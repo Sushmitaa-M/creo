@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router";
+import { createPortal } from "react-dom";
 import { 
   Bell, 
   ChevronLeft, 
@@ -450,7 +451,8 @@ export function AdminTopHeader({
       : activeTab);
 
   return (
-    <div className="sticky top-0 z-40 w-full bg-[#0B111C]/90 backdrop-blur-md pt-3 sm:pt-4 pb-2.5 sm:pb-3 px-3.5 sm:px-8 transition-all">
+    <>
+      <div className="sticky top-0 z-40 w-full bg-[#0B111C]/90 backdrop-blur-md pt-3 sm:pt-4 pb-2.5 sm:pb-3 px-3.5 sm:px-8 transition-all">
       <header className="max-w-[1500px] mx-auto bg-[#161F2D] rounded-2xl sm:rounded-full border border-[#2A3446] px-4 sm:px-7 lg:px-9 py-2.5 sm:py-3.5 flex items-center justify-between shadow-[0_8px_32px_rgba(5,8,16,0.6)] min-h-[58px] sm:min-h-[66px]">
         {/* Left Section: Hamburger Menu + Back Button + Brand Logo + Title */}
         <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
@@ -802,124 +804,133 @@ export function AdminTopHeader({
           </div>
         </div>
       </header>
+    </div>
 
-      {/* Sidebar Backdrop Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-[#050810]/75 backdrop-blur-sm z-50 transition-opacity animate-fade-in"
-          onClick={() => setSidebarOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Slide-out Sidebar Drawer */}
-      <aside
-        className={`fixed top-0 bottom-0 left-0 w-80 sm:w-88 max-w-[88vw] bg-[#161F2D] border-r border-[#2A3446] shadow-[0_25px_60px_rgba(5,8,16,0.95)] z-50 flex flex-col transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-        aria-label="Admin Navigation Drawer"
-      >
-        {/* Drawer Header */}
-        <div className="p-4 sm:p-5 border-b border-[#2A3446] flex items-center justify-between bg-[#0B111C]/60 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <Link
-              to={isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
+    {typeof document !== "undefined" &&
+      createPortal(
+        <>
+          {/* Sidebar Backdrop Overlay */}
+          {sidebarOpen && (
+            <div
+              className="fixed inset-0 bg-[#050810]/75 backdrop-blur-sm z-[9998] transition-opacity duration-300"
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-0.5 font-black text-white text-xl tracking-tight"
-            >
-              creo<span className="text-[#7FA0D6] text-2xl leading-none">.</span>
-            </Link>
-            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
-              {isMemberRole ? "Workstation" : user?.role === "team_lead" ? "Pod Lead" : "Admin Ops"}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(false)}
-            className="size-8 rounded-xl flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] border border-transparent hover:border-[#2A3446] transition-colors cursor-pointer"
-            aria-label="Close navigation sidebar"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+              aria-hidden="true"
+            />
+          )}
 
-        {/* Drawer Navigation List - All sections & items directly listed, zero hover */}
-        <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5 scrollbar-thin text-left">
-          {currentNavSections.map((section) => (
-            <div key={section.label} className="space-y-1">
-              <div className="px-3 pb-1 text-[10px] font-black uppercase tracking-wider text-[#7FA0D6]">
-                {section.label}
+          {/* Slide-out Sidebar Drawer */}
+          <aside
+            className={`fixed top-0 bottom-0 left-0 h-screen h-[100dvh] w-80 sm:w-88 max-w-[88vw] bg-[#161F2D] border-r border-[#2A3446] shadow-[0_25px_60px_rgba(5,8,16,0.95)] z-[9999] flex flex-col transition-all duration-300 ease-in-out ${
+              sidebarOpen
+                ? "translate-x-0 opacity-100 visible"
+                : "-translate-x-full opacity-0 invisible pointer-events-none"
+            }`}
+            aria-label="Admin Navigation Drawer"
+          >
+            {/* Drawer Header */}
+            <div className="p-4 sm:p-5 border-b border-[#2A3446] flex items-center justify-between bg-[#0B111C]/60 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <Link
+                  to={isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
+                  onClick={() => setSidebarOpen(false)}
+                  className="flex items-center gap-0.5 font-black text-white text-xl tracking-tight"
+                >
+                  creo<span className="text-[#7FA0D6] text-2xl leading-none">.</span>
+                </Link>
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
+                  {isMemberRole ? "Workstation" : user?.role === "team_lead" ? "Pod Lead" : "Admin Ops"}
+                </span>
               </div>
-              <div className="space-y-0.5">
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = isPathActive(item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                        active
-                          ? "bg-[#BCCCE6] text-[#0B111C] shadow-sm font-black"
-                          : "text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F]"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <Icon className={`w-4 h-4 shrink-0 ${active ? "text-[#0B111C]" : "text-[#7FA0D6]"}`} />
-                        <span className="truncate">{item.label}</span>
-                      </div>
-                      {item.badge && (
-                        <span
-                          className={`text-[10px] px-1.5 py-0.5 rounded font-black shrink-0 ${
-                            active ? "bg-[#0B111C]/20 text-[#0B111C]" : "bg-[#7FA0D6]/20 text-[#7FA0D6]"
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(false)}
+                className="size-8 rounded-xl flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] border border-transparent hover:border-[#2A3446] transition-colors cursor-pointer"
+                aria-label="Close navigation sidebar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Drawer Navigation List - All sections & items directly listed, zero hover */}
+            <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5 scrollbar-thin text-left">
+              {currentNavSections.map((section) => (
+                <div key={section.label} className="space-y-1">
+                  <div className="px-3 pb-1 text-[10px] font-black uppercase tracking-wider text-[#7FA0D6]">
+                    {section.label}
+                  </div>
+                  <div className="space-y-0.5">
+                    {section.items.map((item) => {
+                      const Icon = item.icon;
+                      const active = isPathActive(item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={() => setSidebarOpen(false)}
+                          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                            active
+                              ? "bg-[#BCCCE6] text-[#0B111C] shadow-sm font-black"
+                              : "text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F]"
                           }`}
                         >
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Icon className={`w-4 h-4 shrink-0 ${active ? "text-[#0B111C]" : "text-[#7FA0D6]"}`} />
+                            <span className="truncate">{item.label}</span>
+                          </div>
+                          {item.badge && (
+                            <span
+                              className={`text-[10px] px-1.5 py-0.5 rounded font-black shrink-0 ${
+                                active ? "bg-[#0B111C]/20 text-[#0B111C]" : "bg-[#7FA0D6]/20 text-[#7FA0D6]"
+                              }`}
+                            >
+                              {item.badge}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Drawer Footer: User Profile Card & Direct Sign Out */}
+            <div className="p-3.5 border-t border-[#2A3446] bg-[#0B111C]/80 shrink-0 space-y-2 text-left">
+              <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#161F2D] border border-[#2A3446]">
+                <div className="size-9 rounded-full bg-[#BCCCE6] text-[#0B111C] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
+                  {(user?.full_name?.[0] || user?.email?.[0] || (isMemberRole ? "D" : "A")).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-xs font-bold text-white truncate">
+                    {user?.full_name || (isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
+                  </h4>
+                  <p className="text-[10px] text-[#97A0B3] font-medium truncate">
+                    {user?.email || (isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setSidebarOpen(false);
+                    try {
+                      await logout();
+                    } catch {
+                      // ignore
+                    }
+                    navigate("/auth");
+                  }}
+                  className="p-1.5 rounded-lg text-[#97A0B3] hover:text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
+                  title="Sign Out / Log Out"
+                  aria-label="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Drawer Footer: User Profile Card & Direct Sign Out */}
-        <div className="p-3.5 border-t border-[#2A3446] bg-[#0B111C]/80 shrink-0 space-y-2 text-left">
-          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#161F2D] border border-[#2A3446]">
-            <div className="size-9 rounded-full bg-[#BCCCE6] text-[#0B111C] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
-              {(user?.full_name?.[0] || user?.email?.[0] || (isMemberRole ? "D" : "A")).toUpperCase()}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-bold text-white truncate">
-                {user?.full_name || (isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
-              </h4>
-              <p className="text-[10px] text-[#97A0B3] font-medium truncate">
-                {user?.email || (isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={async () => {
-                setSidebarOpen(false);
-                try {
-                  await logout();
-                } catch {
-                  // ignore
-                }
-                navigate("/auth");
-              }}
-              className="p-1.5 rounded-lg text-[#97A0B3] hover:text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
-              title="Sign Out / Log Out"
-              aria-label="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </aside>
-    </div>
+          </aside>
+        </>,
+        document.body
+      )}
+    </>
   );
 }

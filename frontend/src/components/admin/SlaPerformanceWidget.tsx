@@ -18,7 +18,7 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
   return (
     <div
       onClick={() => navigate("/admin/sla")}
-      className="bg-[#161F2D] rounded-2xl border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all p-4 sm:p-5 flex flex-col w-full font-sans cursor-pointer group"
+      className="bg-[#161F2D] rounded-2xl border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all p-4 sm:p-5 flex flex-col w-full font-sans cursor-pointer group hover-card-innovative"
     >
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
             ))
           ) : (
             <>
-              <div className="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-white">
+              <div className="flex items-center justify-between p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C]">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                     <AlertTriangle className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -128,7 +128,7 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
                 </div>
                 <span className="text-[9px] font-black text-rose-500 ml-2 tracking-wide shrink-0">Warning</span>
               </div>
-              <div className="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-white">
+              <div className="flex items-center justify-between p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C]">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-7 h-7 rounded-lg bg-[#7FA0D6] text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                     <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -147,7 +147,7 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
         </div>
       </div>
 
-      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-[#97A0B3] font-medium" onClick={(e) => e.stopPropagation()}>
+      <div className="mt-3 pt-3 border-t border-[#2A3446] flex items-center justify-between text-[11px] text-[#97A0B3] font-medium" onClick={(e) => e.stopPropagation()}>
         <span>Updated 2 mins ago</span>
         <button
           onClick={(e) => {

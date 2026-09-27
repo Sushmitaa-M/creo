@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { motion } from "motion/react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
@@ -416,7 +417,12 @@ export function PodClientAllocationsPage() {
         {/* 3. Top 4 Metric KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
           {/* Card 1: Assigned Clients */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.05 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 Assigned Clients
@@ -436,10 +442,15 @@ export function PodClientAllocationsPage() {
                 <span className="text-[9px] font-bold text-[#97A0B3]">Tier 1 Pod</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 2: Monthly Asset Quota */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 Monthly Asset Quota
@@ -463,10 +474,15 @@ export function PodClientAllocationsPage() {
                 <span className="font-bold text-emerald-600">On Pace</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 3: Lead Sign-offs */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 Lead Sign-offs
@@ -504,10 +520,15 @@ export function PodClientAllocationsPage() {
                 )}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 4: Client CSAT */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 Client CSAT
@@ -530,7 +551,7 @@ export function PodClientAllocationsPage() {
                 <span className="font-bold text-emerald-600">Exceptional</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* 4. Active Accounts Full-Width Container (Extended Client Roster) */}

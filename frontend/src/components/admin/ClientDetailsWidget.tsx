@@ -26,7 +26,7 @@ export function ClientDetailsWidget({ clients }: ClientDetailsWidgetProps) {
       case "enterprise":
         return "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30";
       default:
-        return "bg-gray-50 text-gray-700 border-gray-200";
+        return "bg-[#1F2C3F] text-[#F1F5F9] border-[#2A3446]";
     }
   };
 
@@ -35,7 +35,7 @@ export function ClientDetailsWidget({ clients }: ClientDetailsWidgetProps) {
   return (
     <div
       onClick={() => navigate("/admin/clients")}
-      className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 flex flex-col w-full font-sans border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all cursor-pointer group"
+      className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 flex flex-col w-full font-sans border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all cursor-pointer group hover-card-innovative"
     >
       {/* Header Section */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-3.5">
@@ -234,7 +234,7 @@ export function ClientDetailsWidget({ clients }: ClientDetailsWidgetProps) {
                 <h3 className="text-xs font-bold text-white tracking-tight line-clamp-1">{company_name}</h3>
                 <p className="text-[10px] text-[#97A0B3] font-medium tracking-tight mb-2 line-clamp-1">{client.email}</p>
 
-                <div className="flex items-center gap-1.5 mb-2.5 pt-2 border-t border-slate-50">
+                <div className="flex items-center gap-1.5 mb-2.5 pt-2 border-t border-[#2A3446]">
                   <div className="flex-shrink-0 w-5 h-5 rounded-md bg-blue-500 text-white flex items-center justify-center font-bold text-[9px]">
                     {podLetter}
                   </div>
@@ -245,7 +245,7 @@ export function ClientDetailsWidget({ clients }: ClientDetailsWidgetProps) {
                 </div>
 
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-black text-[#7FA0D6] bg-blue-50 border border-blue-100/50">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-black text-[#7FA0D6] bg-[#0B111C] border border-[#2A3446]">
                     <span className="w-1 h-1 rounded-full bg-[#7FA0D6]" />
                     {client.subscription_status || client.account_status}
                   </span>
@@ -255,7 +255,7 @@ export function ClientDetailsWidget({ clients }: ClientDetailsWidgetProps) {
                     </span>
                     <div className="relative w-3.5 h-3.5 flex items-center justify-center">
                       <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                        <circle cx="18" cy="18" r="16" fill="none" className="stroke-slate-100" strokeWidth="6" />
+                        <circle cx="18" cy="18" r="16" fill="none" className="stroke-[#2A3446]" strokeWidth="6" />
                         <circle
                           cx="18"
                           cy="18"

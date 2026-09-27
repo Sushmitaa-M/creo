@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import {
   Sparkles,
   FileText,
@@ -138,18 +139,23 @@ export function MemberAssetHandoffQAPage() {
         </div>
 
         {/* 2. Main Two-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-start">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-start"
+        >
           {/* LEFT 2 COLUMNS */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Section A: Video Player Canvas with Tabs */}
-            <div className="bg-[#161F2D] rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+            <div className="bg-[#161F2D] rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover-card-innovative space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#2A3446]">
                 <div>
                   <span className="text-[10px] sm:text-[11px] font-bold text-[#7FA0D6] uppercase">NORTHWIND LABS · CAMPAIGN 04</span>
                   <h2 className="text-sm sm:text-base font-black text-white">Fintech Ad Set (9:16 Vertical Reel – 4K)</h2>
                 </div>
 
-                <span className="px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 self-start">
+                <span className="px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 self-start animate-status-breathe">
                   Ready for Sign-Off
                 </span>
               </div>
@@ -236,30 +242,30 @@ export function MemberAssetHandoffQAPage() {
                   </div>
                   {/* Waveform graphic bar */}
                   <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex items-center px-1">
-                    <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 rounded-full w-[60%]" />
+                    <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 rounded-full smooth-progress-fill w-[60%]" />
                   </div>
                 </div>
               </div>
 
               {/* Technical Metadata Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1 text-center text-xs">
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative">
                   <div className="text-[10px] text-[#97A0B3] font-bold uppercase">Framerate</div>
                   <div className="font-black text-white mt-0.5">60.00 fps</div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative">
                   <div className="text-[10px] text-[#97A0B3] font-bold uppercase">Resolution</div>
                   <div className="font-black text-white mt-0.5">2160 x 3840</div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative">
                   <div className="text-[10px] text-[#97A0B3] font-bold uppercase">Codec</div>
                   <div className="font-black text-white mt-0.5">ProRes 4444 HQ</div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative">
                   <div className="text-[10px] text-[#97A0B3] font-bold uppercase">Audio Bitrate</div>
                   <div className="font-black text-white mt-0.5">320k AAC</div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] col-span-2 sm:col-span-1">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] col-span-2 sm:col-span-1 hover-card-innovative">
                   <div className="text-[10px] text-[#97A0B3] font-bold uppercase">Color Space</div>
                   <div className="font-black text-white mt-0.5">Rec.709 Legal</div>
                 </div>
@@ -267,7 +273,7 @@ export function MemberAssetHandoffQAPage() {
             </div>
 
             {/* Section B: Lead Review Status & Revision History Ledger */}
-            <div className="bg-[#161F2D] rounded-3xl p-6 sm:p-7 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+            <div className="bg-[#161F2D] rounded-3xl p-6 sm:p-7 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover-card-innovative space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2A3446]">
                 <div className="flex items-center gap-2">
                   <FileText className="size-4 text-[#7FA0D6]" />
@@ -491,7 +497,7 @@ export function MemberAssetHandoffQAPage() {
           {/* RIGHT 1 COLUMN */}
           <div className="space-y-6">
             {/* Self-QA Verification Checklist */}
-            <div className="bg-[#161F2D] rounded-3xl p-6 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+            <div className="bg-[#161F2D] rounded-3xl p-6 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover-card-innovative space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-[#2A3446]">
                 <div className="flex items-center gap-2">
                   <Sparkles className="size-4 text-[#7FA0D6]" />
@@ -510,7 +516,7 @@ export function MemberAssetHandoffQAPage() {
               <div className="space-y-3">
                 <div
                   onClick={() => handleToggleChecklist("safezone")}
-                  className="p-3.5 rounded-2xl bg-[#7FA0D6]/15/50 border border-[#7FA0D6]/30/80 flex items-start gap-3 cursor-pointer hover:bg-[#7FA0D6]/15 transition-colors"
+                  className="p-3.5 rounded-2xl bg-[#7FA0D6]/15/50 border border-[#7FA0D6]/30/80 hover-card-innovative flex items-start gap-3 cursor-pointer hover:bg-[#7FA0D6]/15 transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -528,7 +534,7 @@ export function MemberAssetHandoffQAPage() {
 
                 <div
                   onClick={() => handleToggleChecklist("audioLufs")}
-                  className="p-3.5 rounded-2xl bg-[#7FA0D6]/15/50 border border-[#7FA0D6]/30/80 flex items-start gap-3 cursor-pointer hover:bg-[#7FA0D6]/15 transition-colors"
+                  className="p-3.5 rounded-2xl bg-[#7FA0D6]/15/50 border border-[#7FA0D6]/30/80 hover-card-innovative flex items-start gap-3 cursor-pointer hover:bg-[#7FA0D6]/15 transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -546,7 +552,7 @@ export function MemberAssetHandoffQAPage() {
 
                 <div
                   onClick={() => handleToggleChecklist("brandVectors")}
-                  className="p-3.5 rounded-2xl bg-[#7FA0D6]/15/50 border border-[#7FA0D6]/30/80 flex items-start gap-3 cursor-pointer hover:bg-[#7FA0D6]/15 transition-colors"
+                  className="p-3.5 rounded-2xl bg-[#7FA0D6]/15/50 border border-[#7FA0D6]/30/80 hover-card-innovative flex items-start gap-3 cursor-pointer hover:bg-[#7FA0D6]/15 transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -564,7 +570,7 @@ export function MemberAssetHandoffQAPage() {
 
                 <div
                   onClick={() => handleToggleChecklist("subtitles")}
-                  className="p-3.5 rounded-2xl bg-[#7FA0D6]/15/50 border border-[#7FA0D6]/30/80 flex items-start gap-3 cursor-pointer hover:bg-[#7FA0D6]/15 transition-colors"
+                  className="p-3.5 rounded-2xl bg-[#7FA0D6]/15/50 border border-[#7FA0D6]/30/80 hover-card-innovative flex items-start gap-3 cursor-pointer hover:bg-[#7FA0D6]/15 transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -583,7 +589,7 @@ export function MemberAssetHandoffQAPage() {
             </div>
 
             {/* Lead Review & Sign-Off Box */}
-            <div className="bg-[#161F2D] rounded-3xl p-6 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
+            <div className="bg-[#161F2D] rounded-3xl p-6 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover-card-innovative space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-[#2A3446]">
                 <h3 className="text-sm font-black text-white">Lead Review & Sign-off</h3>
               </div>
@@ -639,7 +645,7 @@ export function MemberAssetHandoffQAPage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Footer */}
         <footer className="pt-6 pb-2 border-t border-[#2A3446]/80 flex flex-col sm:flex-row items-center justify-between text-xs text-[#97A0B3] gap-2">

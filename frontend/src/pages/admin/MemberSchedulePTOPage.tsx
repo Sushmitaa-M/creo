@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { motion } from "motion/react";
 import {
   Calendar,
   CheckCircle2,
@@ -129,9 +130,14 @@ export function MemberSchedulePTOPage() {
         </div>
 
         {/* 2. Top 3 Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3"
+        >
           {/* Paid Time Off */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 PAID TIME OFF (PTO)
@@ -146,7 +152,7 @@ export function MemberSchedulePTOPage() {
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Days Left</span>
               </div>
               <div className="w-full h-1.5 bg-[#1F2C3F] rounded-full overflow-hidden my-1">
-                <div className="h-full bg-blue-600 rounded-full w-[72%]" />
+                <div className="h-full bg-blue-600 rounded-full smooth-progress-fill w-[72%]" />
               </div>
               <div className="flex items-center justify-between pt-1 border-t border-[#2A3446] text-[#97A0B3] font-medium text-[10px] sm:text-[11px]">
                 <span>Used: 5.5 d</span>
@@ -156,7 +162,7 @@ export function MemberSchedulePTOPage() {
           </div>
 
           {/* Sick & Medical */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 SICK & MEDICAL
@@ -177,7 +183,7 @@ export function MemberSchedulePTOPage() {
           </div>
 
           {/* Floating & Comp */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 FLOATING & COMP
@@ -196,14 +202,19 @@ export function MemberSchedulePTOPage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* 3. Main Grid (Left 2/3, Right 1/3) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4 items-start">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.1 }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4 items-start"
+        >
           {/* LEFT 2 COLUMNS */}
           <div className="lg:col-span-2 space-y-3.5 sm:space-y-4">
             {/* Active & Historical Leave Requests */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-3">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#2A3446]">
                 <div>
                   <h2 className="text-sm font-black text-white">Active & Historical Leave Requests</h2>
@@ -220,7 +231,7 @@ export function MemberSchedulePTOPage() {
               {/* Active Requests List */}
               <div className="space-y-2.5">
                 {activeRequests.map((req) => (
-                  <div key={req.id} className="p-3 sm:p-3.5 rounded-xl bg-[#7FA0D6]/15/40 border border-[#7FA0D6]/30/70 space-y-2.5">
+                  <div key={req.id} className="p-3 sm:p-3.5 rounded-xl bg-[#7FA0D6]/15/40 border border-[#7FA0D6]/30/70 hover-card-innovative space-y-2.5">
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                       <div className="flex items-start gap-2.5">
                         <div className="size-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-black">
@@ -277,7 +288,7 @@ export function MemberSchedulePTOPage() {
                   PAST REQUESTS (SPRINT CYCLES 07 – 09)
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between text-xs">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2.5">
                     <div className="size-7 rounded-lg bg-slate-200 text-[#F1F5F9] flex items-center justify-center font-bold text-xs">
                       🏖️
@@ -292,7 +303,7 @@ export function MemberSchedulePTOPage() {
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between text-xs">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2.5">
                     <div className="size-7 rounded-lg bg-slate-200 text-[#F1F5F9] flex items-center justify-center font-bold text-xs">
                       🎉
@@ -310,7 +321,7 @@ export function MemberSchedulePTOPage() {
             </div>
 
             {/* November 2025 Calendar Grid */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-3">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#2A3446]">
                 <div className="flex items-center gap-2.5">
                   <h3 className="text-sm font-black text-white">November 2025</h3>
@@ -439,7 +450,7 @@ export function MemberSchedulePTOPage() {
           {/* RIGHT 1 COLUMN */}
           <div className="space-y-3.5 sm:space-y-4">
             {/* Today's Pod Schedule */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-3">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#2A3446]">
                 <div>
                   <h3 className="text-xs font-black text-white">Today's Pod Schedule</h3>
@@ -452,7 +463,7 @@ export function MemberSchedulePTOPage() {
 
               {/* Schedule Items */}
               <div className="space-y-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-[#7FA0D6]/15/60 border border-[#7FA0D6]/30/80 space-y-1">
+                <div className="p-2.5 rounded-xl bg-[#7FA0D6]/15/60 border border-[#7FA0D6]/30/80 hover-card-innovative space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-blue-950 text-[11px]">10:00 AM – 10:30 AM</span>
                     <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-blue-600 text-white uppercase">
@@ -472,7 +483,7 @@ export function MemberSchedulePTOPage() {
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]/80 space-y-1">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]/80 hover-card-innovative space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-white text-[11px]">01:30 PM – 02:15 PM</span>
                     <span className="text-[10px] text-[#97A0B3]">Conf Room 3</span>
@@ -485,7 +496,7 @@ export function MemberSchedulePTOPage() {
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]/80 space-y-1">
+                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]/80 hover-card-innovative space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-white text-[11px]">04:00 PM – 05:00 PM</span>
                     <span className="text-[10px] text-[#97A0B3]">Designated Window</span>
@@ -497,7 +508,7 @@ export function MemberSchedulePTOPage() {
             </div>
 
             {/* Pod Redundancy Partner */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-2.5">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2.5">
               <div className="flex items-center justify-between pb-1.5 border-b border-[#2A3446]">
                 <div className="flex items-center gap-1.5">
                   <Shield className="size-3.5 text-[#7FA0D6]" />
@@ -537,7 +548,7 @@ export function MemberSchedulePTOPage() {
             </div>
 
             {/* Submit Quick PTO Form */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-3">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-1.5 border-b border-[#2A3446]">
                 <div className="flex items-center gap-1.5">
                   <Plane className="size-3.5 text-[#7FA0D6]" />
@@ -621,7 +632,7 @@ export function MemberSchedulePTOPage() {
               </form>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Footer */}
         <footer className="pt-4 pb-2 border-t border-[#2A3446]/80 flex flex-col sm:flex-row items-center justify-between text-xs text-[#97A0B3] gap-2">

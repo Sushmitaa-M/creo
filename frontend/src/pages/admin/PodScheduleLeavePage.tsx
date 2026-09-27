@@ -3,6 +3,7 @@ import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { approveLeaveRequest, rejectLeaveRequest, fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
 import { useAuth } from "../../lib/auth-context";
+import { motion } from "motion/react";
 import {
   CalendarDays,
   Clock,
@@ -171,9 +172,14 @@ export function PodScheduleLeavePage() {
         </div>
 
         {/* 2. Top 2 KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3"
+        >
           {/* Card 1: People Working Today */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">People Working Today</span>
               <div className="size-6 sm:size-7 rounded-lg bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
@@ -196,7 +202,7 @@ export function PodScheduleLeavePage() {
           </div>
 
           {/* Card 2: Upcoming Leave */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Upcoming Leave</span>
               <div className="size-6 sm:size-7 rounded-lg bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
@@ -219,13 +225,18 @@ export function PodScheduleLeavePage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* 3. Main Two Column Layout (Left 7 cols, Right 5 cols) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 items-start">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.1 }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 items-start"
+        >
           {/* LEFT COLUMN: Pending Leave & PTO Queue (7 cols) */}
           <div className="lg:col-span-7 space-y-3.5 sm:space-y-4">
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-3">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#2A3446]">
                 <div className="flex items-center gap-2">
                   <h2 className="text-sm font-black text-white">Pending Leave & PTO Queue</h2>
@@ -245,7 +256,7 @@ export function PodScheduleLeavePage() {
                   {pendingLeaves.map((leave) => (
                     <div
                       key={leave.id}
-                      className="p-3.5 rounded-xl border border-[#2A3446]/80 bg-[#FAFCFF] hover:border-[#7FA0D6]/30 hover:shadow-xs transition-all space-y-2.5"
+                      className="p-3.5 rounded-xl border border-[#2A3446]/80 bg-[#0B111C] hover:border-[#7FA0D6]/30 hover-card-innovative shadow-2xs transition-all space-y-2.5"
                     >
                       {/* Specialist Info Header */}
                       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -288,10 +299,10 @@ export function PodScheduleLeavePage() {
                       </div>
 
                       {/* Impact Assessment Alert */}
-                      <div className="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-200 text-xs text-emerald-800 flex items-start gap-1.5">
-                        <ShieldCheck className="size-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                      <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-800/50 text-xs text-emerald-300 flex items-start gap-1.5">
+                        <ShieldCheck className="size-3.5 text-emerald-400 shrink-0 mt-0.5" />
                         <p className="font-medium leading-relaxed text-[10.5px]">
-                          <span className="font-bold text-emerald-900">Impact: </span>
+                          <span className="font-bold text-emerald-300">Impact: </span>
                           {leave.impact}
                         </p>
                       </div>
@@ -319,7 +330,7 @@ export function PodScheduleLeavePage() {
             </div>
 
             {/* Past 30 Days Leave History */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-3">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-[#2A3446]">
                 <div className="flex items-center gap-2">
                   <Clock className="size-3.5 text-[#97A0B3]" />
@@ -370,7 +381,7 @@ export function PodScheduleLeavePage() {
           {/* RIGHT COLUMN: Interactive Calendar & Schedule Timeline (5 cols) */}
           <div className="lg:col-span-5 space-y-3.5 sm:space-y-4">
             {/* 1. Monthly Calendar Widget */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-3">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="size-3.5 text-[#7FA0D6]" />
@@ -448,7 +459,7 @@ export function PodScheduleLeavePage() {
             </div>
 
             {/* 2. Today's Schedule & Meetings */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-3">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-[#2A3446]">
                 <div>
                   <h3 className="text-xs font-black text-white">Today's Schedule & Meetings</h3>
@@ -511,7 +522,7 @@ export function PodScheduleLeavePage() {
             </div>
 
             {/* 3. Pod Redundancy Matrix */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs space-y-2.5">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <ArrowLeftRight className="size-3.5 text-[#7FA0D6]" />
@@ -539,7 +550,7 @@ export function PodScheduleLeavePage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </main>
 
       {/* Standup Modal */}

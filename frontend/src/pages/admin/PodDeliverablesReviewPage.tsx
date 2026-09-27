@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { submitPodQAReview, fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
@@ -128,7 +129,12 @@ export function PodDeliverablesReviewPage() {
         {/* 2. Top 3 KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
           {/* Card 1: Pending Lead Sign-off */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.05 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Pending Lead Sign-Off</span>
               <div className="size-6 sm:size-7 rounded-lg bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
@@ -147,10 +153,15 @@ export function PodDeliverablesReviewPage() {
                 <span className="text-[#97A0B3] font-medium">Within 2h SLA threshold</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 2: Average Turnaround Speed */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Average Turnaround Speed</span>
               <div className="size-6 sm:size-7 rounded-lg bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
@@ -167,10 +178,15 @@ export function PodDeliverablesReviewPage() {
                 <span className="font-bold text-emerald-600">↗ 68% Faster</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 3: QA First-Pass Pass Rate */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">QA First-Pass Pass Rate</span>
               <div className="size-6 sm:size-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -188,7 +204,7 @@ export function PodDeliverablesReviewPage() {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* 3. Urgent SLA Alert Banner */}

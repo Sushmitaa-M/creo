@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { motion } from "motion/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchPodDashboard,
@@ -381,10 +382,15 @@ export function PodLeadDashboardPage() {
         {/* 2. Top 3 KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
           {/* Active Pod Capacity */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.05 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Active Pod Capacity</span>
-              <div className="size-6 sm:size-7 rounded-lg bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-[#7FA0D6]/20 text-[#7FA0D6] flex items-center justify-center">
                 <Users className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -395,18 +401,23 @@ export function PodLeadDashboardPage() {
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="font-bold text-[#F1F5F9]">100% Bandwidth</span>
-                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-500/30">
                   ● Optimal Flow
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Today's Review Queue */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Today's Review Queue</span>
-              <div className="size-6 sm:size-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-rose-950/40 text-rose-400 flex items-center justify-center">
                 <MessageSquare className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -422,13 +433,18 @@ export function PodLeadDashboardPage() {
                 <span className="font-bold text-[#97A0B3]">Avg: 38m</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Pod Leave & Attendance */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Pod Leave & Attendance</span>
-              <div className="size-6 sm:size-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-purple-950/40 text-purple-400 flex items-center justify-center">
                 <Calendar className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -444,7 +460,7 @@ export function PodLeadDashboardPage() {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* 3. Main Two-Column Layout (Left 2/3, Right 1/3) */}
@@ -559,7 +575,7 @@ export function PodLeadDashboardPage() {
                   deliverablesList.map((del) => (
                     <div
                       key={del.id}
-                      className="p-3.5 rounded-xl border border-[#2A3446] bg-[#FAFCFF] hover:border-[#7FA0D6]/30 hover:shadow-2xs transition-all space-y-2.5"
+                      className="p-3.5 rounded-xl border border-[#2A3446] bg-[#0B111C] hover:border-[#7FA0D6]/30 hover:shadow-2xs transition-all space-y-2.5"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-1.5">
                         <div className="flex items-center gap-1.5">
@@ -615,10 +631,10 @@ export function PodLeadDashboardPage() {
           {/* RIGHT 1 COLUMN */}
           <div className="space-y-3.5 sm:space-y-4">
             {/* 1. Client SLA Warning */}
-            <div className="bg-gradient-to-br from-rose-50/90 via-red-50/40 to-white rounded-2xl p-4 border border-rose-200/80 shadow-2xs space-y-2.5">
+            <div className="bg-gradient-to-br from-rose-950/40 via-red-950/20 to-[#161F2D] rounded-2xl p-4 border border-rose-500/30 shadow-2xs space-y-2.5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-rose-700 font-bold text-xs uppercase tracking-wider">
-                  <ShieldAlert className="size-3.5 text-rose-600" />
+                <div className="flex items-center gap-1.5 text-rose-400 font-bold text-xs uppercase tracking-wider">
+                  <ShieldAlert className="size-3.5 text-rose-400" />
                   Client SLA Warning
                 </div>
                 <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-rose-600 text-white uppercase tracking-wider">
@@ -638,7 +654,7 @@ export function PodLeadDashboardPage() {
 
               <Link
                 to="/lead/deliverables"
-                className="w-full py-2 rounded-xl bg-[#161F2D] border border-rose-200 text-rose-700 hover:bg-rose-50 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors shadow-2xs"
+                className="w-full py-2 rounded-xl bg-[#0B111C] border border-rose-500/30 text-rose-400 hover:bg-rose-950/30 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors shadow-2xs"
               >
                 Jump to Deliverable <ArrowRight className="size-3" />
               </Link>
@@ -652,19 +668,19 @@ export function PodLeadDashboardPage() {
                   Leave & PTO Requests
                 </div>
                 {pendingLeaveRequests.length > 0 ? (
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-amber-950/40 text-amber-400 border border-amber-500/30">
                     {pendingLeaveRequests.length} Pending
                   </span>
                 ) : (
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-500/30">
                     0 Pending
                   </span>
                 )}
               </div>
 
               {pendingLeaveRequests.length === 0 ? (
-                <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100/80 text-center space-y-1">
-                  <div className="size-6 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
+                <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/20 text-center space-y-1">
+                  <div className="size-6 rounded-full bg-emerald-950/50 text-emerald-400 mx-auto flex items-center justify-center">
                     <Check className="size-3" />
                   </div>
                   <p className="text-xs font-black text-white">All Leave Reviewed</p>

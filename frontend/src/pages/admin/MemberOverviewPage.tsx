@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { motion } from "motion/react";
 import {
   Users,
   Clock,
@@ -189,7 +190,12 @@ export function MemberOverviewPage() {
         {/* 2. Top 3 Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
           {/* Active Sprint Tasks */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.05 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 ACTIVE SPRINT TASKS
@@ -213,10 +219,15 @@ export function MemberOverviewPage() {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Weekly Hours Logged */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 WEEKLY HOURS LOGGED
@@ -232,17 +243,22 @@ export function MemberOverviewPage() {
               </div>
               {/* Progress bar */}
               <div className="w-full h-1.5 bg-[#1F2C3F] rounded-full overflow-hidden my-1">
-                <div className="h-full bg-blue-600 rounded-full w-[81%]" />
+                <div className="h-full bg-blue-600 rounded-full w-[81%] transition-all duration-700" />
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1 border-t border-[#2A3446]">
                 <span className="font-bold text-emerald-600">81% target</span>
                 <span className="font-bold text-[#97A0B3]">7.5h left</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Remaining PTO */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex flex-col justify-between hover-card-innovative"
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 REMAINING PTO
@@ -264,7 +280,7 @@ export function MemberOverviewPage() {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* 3. Main Two-Column Layout (Left 2/3, Right 1/3) */}

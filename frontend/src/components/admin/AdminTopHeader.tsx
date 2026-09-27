@@ -96,7 +96,7 @@ export function AdminTopHeader({
   const isTeamActive = activeTab === "Team Details" || location.pathname.includes("/admin/pod") || location.pathname.includes("/lead/dashboard") || location.pathname.includes("/lead/schedule") || location.pathname.includes("/admin/team") || location.pathname.includes("/admin/leaves") || location.pathname.includes("/admin/leave");
   const isContentActive = activeTab === "Content Engine" || location.pathname.includes("/lead/tasks") || location.pathname.includes("/lead/deliverables") || location.pathname.includes("/admin/deliverables") || location.pathname.includes("/admin/calendar") || location.pathname.includes("/admin/tasks");
   const isClientActive = activeTab === "Client Details" || location.pathname.includes("/lead/clients") || location.pathname.includes("/admin/clients");
-  const isSupportActive = activeTab === "Support" || activeTab === "SLA & Support" || location.pathname.includes("/admin/support") || location.pathname.includes("/admin/sla") || location.pathname.includes("/admin/escalations");
+  const isSupportActive = activeTab === "Support" || activeTab === "SLA & Support" || location.pathname.includes("/admin/support") || location.pathname.includes("/admin/sla");
 
   // Member active tab states
   const isMemberOverview = activeTab === "Overview" || location.pathname === "/workstation" || location.pathname === "/workstation/overview" || location.pathname === "/member" || location.pathname === "/member/overview";
@@ -308,8 +308,6 @@ export function AdminTopHeader({
       ? "Executive Analytics"
       : location.pathname.includes("/admin/addons")
       ? "Add-ons Catalog"
-      : location.pathname.includes("/admin/escalations")
-      ? "SLA Escalations"
       : location.pathname.includes("/admin/settings")
       ? "System Settings"
       : activeTab);
@@ -714,13 +712,6 @@ export function AdminTopHeader({
                   className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
                 >
                   SLA Performance
-                </Link>
-                <Link 
-                  to="/admin/escalations" 
-                  onClick={() => setSupportDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  SLA Escalations
                 </Link>
                 <Link 
                   to="/slack" 

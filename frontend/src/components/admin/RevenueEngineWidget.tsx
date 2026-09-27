@@ -104,7 +104,7 @@ export function RevenueEngineWidget({ kpis, clients: _clients }: RevenueEngineWi
   return (
     <div
       onClick={() => navigate("/admin/revenue")}
-      className="bg-[#161F2D] rounded-2xl border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all p-4 sm:p-5 flex flex-col w-full h-full font-sans cursor-pointer group"
+      className="bg-[#161F2D] rounded-2xl border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all p-4 sm:p-5 flex flex-col w-full h-full font-sans cursor-pointer group hover-card-innovative"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-2.5">
@@ -278,14 +278,14 @@ export function RevenueEngineWidget({ kpis, clients: _clients }: RevenueEngineWi
         <Link
           to="/admin/revenue"
           onClick={(e) => e.stopPropagation()}
-          className="flex-1 text-center py-1.5 bg-blue-50 text-[#7FA0D6] rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"
+          className="flex-1 text-center py-1.5 bg-[#0B111C] hover:bg-[#1F2C3F] text-white rounded-lg text-xs font-bold border border-[#2A3446] transition-colors"
         >
           Manage Revenues
         </Link>
         <Link
           to="/admin/plans"
           onClick={(e) => e.stopPropagation()}
-          className="flex-1 text-center py-1.5 bg-slate-50 text-slate-700 rounded-lg text-xs font-bold hover:bg-[#2A3446] border border-[#2A3446] transition-colors"
+          className="flex-1 text-center py-1.5 bg-[#0B111C] hover:bg-[#1F2C3F] text-white rounded-lg text-xs font-bold border border-[#2A3446] transition-colors"
         >
           Plans & Negotiations
         </Link>

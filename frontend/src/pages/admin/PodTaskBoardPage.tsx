@@ -4,6 +4,7 @@ import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { submitPodQAReview, fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
 import { useAuth } from "../../lib/auth-context";
+import { motion } from "motion/react";
 import {
   FolderKanban,
   AlertTriangle,
@@ -133,9 +134,14 @@ export function PodTaskBoardPage() {
         </div>
 
         {/* 2. Top Summary KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3"
+        >
           {/* Card 1: Total Active Tasks */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex items-center justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex items-center justify-between">
             <div className="space-y-0.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Total Active Tasks</span>
               <div className="flex items-baseline gap-1.5">
@@ -152,7 +158,7 @@ export function PodTaskBoardPage() {
           </div>
 
           {/* Card 2: Blockers / Escalations */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs flex items-center justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex items-center justify-between">
             <div className="space-y-0.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Blockers / Escalations</span>
               <div className="flex items-baseline gap-1.5">
@@ -173,7 +179,7 @@ export function PodTaskBoardPage() {
               <AlertTriangle className="size-3.5 sm:size-4" />
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Mobile-Only Kanban Column Selector Pills */}
         <div className="flex md:hidden items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-bold">
@@ -206,7 +212,12 @@ export function PodTaskBoardPage() {
         </div>
 
         {/* 3. Four Kanban Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 items-start">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 items-start"
+        >
           {/* COLUMN 1: Backlog / To Do */}
           <div
             className={`${
@@ -226,7 +237,7 @@ export function PodTaskBoardPage() {
             {/* Cards */}
             <div className="space-y-2.5">
               {/* Card 1: Reel */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#7FA0D6]">Northwind Labs</span>
                   <span className="text-[#97A0B3]">3h</span>
@@ -246,7 +257,7 @@ export function PodTaskBoardPage() {
               </div>
 
               {/* Card 2: Story */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-purple-600">Bloom Studio</span>
                   <span className="px-1.5 py-0.2 rounded bg-rose-50 text-rose-700 text-[8.5px]">High Priority</span>
@@ -266,7 +277,7 @@ export function PodTaskBoardPage() {
               </div>
 
               {/* Card 3: Post */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#F1F5F9]">Atlas Commerce</span>
                   <span className="text-[#97A0B3]">2h</span>
@@ -315,7 +326,7 @@ export function PodTaskBoardPage() {
             {/* Cards */}
             <div className="space-y-2.5">
               {/* Card 1: Reel */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#7FA0D6]">Northwind Labs</span>
                   <span className="px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 text-[8.5px]">Reel · Urgent</span>
@@ -330,7 +341,7 @@ export function PodTaskBoardPage() {
                     <span className="text-[#7FA0D6] font-black">75%</span>
                   </div>
                   <div className="w-full h-1 bg-[#1F2C3F] rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-600 rounded-full" style={{ width: "75%" }} />
+                    <div className="h-full bg-blue-600 rounded-full smooth-progress-fill" style={{ width: "75%" }} />
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
@@ -342,7 +353,7 @@ export function PodTaskBoardPage() {
               </div>
 
               {/* Card 2: Story */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#F1F5F9]">Atlas Commerce</span>
                   <span className="px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 text-[8.5px]">Story</span>
@@ -357,7 +368,7 @@ export function PodTaskBoardPage() {
                     <span className="text-emerald-600 font-black">55%</span>
                   </div>
                   <div className="w-full h-1 bg-[#1F2C3F] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "55%" }} />
+                    <div className="h-full bg-emerald-500 rounded-full smooth-progress-fill" style={{ width: "55%" }} />
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
@@ -369,7 +380,7 @@ export function PodTaskBoardPage() {
               </div>
 
               {/* Card 3: Post */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#F1F5F9]">Atlas Commerce</span>
                   <span className="text-rose-600 font-bold text-[9.5px] flex items-center gap-0.5">
@@ -386,7 +397,7 @@ export function PodTaskBoardPage() {
                     <span className="text-emerald-600 font-black">90%</span>
                   </div>
                   <div className="w-full h-1 bg-[#1F2C3F] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "90%" }} />
+                    <div className="h-full bg-emerald-500 rounded-full smooth-progress-fill" style={{ width: "90%" }} />
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
@@ -418,7 +429,7 @@ export function PodTaskBoardPage() {
             {/* Cards */}
             <div className="space-y-2.5">
               {/* Card 1: Reel */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-amber-200 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-amber-200 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#7FA0D6]">Northwind Labs</span>
                   <span className="text-amber-600 font-bold text-[9.5px]">Due in 2h</span>
@@ -446,7 +457,7 @@ export function PodTaskBoardPage() {
               </div>
 
               {/* Card 2: Story */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-purple-600">Bloom Studio</span>
                   <span className="text-[#97A0B3] text-[9.5px]">Due in 4h</span>
@@ -464,7 +475,7 @@ export function PodTaskBoardPage() {
               </div>
 
               {/* Card 3: Post */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-purple-600">Bloom Studio</span>
                   <span className="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 text-[8.5px]">Ready</span>
@@ -504,7 +515,7 @@ export function PodTaskBoardPage() {
             {/* Cards */}
             <div className="space-y-2.5">
               {/* Card 1: Reel */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-emerald-700 font-bold text-[9.5px] flex items-center gap-1">
                     <CheckCircle2 className="size-3 text-emerald-600" /> Dispatched
@@ -527,7 +538,7 @@ export function PodTaskBoardPage() {
               </div>
 
               {/* Card 2: Story */}
-              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2">
+              <div className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-emerald-700 font-bold text-[9.5px] flex items-center gap-1">
                     <CheckCircle2 className="size-3 text-emerald-600" /> Verified
@@ -550,7 +561,7 @@ export function PodTaskBoardPage() {
               </div>
 
               {/* Card 3: Summary link */}
-              <div className="p-2.5 bg-[#161F2D]/70 rounded-xl border border-dashed border-emerald-200 text-center">
+              <div className="p-2.5 bg-[#161F2D]/70 rounded-xl border border-dashed border-emerald-200 text-center hover-card-innovative">
                 <span className="text-[10px] text-[#97A0B3] font-medium block">
                   2 older completed tasks
                 </span>
@@ -560,7 +571,7 @@ export function PodTaskBoardPage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* 4. Bottom Footer Banner (Lead Management Controls) */}
         <div className="bg-[#161F2D] rounded-2xl p-3.5 sm:p-4 border border-[#2A3446]/80 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">

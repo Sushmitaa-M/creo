@@ -2534,7 +2534,7 @@ export function AdminTasksPage() {
         {/* 4 Kanban Columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Column 1: TO DO */}
-          <div className="bg-[#F1F5F9]/60 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
+          <div className="bg-[#161F2D]/40 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
@@ -2583,7 +2583,7 @@ export function AdminTasksPage() {
           </div>
 
           {/* Column 2: IN PROGRESS */}
-          <div className="bg-[#F1F5F9]/60 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
+          <div className="bg-[#161F2D]/40 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#7FA0D6]/150 animate-pulse" />
@@ -2632,7 +2632,7 @@ export function AdminTasksPage() {
           </div>
 
           {/* Column 3: UNDER REVIEW */}
-          <div className="bg-[#F1F5F9]/60 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
+          <div className="bg-[#161F2D]/40 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
@@ -2676,7 +2676,7 @@ export function AdminTasksPage() {
           </div>
 
           {/* Column 4: APPROVED */}
-          <div className="bg-[#F1F5F9]/60 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
+          <div className="bg-[#161F2D]/40 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
@@ -5713,7 +5713,6 @@ export interface PlanNegotiationItem {
 }
 
 export function AdminRevenuePage() {
-  const [timeframe, setTimeframe] = useState<"7D" | "30D" | "Quarter" | "Year" | "Custom">("30D");
   const [filter, setFilter] = useState<"all" | "paid" | "pending" | "overdue">("all");
   const [search, setSearch] = useState("");
   const [toast, setToast] = useState<string | null>(null);
@@ -5901,24 +5900,6 @@ export function AdminRevenuePage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* Timeframe selector pills */}
-            <div className="flex items-center bg-[#1F2C3F] p-1 rounded-xl text-xs font-bold border border-[#2A3446]">
-              {(["7D", "30D", "Quarter", "Year", "Custom"] as const).map((tf) => (
-                <button
-                  key={tf}
-                  type="button"
-                  onClick={() => setTimeframe(tf)}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                    timeframe === tf
-                      ? "bg-[#161F2D] text-[#7FA0D6] shadow-xs font-black"
-                      : "text-[#97A0B3] hover:text-white"
-                  }`}
-                >
-                  {tf}
-                </button>
-              ))}
-            </div>
-
             <button
               type="button"
               onClick={handleExportCSV}
@@ -6164,26 +6145,6 @@ export function AdminRevenuePage() {
           </div>
         </div>
 
-        {/* ─────────────────────────────────────────────────────────────────────────────
-            SALES & NEGOTIATIONS CALLOUT BANNER
-        ───────────────────────────────────────────────────────────────────────────── */}
-        <div className="p-5 rounded-3xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-[#7FA0D6]/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/20 shrink-0">
-              <DollarSign className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-black text-white uppercase tracking-wide">Client Plan Negotiations & Proposals</h4>
-              <p className="text-xs text-[#F1F5F9]">Review pending custom scope proposals, counter-offers, and deal proposals on the Sales page.</p>
-            </div>
-          </div>
-          <Link
-            to="/admin/sales"
-            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shrink-0 shadow-sm flex items-center gap-1.5 cursor-pointer"
-          >
-            Open Sales & Negotiations &rarr;
-          </Link>
-        </div>
 
         {/* ─────────────────────────────────────────────────────────────────────────────
             RECENT TRANSACTIONS ROSTER TABLE (Matching Image 2)

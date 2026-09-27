@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useParams, Link } from "react-router";
+import { motion } from "motion/react";
 import {
   ArrowLeft,
   Shield,
@@ -322,7 +323,12 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
         </div>
       </div>
 
-      <main className="flex-1 px-6 lg:px-8 py-6 max-w-[1500px] w-full mx-auto space-y-6">
+      <motion.main
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="flex-1 px-6 lg:px-8 py-6 max-w-[1500px] w-full mx-auto space-y-6"
+      >
         {/* Toast Alert */}
         {toastMessage && (
           <div
@@ -342,7 +348,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
         )}
 
         {/* Ticket Header Card */}
-        <div className="bg-[#161F2D] border border-[#2A3446]/90 rounded-2xl p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+        <div className="bg-[#161F2D] border border-[#2A3446]/90 rounded-2xl p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-5 hover-card-innovative">
           <div className="space-y-2.5">
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
@@ -506,7 +512,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`bg-[#161F2D] border rounded-2xl p-6 shadow-xs space-y-4 transition-all ${
+                  className={`bg-[#161F2D] border rounded-2xl p-6 shadow-xs space-y-4 transition-all hover-card-innovative ${
                     msg.isSystemAudit
                       ? "border-amber-200/80 bg-gradient-to-r from-amber-50/40 to-white"
                       : msg.isInternal
@@ -627,7 +633,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
             </div>
 
             {/* Reply Editor Box */}
-            <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl shadow-xs overflow-hidden">
+            <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl shadow-xs overflow-hidden hover-card-innovative">
               {/* Tab Selector */}
               <div className="flex items-center border-b border-[#2A3446] bg-[#0B111C]/70 px-4 pt-3 gap-2">
                 <button
@@ -818,7 +824,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
           {/* Right Column: Sidebar (1 Col) */}
           <div className="space-y-6">
             {/* Client Context Card */}
-            <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl p-5 shadow-xs space-y-4">
+            <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl p-5 shadow-xs space-y-4 hover-card-innovative">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                   Client Context
@@ -882,7 +888,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
             </div>
 
             {/* Ticket Metadata Card */}
-            <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl p-5 shadow-xs space-y-4">
+            <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl p-5 shadow-xs space-y-4 hover-card-innovative">
               <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3] border-b border-[#2A3446] pb-3">
                 Ticket Metadata
               </h3>
@@ -983,7 +989,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
             </div>
           </div>
         </div>
-      </main>
+      </motion.main>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
           1. REASSIGN TICKET MODAL

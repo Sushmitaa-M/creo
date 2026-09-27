@@ -116,21 +116,21 @@ export function CreoTopNavbar() {
 
   return (
     <header className="fixed top-4 inset-x-4 lg:inset-x-8 z-[100] transition-all pointer-events-none">
-      <div className="flex items-center justify-between px-6 max-w-[1600px] mx-auto h-16 w-full bg-white rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100 pointer-events-auto">
+      <div className="flex items-center justify-between px-6 max-w-[1600px] mx-auto h-16 w-full bg-[#0B111C]/90 backdrop-blur-xl rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.3)] border border-[#2A3446]/70 pointer-events-auto">
         {/* Mobile Left: Logo & Page Title */}
         <div className="flex-1 flex items-center xl:hidden gap-3 min-w-0 pr-2">
           <Link to="/portal" className="flex items-center hover:scale-105 hover:drop-shadow-sm transition-all shrink-0">
-            <span className="text-[20px] font-black tracking-tighter text-slate-900">creo<span className="text-[#0052FF]">.</span></span>
+            <span className="text-[20px] font-black tracking-tighter text-[#F1F5F9]">creo<span className="text-[#0052FF]">.</span></span>
           </Link>
           <div className="w-[1px] h-4 bg-slate-200 shrink-0"></div>
-          <h1 className="text-[15px] sm:text-[16px] font-black tracking-tight text-slate-900 truncate">
+          <h1 className="text-[15px] sm:text-[16px] font-black tracking-tight text-[#F1F5F9] truncate">
             {getPageName(location.pathname, true)}
           </h1>
         </div>
 
         {/* Desktop Left: Page Title */}
         <div className="flex-1 shrink-0 hidden xl:flex items-center">
-          <h1 className="text-[17px] font-black tracking-tight text-slate-900">
+          <h1 className="text-[17px] font-black tracking-tight text-[#F1F5F9]">
             {getPageName(location.pathname)}
           </h1>
         </div>
@@ -139,13 +139,13 @@ export function CreoTopNavbar() {
         <div className="hidden xl:flex absolute left-1/2 -translate-x-1/2 items-center justify-center pointer-events-none">
           
           {/* Desktop Center: Nav Pill */}
-          <nav className="bg-[#F8F9FC] rounded-full p-1.5 hidden xl:flex items-center gap-1 border border-slate-100/60 pointer-events-auto">
+          <nav className="bg-[#161F2D]/80 rounded-full p-1.5 hidden xl:flex items-center gap-1 border border-[#2A3446]/60 pointer-events-auto">
             <Link
               to="/portal"
               className={`transition-all px-4 py-2 text-[13px] font-semibold rounded-full ${
                 location.pathname === "/portal" || location.pathname === "/portal/"
-                  ? "bg-white text-[#0D2137] shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
-                  : "text-slate-500 hover:text-[#0052FF] hover:bg-[#EBF3FF] hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                  ? "bg-[#2A3446] text-[#F1F5F9] shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
+                  : "text-[#97A0B3] hover:text-[#F1F5F9] hover:bg-[#2A3446]/50 hover:-translate-y-0.5 active:translate-y-0 transition-all"
               }`}
             >
               Dashboard
@@ -173,7 +173,7 @@ export function CreoTopNavbar() {
 
             {/* Logo in the middle */}
             <Link to="/portal" className="px-4 py-1 flex items-center hover:scale-105 hover:drop-shadow-sm transition-all">
-              <span className="text-[20px] font-black tracking-tighter text-slate-900">creo<span className="text-[#0052FF]">.</span></span>
+              <span className="text-[20px] font-black tracking-tighter text-[#F1F5F9]">creo<span className="text-[#0052FF]">.</span></span>
             </Link>
 
             <Link
@@ -228,7 +228,7 @@ export function CreoTopNavbar() {
           <div className="relative group">
             <button
               type="button"
-              className="w-10 h-10 rounded-full border border-slate-200/80 flex items-center justify-center text-slate-500 hover:text-[#0052FF] hover:bg-[#EBF3FF] hover:border-[#0052FF]/30 hover:scale-105 active:scale-95 transition-all relative shadow-xs"
+              className="w-10 h-10 rounded-full border border-[#2A3446]/80 flex items-center justify-center text-[#97A0B3] hover:text-[#0052FF] hover:bg-[#2A3446]/50 hover:border-[#0052FF]/30 hover:scale-105 active:scale-95 transition-all relative shadow-xs"
               aria-label="Notifications"
               onClick={() => setNotificationOpen(!notificationOpen)}
             >
@@ -245,9 +245,9 @@ export function CreoTopNavbar() {
             {/* Notification Dropdown (Click activated to mark read) */}
             {notificationOpen && (
               <div className="absolute right-0 top-full pt-4 z-[150] animate-scale-up" ref={bellRef as any}>
-                <div className="w-80 bg-white rounded-3xl border border-slate-200/80 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] overflow-hidden">
+                <div className="w-80 bg-[#161F2D] rounded-3xl border border-[#2A3446]/80 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden">
                   <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-slate-900">Notifications</h3>
+                    <h3 className="text-sm font-bold text-[#F1F5F9]">Notifications</h3>
                     {unreadCount > 0 && (
                       <button
                         type="button"
@@ -271,8 +271,8 @@ export function CreoTopNavbar() {
                             !n.is_read ? "bg-blue-50/50" : ""
                           }`}
                         >
-                          <p className="text-xs font-bold text-slate-900 truncate">{n.title}</p>
-                          <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
+                          <p className="text-xs font-bold text-[#F1F5F9] truncate">{n.title}</p>
+                          <p className="text-[11px] font-medium text-[#97A0B3] mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
                         </button>
                       ))
                     )}
@@ -285,7 +285,7 @@ export function CreoTopNavbar() {
           {/* Settings Icon */}
           <Link
             to="/portal/account"
-            className="w-10 h-10 hidden xl:flex items-center justify-center text-slate-400 hover:text-[#0052FF] hover:bg-[#EBF3FF] hover:scale-105 active:scale-95 rounded-full transition-all"
+            className="w-10 h-10 hidden xl:flex items-center justify-center text-[#97A0B3] hover:text-[#0052FF] hover:bg-[#2A3446]/50 hover:scale-105 active:scale-95 rounded-full transition-all"
             aria-label="Settings"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,10 +306,10 @@ export function CreoTopNavbar() {
 
             {/* CSS Hover Menu for Profile */}
             <div className="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[150]">
-              <div className="w-64 bg-white rounded-3xl border border-slate-200/80 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] p-2">
+              <div className="w-64 bg-[#161F2D] rounded-3xl border border-[#2A3446]/80 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] p-2">
                 <div className="px-4 py-3 border-b border-slate-100 mb-2">
-                  <p className="text-sm font-bold text-slate-900 truncate">{user?.full_name || "User"}</p>
-                  <p className="text-xs font-medium text-slate-500 truncate mt-0.5">{user?.email || ""}</p>
+                  <p className="text-sm font-bold text-[#F1F5F9] truncate">{user?.full_name || "User"}</p>
+                  <p className="text-xs font-medium text-[#97A0B3] truncate mt-0.5">{user?.email || ""}</p>
                 </div>
                 
                 <div className="px-3 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">Profile Sections</div>
@@ -370,7 +370,7 @@ export function CreoTopNavbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="pointer-events-auto absolute top-[70px] inset-x-0 xl:hidden bg-white border border-slate-200/80 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] p-4 space-y-1.5 animate-scale-up z-[150]">
+        <div className="pointer-events-auto absolute top-[70px] inset-x-0 xl:hidden bg-[#0B111C] border border-[#2A3446]/80 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] p-4 space-y-1.5 animate-scale-up z-[150]">
           <Link
             to="/portal"
             onClick={() => setMobileMenuOpen(false)}

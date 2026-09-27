@@ -81,9 +81,6 @@ const AdminSalesPage = lazy(() =>
 const AdminAddonsPage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminAddonsPage }))
 );
-const AdminEscalationsPage = lazy(() =>
-  import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminEscalationsPage }))
-);
 const AdminSettingsPage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminSettingsPage }))
 );
@@ -497,11 +494,7 @@ export function App() {
                 />
                 <Route
                   path="/admin/escalations"
-                  element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
-                      <AdminEscalationsPage />
-                    </ProtectedRoute>
-                  }
+                  element={<Navigate to="/admin/support" replace />}
                 />
                 <Route
                   path="/admin/settings"
@@ -527,6 +520,57 @@ export function App() {
                     </ProtectedRoute>
                   }
                 />
+                {/* Team Lead Portal Routes */}
+                <Route path="/team-lead" element={<Navigate to="/team-lead/dashboard" replace />} />
+                <Route
+                  path="/team-lead/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                      <PodLeadDashboardPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/team-lead/tasks"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                      <PodTaskBoardPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/team-lead/deliverables"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                      <PodDeliverablesReviewPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/team-lead/schedule"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                      <PodScheduleLeavePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/team-lead/clients"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                      <PodClientAllocationsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/team-lead/clients/:clientId"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                      <AdminClientBrandPage />
+                    </ProtectedRoute>
+                  }
+                />
+
                 <Route
                   path="/lead/dashboard"
                   element={

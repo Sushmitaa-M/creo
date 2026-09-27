@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "motion/react";
 import {
   ArrowLeft,
   CheckSquare,
@@ -57,7 +58,7 @@ function SectionCard({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-[#2A3446]/80 bg-[#161F2D] shadow-sm overflow-hidden ${className}`}
+      className={`rounded-2xl border border-[#2A3446]/80 bg-[#161F2D] shadow-sm overflow-hidden hover-card-innovative ${className}`}
     >
       <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-[#2A3446] bg-[#0B111C]/50">
         <div className="size-7 rounded-lg bg-[#7FA0D6]/15 border border-[#2A3446] flex items-center justify-center text-[#7FA0D6]">
@@ -367,7 +368,12 @@ export function AdminClientBrandPage() {
   return (
     <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
       <AdminTopHeader activeTab="Client Details" />
-      <main className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-5 animate-page-in">
+      <motion.main 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-5 animate-page-in"
+      >
         {/* ── Back Navigation ────────────────────────────────── */}
         <div className="flex items-center gap-2 text-xs">
           <button
@@ -842,7 +848,7 @@ export function AdminClientBrandPage() {
           Client ID: {client.client_id.slice(0, 8)}
         </span>
       </div>
-      </main>
+      </motion.main>
     </div>
   );
 }

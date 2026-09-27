@@ -230,7 +230,7 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
   return (
     <div
       onClick={() => navigate("/admin/support")}
-      className="bg-[#161F2D] rounded-2xl border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all p-4 sm:p-5 flex flex-col justify-between h-full font-sans cursor-pointer group"
+      className="bg-[#161F2D] rounded-2xl border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all p-4 sm:p-5 flex flex-col justify-between h-full font-sans cursor-pointer group hover-card-innovative"
     >
       <div>
         {/* Header Title Row */}

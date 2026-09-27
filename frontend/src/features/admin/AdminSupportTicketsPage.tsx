@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { motion } from "motion/react";
 import {
   CheckCircle2,
   MoreVertical,
@@ -204,11 +205,16 @@ export function AdminSupportTicketsPage() {
     <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
       <AdminTopHeader activeTab="Support" />
 
-      <main className="flex-1 px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 sm:pb-8 max-w-[1500px] w-full mx-auto space-y-5 sm:space-y-6">
+      <motion.main
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="flex-1 px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 sm:pb-8 max-w-[1500px] w-full mx-auto space-y-5 sm:space-y-6"
+      >
         {/* Top Summary Cards Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Open Tickets */}
-          <div className="bg-[#161F2D] border border-[#2A3446]/90 rounded-2xl p-5 shadow-xs space-y-3">
+          <div className="bg-[#161F2D] border border-[#2A3446]/90 rounded-2xl p-5 shadow-xs space-y-3 hover-card-innovative">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 ACTIVE / OPEN TICKETS
@@ -230,7 +236,7 @@ export function AdminSupportTicketsPage() {
           </div>
 
           {/* Card 2: Resolved Today */}
-          <div className="bg-[#161F2D] border border-[#2A3446]/90 rounded-2xl p-5 shadow-xs space-y-3">
+          <div className="bg-[#161F2D] border border-[#2A3446]/90 rounded-2xl p-5 shadow-xs space-y-3 hover-card-innovative">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 RESOLVED TODAY
@@ -527,7 +533,7 @@ export function AdminSupportTicketsPage() {
             </table>
           </div>
         </div>
-      </main>
+      </motion.main>
 
       {/* Centered Popup Modal with Whole Background Blurred */}
       {alertModal?.isOpen && (

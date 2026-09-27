@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { motion } from "motion/react";
 import {
   Hash,
   Send,
@@ -304,7 +305,12 @@ export function SlackChatPage() {
       <AdminTopHeader activeTab="Slack" />
 
       {/* Main Slack Layout (Sidebar + Chat Area) */}
-      <div className="flex-1 flex flex-col md:flex-row max-w-[1650px] w-full mx-auto px-2 sm:px-6 py-2 sm:py-4 gap-3 sm:gap-4 h-[calc(100vh-76px)] overflow-hidden pb-20 md:pb-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="flex-1 flex flex-col md:flex-row max-w-[1650px] w-full mx-auto px-2 sm:px-6 py-2 sm:py-4 gap-3 sm:gap-4 h-[calc(100vh-76px)] overflow-hidden pb-20 md:pb-4"
+      >
         {/* Toast Alert */}
         {toastMessage && (
           <div
@@ -559,7 +565,7 @@ export function SlackChatPage() {
 
                   {/* Task Card Embedded in Chat */}
                   {msg.isTaskCard && msg.taskData && (
-                    <div className="mt-2.5 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-[#7FA0D6]/30 shadow-sm space-y-2.5 w-full max-w-lg">
+                    <div className="mt-2.5 p-3.5 sm:p-4 rounded-2xl bg-[#161F2D] border border-[#7FA0D6]/30 shadow-sm hover-card-innovative space-y-2.5 w-full max-w-lg">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono font-bold text-[#7FA0D6] bg-[#7FA0D6]/20 px-2 py-0.5 rounded">
                           {msg.taskData.id}
@@ -697,7 +703,7 @@ export function SlackChatPage() {
             </div>
           </form>
         </section>
-      </div>
+      </motion.div>
 
       {/* ─────────────────────────────────────────────────────────────
           CENTERED MODALS WITH BLURRED BACKGROUND (z-[99999])

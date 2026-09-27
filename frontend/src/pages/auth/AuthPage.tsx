@@ -85,7 +85,6 @@ export function AuthPage({ defaultView = "login" }: { defaultView?: "login" | "s
         decoded === "/admin/kpi" ||
         decoded === "/admin/sales" ||
         decoded === "/admin/settings" ||
-        decoded === "/admin/escalations" ||
         decoded === "/admin/addons";
 
       if (isTeam && isAdminOnly) {

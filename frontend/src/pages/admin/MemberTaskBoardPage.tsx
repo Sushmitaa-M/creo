@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import {
   Search,
   Clock,
@@ -581,7 +582,12 @@ export function MemberTaskBoardPage() {
       <AdminTopHeader activeTab="My Tasks" />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-3 sm:px-5 lg:px-6 py-3.5 pb-20 sm:pb-6 space-y-3.5">
+      <motion.main
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="flex-1 max-w-[1440px] w-full mx-auto px-3 sm:px-5 lg:px-6 py-3.5 pb-20 sm:pb-6 space-y-3.5"
+      >
         {/* Toast Alert */}
         {toastMessage && (
           <div
@@ -771,7 +777,7 @@ export function MemberTaskBoardPage() {
               {assignedTasks.map((task) => (
                 <div
                   key={task.id}
-                  className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2"
+                  className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2"
                 >
                   <div className="flex items-center justify-between text-[10px] font-bold">
                     <span className={task.clientColor}>{task.client.toUpperCase()}</span>
@@ -842,7 +848,7 @@ export function MemberTaskBoardPage() {
               {productionTasks.map((task) => (
                 <div
                   key={task.id}
-                  className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2"
+                  className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2"
                 >
                   <div className="flex items-center justify-between text-[10px] font-bold">
                     <span className={task.clientColor}>{task.client.toUpperCase()}</span>
@@ -947,7 +953,7 @@ export function MemberTaskBoardPage() {
               {qaTasks.map((task) => (
                 <div
                   key={task.id}
-                  className={`bg-[#161F2D] rounded-xl p-3 border shadow-2xs hover:shadow-xs transition-all space-y-2 ${
+                  className={`bg-[#161F2D] rounded-xl p-3 border shadow-2xs hover-card-innovative space-y-2 ${
                     task.reviewData?.status === "Revision Pending"
                       ? "border-amber-300 ring-1 ring-amber-200/50"
                       : "border-[#2A3446]/80"
@@ -1045,7 +1051,7 @@ export function MemberTaskBoardPage() {
               {dispatchedTasks.map((task) => (
                 <div
                   key={task.id}
-                  className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover:shadow-xs transition-all space-y-2"
+                  className="bg-[#161F2D] rounded-xl p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2"
                 >
                   <div className="flex items-center justify-between text-[10px] font-bold">
                     <span className={task.clientColor}>{task.client.toUpperCase()}</span>
@@ -1195,7 +1201,7 @@ export function MemberTaskBoardPage() {
             <span className="hover:underline cursor-pointer">Security & Compliance</span>
           </div>
         </footer>
-      </main>
+      </motion.main>
 
       {/* ─────────────────────────────────────────────────────────────
           1. MODAL: ADD DELIVERABLE DIRECTLY TO TASK BOARD

@@ -209,7 +209,7 @@ export function AdminSidebar() {
       </div>
 
       {/* Scrollable Navigation - All menus directly visible, zero hover */}
-      <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5 scrollbar-thin text-left">
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3.5 space-y-4 text-left [scrollbar-width:thin] [scrollbar-color:#2A3446_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#2A3446] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#7FA0D6]/50">
         {currentNavSections.map((section) => (
           <div key={section.label} className="space-y-1">
             <div className="px-3 pb-1 text-[10px] font-black uppercase tracking-wider text-[#7FA0D6]">
@@ -224,13 +224,13 @@ export function AdminSidebar() {
                     key={item.href}
                     to={item.href}
                     onClick={onItemClick}
-                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                       active
                         ? "bg-[#BCCCE6] text-[#0B111C] shadow-sm font-black"
                         : "text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F]"
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <Icon className={`w-4 h-4 shrink-0 ${active ? "text-[#0B111C]" : "text-[#7FA0D6]"}`} />
                       <span className="truncate">{item.label}</span>
                     </div>
@@ -252,9 +252,9 @@ export function AdminSidebar() {
       </div>
 
       {/* Footer: User Profile Card & Direct Sign Out */}
-      <div className="p-3.5 border-t border-[#2A3446] bg-[#0B111C]/80 shrink-0 space-y-2 text-left">
-        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#161F2D] border border-[#2A3446]">
-          <div className="size-9 rounded-full bg-[#BCCCE6] text-[#0B111C] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
+      <div className="p-3 border-t border-[#2A3446] bg-[#0B111C]/80 shrink-0 space-y-2 text-left">
+        <div className="flex items-center gap-2.5 p-2 rounded-xl bg-[#161F2D] border border-[#2A3446]">
+          <div className="size-8 rounded-full bg-[#BCCCE6] text-[#0B111C] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
             {(user?.full_name?.[0] || user?.email?.[0] || (isMemberRole ? "D" : "A")).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
@@ -290,12 +290,16 @@ export function AdminSidebar() {
   return (
     <>
       {/* ── 1. Desktop Permanent Sidebar (Always Visible, Not Floating) ── */}
-      <aside
-        className="hidden md:flex fixed top-0 bottom-0 left-0 w-64 lg:w-72 h-screen h-[100dvh] bg-[#161F2D] border-r border-[#2A3446] shadow-2xl z-30 flex-col"
-        aria-label="Admin Navigation Sidebar"
-      >
-        {renderNavContent()}
-      </aside>
+      {typeof document !== "undefined" &&
+        createPortal(
+          <aside
+            className="hidden md:flex fixed top-0 bottom-0 left-0 w-64 lg:w-72 h-screen h-[100dvh] bg-[#161F2D] border-r border-[#2A3446] shadow-2xl z-30 flex-col overflow-hidden"
+            aria-label="Admin Navigation Sidebar"
+          >
+            {renderNavContent()}
+          </aside>,
+          document.body
+        )}
 
       {/* ── 2. Mobile Drawer (For small screens <md only) ── */}
       {typeof document !== "undefined" &&
@@ -309,7 +313,7 @@ export function AdminSidebar() {
               />
             )}
             <aside
-              className={`fixed top-0 bottom-0 left-0 h-screen h-[100dvh] w-72 max-w-[85vw] bg-[#161F2D] border-r border-[#2A3446] shadow-2xl z-[9999] flex flex-col md:hidden transition-all duration-300 ease-in-out ${
+              className={`fixed top-0 bottom-0 left-0 h-screen h-[100dvh] w-72 max-w-[85vw] bg-[#161F2D] border-r border-[#2A3446] shadow-2xl z-[9999] flex flex-col md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
                 mobileOpen
                   ? "translate-x-0 opacity-100 visible"
                   : "-translate-x-full opacity-0 invisible pointer-events-none"

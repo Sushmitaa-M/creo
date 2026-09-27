@@ -30,10 +30,13 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FAFAF8] text-[#14171C]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="size-8 animate-spin rounded-full border-3 border-[#2B7BC4] border-t-transparent" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+      <div className="flex min-h-screen items-center justify-center bg-[#0B111C] text-[#F8FAFC]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative flex items-center justify-center">
+            <div className="size-11 animate-spin rounded-full border-3 border-[#2A3446] border-t-[#7FA0D6] shadow-[0_0_20px_rgba(127,160,214,0.25)]" />
+            <span className="absolute font-black text-xs text-[#7FA0D6]">C</span>
+          </div>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#97A0B3]">
             Verifying session...
           </span>
         </div>
@@ -60,16 +63,16 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
 
       // Fallback Access Restricted UI if user is already at their targetHome
       return (
-        <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] text-[#0D2137] p-6">
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl text-center space-y-6">
-            <div className="size-14 mx-auto rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-2xl text-amber-600">
+        <div className="flex min-h-screen items-center justify-center bg-[#0B111C] text-[#F8FAFC] p-6">
+          <div className="w-full max-w-md rounded-3xl border border-[#2A3446] bg-[#161F2D] p-8 shadow-2xl text-center space-y-6">
+            <div className="size-14 mx-auto rounded-2xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-center text-2xl text-[#D8BF9B]">
               🔒
             </div>
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-[#0D2137]">Access Restricted</h2>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                This operations portal requires <span className="font-semibold text-slate-800">Admin or Staff</span> permissions.
-                You are currently signed in as <span className="font-mono text-[#2B7BC4] font-semibold">{user.email}</span> ({user.role}).
+              <h2 className="text-xl font-bold text-white">Access Restricted</h2>
+              <p className="text-xs text-[#97A0B3] leading-relaxed">
+                This operations portal requires <span className="font-semibold text-white">Admin or Staff</span> permissions.
+                You are currently signed in as <span className="font-mono text-[#7FA0D6] font-semibold">{user.email}</span> ({user.role}).
               </p>
             </div>
             <div className="space-y-2.5 pt-2">
@@ -78,7 +81,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
                 onClick={() => {
                   window.location.href = getRoleHome(user.role);
                 }}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#2B7BC4] text-white text-xs font-bold hover:bg-[#1A5EA8] transition-colors shadow-xs"
+                className="w-full py-2.5 px-4 rounded-xl bg-[#BCCCE6] text-[#0B111C] text-xs font-bold hover:bg-white transition-colors shadow-xs cursor-pointer"
               >
                 Go to Your Portal ({getRoleHome(user.role)})
               </button>
@@ -88,7 +91,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
                   const returnUrl = encodeURIComponent(location.pathname + location.search);
                   window.location.href = `/login?redirectedFrom=${returnUrl}`;
                 }}
-                className="w-full py-2.5 px-4 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors"
+                className="w-full py-2.5 px-4 rounded-xl border border-[#2A3446] text-[#97A0B3] hover:text-white text-xs font-bold hover:bg-[#1F2C3F] transition-colors cursor-pointer"
               >
                 Sign In with Admin Account
               </button>

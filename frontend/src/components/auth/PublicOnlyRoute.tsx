@@ -13,10 +13,15 @@ export function PublicOnlyRoute({ children }: PublicOnlyRouteProps) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white text-[#0D2137]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="size-8 animate-spin rounded-full border-3 border-[#2B7BC4] border-t-transparent" />
-          <span className="text-xs font-semibold text-[#64748B]">Authenticating...</span>
+      <div className="flex min-h-screen items-center justify-center bg-[#0B111C] text-[#F8FAFC]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative flex items-center justify-center">
+            <div className="size-11 animate-spin rounded-full border-3 border-[#2A3446] border-t-[#7FA0D6] shadow-[0_0_20px_rgba(127,160,214,0.25)]" />
+            <span className="absolute font-black text-xs text-[#7FA0D6]">C</span>
+          </div>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#97A0B3]">
+            Authenticating...
+          </span>
         </div>
       </div>
     );

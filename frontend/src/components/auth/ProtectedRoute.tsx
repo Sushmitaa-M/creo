@@ -24,24 +24,14 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
+import { CreoLoadingScreen } from "../ui/CreoLoadingScreen";
+
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0B111C] text-[#F8FAFC]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative flex items-center justify-center">
-            <div className="size-11 animate-spin rounded-full border-3 border-[#2A3446] border-t-[#7FA0D6] shadow-[0_0_20px_rgba(127,160,214,0.25)]" />
-            <span className="absolute font-black text-xs text-[#7FA0D6]">C</span>
-          </div>
-          <span className="text-xs font-bold uppercase tracking-widest text-[#97A0B3]">
-            Verifying session...
-          </span>
-        </div>
-      </div>
-    );
+    return <CreoLoadingScreen label="Verifying session..." />;
   }
 
   // Not logged in -> redirect to login with return path

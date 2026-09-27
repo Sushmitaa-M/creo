@@ -21,6 +21,7 @@ import { GoogleCallbackPage } from "../pages/auth/GoogleCallbackPage";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { PublicOnlyRoute } from "../components/auth/PublicOnlyRoute";
 import { MandatoryPasswordResetModal } from "../components/auth/MandatoryPasswordResetModal";
+import { CreoLoadingScreen } from "../components/ui/CreoLoadingScreen";
 
 // Portal Layout & Pages
 import { PortalLayout } from "../components/portal/PortalLayout";
@@ -126,17 +127,7 @@ const SlackChatPage = lazy(() =>
 );
 
 function RouteLoading() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0B111C] text-[#F8FAFC]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="relative flex items-center justify-center">
-          <div className="size-11 animate-spin rounded-full border-3 border-[#2A3446] border-t-[#7FA0D6] shadow-[0_0_20px_rgba(127,160,214,0.25)]" />
-          <span className="absolute font-black text-xs text-[#7FA0D6]">C</span>
-        </div>
-        <span className="text-xs font-bold uppercase tracking-widest text-[#97A0B3]">Loading Creo...</span>
-      </div>
-    </div>
-  );
+  return <CreoLoadingScreen label="Loading Creo..." />;
 }
 
 class OnboardingErrorBoundary extends Component<

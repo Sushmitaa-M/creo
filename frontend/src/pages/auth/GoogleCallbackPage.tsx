@@ -166,8 +166,8 @@ export function GoogleCallbackPage() {
           </div>
 
           {/* Creo Logo Container */}
-          <div className="relative flex size-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#2B7BC4] to-[#1E609A] text-white font-black text-2xl shadow-lg shadow-blue-500/30 hover:scale-105 transition-transform z-10 border border-blue-400/30">
-            C
+          <div className="relative flex size-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#2B7BC4] to-[#1E609A] text-white shadow-lg shadow-blue-500/30 hover:scale-105 transition-transform z-10 border border-blue-400/30">
+            <span className="font-black text-sm tracking-tight">creo.</span>
           </div>
         </div>
 

@@ -19,7 +19,6 @@ import {
   CheckCircle2,
   MessageSquare,
   AlertTriangle,
-  DollarSign,
   Briefcase,
   TrendingUp,
   Eye,

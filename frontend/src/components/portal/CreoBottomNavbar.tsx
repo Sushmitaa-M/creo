@@ -21,7 +21,7 @@ export function CreoBottomNavbar() {
   ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-[100] bg-[#161F2D]/95 backdrop-blur-md border-t border-[#2A3446] shadow-[0_-4px_24px_rgba(5,8,16,0.6)] xl:hidden pb-safe">
+    <nav className="fixed bottom-0 inset-x-0 z-[100] bg-[#161F2D]/95 backdrop-blur-md border-t border-[#2A3446] shadow-[0_-4px_24px_rgba(5,8,16,0.6)] md:hidden pb-safe">
       <div className="flex items-center justify-around overflow-x-auto no-scrollbar px-2 py-2">
         {navItems.map((item) => {
           const isActive =

@@ -18,7 +18,8 @@ import {
   ShieldCheck,
   Megaphone,
   BarChart3,
-  Settings
+  Settings,
+  CreditCard
 } from "lucide-react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -31,13 +32,18 @@ export function AdminSidebar() {
   const { user, logout } = useAuth();
   const { mobileOpen, setMobileOpen } = useAdminSidebar();
 
+  const isClientRole =
+    user?.role === "client" ||
+    location.pathname.startsWith("/portal");
+
   const isMemberRole =
-    user?.role === "team_member" ||
-    user?.role === "editor" ||
-    user?.role === "designer" ||
-    location.pathname.startsWith("/workstation") ||
-    location.pathname.startsWith("/member") ||
-    location.pathname === "/slack";
+    !isClientRole &&
+    (user?.role === "team_member" ||
+      user?.role === "editor" ||
+      user?.role === "designer" ||
+      location.pathname.startsWith("/workstation") ||
+      location.pathname.startsWith("/member") ||
+      location.pathname === "/slack");
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -64,6 +70,7 @@ export function AdminSidebar() {
   }, [mobileOpen, setMobileOpen]);
 
   const isPathActive = (href: string) => {
+    if (href === "/portal") return location.pathname === "/portal" || location.pathname === "/portal/";
     if (href === "/admin") return location.pathname === "/admin";
     if (href === "/workstation") return location.pathname === "/workstation" || location.pathname === "/workstation/overview";
     return location.pathname.startsWith(href);
@@ -168,13 +175,38 @@ export function AdminSidebar() {
     },
   ];
 
-  const currentNavSections = isMemberRole
+  const clientNavSections = [
+    {
+      label: "Client Portal",
+      items: [
+        { label: "Dashboard", href: "/portal", icon: LayoutDashboard },
+        { label: "Content Deliverables", href: "/portal/deliverables", icon: Layers },
+        { label: "Content Calendar", href: "/portal/calendar", icon: Calendar },
+        { label: "Creative Pod", href: "/portal/creative-pod", icon: Briefcase },
+      ],
+    },
+    {
+      label: "Billing & Support",
+      items: [
+        { label: "Plans & Billing", href: "/portal/payments", icon: CreditCard },
+        { label: "Support Desk", href: "/portal/support", icon: LifeBuoy },
+        { label: "Account Settings", href: "/portal/account", icon: Settings },
+        { label: "Slack Workspace Hub", href: "/portal/slack", icon: MessageSquare, badge: "Chat" },
+      ],
+    },
+  ];
+
+  const currentNavSections = isClientRole
+    ? clientNavSections
+    : isMemberRole
     ? memberNavSections
     : user?.role === "team_lead"
     ? leadNavSections
     : adminNavSections;
 
-  const homeHref = isMemberRole
+  const homeHref = isClientRole
+    ? "/portal"
+    : isMemberRole
     ? "/workstation"
     : user?.role === "team_lead"
     ? "/admin/pod-dashboard"
@@ -193,7 +225,13 @@ export function AdminSidebar() {
             creo<span className="text-[#7FA0D6] text-2xl leading-none">.</span>
           </Link>
           <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
-            {isMemberRole ? "Workstation" : user?.role === "team_lead" ? "Pod Lead" : "Admin Ops"}
+            {isClientRole
+              ? "Client Portal"
+              : isMemberRole
+              ? "Workstation"
+              : user?.role === "team_lead"
+              ? "Pod Lead"
+              : "Admin Ops"}
           </span>
         </div>
         {onItemClick && (
@@ -255,14 +293,14 @@ export function AdminSidebar() {
       <div className="p-3 border-t border-[#2A3446] bg-[#0B111C]/80 shrink-0 space-y-2 text-left">
         <div className="flex items-center gap-2.5 p-2 rounded-xl bg-[#161F2D] border border-[#2A3446]">
           <div className="size-8 rounded-full bg-[#BCCCE6] text-[#0B111C] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
-            {(user?.full_name?.[0] || user?.email?.[0] || (isMemberRole ? "D" : "A")).toUpperCase()}
+            {(user?.full_name?.[0] || user?.email?.[0] || (isClientRole ? "C" : isMemberRole ? "D" : "A")).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
             <h4 className="text-xs font-bold text-white truncate">
-              {user?.full_name || (isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
+              {user?.full_name || (isClientRole ? (user?.company_name || "Client Account") : isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
             </h4>
             <p className="text-[10px] text-[#97A0B3] font-medium truncate">
-              {user?.email || (isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
+              {user?.email || (isClientRole ? "client@brand.com" : isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
             </p>
           </div>
           <button

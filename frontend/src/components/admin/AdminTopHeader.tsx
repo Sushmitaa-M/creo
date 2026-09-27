@@ -13,7 +13,10 @@ import {
   Trash2, 
   LogOut, 
   MessageSquare,
-  Menu
+  Menu,
+  LayoutDashboard,
+  Layers,
+  CreditCard
 } from "lucide-react";
 import { AdminKPIs } from "../../types/ops";
 import { useState, useRef, useEffect } from "react";
@@ -87,13 +90,18 @@ export function AdminTopHeader({
   const queryClient = useQueryClient();
   const { toggleMobile } = useAdminSidebar();
 
+  const isClientRole =
+    user?.role === "client" ||
+    location.pathname.startsWith("/portal");
+
   const isMemberRole =
-    user?.role === "team_member" ||
-    user?.role === "editor" ||
-    user?.role === "designer" ||
-    location.pathname.startsWith("/workstation") ||
-    location.pathname.startsWith("/member") ||
-    location.pathname === "/slack";
+    !isClientRole &&
+    (user?.role === "team_member" ||
+      user?.role === "editor" ||
+      user?.role === "designer" ||
+      location.pathname.startsWith("/workstation") ||
+      location.pathname.startsWith("/member") ||
+      location.pathname === "/slack");
 
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -251,7 +259,23 @@ export function AdminTopHeader({
 
   const resolvedTitle =
     title ||
-    (location.pathname.startsWith("/workstation/tasks") || location.pathname.startsWith("/member/tasks")
+    (location.pathname === "/portal" || location.pathname === "/portal/"
+      ? "Client Dashboard"
+      : location.pathname.startsWith("/portal/deliverables")
+      ? "Content Deliverables"
+      : location.pathname.startsWith("/portal/calendar")
+      ? "Content Calendar"
+      : location.pathname.startsWith("/portal/creative-pod")
+      ? "Creative Pod"
+      : location.pathname.startsWith("/portal/payments")
+      ? "Plans & Billing"
+      : location.pathname.startsWith("/portal/support")
+      ? "Support Desk"
+      : location.pathname.startsWith("/portal/account")
+      ? "Account Settings"
+      : location.pathname === "/portal/slack"
+      ? "Slack Workspace Hub"
+      : location.pathname.startsWith("/workstation/tasks") || location.pathname.startsWith("/member/tasks")
       ? "My Tasks"
       : location.pathname.startsWith("/workstation/schedule") || location.pathname.startsWith("/member/schedule")
       ? "My Schedule & PTO"
@@ -317,7 +341,7 @@ export function AdminTopHeader({
 
           {showBackButton && (
             <Link
-              to={isMemberRole ? "/workstation" : "/admin"}
+              to={isClientRole ? "/portal" : isMemberRole ? "/workstation" : "/admin"}
               className="p-1.5 rounded-full hover:bg-[#1F2C3F] text-[#97A0B3] hover:text-white transition-colors shrink-0"
               title="Go Back"
             >
@@ -327,7 +351,7 @@ export function AdminTopHeader({
 
           {/* Brand Logo - visible on mobile where sidebar is inside drawer */}
           <Link
-            to={isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
+            to={isClientRole ? "/portal" : isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
             className="md:hidden flex items-center gap-0.5 font-black text-white text-base sm:text-lg tracking-tight shrink-0 px-1 hover:opacity-85 transition-opacity"
             title="creo. Home"
           >
@@ -484,11 +508,11 @@ export function AdminTopHeader({
                 <div className="p-3 bg-[#0B111C]/60 border-t border-[#2A3446] flex items-center justify-between text-xs">
                   <span className="text-[11px] text-[#97A0B3] font-medium">Real-time alerts</span>
                   <Link
-                    to={isMemberRole ? "/workstation/schedule" : "/admin/leaves"}
+                    to={isClientRole ? "/portal/deliverables" : isMemberRole ? "/workstation/schedule" : "/admin/leaves"}
                     onClick={() => setNotificationOpen(false)}
                     className="text-[11px] font-bold text-[#7FA0D6] hover:underline"
                   >
-                    {isMemberRole ? "View Schedule →" : "View Approvals →"}
+                    {isClientRole ? "View Deliverables →" : isMemberRole ? "View Schedule →" : "View Approvals →"}
                   </Link>
                 </div>
               </div>
@@ -504,7 +528,7 @@ export function AdminTopHeader({
               className="size-10 sm:size-11 rounded-full bg-[#BCCCE6] hover:bg-[#D4E2F5] text-[#0B111C] font-black text-sm sm:text-base flex items-center justify-center shadow-md shadow-[#050810]/40 cursor-pointer ml-1 transition-all focus:outline-none focus:ring-2 focus:ring-[#7FA0D6]"
               aria-label="User profile menu"
             >
-              {(user?.full_name?.[0] || user?.email?.[0] || (isMemberRole ? "D" : "A")).toUpperCase()}
+              {(user?.full_name?.[0] || user?.email?.[0] || (isClientRole ? "C" : isMemberRole ? "D" : "A")).toUpperCase()}
             </button>
 
             {/* Profile Dropdown Menu */}
@@ -513,18 +537,20 @@ export function AdminTopHeader({
                 {/* User Header */}
                 <div className="p-3 bg-[#0B111C]/80 rounded-2xl border border-[#2A3446] flex items-center gap-3">
                   <div className="size-10 rounded-full bg-[#BCCCE6] text-[#0B111C] font-black text-sm flex items-center justify-center shrink-0 shadow-sm">
-                    {(user?.full_name?.[0] || user?.email?.[0] || (isMemberRole ? "D" : "A")).toUpperCase()}
+                    {(user?.full_name?.[0] || user?.email?.[0] || (isClientRole ? "C" : isMemberRole ? "D" : "A")).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="text-xs font-bold text-white truncate">
-                      {user?.full_name || (isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
+                      {user?.full_name || (isClientRole ? (user?.company_name || "Client Account") : isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
                     </h4>
                     <p className="text-[11px] text-[#97A0B3] font-medium truncate">
-                      {user?.email || (isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
+                      {user?.email || (isClientRole ? "client@brand.com" : isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
                     </p>
                     <div className="mt-1">
                       <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 capitalize">
-                        {isMemberRole
+                        {isClientRole
+                          ? "Client Account"
+                          : isMemberRole
                           ? "Pod A · Sr. Motion"
                           : user?.role === "team_lead"
                           ? "Pod A Lead"
@@ -536,7 +562,58 @@ export function AdminTopHeader({
 
                 {/* Quick Navigation Links */}
                 <div className="space-y-0.5 pt-1">
-                  {isMemberRole ? (
+                  {isClientRole ? (
+                    <>
+                      <Link
+                        to="/portal"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-[#97A0B3]" />
+                        <span>Client Dashboard</span>
+                      </Link>
+                      <Link
+                        to="/portal/deliverables"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
+                      >
+                        <Layers className="w-4 h-4 text-[#97A0B3]" />
+                        <span>Content Deliverables</span>
+                      </Link>
+                      <Link
+                        to="/portal/calendar"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
+                      >
+                        <CalendarCheck className="w-4 h-4 text-[#97A0B3]" />
+                        <span>Content Calendar</span>
+                      </Link>
+                      <Link
+                        to="/portal/creative-pod"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
+                      >
+                        <Users className="w-4 h-4 text-[#97A0B3]" />
+                        <span>Creative Pod</span>
+                      </Link>
+                      <Link
+                        to="/portal/payments"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
+                      >
+                        <CreditCard className="w-4 h-4 text-[#97A0B3]" />
+                        <span>Plans & Billing</span>
+                      </Link>
+                      <Link
+                        to="/portal/support"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
+                      >
+                        <ShieldCheck className="w-4 h-4 text-[#97A0B3]" />
+                        <span>Support Desk</span>
+                      </Link>
+                    </>
+                  ) : isMemberRole ? (
                     <>
                       <Link
                         to="/workstation"

@@ -5734,8 +5734,8 @@ export function AdminRevenuePage() {
       client: "Northwind Labs",
       clientInitials: "NL",
       scope: "Enterprise Retainer • Nov 2024",
-      amount: 7200,
-      method: "Stripe ACH",
+      amount: 95000,
+      method: "Razorpay UPI",
       status: "Paid",
       date: "Nov 12",
       badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -5745,8 +5745,8 @@ export function AdminRevenuePage() {
       id: "CR-9480",
       client: "Bloom Studio",
       clientInitials: "BS",
-      scope: "Growth Retainer + 2x Addon Reels",
-      amount: 6400,
+      scope: "Growth Retainer + 1x Addon Reel",
+      amount: 60000,
       method: "Bank Wire",
       status: "Paid",
       date: "Nov 10",
@@ -5758,7 +5758,7 @@ export function AdminRevenuePage() {
       client: "Atlas Commerce",
       clientInitials: "AC",
       scope: "Enterprise Retainer • Net 15",
-      amount: 8000,
+      amount: 95000,
       method: "Invoice Net 15",
       status: "Pending",
       date: "Due Nov 20",
@@ -5770,7 +5770,7 @@ export function AdminRevenuePage() {
       client: "Horizon Digital",
       clientInitials: "HD",
       scope: "Starter Launch Package",
-      amount: 4500,
+      amount: 25000,
       method: "Mastercard •• 4912",
       status: "Paid",
       date: "Nov 08",
@@ -5782,8 +5782,8 @@ export function AdminRevenuePage() {
       client: "Zenith Brands",
       clientInitials: "ZB",
       scope: "Growth Retainer • Nov 2024",
-      amount: 5800,
-      method: "Stripe ACH",
+      amount: 50000,
+      method: "Razorpay UPI",
       status: "Paid",
       date: "Nov 05",
       badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -5794,7 +5794,7 @@ export function AdminRevenuePage() {
       client: "Apex Media",
       clientInitials: "AM",
       scope: "Add-on Asset Pack (SaaS Motion)",
-      amount: 1900,
+      amount: 15000,
       method: "Visa •• 8841",
       status: "Paid",
       date: "Nov 03",
@@ -5805,11 +5805,11 @@ export function AdminRevenuePage() {
 
   // Chart Trend Data
   const trajectoryPoints = [
-    { label: "Oct 15 (₹98.0k)", value: 98000, target: 100000 },
-    { label: "Oct 22", value: 104200, target: 105000 },
-    { label: "Oct 29", value: 112500, target: 110000 },
-    { label: "Nov 05", value: 118400, target: 115000 },
-    { label: "Nov 14 (₹124.8k)", value: 124800, target: 120000 },
+    { label: "Oct 15 (₹9.8L)", value: 980000, target: 1000000 },
+    { label: "Oct 22", value: 1042000, target: 1050000 },
+    { label: "Oct 29", value: 1125000, target: 1100000 },
+    { label: "Nov 05", value: 1184000, target: 1150000 },
+    { label: "Nov 14 (₹12.5L)", value: 1248000, target: 1200000 },
   ];
 
   // Actions: Create Invoice
@@ -5831,7 +5831,7 @@ export function AdminRevenuePage() {
     };
 
     setTransactions((prev) => [newTx, ...prev]);
-    setToast(`Invoice ${newTx.id} created for ${newInvClient} (₹${newTx.amount.toLocaleString()})!`);
+    setToast(`Invoice ${newTx.id} created for ${newInvClient} (₹${newTx.amount.toLocaleString('en-IN')})!`);
     setIsCreateInvoiceOpen(false);
     setNewInvClient("");
     setNewInvScope("");
@@ -5929,17 +5929,17 @@ export function AdminRevenuePage() {
                 Total Revenue (MRR)
               </span>
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-black text-white tracking-tight">₹124,800</span>
+                <span className="text-4xl font-black text-white tracking-tight">₹12,48,000</span>
                 <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
                   <TrendingUp className="w-3.5 h-3.5" /> +12.4%
                 </span>
               </div>
               <div className="text-xs text-[#97A0B3] font-medium pt-1">
-                Projected ARR: <strong className="text-white font-bold">₹1,497,600</strong>
+                Projected ARR: <strong className="text-white font-bold">₹1,49,76,000</strong>
               </div>
             </div>
-            <div className="w-14 h-14 rounded-2xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center shrink-0 border border-[#7FA0D6]/30">
-              <DollarSign className="w-7 h-7" />
+            <div className="w-14 h-14 rounded-2xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center shrink-0 border border-[#7FA0D6]/30 font-black text-2xl">
+              ₹
             </div>
           </div>
 
@@ -5950,7 +5950,7 @@ export function AdminRevenuePage() {
                 Collected this Month
               </span>
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-black text-white tracking-tight">₹108,400</span>
+                <span className="text-4xl font-black text-white tracking-tight">₹10,84,000</span>
                 <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
                   86.8% Rate
                 </span>
@@ -5991,7 +5991,7 @@ export function AdminRevenuePage() {
               {/* Peak Marker Badge */}
               <div className="flex justify-end mb-2">
                 <span className="px-3 py-1 rounded-full text-[11px] font-black bg-[#2563EB] text-white shadow-md">
-                  ₹124,800 Peak • Today Nov 14
+                  ₹12,48,000 Peak • Today Nov 14
                 </span>
               </div>
 
@@ -6011,13 +6011,13 @@ export function AdminRevenuePage() {
                       tick={{ fontSize: 11, fill: "#64748b" }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(v: number) => `₹${(v / 1000).toFixed(0)}k`}
+                      tickFormatter={(v: number) => `₹${(v / 100000).toFixed(1)}L`}
                     />
                     <Tooltip
-                      formatter={(val: any) => [`₹${Number(val).toLocaleString()}`, "Revenue"]}
+                      formatter={(val: any) => [`₹${Number(val).toLocaleString('en-IN')}`, "Revenue"]}
                       contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0", boxShadow: "0 10px 25px rgba(0,0,0,0.08)" }}
                     />
-                    <ReferenceLine y={120000} stroke="#94a3b8" strokeDasharray="4 4" />
+                    <ReferenceLine y={1200000} stroke="#94a3b8" strokeDasharray="4 4" />
                     <Area
                       type="monotone"
                       dataKey="value"
@@ -6036,19 +6036,19 @@ export function AdminRevenuePage() {
             <div className="pt-4 border-t border-[#2A3446] grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Invoiced</span>
-                <div className="text-sm font-black text-white">₹124,800</div>
+                <div className="text-sm font-black text-white">₹12,48,000</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
-                <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Direct ACH / Wire</span>
-                <div className="text-sm font-black text-white">₹98,200</div>
+                <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Direct UPI / Wire</span>
+                <div className="text-sm font-black text-white">₹9,82,000</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
-                <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Stripe Cards</span>
-                <div className="text-sm font-black text-white">₹26,600</div>
+                <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Cards / Razorpay</span>
+                <div className="text-sm font-black text-white">₹2,66,000</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Disputed / Refunded</span>
-                <div className="text-sm font-black text-emerald-600">₹0.00</div>
+                <div className="text-sm font-black text-emerald-600">₹0</div>
               </div>
             </div>
           </div>
@@ -6080,16 +6080,16 @@ export function AdminRevenuePage() {
                 <div className="space-y-2 p-3 bg-[#7FA0D6]/15/40 rounded-2xl border border-[#7FA0D6]/30/60">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="flex items-center gap-2 text-white">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> Package 1 (Enterprise Suite)
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> Package 1 (Enterprise Domination)
                     </span>
-                    <span className="text-white font-black">₹54,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹5,70,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
                   <div className="w-full bg-[#7FA0D6]/20 rounded-full h-2 overflow-hidden">
-                    <div className="bg-blue-600 h-full rounded-full w-[43.2%]" />
+                    <div className="bg-blue-600 h-full rounded-full w-[45.6%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
                     <span>6 Retainer Accounts</span>
-                    <span className="text-[#7FA0D6] font-bold">43.2% of MRR</span>
+                    <span className="text-[#7FA0D6] font-bold">45.6% of MRR</span>
                   </div>
                 </div>
 
@@ -6097,16 +6097,16 @@ export function AdminRevenuePage() {
                 <div className="space-y-2 p-3 bg-purple-50/40 rounded-2xl border border-purple-100/60">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="flex items-center gap-2 text-white">
-                      <span className="w-2.5 h-2.5 rounded-full bg-purple-600" /> Package 2 (Growth & Scale)
+                      <span className="w-2.5 h-2.5 rounded-full bg-purple-600" /> Package 2 (Brand Accelerator)
                     </span>
-                    <span className="text-white font-black">₹48,800 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹4,00,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
                   <div className="w-full bg-purple-100 rounded-full h-2 overflow-hidden">
-                    <div className="bg-purple-600 h-full rounded-full w-[39.1%]" />
+                    <div className="bg-purple-600 h-full rounded-full w-[32.0%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
                     <span>8 Retainer Accounts</span>
-                    <span className="text-purple-700 font-bold">39.1% of MRR</span>
+                    <span className="text-purple-700 font-bold">32.0% of MRR</span>
                   </div>
                 </div>
 
@@ -6114,16 +6114,16 @@ export function AdminRevenuePage() {
                 <div className="space-y-2 p-3 bg-emerald-50/40 rounded-2xl border border-emerald-100/60">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="flex items-center gap-2 text-white">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" /> Package 3 (Starter / Launch)
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" /> Package 3 (Starter Growth)
                     </span>
-                    <span className="text-white font-black">₹22,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹1,00,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
                   <div className="w-full bg-emerald-100 rounded-full h-2 overflow-hidden">
-                    <div className="bg-emerald-600 h-full rounded-full w-[17.7%]" />
+                    <div className="bg-emerald-600 h-full rounded-full w-[8.0%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
                     <span>4 Retainer Accounts</span>
-                    <span className="text-emerald-700 font-bold">17.7% of MRR</span>
+                    <span className="text-emerald-700 font-bold">8.0% of MRR</span>
                   </div>
                 </div>
               </div>
@@ -6140,7 +6140,7 @@ export function AdminRevenuePage() {
                   <p className="text-[11px] text-[#97A0B3] font-medium">3 viral reels + 4 performance ad sets</p>
                 </div>
               </div>
-              <span className="text-base font-black text-indigo-700">+₹6,400</span>
+              <span className="text-base font-black text-indigo-700">+₹64,000</span>
             </div>
           </div>
         </div>
@@ -6224,7 +6224,7 @@ export function AdminRevenuePage() {
                     <td className="px-5 py-4 font-mono font-bold text-[#F1F5F9]">{tx.id}</td>
 
                     <td className="px-5 py-4 font-black text-sm text-white">
-                      ₹{tx.amount.toLocaleString()}
+                      ₹{tx.amount.toLocaleString('en-IN')}
                     </td>
 
                     <td className="px-5 py-4 text-[#F1F5F9] font-medium">{tx.method}</td>
@@ -6336,7 +6336,7 @@ export function AdminRevenuePage() {
                   <input
                     type="number"
                     required
-                    placeholder="7500"
+                    placeholder="50000"
                     value={newInvAmount}
                     onChange={(e) => setNewInvAmount(e.target.value)}
                     className="w-full px-3.5 py-2 rounded-xl border border-[#2A3446] text-xs focus:outline-none"
@@ -6349,10 +6349,10 @@ export function AdminRevenuePage() {
                     onChange={(e) => setNewInvMethod(e.target.value)}
                     className="w-full px-3.5 py-2 rounded-xl border border-[#2A3446] text-xs font-medium"
                   >
-                    <option value="Stripe ACH">Stripe ACH</option>
+                    <option value="Razorpay UPI">Razorpay UPI</option>
                     <option value="Bank Wire">Bank Wire</option>
                     <option value="Invoice Net 15">Invoice Net 15</option>
-                    <option value="Credit Card">Credit Card</option>
+                    <option value="Credit / Debit Card">Credit / Debit Card</option>
                   </select>
                 </div>
               </div>
@@ -6425,13 +6425,13 @@ export function AdminRevenuePage() {
                 <span className="text-[#97A0B3] block text-[10px] uppercase font-bold">Scope Breakdown</span>
                 <div className="p-3 bg-[#0B111C] rounded-xl flex items-center justify-between font-bold text-white">
                   <span>{selectedReceipt.scope}</span>
-                  <span>₹{selectedReceipt.amount.toLocaleString()}</span>
+                  <span>₹{selectedReceipt.amount.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               <div className="pt-2 flex justify-between items-center text-sm font-black text-white border-t border-[#2A3446]">
                 <span>Total Settled</span>
-                <span className="text-base text-[#7FA0D6]">₹{selectedReceipt.amount.toLocaleString()} INR</span>
+                <span className="text-base text-[#7FA0D6]">₹{selectedReceipt.amount.toLocaleString('en-IN')} INR</span>
               </div>
             </div>
 
@@ -6474,12 +6474,12 @@ export function AdminPlansPage() {
     {
       id: "starter",
       name: "starter",
-      display_name: "Starter Launch",
-      price_monthly: 45000,
+      display_name: "Starter Growth",
+      price_monthly: 25000,
       currency: "INR",
-      subscribers: 4,
+      subscribers: 0,
       features: [
-        "10 Static Posters / Month",
+        "8 Static Posters / Month",
         "4 Short Video Reels / Month",
         "10 Story Templates",
         "Standard SLA (48h Turnaround)",
@@ -6489,12 +6489,12 @@ export function AdminPlansPage() {
       id: "growth",
       name: "growth",
       display_name: "Brand Accelerator",
-      price_monthly: 64000,
+      price_monthly: 50000,
       currency: "INR",
-      subscribers: 8,
+      subscribers: 0,
       features: [
-        "20 Static Posters / Month",
-        "10 Short Video Reels / Month",
+        "15 Static Posters / Month",
+        "8 Short Video Reels / Month",
         "20 Story Templates",
         "Priority SLA (24h Turnaround)",
         "Dedicated Creative Pod Lead",
@@ -6503,13 +6503,13 @@ export function AdminPlansPage() {
     {
       id: "scale",
       name: "scale",
-      display_name: "Scale Enterprise Suite",
+      display_name: "Enterprise Domination",
       price_monthly: 95000,
       currency: "INR",
-      subscribers: 12,
+      subscribers: 0,
       features: [
-        "40 Static Posters / Month",
-        "20 High-Production Video Reels",
+        "30 Static Posters / Month",
+        "16 High-Production Video Reels",
         "40 Story Templates",
         "Express 12h SLA Turnaround",
         "Unlimited Revision Iterations",
@@ -6532,127 +6532,37 @@ export function AdminPlansPage() {
   const [declineReasonInput, setDeclineReasonInput] = useState("");
 
   const [newPropClient, setNewPropClient] = useState("");
-  const [newPropCurrentPlan, setNewPropCurrentPlan] = useState("Starter / Launch Package (₹45,000/mo)");
-  const [newPropTargetPlan, setNewPropTargetPlan] = useState("Enterprise Suite Custom Scope");
-  const [newPropStandardRate, setNewPropStandardRate] = useState("72000");
-  const [newPropProposedRate, setNewPropProposedRate] = useState("64000");
+  const [newPropCurrentPlan, setNewPropCurrentPlan] = useState("Starter Growth (₹25,000/mo)");
+  const [newPropTargetPlan, setNewPropTargetPlan] = useState("Enterprise Domination Custom Scope");
+  const [newPropStandardRate, setNewPropStandardRate] = useState("95000");
+  const [newPropProposedRate, setNewPropProposedRate] = useState("85000");
   const [newPropNotes, setNewPropNotes] = useState("");
 
-  // Client Plan Negotiations List
-  const [negotiations, setNegotiations] = useState<PlanNegotiationItem[]>([
-    {
-      id: "neg-101",
-      clientName: "Apex Media",
-      clientLogo: "AM",
-      currentPlan: "Growth & Scale Retainer (₹58,000/mo)",
-      proposedPlan: "Enterprise Suite Custom Scope",
-      originalPrice: 72000,
-      proposedPrice: 62000,
-      discountPct: 14,
-      notes: "Requesting 15 Reels + 40 Static Posts with a 12-month lock-in commitment. Require dedicated Pod Lead.",
-      requestedAt: "Today, 11:20 AM",
-      status: "Pending Review",
-    },
-    {
-      id: "neg-102",
-      clientName: "Atlas Commerce",
-      clientLogo: "AC",
-      currentPlan: "Starter / Launch Package (₹45,000/mo)",
-      proposedPlan: "Growth & Scale Tier Upgrade",
-      originalPrice: 64000,
-      proposedPrice: 56000,
-      discountPct: 12.5,
-      notes: "Scaling up Q4 video output. Requesting ₹56,000/mo retainer rate for 6-month contract.",
-      requestedAt: "Yesterday, 3:45 PM",
-      status: "Pending Review",
-    },
-    {
-      id: "neg-103",
-      clientName: "Vortex Brand Suite",
-      clientLogo: "VB",
-      currentPlan: "No Active Retainer (Custom Quote)",
-      proposedPlan: "Starter / Launch Custom Pack",
-      originalPrice: 45000,
-      proposedPrice: 39000,
-      discountPct: 13.3,
-      notes: "Early stage startup seeking launch pack discount with bi-weekly payment terms.",
-      requestedAt: "Nov 15, 2024",
-      status: "Counter Offered",
-      counterPrice: 42000,
-    },
-    {
-      id: "neg-104",
-      clientName: "Luminary AI Labs",
-      clientLogo: "LA",
-      currentPlan: "Growth Retainer (₹64,000/mo)",
-      proposedPlan: "Multi-Pod Enterprise Custom Retainer",
-      originalPrice: 115000,
-      proposedPrice: 98000,
-      discountPct: 14.8,
-      notes: "Requires dedicated 3D Motion Squad + daily standup syncs for fast product release cadence.",
-      requestedAt: "Nov 12, 2024",
-      status: "Accepted",
-    },
-  ]);
+  // Client Plan Negotiations List (0 Mock Data - Real client contract proposals appear here)
+  const [negotiations, setNegotiations] = useState<PlanNegotiationItem[]>([]);
 
-  // Active Deals Pipeline
-  const [deals, setDeals] = useState([
-    {
-      id: "deal-1",
-      client: "Northwind Labs",
-      clientLogo: "NL",
-      scope: "Annual Enterprise Tier 2 Retainer",
-      value: 960000,
-      stage: "Closing / Contract",
-      stageBadge: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      probability: "95%",
-      owner: "Sarah Vance",
-      expectedClose: "Nov 30, 2024",
-    },
-    {
-      id: "deal-2",
-      client: "Bloom Studio",
-      clientLogo: "BS",
-      scope: "UGC Scale & Paid Ads Pack (12-mo)",
-      value: 768000,
-      stage: "In Negotiation",
-      stageBadge: "bg-amber-50 text-amber-700 border-amber-200",
-      probability: "75%",
-      owner: "Elena Rostova",
-      expectedClose: "Dec 05, 2024",
-    },
-    {
-      id: "deal-3",
-      client: "Apex Media",
-      clientLogo: "AM",
-      scope: "Full-Funnel Brand Redesign & Motion",
-      value: 840000,
-      stage: "Proposal Sent",
-      stageBadge: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      probability: "60%",
-      owner: "Marcus Brody",
-      expectedClose: "Dec 12, 2024",
-    },
-    {
-      id: "deal-4",
-      client: "Vortex Brand Suite",
-      clientLogo: "VB",
-      scope: "Starter Launch & Social Sprint",
-      value: 504000,
-      stage: "Discovery / Demo",
-      stageBadge: "bg-purple-50 text-purple-700 border-purple-200",
-      probability: "40%",
-      owner: "Maya Lin",
-      expectedClose: "Dec 20, 2024",
-    },
-  ]);
+  // Active Deals Pipeline (0 Mock Data - Real commercial pipeline deals appear here)
+  const [deals, setDeals] = useState<
+    Array<{
+      id: string;
+      client: string;
+      clientLogo: string;
+      scope: string;
+      value: number;
+      stage: string;
+      stageBadge: string;
+      probability: string;
+      owner: string;
+      expectedClose: string;
+    }>
+  >([]);
 
   // Actions: ACCEPT Client Plan Negotiation
   const handleAcceptNegotiation = (item: PlanNegotiationItem) => {
     setNegotiations((prev) =>
       prev.map((n) => (n.id === item.id ? { ...n, status: "Accepted" } : n))
     );
-    setToast(`Plan Negotiation ACCEPTED for ${item.clientName}! Retainer activated at ₹${item.proposedPrice.toLocaleString("en-IN")}/mo.`);
+    setToast(`Plan Negotiation ACCEPTED for ${item.clientName}! Retainer activated at ₹${item.proposedPrice.toLocaleString('en-IN')}/mo.`);
     setTimeout(() => setToast(null), 4000);
   };
 
@@ -6687,7 +6597,7 @@ export function AdminPlansPage() {
           : n
       )
     );
-    setToast(`Counter offer of ₹${price.toLocaleString("en-IN")}/mo submitted to ${counterModalItem.clientName}.`);
+    setToast(`Counter offer of ₹${price.toLocaleString('en-IN')}/mo submitted to ${counterModalItem.clientName}.`);
     setCounterModalItem(null);
     setCounterPriceInput("");
     setCounterNoteInput("");
@@ -6699,8 +6609,8 @@ export function AdminPlansPage() {
     e.preventDefault();
     if (!newPropClient || !newPropProposedRate) return;
 
-    const orig = parseFloat(newPropStandardRate) || 72000;
-    const prop = parseFloat(newPropProposedRate) || 64000;
+    const orig = parseFloat(newPropStandardRate) || 95000;
+    const prop = parseFloat(newPropProposedRate) || 85000;
     const disc = Math.max(0, Math.round(((orig - prop) / orig) * 100 * 10) / 10);
 
     const newNeg: PlanNegotiationItem = {
@@ -6718,7 +6628,7 @@ export function AdminPlansPage() {
     };
 
     setNegotiations((prev) => [newNeg, ...prev]);
-    setToast(`Custom retainer proposal initiated for ${newPropClient} (₹${prop.toLocaleString("en-IN")}/mo)!`);
+    setToast(`Custom retainer proposal initiated for ${newPropClient} (₹${prop.toLocaleString('en-IN')}/mo)!`);
     setIsNewProposalOpen(false);
     setNewPropClient("");
     setNewPropNotes("");
@@ -6908,7 +6818,7 @@ export function AdminPlansPage() {
       )
     );
 
-    setToast(`Tier "${editingPlan.display_name}" updated successfully (₹${newPrice.toLocaleString("en-IN")}/mo)!`);
+    setToast(`Tier "${editingPlan.display_name}" updated successfully (₹${newPrice.toLocaleString('en-IN')}/mo)!`);
     setEditingPlan(null);
     setTimeout(() => setToast(null), 3000);
   };
@@ -6985,11 +6895,11 @@ export function AdminPlansPage() {
           <div className="kpi-card p-6 bg-[#161F2D] rounded-3xl border-2 border-[#1E3A8A] hover:border-[#60A5FA] transition-all shadow-[0_2px_15px_rgba(0,0,0,0.03)] space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-[#97A0B3] uppercase tracking-wider">AVG RETAINER VALUE</span>
-              <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                <DollarSign className="w-3.5 h-3.5" />
+              <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-sm">
+                ₹
               </div>
             </div>
-            <div className="text-3xl font-black text-white">₹66,000/mo</div>
+            <div className="text-3xl font-black text-white">₹50,000/mo</div>
             <p className="text-xs text-emerald-600 font-bold">High LTV retention</p>
           </div>
 
@@ -7255,36 +7165,45 @@ export function AdminPlansPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {deals.map((d) => (
-                  <tr key={d.id} className="hover:bg-[#0B111C]/70 transition-colors">
-                    <td className="py-4 pl-2 font-bold text-white">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-slate-900 text-white font-black text-xs flex items-center justify-center">
-                          {d.clientLogo}
-                        </div>
-                        <span>{d.client}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 text-[#F1F5F9] font-medium">{d.scope}</td>
-                    <td className="py-4 font-black text-white">₹{d.value.toLocaleString("en-IN")} / yr</td>
-                    <td className="py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-black border ${d.stageBadge}`}>
-                        {d.stage}
-                      </span>
-                    </td>
-                    <td className="py-4 font-bold text-emerald-600">{d.probability}</td>
-                    <td className="py-4 text-[#F1F5F9] font-medium">{d.owner}</td>
-                    <td className="py-4 text-right pr-2">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenManageDeal(d)}
-                        className="px-3.5 py-1.5 rounded-xl bg-[#1F2C3F] hover:bg-blue-600 hover:text-white text-white font-bold text-xs cursor-pointer shadow-2xs transition-all active:scale-95"
-                      >
-                        Manage
-                      </button>
+                {deals.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-10 text-center text-[#97A0B3]">
+                      <p className="text-xs font-bold text-[#F1F5F9]">No active pipeline deals</p>
+                      <p className="text-[11px] text-[#97A0B3] mt-0.5">Real sales prospect deals will appear here once initiated.</p>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  deals.map((d) => (
+                    <tr key={d.id} className="hover:bg-[#0B111C]/70 transition-colors">
+                      <td className="py-4 pl-2 font-bold text-white">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-slate-900 text-white font-black text-xs flex items-center justify-center">
+                            {d.clientLogo}
+                          </div>
+                          <span>{d.client}</span>
+                        </div>
+                      </td>
+                      <td className="py-4 text-[#F1F5F9] font-medium">{d.scope}</td>
+                      <td className="py-4 font-black text-white">₹{d.value.toLocaleString("en-IN")} / yr</td>
+                      <td className="py-4">
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black border ${d.stageBadge}`}>
+                          {d.stage}
+                        </span>
+                      </td>
+                      <td className="py-4 font-bold text-emerald-600">{d.probability}</td>
+                      <td className="py-4 text-[#F1F5F9] font-medium">{d.owner}</td>
+                      <td className="py-4 text-right pr-2">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenManageDeal(d)}
+                          className="px-3.5 py-1.5 rounded-xl bg-[#1F2C3F] hover:bg-blue-600 hover:text-white text-white font-bold text-xs cursor-pointer shadow-2xs transition-all active:scale-95"
+                        >
+                          Manage
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -7412,7 +7331,7 @@ export function AdminPlansPage() {
                 <label className="block font-bold text-[#F1F5F9] mb-1">Counter Offer Notes / Scope Terms</label>
                 <textarea
                   rows={3}
-                  placeholder="e.g. We can offer ₹66,000/mo with 12-month commitment."
+                  placeholder="e.g. We can offer ₹85,000/mo with 12-month commitment."
                   value={counterNoteInput}
                   onChange={(e) => setCounterNoteInput(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl border border-[#2A3446] text-xs resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/20"

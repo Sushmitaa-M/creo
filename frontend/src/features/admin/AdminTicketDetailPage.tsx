@@ -844,7 +844,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-white">Northwind Labs</h4>
-                  <p className="text-xs text-[#7FA0D6] font-semibold">Enterprise Suite • ₹54,000/mo</p>
+                  <p className="text-xs text-[#7FA0D6] font-semibold">Enterprise Domination • ₹95,000/mo</p>
                 </div>
               </div>
 

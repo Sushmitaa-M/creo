@@ -230,39 +230,47 @@ export function PortalDashboardPage() {
 {/* ── 1. Content Calendar Section (Detailed) ── */}
 <section className="card-surface card-interactive p-6 sm:p-8 flex flex-col justify-between" data-purpose="content-calendar-card">
   {/* Calendar Header & Filter Tabs */}
-  <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-4 mb-6">
+  <div className="space-y-4 mb-6">
     <div className="flex items-center gap-3 sm:gap-4">
       <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#0B111C] text-[#7FA0D6] flex items-center justify-center shrink-0 border border-[#2A3446] shadow-sm">
         <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
         </svg>
       </div>
-      <div>
-        <div className="flex items-center gap-2.5 mb-1">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2 mb-1">
           <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">Content Calendar</h2>
           <span className="hidden sm:inline-flex rounded-full px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-wider items-center justify-center bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 shadow-xs whitespace-nowrap shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-[#7FA0D6] mr-1.5 animate-pulse shrink-0"></span>
             Instagram Hub
           </span>
         </div>
-        <p className="text-xs sm:text-[13px] text-[#97A0B3] font-medium">
+        <p className="text-xs sm:text-[13px] text-[#97A0B3] font-medium truncate">
           Multi-asset publishing queue for @{((dashboard?.company?.name || user?.company_name || user?.full_name || "brand").toLowerCase().replace(/[^a-z0-9]/g, ''))}
         </p>
       </div>
     </div>
+
     {/* Filter Pills */}
-    <div className="inline-flex flex-wrap sm:flex-nowrap items-center bg-[#0B111C] p-1.5 rounded-xl border border-[#2A3446] text-[11px] sm:text-xs font-bold gap-1 self-stretch xl:self-auto w-full xl:w-auto">
+    <div className="grid grid-cols-4 items-center bg-[#0B111C] p-1.5 rounded-2xl border border-[#2A3446] text-xs font-bold gap-1 w-full">
       {["All", "Reels", "Posts", "Stories"].map((filterName) => (
         <button
           key={filterName}
           onClick={() => setActiveCalendarFilter(filterName)}
-          className={`px-3 sm:px-4 py-2 rounded-lg flex-1 sm:flex-none text-center transition-all ${
+          className={`py-2 px-1.5 sm:px-3 rounded-xl text-center transition-all cursor-pointer truncate ${
             activeCalendarFilter === filterName
-              ? "bg-[#BCCCE6] text-[#0B111C] font-bold shadow-sm"
+              ? "bg-[#BCCCE6] text-[#0B111C] font-black shadow-sm"
               : "text-[#97A0B3] hover:text-white hover:bg-[#161F2D]"
           }`}
         >
-          {filterName === "All" ? "All Instagram" : filterName}
+          {filterName === "All" ? (
+            <>
+              <span className="hidden sm:inline">All Instagram</span>
+              <span className="sm:hidden">All</span>
+            </>
+          ) : (
+            filterName
+          )}
         </button>
       ))}
     </div>

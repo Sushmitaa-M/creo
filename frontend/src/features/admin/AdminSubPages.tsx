@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
+import { fetchClientRoster } from "../../lib/ops-api";
+import type { ClientRosterItem } from "../../types/ops";
 import {
   AreaChart,
   Area,
@@ -139,11 +141,24 @@ export interface ClientDetailData {
 }
 
 export function AdminClientsPage() {
+  const { clientId } = useParams<{ clientId?: string }>();
+  const [searchParams] = useSearchParams();
+  const urlClientId = clientId || searchParams.get("clientId") || searchParams.get("client");
+
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [serverClients, setServerClients] = useState<ClientRosterItem[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [deliverableSearch, setDeliverableSearch] = useState("");
   const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchClientRoster()
+      .then((data) => {
+        if (Array.isArray(data)) setServerClients(data);
+      })
+      .catch(console.error);
+  }, []);
 
   // Active Modals
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -633,8 +648,170 @@ export function AdminClientsPage() {
     },
   };
 
-  const clientList = Object.values(clientsData);
-  const activeClient = selectedClientId ? clientsData[selectedClientId] || clientsData.northwind : null;
+  const dynamicClients: Record<string, ClientDetailData> = {};
+  serverClients.forEach((sc) => {
+    const emailParts = sc.email.split("@");
+    const rawEmailPart = (emailParts[0] || "").replace(/[._0-9]/g, " ").trim();
+    const rawName = sc.company_name && sc.company_name.trim() !== "" && sc.company_name.toLowerCase() !== "unknown"
+      ? sc.company_name
+      : rawEmailPart;
+    const formattedName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : "Client Account";
+    const initials = formattedName.charAt(0).toUpperCase();
+    const tierName = sc.plan_display_name || sc.plan_name || "Enterprise Retainer";
+    const tier = tierName.toLowerCase();
+    
+    const podLetters = ["A", "B", "C", "D", "E"];
+    const podIdx = Math.abs(formattedName.charCodeAt(0) || 0) % podLetters.length;
+    const podLetter = podLetters[podIdx] || "A";
+    const podLeads = [
+      { name: "Maya Lin", title: "Senior Art Director (Lead)", avatar: "ML" },
+      { name: "Elena Rostova", title: "Senior Creative Producer", avatar: "ER" },
+      { name: "Kenji Sato", title: "Director of Performance Creative", avatar: "KS" },
+      { name: "Theo Clark", title: "Creative Lead & VFX Director", avatar: "TC" },
+      { name: "Sarah Jenkins", title: "Creative Communications Lead", avatar: "SJ" },
+    ];
+    const defaultLead = { name: "Maya Lin", title: "Senior Art Director (Lead)", avatar: "ML" };
+    const lead = podLeads[podIdx] ?? defaultLead;
+
+    const monthlyFee = tier.includes("starter") ? 25000 : tier.includes("growth") || tier.includes("brand") ? 50000 : 95000;
+    
+    const postsQuota = sc.quota_usage.find((q) => q.kind.toLowerCase() === "posts")?.quota || (tier.includes("starter") ? 8 : tier.includes("growth") ? 15 : 30);
+    const postsDelivered = sc.quota_usage.find((q) => q.kind.toLowerCase() === "posts")?.used || 0;
+    const reelsQuota = sc.quota_usage.find((q) => q.kind.toLowerCase() === "reels")?.quota || (tier.includes("starter") ? 4 : tier.includes("growth") ? 8 : 16);
+    const reelsDelivered = sc.quota_usage.find((q) => q.kind.toLowerCase() === "reels")?.used || 0;
+    const storiesQuota = sc.quota_usage.find((q) => q.kind.toLowerCase() === "stories")?.quota || (tier.includes("starter") ? 10 : tier.includes("growth") ? 20 : 40);
+    const storiesDelivered = sc.quota_usage.find((q) => q.kind.toLowerCase() === "stories")?.used || 0;
+
+    dynamicClients[sc.client_id] = {
+      id: sc.client_id,
+      name: formattedName,
+      initials,
+      industry: "Digital Growth & Direct-to-Consumer",
+      timezone: "Client Time: IST (UTC+5:30)",
+      activeSince: "Active Client",
+      tier: tierName,
+      tierBadge: tierName.toUpperCase(),
+      status: (sc.subscription_status || sc.account_status || "ACTIVE RETAINER").toUpperCase(),
+      monthlyFee,
+      addon: "Add-on: Creative Pod",
+      nextBilling: "Next Month Cycle",
+      billingMethod: "Direct ACH / Razorpay",
+      totalAssetsDelivered: postsDelivered + reelsDelivered + storiesDelivered,
+      totalAssetsQuota: postsQuota + reelsQuota + storiesQuota,
+      postsDelivered,
+      postsQuota,
+      reelsDelivered,
+      reelsQuota,
+      storiesDelivered,
+      storiesQuota,
+      sprintNumber: 44,
+      daysRemainingInSprint: 14,
+      contact: {
+        name: formattedName,
+        title: "Account Owner & Authorized Contact",
+        email: sc.email,
+        phone: "+91 98401 23890",
+        renewedDate: "Current Sprint",
+        termMonths: 12,
+      },
+      brand: {
+        kitVersion: "Design Kit v2.4",
+        headingsFont: "Plus Jakarta Sans",
+        bodyFont: "Inter Sans",
+        monoFont: "JetBrains Mono",
+        toneSummary: `Dynamic, high-impact social media creatives engineered for ${formattedName}. High-clarity typography with conversion-optimized video hooks.`,
+        toneTags: ["High Conversion", "Brand Authority", "Visual Polish"],
+        colors: [
+          { name: "Primary Deep Navy", hex: "#0F172A" },
+          { name: "Accent Royal Blue", hex: "#2563EB" },
+          { name: "Cyan Highlight", hex: "#06B6D4" },
+          { name: "Clean Neutral", hex: "#F8FAFC", isLight: true },
+        ],
+        social: {
+          handle: sc.instagram_username ? `@${sc.instagram_username}` : `@${emailParts[0] || "client"}`,
+          followers: "API Connected",
+          status: "API CONNECTED",
+          syncInterval: "15m refresh",
+        },
+        brandVaultLink: "Client Brand Vault Drive",
+        figmaLink: "Figma Master Design Kit",
+        lastAuditDate: "This Sprint",
+      },
+      pod: {
+        name: `Pod ${podLetter}`,
+        tagline: "Social & Performance Creative",
+        leadName: lead.name,
+        leadTitle: lead.title,
+        leadAvatar: lead.avatar,
+        squad: [
+          { name: "Omar K.", role: "Motion & Reels Specialist", hoursPerWeek: 12, avatar: "OK" },
+          { name: "Lena V.", role: "Senior Copywriter", hoursPerWeek: 10, avatar: "LV" },
+          { name: "Theo P.", role: "Graphic & Vector Designer", hoursPerWeek: 10, avatar: "TP" },
+        ],
+        capacityAllocatedHrs: 32,
+        bandwidthPercent: 80,
+        dailySyncTime: "11:00 AM IST",
+      },
+      deliverables: [
+        {
+          id: `deliv-${sc.client_id}-1`,
+          title: `${formattedName} Q4 Cinematic Reel`,
+          description: "High-impact motion animation with dynamic subtitles and audio sync.",
+          format: "9:16 Vertical Video",
+          status: "IN REVIEW",
+          statusColor: "bg-amber-50 text-amber-700 border-amber-200",
+          code: `#${podLetter}-101`,
+          dueDate: "Tomorrow 4:00 PM",
+          assignedTo: "Omar K.",
+          actions: ["Approve", "Decline", "Preview Video Draft (0:45)"],
+        },
+        {
+          id: `deliv-${sc.client_id}-2`,
+          title: "3× Multi-Slide Carousel Deck",
+          description: "Visual infographics highlighting key value propositions and features.",
+          format: "4:5 Carousel (3 slides)",
+          status: "IN PRODUCTION",
+          statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
+          code: `#${podLetter}-102`,
+          dueDate: "Nov 20, 2024",
+          assignedTo: "Theo P.",
+          actions: ["Preview Canvas", "Request Revisions"],
+        },
+        {
+          id: `deliv-${sc.client_id}-3`,
+          title: "Brand Announcement Static Hero",
+          description: "1:1 high-resolution brand campaign poster for Instagram and LinkedIn.",
+          format: "1:1 Square Static",
+          status: "APPROVED",
+          statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+          code: `#${podLetter}-103`,
+          dueDate: "Nov 22, 9:00 AM",
+          assignedTo: "Lena V.",
+          actions: ["Auto-Publish Locked", "View Scheduled Meta"],
+        },
+      ],
+    };
+  });
+
+  const mergedClientsData = { ...dynamicClients, ...clientsData };
+  const clientList = Object.values(mergedClientsData);
+
+  useEffect(() => {
+    if (urlClientId) {
+      const match = Object.keys(mergedClientsData).find(
+        (key) =>
+          key.toLowerCase() === urlClientId.toLowerCase() ||
+          mergedClientsData[key]?.name.toLowerCase() === urlClientId.toLowerCase() ||
+          key.includes(urlClientId) ||
+          urlClientId.includes(key)
+      );
+      if (match) {
+        setSelectedClientId(match);
+      }
+    }
+  }, [urlClientId, serverClients]);
+
+  const activeClient = selectedClientId ? mergedClientsData[selectedClientId] || mergedClientsData.northwind : null;
 
   const showToast = (msg: string) => {
     setToast(msg);

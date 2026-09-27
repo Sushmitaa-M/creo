@@ -418,6 +418,14 @@ export function App() {
                 />
                 <Route
                   path="/admin/clients/:clientId"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
+                      <AdminClientsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/clients/:clientId/brand"
                   element={<AdminClientBrandPage />}
                 />
                 <Route path="/admin/calendar" element={<AdminCalendarPage />} />

@@ -8,11 +8,26 @@ import {
   DollarSign, 
   Users, 
   Clock, 
-  ExternalLink,
-  ShieldCheck,
-  Trash2,
-  LogOut,
-  MessageSquare
+  ExternalLink, 
+  ShieldCheck, 
+  Trash2, 
+  LogOut, 
+  MessageSquare,
+  Menu,
+  X,
+  LayoutDashboard,
+  TrendingUp,
+  FileText,
+  Briefcase,
+  Layers,
+  CheckSquare,
+  Calendar,
+  ListTodo,
+  Building2,
+  LifeBuoy,
+  Megaphone,
+  BarChart3,
+  Settings
 } from "lucide-react";
 import { AdminKPIs } from "../../types/ops";
 import { useState, useRef, useEffect } from "react";
@@ -73,7 +88,7 @@ const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
 export function AdminTopHeader({
   title,
   activeTab = "Dashboard",
-  setActiveTab,
+  setActiveTab: _setActiveTab,
   kpis: _kpis,
   refreshing: _refreshing,
   handleRefreshKpis: _handleRefreshKpis,
@@ -92,22 +107,7 @@ export function AdminTopHeader({
     location.pathname.startsWith("/member") ||
     location.pathname === "/slack";
 
-  const isRevenueActive = activeTab === "Revenue" || location.pathname.includes("/admin/revenue") || location.pathname.includes("/admin/plans") || location.pathname.includes("/admin/sales");
-  const isTeamActive = activeTab === "Team Details" || location.pathname.includes("/admin/pod") || location.pathname.includes("/lead/dashboard") || location.pathname.includes("/lead/schedule") || location.pathname.includes("/admin/team") || location.pathname.includes("/admin/leaves") || location.pathname.includes("/admin/leave");
-  const isContentActive = activeTab === "Content Engine" || location.pathname.includes("/lead/tasks") || location.pathname.includes("/lead/deliverables") || location.pathname.includes("/admin/deliverables") || location.pathname.includes("/admin/calendar") || location.pathname.includes("/admin/tasks");
-  const isClientActive = activeTab === "Client Details" || location.pathname.includes("/lead/clients") || location.pathname.includes("/admin/clients");
-  const isSupportActive = activeTab === "Support" || activeTab === "SLA & Support" || location.pathname.includes("/admin/support") || location.pathname.includes("/admin/sla");
-
-  // Member active tab states
-  const isMemberOverview = activeTab === "Overview" || location.pathname === "/workstation" || location.pathname === "/workstation/overview" || location.pathname === "/member" || location.pathname === "/member/overview";
-  const isMemberTasks = activeTab === "My Tasks" || activeTab === "Tasks" || location.pathname.includes("/workstation/tasks") || location.pathname.includes("/member/tasks");
-  const isMemberSchedule = activeTab === "My Schedule & PTO" || activeTab === "Schedule" || location.pathname.includes("/workstation/schedule") || location.pathname.includes("/member/schedule");
-  const isSlackActive = activeTab === "Slack" || location.pathname.includes("/slack");
-
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [teamDropdownOpen, setTeamDropdownOpen] = useState(false);
-  const [contentDropdownOpen, setContentDropdownOpen] = useState(false);
-  const [supportDropdownOpen, setSupportDropdownOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
@@ -115,6 +115,143 @@ export function AdminTopHeader({
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Close sidebar on Escape key & lock body scrolling when open
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setSidebarOpen(false);
+      }
+    }
+    if (sidebarOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [sidebarOpen]);
+
+  // Close sidebar on navigation change
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Check if a nav item is active
+  const isPathActive = (href: string) => {
+    if (href === "/admin") return location.pathname === "/admin";
+    if (href === "/workstation") return location.pathname === "/workstation" || location.pathname === "/workstation/overview";
+    return location.pathname.startsWith(href);
+  };
+
+  // Structured sidebar navigation sections - all directly visible, no hover required
+  const adminNavSections = [
+    {
+      label: "Overview",
+      items: [
+        { label: "Admin Ops Dashboard", href: "/admin", icon: LayoutDashboard },
+      ],
+    },
+    {
+      label: "Revenue Engine",
+      items: [
+        { label: "Manage Revenues", href: "/admin/revenue", icon: TrendingUp },
+        { label: "Plans & Negotiations", href: "/admin/plans", icon: FileText },
+      ],
+    },
+    {
+      label: "Team Management",
+      items: [
+        { label: "Team Management", href: "/admin/team", icon: Users },
+        { label: "Leave Requests & Approvals", href: "/admin/leaves", icon: CalendarCheck },
+        { label: "Pod Lead Dashboard", href: "/admin/pod-dashboard", icon: Briefcase },
+      ],
+    },
+    {
+      label: "Content Engine",
+      items: [
+        { label: "Deliverables Review", href: "/admin/deliverables", icon: Layers },
+        { label: "Publishing Calendar", href: "/admin/calendar", icon: Calendar },
+        { label: "Production Task Queue", href: "/admin/tasks", icon: ListTodo },
+      ],
+    },
+    {
+      label: "Client Details",
+      items: [
+        { label: "Client Directory & Portals", href: "/admin/clients", icon: Building2 },
+      ],
+    },
+    {
+      label: "Support & Operations",
+      items: [
+        { label: "Support Desk", href: "/admin/support", icon: LifeBuoy },
+        { label: "SLA Performance Hub", href: "/admin/support/sla", icon: ShieldCheck },
+        { label: "Slack Workspace Hub", href: "/slack", icon: MessageSquare, badge: "Chat" },
+      ],
+    },
+    {
+      label: "Governance & Settings",
+      items: [
+        { label: "Announcements", href: "/admin/announcements", icon: Megaphone },
+        { label: "Executive Analytics & KPIs", href: "/admin/reports", icon: BarChart3 },
+        { label: "Add-ons Catalog", href: "/admin/addons", icon: Layers },
+        { label: "System Settings", href: "/admin/settings", icon: Settings },
+      ],
+    },
+  ];
+
+  const leadNavSections = [
+    {
+      label: "Team Management",
+      items: [
+        { label: "Pod Lead Dashboard", href: "/admin/pod-dashboard", icon: Briefcase },
+        { label: "Leave Approvals & Schedule", href: "/lead/schedule", icon: CalendarCheck },
+      ],
+    },
+    {
+      label: "Content Engine",
+      items: [
+        { label: "Pod Task Board & Backlog", href: "/lead/tasks", icon: ListTodo },
+        { label: "Deliverables Review & Sign-Off", href: "/lead/deliverables", icon: Layers },
+        { label: "Publishing Calendar", href: "/admin/calendar", icon: Calendar },
+      ],
+    },
+    {
+      label: "Client Details",
+      items: [
+        { label: "Client Allocations", href: "/lead/clients", icon: Building2 },
+      ],
+    },
+    {
+      label: "Support & SLA",
+      items: [
+        { label: "SLA Performance Hub", href: "/admin/sla", icon: ShieldCheck },
+        { label: "Support Desk", href: "/admin/support", icon: LifeBuoy },
+        { label: "Slack Workspace Hub", href: "/slack", icon: MessageSquare, badge: "Chat" },
+      ],
+    },
+  ];
+
+  const memberNavSections = [
+    {
+      label: "Workstation",
+      items: [
+        { label: "Workstation Overview", href: "/workstation", icon: LayoutDashboard },
+        { label: "My Production Tasks", href: "/workstation/tasks", icon: CheckSquare },
+        { label: "My Schedule & PTO", href: "/workstation/schedule", icon: Calendar },
+        { label: "Slack Workspace Hub", href: "/slack", icon: MessageSquare, badge: "Chat" },
+      ],
+    },
+  ];
+
+  const currentNavSections = isMemberRole
+    ? memberNavSections
+    : user?.role === "team_lead"
+    ? leadNavSections
+    : adminNavSections;
 
   const { data: serverNotifications = [] } = useQuery<NotificationItem[]>({
     queryKey: ["admin-notifications"],
@@ -315,416 +452,45 @@ export function AdminTopHeader({
   return (
     <div className="sticky top-0 z-40 w-full bg-[#0B111C]/90 backdrop-blur-md pt-3 sm:pt-4 pb-2.5 sm:pb-3 px-3.5 sm:px-8 transition-all">
       <header className="max-w-[1500px] mx-auto bg-[#161F2D] rounded-2xl sm:rounded-full border border-[#2A3446] px-4 sm:px-7 lg:px-9 py-2.5 sm:py-3.5 flex items-center justify-between shadow-[0_8px_32px_rgba(5,8,16,0.6)] min-h-[58px] sm:min-h-[66px]">
-        {/* Left Section: Active Title */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1 sm:flex-initial">
+        {/* Left Section: Hamburger Menu + Back Button + Brand Logo + Title */}
+        <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
+          {/* Hamburger Menu Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            className="size-10 rounded-full flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] transition-all cursor-pointer border border-transparent hover:border-[#2A3446] focus:outline-none focus:ring-2 focus:ring-[#7FA0D6] shrink-0"
+            aria-label="Open navigation sidebar"
+            title="Open navigation menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
           {showBackButton && (
             <Link
               to={isMemberRole ? "/workstation" : "/admin"}
               className="p-1.5 rounded-full hover:bg-[#1F2C3F] text-[#97A0B3] hover:text-white transition-colors shrink-0"
+              title="Go Back"
             >
               <ChevronLeft className="w-5 h-5" />
             </Link>
           )}
-          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-            <Link
-              to={isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
-              className="lg:hidden flex items-center gap-0.5 font-black text-white text-base tracking-tight shrink-0 mr-1"
-            >
-              creo<span className="text-[#7FA0D6] text-lg leading-none">.</span>
-            </Link>
-            <h1 className="text-sm sm:text-base lg:text-lg font-black text-white tracking-tight truncate">
-              {resolvedTitle}
-            </h1>
-          </div>
+
+          {/* Brand Logo */}
+          <Link
+            to={isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
+            className="flex items-center gap-0.5 font-black text-white text-base sm:text-lg tracking-tight shrink-0 px-1 hover:opacity-85 transition-opacity"
+            title="creo. Home"
+          >
+            creo<span className="text-[#7FA0D6] text-lg sm:text-xl leading-none">.</span>
+          </Link>
+
+          <span className="h-5 w-px bg-[#2A3446] mx-1 hidden sm:block shrink-0" />
+
+          {/* Active Page Title */}
+          <h1 className="text-xs sm:text-sm lg:text-base font-black text-white tracking-tight truncate">
+            {resolvedTitle}
+          </h1>
         </div>
-
-        {/* Center Pill Capsule */}
-        {isMemberRole ? (
-          <div className="hidden lg:flex items-center gap-1.5 bg-[#0B111C] px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-bold text-[#97A0B3] border border-[#2A3446] shadow-2xs">
-            <Link
-              to="/workstation"
-              className={`px-3.5 py-1.5 rounded-full transition-all ${
-                isMemberOverview
-                  ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                  : "hover:text-white hover:bg-[#161F2D]"
-              }`}
-            >
-              Overview
-            </Link>
-            <Link
-              to="/workstation/tasks"
-              className={`px-3.5 py-1.5 rounded-full transition-all ${
-                isMemberTasks
-                  ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                  : "hover:text-white hover:bg-[#161F2D]"
-              }`}
-            >
-              My Tasks
-            </Link>
-
-            {/* --- CREO LOGO CENTER BADGE WITH BLUE DOT --- */}
-            <Link to="/workstation" className="flex items-center gap-0.5 px-3 py-1 font-black text-white text-sm sm:text-base tracking-tighter hover:opacity-80 transition-opacity">
-              creo<span className="text-[#7FA0D6] text-lg leading-none">.</span>
-            </Link>
-
-            <Link
-              to="/workstation/schedule"
-              className={`px-3.5 py-1.5 rounded-full transition-all ${
-                isMemberSchedule
-                  ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                  : "hover:text-white hover:bg-[#161F2D]"
-              }`}
-            >
-              My Schedule & PTO
-            </Link>
-            <Link
-              to="/slack"
-              className={`px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
-                isSlackActive
-                  ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                  : "hover:text-white hover:bg-[#161F2D]"
-              }`}
-            >
-              <span className="size-2 rounded-full bg-[#7FA0D6] animate-pulse" />
-              <span>Slack</span>
-            </Link>
-          </div>
-        ) : user?.role === "team_lead" ? (
-          <div className="hidden lg:flex items-center gap-1.5 bg-[#0B111C] px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-bold text-[#97A0B3] border border-[#2A3446] shadow-2xs">
-            {/* Team Details Dropdown */}
-            <div
-              className="relative group"
-              onMouseEnter={() => setTeamDropdownOpen(true)}
-              onMouseLeave={() => setTeamDropdownOpen(false)}
-            >
-              <Link
-                to="/admin/pod-dashboard"
-                className={`block px-3.5 py-1.5 rounded-full transition-all ${
-                  isTeamActive
-                    ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                    : "hover:text-white hover:bg-[#161F2D]"
-                }`}
-              >
-                Team Details
-              </Link>
-              <div
-                className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-44 bg-[#161F2D] rounded-xl shadow-2xl border border-[#2A3446] p-1.5 transition-all flex flex-col z-50 ${
-                  teamDropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
-                }`}
-              >
-                <Link
-                  to="/lead/schedule"
-                  onClick={() => setTeamDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Leave Approvals
-                </Link>
-              </div>
-            </div>
-
-            {/* Content Engine Dropdown */}
-            <div
-              className="relative group"
-              onMouseEnter={() => setContentDropdownOpen(true)}
-              onMouseLeave={() => setContentDropdownOpen(false)}
-            >
-              <Link
-                to="/lead/tasks"
-                className={`block px-3.5 py-1.5 rounded-full transition-all ${
-                  isContentActive
-                    ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                    : "hover:text-white hover:bg-[#161F2D]"
-                }`}
-              >
-                Content Engine
-              </Link>
-              <div
-                className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-52 bg-[#161F2D] rounded-xl shadow-2xl border border-[#2A3446] p-1.5 transition-all flex flex-col z-50 ${
-                  contentDropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
-                }`}
-              >
-                <Link
-                  to="/lead/tasks"
-                  onClick={() => setContentDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#7FA0D6] hover:bg-[#1F2C3F] transition-colors"
-                >
-                  Pod Task Board & Backlog
-                </Link>
-                <Link
-                  to="/lead/deliverables"
-                  onClick={() => setContentDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Deliverables Review & Sign-Off
-                </Link>
-                <Link
-                  to="/admin/calendar"
-                  onClick={() => setContentDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Publishing Calendar
-                </Link>
-              </div>
-            </div>
-
-            {/* --- CREO LOGO CENTER BADGE WITH BLUE DOT --- */}
-            <Link to="/admin/pod-dashboard" className="flex items-center gap-0.5 px-3 py-1 font-black text-white text-sm sm:text-base tracking-tighter hover:opacity-80 transition-opacity">
-              creo<span className="text-[#7FA0D6] text-lg leading-none">.</span>
-            </Link>
-
-            {/* Client Details Direct Link */}
-            <Link
-              to="/lead/clients"
-              className={`px-3.5 py-1.5 rounded-full cursor-pointer transition-all ${
-                isClientActive
-                  ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                  : "hover:text-white hover:bg-[#161F2D]"
-              }`}
-            >
-              Client Details
-            </Link>
-
-            {/* SLA & Support Dropdown */}
-            <div
-              className="relative group"
-              onMouseEnter={() => setSupportDropdownOpen(true)}
-              onMouseLeave={() => setSupportDropdownOpen(false)}
-            >
-              <Link
-                to="/admin/sla"
-                className={`block px-3.5 py-1.5 rounded-full transition-all ${
-                  isSupportActive
-                    ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                    : "hover:text-white hover:bg-[#161F2D]"
-                }`}
-              >
-                SLA & Support
-              </Link>
-              <div
-                className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-48 bg-[#161F2D] rounded-xl shadow-2xl border border-[#2A3446] p-1.5 transition-all flex flex-col z-50 ${
-                  supportDropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
-                }`}
-              >
-                <Link
-                  to="/admin/sla"
-                  onClick={() => setSupportDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#7FA0D6] hover:bg-[#1F2C3F] transition-colors"
-                >
-                  SLA Performance Hub
-                </Link>
-                <Link
-                  to="/admin/support"
-                  onClick={() => setSupportDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Support Desk
-                </Link>
-                <Link
-                  to="/slack"
-                  onClick={() => setSupportDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#7FA0D6] hover:bg-[#1F2C3F] transition-colors flex items-center justify-between"
-                >
-                  <span>Slack Workspace Hub</span>
-                  <span className="text-[10px] bg-[#7FA0D6]/20 text-[#7FA0D6] px-1 py-0.5 rounded">Chat</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="hidden lg:flex items-center gap-1.5 bg-[#0B111C] px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-bold text-[#97A0B3] border border-[#2A3446] shadow-2xs">
-            <Link
-              to="/admin"
-              onClick={() => setActiveTab?.("Dashboard")}
-              className={`px-3.5 py-1.5 rounded-full transition-all ${
-                activeTab === "Dashboard" && location.pathname === "/admin"
-                  ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                  : "hover:text-white hover:bg-[#161F2D]"
-              }`}
-            >
-              Dashboard
-            </Link>
-
-            {/* Revenue Dropdown container */}
-            <div 
-              className="relative group"
-              onMouseEnter={() => setDropdownOpen(true)}
-              onMouseLeave={() => setDropdownOpen(false)}
-            >
-              <span
-                className={`block px-3.5 py-1.5 rounded-full cursor-pointer transition-all ${
-                  isRevenueActive
-                    ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                    : "hover:text-white hover:bg-[#161F2D]"
-                }`}
-              >
-                Revenue
-              </span>
-              <div 
-                className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-44 bg-[#161F2D] rounded-xl shadow-2xl border border-[#2A3446] p-1.5 transition-all flex flex-col z-50 ${
-                  dropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
-                }`}
-              >
-                <Link 
-                  to="/admin/revenue" 
-                  onClick={() => setDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Manage Revenues
-                </Link>
-                <Link 
-                  to="/admin/plans" 
-                  onClick={() => setDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Plans & Negotiations
-                </Link>
-              </div>
-            </div>
-
-            {/* Team Details Dropdown container */}
-            <div 
-              className="relative group"
-              onMouseEnter={() => setTeamDropdownOpen(true)}
-              onMouseLeave={() => setTeamDropdownOpen(false)}
-            >
-              <span
-                className={`block px-3.5 py-1.5 rounded-full cursor-pointer transition-all ${
-                  isTeamActive
-                    ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                    : "hover:text-white hover:bg-[#161F2D]"
-                }`}
-              >
-                Team Details
-              </span>
-              <div 
-                className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-44 bg-[#161F2D] rounded-xl shadow-2xl border border-[#2A3446] p-1.5 transition-all flex flex-col z-50 ${
-                  teamDropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
-                }`}
-              >
-                <Link 
-                  to="/admin/team" 
-                  onClick={() => setTeamDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Team Management
-                </Link>
-                <Link 
-                  to="/admin/leaves" 
-                  onClick={() => setTeamDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Leave Requests
-                </Link>
-              </div>
-            </div>
-
-            {/* --- CREO LOGO CENTER BADGE WITH BLUE DOT --- */}
-            <Link to="/admin" className="flex items-center gap-0.5 px-3 py-1 font-black text-white text-sm sm:text-base tracking-tighter hover:opacity-80 transition-opacity">
-              creo<span className="text-[#7FA0D6] text-lg leading-none">.</span>
-            </Link>
-
-            {/* Content Engine Dropdown container */}
-            <div 
-              className="relative group"
-              onMouseEnter={() => setContentDropdownOpen(true)}
-              onMouseLeave={() => setContentDropdownOpen(false)}
-            >
-              <span
-                className={`block px-3.5 py-1.5 rounded-full cursor-pointer transition-all ${
-                  isContentActive
-                    ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                    : "hover:text-white hover:bg-[#161F2D]"
-                }`}
-              >
-                Content Engine
-              </span>
-              <div 
-                className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-44 bg-[#161F2D] rounded-xl shadow-2xl border border-[#2A3446] p-1.5 transition-all flex flex-col z-50 ${
-                  contentDropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
-                }`}
-              >
-                <Link 
-                  to="/admin/deliverables" 
-                  onClick={() => setContentDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Deliverables
-                </Link>
-                <Link 
-                  to="/admin/calendar" 
-                  onClick={() => setContentDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Calendar
-                </Link>
-                <Link 
-                  to="/admin/tasks" 
-                  onClick={() => setContentDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Task Queue
-                </Link>
-              </div>
-            </div>
-
-            {/* Client Details Direct Link (No Dropdown) */}
-            <Link
-              to="/admin/clients"
-              className={`px-3.5 py-1.5 rounded-full cursor-pointer transition-all ${
-                isClientActive
-                  ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                  : "hover:text-white hover:bg-[#161F2D]"
-              }`}
-            >
-              Client Details
-            </Link>
-
-            {/* Support Dropdown container */}
-            <div 
-              className="relative group"
-              onMouseEnter={() => setSupportDropdownOpen(true)}
-              onMouseLeave={() => setSupportDropdownOpen(false)}
-            >
-              <span
-                className={`block px-3.5 py-1.5 rounded-full cursor-pointer transition-all ${
-                  isSupportActive
-                    ? "text-[#0B111C] font-bold bg-[#BCCCE6] shadow-xs"
-                    : "hover:text-white hover:bg-[#161F2D]"
-                }`}
-              >
-                Support
-              </span>
-              <div 
-                className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-48 bg-[#161F2D] rounded-xl shadow-2xl border border-[#2A3446] p-1.5 transition-all flex flex-col z-50 ${
-                  supportDropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
-                }`}
-              >
-                <Link 
-                  to="/admin/support" 
-                  onClick={() => setSupportDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  Support Desk
-                </Link>
-                <Link 
-                  to="/admin/support/sla" 
-                  onClick={() => setSupportDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                >
-                  SLA Performance
-                </Link>
-                <Link 
-                  to="/slack" 
-                  onClick={() => setSupportDropdownOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#7FA0D6] hover:bg-[#1F2C3F] transition-colors flex items-center justify-between"
-                >
-                  <span>Slack Workspace Hub</span>
-                  <span className="text-[10px] bg-[#7FA0D6]/20 text-[#7FA0D6] px-1 py-0.5 rounded">Chat</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Right Utility Icons (Bell with Functional Dropdown, Profile with Dropdown) */}
         <div className="flex items-center gap-2 sm:gap-3.5 shrink-0 justify-end">
@@ -1036,6 +802,124 @@ export function AdminTopHeader({
           </div>
         </div>
       </header>
+
+      {/* Sidebar Backdrop Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-[#050810]/75 backdrop-blur-sm z-50 transition-opacity animate-fade-in"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Slide-out Sidebar Drawer */}
+      <aside
+        className={`fixed top-0 bottom-0 left-0 w-80 sm:w-88 max-w-[88vw] bg-[#161F2D] border-r border-[#2A3446] shadow-[0_25px_60px_rgba(5,8,16,0.95)] z-50 flex flex-col transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+        aria-label="Admin Navigation Drawer"
+      >
+        {/* Drawer Header */}
+        <div className="p-4 sm:p-5 border-b border-[#2A3446] flex items-center justify-between bg-[#0B111C]/60 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <Link
+              to={isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
+              onClick={() => setSidebarOpen(false)}
+              className="flex items-center gap-0.5 font-black text-white text-xl tracking-tight"
+            >
+              creo<span className="text-[#7FA0D6] text-2xl leading-none">.</span>
+            </Link>
+            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
+              {isMemberRole ? "Workstation" : user?.role === "team_lead" ? "Pod Lead" : "Admin Ops"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(false)}
+            className="size-8 rounded-xl flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] border border-transparent hover:border-[#2A3446] transition-colors cursor-pointer"
+            aria-label="Close navigation sidebar"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Drawer Navigation List - All sections & items directly listed, zero hover */}
+        <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5 scrollbar-thin text-left">
+          {currentNavSections.map((section) => (
+            <div key={section.label} className="space-y-1">
+              <div className="px-3 pb-1 text-[10px] font-black uppercase tracking-wider text-[#7FA0D6]">
+                {section.label}
+              </div>
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const active = isPathActive(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        active
+                          ? "bg-[#BCCCE6] text-[#0B111C] shadow-sm font-black"
+                          : "text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Icon className={`w-4 h-4 shrink-0 ${active ? "text-[#0B111C]" : "text-[#7FA0D6]"}`} />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                      {item.badge && (
+                        <span
+                          className={`text-[10px] px-1.5 py-0.5 rounded font-black shrink-0 ${
+                            active ? "bg-[#0B111C]/20 text-[#0B111C]" : "bg-[#7FA0D6]/20 text-[#7FA0D6]"
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Drawer Footer: User Profile Card & Direct Sign Out */}
+        <div className="p-3.5 border-t border-[#2A3446] bg-[#0B111C]/80 shrink-0 space-y-2 text-left">
+          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#161F2D] border border-[#2A3446]">
+            <div className="size-9 rounded-full bg-[#BCCCE6] text-[#0B111C] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
+              {(user?.full_name?.[0] || user?.email?.[0] || (isMemberRole ? "D" : "A")).toUpperCase()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="text-xs font-bold text-white truncate">
+                {user?.full_name || (isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
+              </h4>
+              <p className="text-[10px] text-[#97A0B3] font-medium truncate">
+                {user?.email || (isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                setSidebarOpen(false);
+                try {
+                  await logout();
+                } catch {
+                  // ignore
+                }
+                navigate("/auth");
+              }}
+              className="p-1.5 rounded-lg text-[#97A0B3] hover:text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
+              title="Sign Out / Log Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }

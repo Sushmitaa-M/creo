@@ -178,7 +178,7 @@ function OnboardingPageWrapper() {
   const userId = user?.id || "00000000-0000-0000-0000-000000000001";
 
   return (
-    <div data-surface="review" className="min-h-screen bg-[#0B111C] text-[#F8FAFC] flex flex-col overflow-x-hidden">
+    <div data-surface="review" className="bento-theme min-h-screen bg-[#0B111C] text-[#F8FAFC] flex flex-col overflow-x-hidden">
       {/* Top Header Bar */}
       <header className="sticky top-0 z-30 border-b border-[#2A3446] bg-[#050810]/95 backdrop-blur-md px-4 sm:px-8 py-3 shadow-md shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">

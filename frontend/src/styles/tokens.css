@@ -810,4 +810,151 @@ aside .scrollbar-thin,
   border-color: #2A3446 !important;
 }
 
+/* ==========================================================================
+   NEBULA BENTO THEME — Scoped to .bento-theme wrapper
+   Only affects Client Portal & Onboarding pages.
+   ========================================================================== */
 
+:root {
+  --nebula-void: #050810;
+  --nebula-navy: #0B111C;
+  --nebula-surface: #161F2D;
+  --nebula-steel: #2A3446;
+  --nebula-mist: #97A0B3;
+  --nebula-periwinkle: #BCCCE6;
+  --nebula-glow: #7FA0D6;
+  --nebula-sand: #D8BF9B;
+}
+
+/* --- Remove all shadows inside bento-theme --- */
+.bento-theme *,
+.bento-theme *::before,
+.bento-theme *::after {
+  box-shadow: none !important;
+}
+
+/* --- Remove all gradients inside bento-theme --- */
+.bento-theme [class*="bg-gradient-"],
+.bento-theme [class*="from-"],
+.bento-theme [class*="via-"] {
+  background-image: none !important;
+}
+
+/* --- Hide decorative blur glows --- */
+.bento-theme [class*="blur-3xl"],
+.bento-theme [class*="blur-2xl"],
+.bento-theme .animate-ai-bg-drift,
+.bento-theme .animate-ai-orb-1,
+.bento-theme .animate-ai-orb-2 {
+  display: none !important;
+}
+
+/* --- Remove backdrop-filter (frosted glass) --- */
+.bento-theme [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* --- Remove hover lift transforms for flat bento feel --- */
+.bento-theme .card-interactive:hover,
+.bento-theme .hover\\:-translate-y-1:hover,
+.bento-theme [class*="hover:-translate-y"]:hover {
+  transform: none !important;
+}
+
+/* --- Restore typographic and background overrides so it works before manual TSX edits --- */
+.bento-theme {
+  background-color: var(--nebula-navy) !important;
+  color: var(--nebula-periwinkle) !important;
+}
+
+.bento-theme h1, .bento-theme h2, .bento-theme h3, .bento-theme h4, .bento-theme h5, .bento-theme h6,
+.bento-theme .text-slate-900, .bento-theme .text-slate-800, .bento-theme .text-slate-700, .bento-theme .text-gray-900,
+.bento-theme .text-\\[\\#0D2137\\], .bento-theme .text-\\[\\#0F172A\\] {
+  color: var(--nebula-periwinkle) !important;
+}
+
+.bento-theme p, .bento-theme span, .bento-theme div,
+.bento-theme .text-slate-500, .bento-theme .text-slate-400, .bento-theme .text-slate-600, .bento-theme .text-gray-500,
+.bento-theme .text-\\[\\#64748B\\], .bento-theme .text-\\[\\#97A0B3\\] {
+  color: var(--nebula-mist) !important;
+}
+
+.bento-theme .text-blue-600, .bento-theme .text-blue-500, .bento-theme .text-\\[\\#0052FF\\], .bento-theme .text-\\[\\#2B7BC4\\],
+.bento-theme .text-\\[\\#7FA0D6\\] {
+  color: var(--nebula-glow) !important;
+}
+
+.bento-theme .text-amber-500, .bento-theme .text-yellow-500, .bento-theme .text-\\[\\#D8BF9B\\] {
+  color: var(--nebula-sand) !important;
+}
+
+.bento-theme .bg-white, .bento-theme .bg-white\\/95, .bento-theme .bg-white\\/90,
+.bento-theme .bg-slate-50, .bento-theme .bg-slate-100, .bento-theme .bg-gray-50, .bento-theme .bg-gray-100,
+.bento-theme .card-surface, .bento-theme .glass-card,
+.bento-theme .bg-\\[\\#161F2D\\] {
+  background-color: var(--nebula-surface) !important;
+  border-color: var(--nebula-steel) !important;
+  color: var(--nebula-periwinkle) !important;
+}
+
+.bento-theme .border-slate-200, .bento-theme .border-slate-100, .bento-theme .border-slate-300, .bento-theme .border-gray-200,
+.bento-theme .border-\\[\\#2A3446\\] {
+  border-color: var(--nebula-steel) !important;
+}
+
+.bento-theme .bg-blue-600, .bento-theme .bg-blue-500, .bento-theme .bg-\\[\\#0052FF\\], .bento-theme .bg-\\[\\#2B7BC4\\],
+.bento-theme .btn-primary {
+  background-color: var(--nebula-periwinkle) !important;
+  color: var(--nebula-navy) !important;
+  border-color: var(--nebula-periwinkle) !important;
+}
+
+/* --- Fix hover backgrounds --- */
+.bento-theme .hover\\:bg-slate-50:hover, 
+.bento-theme .hover\\:bg-white:hover,
+.bento-theme .hover\\:bg-slate-100:hover,
+.bento-theme .group:hover .group-hover\\:bg-slate-50 {
+  background-color: var(--nebula-steel) !important;
+  border-color: var(--nebula-mist) !important;
+}
+
+.bento-theme .bg-slate-50\\/40, .bento-theme .bg-slate-50\\/50, .bento-theme .bg-slate-50\\/80 {
+  background-color: transparent !important;
+  border-color: var(--nebula-steel) !important;
+}
+
+/* --- Fix amber icon backgrounds --- */
+.bento-theme .bg-amber-50, .bento-theme .bg-amber-50\\/80, .bento-theme .bg-amber-100 {
+  background-color: transparent !important;
+  border-color: var(--nebula-sand) !important;
+}
+.bento-theme .text-amber-600, .bento-theme .fill-amber-400 {
+  color: var(--nebula-sand) !important;
+  fill: var(--nebula-sand) !important;
+}
+
+/* --- Catch ALL opacity variants of light backgrounds --- */
+.bento-theme [class*="bg-white/"],
+.bento-theme [class*="bg-slate-50/"],
+.bento-theme [class*="bg-slate-100/"],
+.bento-theme [class*="bg-gray-50/"],
+.bento-theme [class*="bg-gray-100/"] {
+  background-color: transparent !important;
+  border-color: var(--nebula-steel) !important;
+}
+
+/* --- Fix Connect Instagram Card --- */
+.bento-theme .bg-\\[\\#F8FAFC\\] {
+  background-color: var(--nebula-surface) !important;
+  border-color: var(--nebula-steel) !important;
+  color: var(--nebula-periwinkle) !important;
+}
+.bento-theme .bg-emerald-50, .bento-theme .bg-emerald-100 {
+  background-color: transparent !important;
+  border-color: var(--nebula-sand) !important;
+}
+.bento-theme .text-emerald-700, .bento-theme .border-emerald-200 {
+  color: var(--nebula-sand) !important;
+  border-color: var(--nebula-sand) !important;
+}

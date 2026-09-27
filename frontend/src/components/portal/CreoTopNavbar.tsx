@@ -94,6 +94,7 @@ export function CreoTopNavbar() {
       cancelText: "Stay Logged In",
       tone: "warning",
       icon: "logout",
+      className: "bento-theme",
     });
     if (!ok) return;
     await logout();

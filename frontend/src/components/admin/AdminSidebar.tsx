@@ -26,6 +26,18 @@ import { createPortal } from "react-dom";
 import { useAuth } from "../../lib/auth-context";
 import { useAdminSidebar } from "./AdminSidebarContext";
 
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+}
+
+interface NavSection {
+  label: string;
+  items: NavItem[];
+}
+
 export function AdminSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -76,7 +88,7 @@ export function AdminSidebar() {
     return location.pathname.startsWith(href);
   };
 
-  const adminNavSections = [
+  const adminNavSections: NavSection[] = [
     {
       label: "Overview",
       items: [
@@ -131,7 +143,7 @@ export function AdminSidebar() {
     },
   ];
 
-  const leadNavSections = [
+  const leadNavSections: NavSection[] = [
     {
       label: "Team Management",
       items: [
@@ -163,7 +175,7 @@ export function AdminSidebar() {
     },
   ];
 
-  const memberNavSections = [
+  const memberNavSections: NavSection[] = [
     {
       label: "Workstation",
       items: [
@@ -175,7 +187,7 @@ export function AdminSidebar() {
     },
   ];
 
-  const clientNavSections = [
+  const clientNavSections: NavSection[] = [
     {
       label: "Client Portal",
       items: [
@@ -190,8 +202,6 @@ export function AdminSidebar() {
       items: [
         { label: "Plans & Billing", href: "/portal/payments", icon: CreditCard },
         { label: "Support Desk", href: "/portal/support", icon: LifeBuoy },
-        { label: "Account Settings", href: "/portal/account", icon: Settings },
-        { label: "Slack Workspace Hub", href: "/portal/slack", icon: MessageSquare, badge: "Chat" },
       ],
     },
   ];

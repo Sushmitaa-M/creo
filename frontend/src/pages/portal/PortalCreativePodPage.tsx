@@ -69,11 +69,7 @@ export function PortalCreativePodPage() {
 
   if (!isSubscribed && !isLoading) {
     return (
-      <div className="animate-page-in space-y-5 max-w-[1440px] mx-auto px-4 md:px-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">Creative Pod</h1>
-          <p className="text-sm text-[#64748B] mt-1">Your dedicated creative team and production unit.</p>
-        </div>
+      <div className="animate-page-in space-y-5 max-w-[1440px] mx-auto px-4 md:px-8 pt-4">
         <SubscriptionLockedState
           title={isExpired ? "Creative Pod Access Expired" : "Creative Pod Locked"}
           description={isExpired

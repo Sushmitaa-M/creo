@@ -225,6 +225,8 @@ export function PortalDashboardPage() {
       <PlanBargainCallModal isOpen={bargainModalOpen} onClose={() => setBargainModalOpen(false)} />
       <main className="max-w-[1440px] mx-auto space-y-6">
 
+{/* ── 1. & 2. Side-by-Side Grid ── */}
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
 {/* ── 1. Content Calendar Section (Detailed) ── */}
 <section className="card-surface card-interactive p-6 sm:p-8 flex flex-col justify-between" data-purpose="content-calendar-card">
   {/* Calendar Header & Filter Tabs */}
@@ -238,8 +240,8 @@ export function PortalDashboardPage() {
       <div>
         <div className="flex items-center gap-2.5 mb-1">
           <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">Content Calendar</h2>
-          <span className="hidden sm:inline-flex rounded-full px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-wider items-center justify-center bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#7FA0D6] mr-1.5 animate-pulse"></span>
+          <span className="hidden sm:inline-flex rounded-full px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-wider items-center justify-center bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 shadow-xs whitespace-nowrap shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#7FA0D6] mr-1.5 animate-pulse shrink-0"></span>
             Instagram Hub
           </span>
         </div>
@@ -523,6 +525,7 @@ export function PortalDashboardPage() {
     </Link>
   </div>
 </section>
+</div>
 
 {/* ── 3. Creative Pod, Notifications, Support, SLA (Compact / Less Details) ── */}
 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-purpose="secondary-metrics-grid">

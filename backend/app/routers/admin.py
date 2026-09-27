@@ -2398,14 +2398,17 @@ async def list_admin_support_tickets(
     results = []
     for t in tickets:
         client_res = await db.execute(
-            select(User.email, User.full_name, ClientProfile.company_name)
+            select(User.email, User.full_name, ClientProfile.company_name, Plan.display_name)
             .outerjoin(ClientProfile, ClientProfile.user_id == User.id)
+            .outerjoin(Subscription, (Subscription.client_id == User.id) & (Subscription.status.in_(["active", "trialing"])))
+            .outerjoin(Plan, Plan.id == Subscription.plan_id)
             .where(User.id == t.client_id)
         )
         c_row = client_res.first()
         client_email = c_row[0] if c_row else ""
         client_name = c_row[1] if c_row else ""
         company_name = c_row[2] if c_row else ""
+        tier_name = c_row[3] if c_row and c_row[3] else "Active Retainer"
 
         client_label = company_name or client_name or (client_email.split("@")[0].capitalize() if client_email else "Client")
 
@@ -2422,6 +2425,8 @@ async def list_admin_support_tickets(
             "description": t.description,
             "client": client_label,
             "client_id": str(t.client_id),
+            "email": client_email,
+            "tier": tier_name,
             "priority": t.priority.value,
             "status": t.status.value,
             "assigned_to": str(t.assigned_to) if t.assigned_to else None,

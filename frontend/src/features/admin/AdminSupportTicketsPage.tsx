@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
 import {
@@ -9,6 +9,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
+import { request } from "../../lib/http";
 
 interface TicketItem {
   id: string;
@@ -28,11 +29,63 @@ interface TicketItem {
   secondaryAction: string;
 }
 
-const INITIAL_TICKETS: TicketItem[] = [];
+const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
+  {
+    id: "1042",
+    client: "Ryze",
+    tier: "Starter Growth",
+    email: "sushmitaa1407@gmail.com",
+    avatarBg: "bg-[#0F172A]",
+    issueTitle: "API Webhook Timeout on Deliverables Sync",
+    issueDesc: "Payload dropped after 4 retries via US-East Gateway during automated delivery sync of 4× 4K Reels.",
+    priority: "Urgent",
+    timeLog: "18m remaining",
+    agent: "Maya Lin",
+    pod: "Pod C",
+    agentInitials: "ML",
+    status: "Open",
+    primaryAction: "Resolve",
+    secondaryAction: "Assign",
+  },
+  {
+    id: "1032",
+    client: "Aravindan",
+    tier: "Custom Retainer",
+    email: "aravindan20062006@gmail.com",
+    avatarBg: "bg-[#1E293B]",
+    issueTitle: "Cloud Database Architecture Infographic Review",
+    issueDesc: "Technical schematic revision for zero-latency failover cluster diagram requested by CTO.",
+    priority: "High",
+    timeLog: "Logged 2h ago",
+    agent: "Theo Clark",
+    pod: "Pod A",
+    agentInitials: "TC",
+    status: "In Progress",
+    primaryAction: "Resolve",
+    secondaryAction: "Assign",
+  },
+  {
+    id: "1039",
+    client: "Shanmugaraj",
+    tier: "Brand Accelerator",
+    email: "shanmugaraj2204@gmail.com",
+    avatarBg: "bg-[#0B111C]",
+    issueTitle: "Asset Upload Sync Error in Reels Batch 44",
+    issueDesc: "Audio sync drift of 240ms detected in final MP4 export for upcoming Instagram Reels release.",
+    priority: "Medium",
+    timeLog: "Logged 28m ago",
+    agent: "Omar K.",
+    pod: "Pod A",
+    agentInitials: "OK",
+    status: "Open",
+    primaryAction: "Resolve",
+    secondaryAction: "Assign",
+  },
+];
 
 export function AdminSupportTicketsPage() {
   const navigate = useNavigate();
-  const [tickets, setTickets] = useState<TicketItem[]>(INITIAL_TICKETS);
+  const [tickets, setTickets] = useState<TicketItem[]>(DEFAULT_INITIAL_TICKETS);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [alertModal, setAlertModal] = useState<{
     isOpen: boolean;
@@ -43,6 +96,114 @@ export function AdminSupportTicketsPage() {
     tier?: string;
     type?: "success" | "info" | "warning";
   } | null>(null);
+
+  const loadTickets = useCallback(async () => {
+    try {
+      // 1. Fetch from server API
+      let serverItems: any[] = [];
+      try {
+        const res = await request<any[]>("/api/v1/admin/support/tickets");
+        if (Array.isArray(res) && res.length > 0) serverItems = res;
+      } catch {
+        try {
+          const res2 = await request<any[]>("/api/v1/tickets");
+          if (Array.isArray(res2)) serverItems = res2;
+        } catch {}
+      }
+
+      // 2. Fetch from shared local tickets (client portal submissions)
+      let localItems: any[] = [];
+      try {
+        localItems = JSON.parse(localStorage.getItem("creo_support_tickets") || "[]");
+      } catch {}
+
+      // Map server items
+      const mappedServer: TicketItem[] = serverItems.map((st: any) => {
+        const prio = (st.priority || "medium").toLowerCase();
+        const priority: TicketItem["priority"] =
+          prio === "urgent" ? "Urgent" : prio === "high" ? "High" : prio === "low" ? "Low Priority" : "Medium";
+        const stat = (st.status || "open").toLowerCase();
+        const status: TicketItem["status"] =
+          stat === "resolved" ? "Resolved" : stat === "in_progress" ? "In Progress" : stat === "waiting_on_client" ? "Pending Client" : "Open";
+        const initials = (st.assignee_name || st.agent || "Maya Lin").split(" ").map((w: string) => w[0]).join("").toUpperCase();
+        const shortId = String(st.id).length > 8 ? String(st.id).slice(0, 8).toUpperCase() : String(st.id);
+
+        return {
+          id: shortId,
+          client: st.client || "Client Account",
+          tier: st.tier || "Active Retainer",
+          email: st.email || "client@creo.agency",
+          avatarBg: "bg-[#0F172A]",
+          issueTitle: st.title || st.subject || "Support Inquiry",
+          issueDesc: st.description || "",
+          priority,
+          timeLog: st.time || "Logged recently",
+          agent: st.assignee_name || "Maya Lin",
+          pod: "Pod A",
+          agentInitials: initials,
+          status,
+          primaryAction: status === "Resolved" ? "Reopen" : "Resolve",
+          secondaryAction: "Assign",
+        };
+      });
+
+      // Map local items
+      const mappedLocal: TicketItem[] = localItems.map((lt: any) => ({
+        id: String(lt.id),
+        client: lt.client || "Client Account",
+        tier: lt.tier || "Active Retainer",
+        email: lt.email || "client@creo.agency",
+        avatarBg: lt.avatarBg || "bg-[#0F172A]",
+        issueTitle: lt.issueTitle || lt.title || "Support Request",
+        issueDesc: lt.issueDesc || lt.description || "",
+        priority: lt.priority || "Urgent",
+        timeLog: lt.timeLog || "Logged just now",
+        agent: lt.agent || "Maya Lin",
+        pod: lt.pod || "Pod A",
+        agentInitials: lt.agentInitials || "ML",
+        status: lt.status || "Open",
+        primaryAction: lt.status === "Resolved" ? "Reopen" : "Resolve",
+        secondaryAction: "Assign",
+      }));
+
+      // Combine with local first so newly sent tickets appear at the very top
+      const combined = [...mappedLocal, ...mappedServer];
+      const seen = new Set<string>();
+      const deduped: TicketItem[] = [];
+
+      for (const t of combined) {
+        const key = `${t.id}_${t.issueTitle.toLowerCase()}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduped.push(t);
+        }
+      }
+
+      if (deduped.length > 0) {
+        setTickets(deduped);
+      } else {
+        setTickets(DEFAULT_INITIAL_TICKETS);
+      }
+    } catch (err) {
+      console.error("Failed to load tickets:", err);
+      setTickets(DEFAULT_INITIAL_TICKETS);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTickets();
+    const interval = setInterval(loadTickets, 5000);
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "creo_support_tickets") {
+        loadTickets();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, [loadTickets]);
 
   const filteredTickets = tickets;
 
@@ -62,54 +223,50 @@ export function AdminSupportTicketsPage() {
     }
   };
 
-  const handlePrimaryAction = (t: TicketItem) => {
-    if (t.status !== "Resolved") {
-      setTickets((prev) =>
-        prev.map((item) =>
-          item.id === t.id
-            ? {
-                ...item,
-                status: "Resolved",
-                primaryAction: "Reopen",
-                secondaryAction: "View Log",
-                timeLog: "Resolved just now",
-              }
-            : item
-        )
+  const handlePrimaryAction = async (t: TicketItem) => {
+    const newStatus: TicketItem["status"] = t.status !== "Resolved" ? "Resolved" : "In Progress";
+    setTickets((prev) =>
+      prev.map((item) =>
+        item.id === t.id
+          ? {
+              ...item,
+              status: newStatus,
+              primaryAction: newStatus === "Resolved" ? "Reopen" : "Resolve",
+              timeLog: newStatus === "Resolved" ? "Resolved just now" : "Reopened just now",
+            }
+          : item
+      )
+    );
+
+    // Update in localStorage
+    try {
+      const stored = JSON.parse(localStorage.getItem("creo_support_tickets") || "[]");
+      const updated = stored.map((st: any) =>
+        st.id === t.id || st.issueTitle === t.issueTitle ? { ...st, status: newStatus } : st
       );
-      setAlertModal({
-        isOpen: true,
-        title: "Ticket Marked as Resolved!",
-        message: `Ticket #${t.id} has been marked as resolved! SLA compliance verified and confirmation sent to ${t.client}.`,
-        ticketId: t.id,
-        client: t.client,
-        tier: t.tier,
-        type: "success",
+      localStorage.setItem("creo_support_tickets", JSON.stringify(updated));
+    } catch {}
+
+    // Update backend if possible
+    try {
+      await request(`/api/v1/admin/support/tickets/${t.id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: newStatus.toLowerCase().replace(" ", "_") }),
       });
-    } else {
-      setTickets((prev) =>
-        prev.map((item) =>
-          item.id === t.id
-            ? {
-                ...item,
-                status: "In Progress",
-                primaryAction: "Resolve",
-                secondaryAction: "Assign",
-                timeLog: "Reopened just now",
-              }
-            : item
-        )
-      );
-      setAlertModal({
-        isOpen: true,
-        title: "Ticket Reopened",
-        message: `Ticket #${t.id} for ${t.client} has been reopened and placed back into the active triage queue.`,
-        ticketId: t.id,
-        client: t.client,
-        tier: t.tier,
-        type: "info",
-      });
-    }
+    } catch {}
+
+    setAlertModal({
+      isOpen: true,
+      title: newStatus === "Resolved" ? "Ticket Marked as Resolved!" : "Ticket Reopened",
+      message:
+        newStatus === "Resolved"
+          ? `Ticket #${t.id} has been marked as resolved! SLA compliance verified and confirmation sent to ${t.client}.`
+          : `Ticket #${t.id} for ${t.client} has been reopened and placed back into the active triage queue.`,
+      ticketId: t.id,
+      client: t.client,
+      tier: t.tier,
+      type: newStatus === "Resolved" ? "success" : "info",
+    });
   };
 
   const openCount = tickets.filter((t) => t.status === "Open" || t.status === "In Progress").length;

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { SLABreachItem } from "@/types/ops";
 import { Check, CheckCircle2, RotateCcw, X } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { resolveTaskSla } from "@/lib/ops-api";
+import { request } from "@/lib/http";
 
 interface SupportTicketsWidgetProps {
   slas: SLABreachItem[];
@@ -153,6 +154,102 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
 
   const [tickets, setTickets] = useState<TicketRecord[]>(DEFAULT_TICKETS);
   const [activeTab, setActiveTab] = useState<"open" | "pending" | "resolved">("open");
+
+  useEffect(() => {
+    const loadWidgetTickets = async () => {
+      try {
+        let serverItems: any[] = [];
+        try {
+          const res = await request<any[]>("/api/v1/admin/support/tickets");
+          if (Array.isArray(res) && res.length > 0) serverItems = res;
+        } catch {
+          try {
+            const res2 = await request<any[]>("/api/v1/tickets");
+            if (Array.isArray(res2)) serverItems = res2;
+          } catch {}
+        }
+
+        let localItems: any[] = [];
+        try {
+          localItems = JSON.parse(localStorage.getItem("creo_support_tickets") || "[]");
+        } catch {}
+
+        const mappedServer: TicketRecord[] = serverItems.map((st: any) => {
+          const prio = (st.priority || "medium").toLowerCase();
+          const priority: TicketRecord["priority"] =
+            prio === "urgent" ? "Urgent" : prio === "high" ? "High" : prio === "low" ? "Normal" : "Medium";
+          const stat = (st.status || "open").toLowerCase();
+          const status: TicketRecord["status"] =
+            stat === "resolved" ? "resolved" : stat === "waiting_on_client" ? "pending" : "open";
+          const clientName = st.client || "Client";
+          const shortId = String(st.id).length > 8 ? String(st.id).slice(0, 8).toUpperCase() : String(st.id);
+
+          return {
+            id: shortId,
+            title: st.title || st.subject || "Support Inquiry",
+            client: clientName,
+            clientInitials: clientName[0].toUpperCase(),
+            avatarBg: "bg-[#0F172A]",
+            priority,
+            timeLog: st.time || "Logged recently",
+            agent: st.assignee_name || "Maya Lin",
+            pod: "Pod A",
+            status,
+          };
+        });
+
+        const mappedLocal: TicketRecord[] = localItems.map((lt: any) => {
+          const prio = (lt.priority || "Urgent").toLowerCase();
+          const priority: TicketRecord["priority"] =
+            prio === "urgent" ? "Urgent" : prio === "high" ? "High" : prio === "low" ? "Normal" : "Medium";
+          const stat = (lt.status || "Open").toLowerCase();
+          const status: TicketRecord["status"] =
+            stat === "resolved" ? "resolved" : stat === "pending client" ? "pending" : "open";
+          const clientName = lt.client || "Client";
+
+          return {
+            id: String(lt.id),
+            title: lt.issueTitle || lt.title || "Support Request",
+            client: clientName,
+            clientInitials: clientName[0].toUpperCase(),
+            avatarBg: lt.avatarBg || "bg-[#0F172A]",
+            priority,
+            timeLog: lt.timeLog || "Logged just now",
+            agent: lt.agent || "Maya Lin",
+            pod: lt.pod || "Pod A",
+            status,
+          };
+        });
+
+        const combined = [...mappedLocal, ...mappedServer];
+        const seen = new Set<string>();
+        const deduped: TicketRecord[] = [];
+
+        for (const t of combined) {
+          const key = `${t.id}_${t.title.toLowerCase()}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            deduped.push(t);
+          }
+        }
+
+        if (deduped.length > 0) {
+          setTickets([...deduped, ...DEFAULT_TICKETS.filter((dt) => !deduped.some((d) => d.id === dt.id))]);
+        }
+      } catch {}
+    };
+
+    loadWidgetTickets();
+    const interval = setInterval(loadWidgetTickets, 5000);
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "creo_support_tickets") loadWidgetTickets();
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
 
   // Centered Alert Modal on Resolve / Reopen with blurred backdrop
   const [alertModal, setAlertModal] = useState<{

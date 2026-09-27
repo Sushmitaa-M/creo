@@ -155,7 +155,8 @@ export function PortalSupportPage() {
       return;
     }
 
-    const newTicketId = `#TKT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const numericId = String(Math.floor(1000 + Math.random() * 9000));
+    const newTicketId = `#TKT-${numericId}`;
     const newTicket: SupportTicketData = {
       id: newTicketId,
       status: "in_progress",
@@ -164,12 +165,12 @@ export function PortalSupportPage() {
       timeAgo: "Just now",
       title: subject.trim(),
       description: description.trim(),
-      meta: `Opened by ${user?.full_name || "You"} • Assigned to DevOps Tier 3`,
+      meta: `Opened by ${user?.full_name || brandDisplayName || "You"} • Assigned to Creative Pod A`,
       category,
       messages: [
         {
           id: `msg-${Date.now()}`,
-          sender: user?.full_name || "You",
+          sender: user?.full_name || brandDisplayName || "You",
           text: description.trim(),
           time: "Just now",
           isMe: true,
@@ -178,6 +179,38 @@ export function PortalSupportPage() {
     };
 
     setTicketsList((prev) => [newTicket, ...prev]);
+
+    // Save to shared creo_support_tickets for immediate Admin Support Tickets visibility
+    try {
+      const stored = JSON.parse(localStorage.getItem("creo_support_tickets") || "[]");
+      const clientName = brandDisplayName || user?.full_name || "Client";
+      const planName =
+        subData?.subscription?.plan?.display_name ||
+        subData?.plan_display_name ||
+        "Starter Growth Retainer";
+      const adminTicket = {
+        id: numericId,
+        client: clientName,
+        tier: planName,
+        email: user?.email || "client@creo.agency",
+        avatarBg: "bg-[#0F172A]",
+        issueTitle: subject.trim(),
+        issueDesc: description.trim(),
+        priority: priority === "urgent" ? "Urgent" : priority === "high" ? "High" : priority === "low" ? "Low Priority" : "Medium",
+        timeLog: "Logged just now",
+        agent: "Maya Lin",
+        pod: "Pod A",
+        agentInitials: "ML",
+        status: "Open",
+        primaryAction: "Resolve",
+        secondaryAction: "Assign",
+        createdAt: new Date().toISOString(),
+      };
+      localStorage.setItem("creo_support_tickets", JSON.stringify([adminTicket, ...stored]));
+    } catch {
+      // Local storage fallback
+    }
+
     createTicketMutation.mutate({
       title: subject.trim(),
       description: description.trim(),

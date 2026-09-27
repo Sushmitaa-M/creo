@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import { motion } from "motion/react";
+import { request } from "../../lib/http";
 import {
   ArrowLeft,
   Shield,
@@ -52,6 +53,19 @@ export function AdminTicketDetailPage() {
   const [newTag, setNewTag] = useState("");
   const [showAddTag, setShowAddTag] = useState(false);
 
+  // Dynamic ticket details
+  const [ticketData, setTicketData] = useState<{
+    id: string;
+    client: string;
+    email: string;
+    tier: string;
+    title: string;
+    description: string;
+    priority: string;
+    status: string;
+    time: string;
+  } | null>(null);
+
   // Modals & Menus
   const [reassignModalOpen, setReassignModalOpen] = useState(false);
   const [escalateModalOpen, setEscalateModalOpen] = useState(false);
@@ -90,6 +104,90 @@ export function AdminTicketDetailPage() {
       text: "Payload dropped after 4 retries via US-East Gateway during automated delivery sync of 4× 4K Reels. The client webhook endpoint returned 504 Gateway Timeout on asset digest verification.\n\nDeliverable batch identifier: #DL-8821. Client edge ingress closed the connection after reaching the 30-second handshake limit before SHA256 checksums were committed.",
     },
   ]);
+
+  useEffect(() => {
+    // 1. Try shared storage
+    try {
+      const stored = JSON.parse(localStorage.getItem("creo_support_tickets") || "[]");
+      const found = stored.find(
+        (t: any) =>
+          String(t.id).toLowerCase() === ticketId.toLowerCase() ||
+          ticketId.toLowerCase().includes(String(t.id).toLowerCase())
+      );
+      if (found) {
+        setTicketData({
+          id: String(found.id),
+          client: found.client || "Client",
+          email: found.email || "client@creo.agency",
+          tier: found.tier || "Active Retainer",
+          title: found.issueTitle || found.title || "Support Request",
+          description: found.issueDesc || found.description || "",
+          priority: found.priority || "Urgent",
+          status: found.status || "Open",
+          time: found.timeLog || "Recently",
+        });
+        if (found.status === "Resolved") {
+          setIsResolved(true);
+        }
+        if (found.issueDesc || found.description) {
+          setMessages([
+            {
+              id: "msg-initial",
+              author: found.client || "Client Account",
+              role: `${found.tier || "Active Retainer"} • Client`,
+              avatar: (found.client || "C")[0].toUpperCase(),
+              avatarBg: "bg-slate-800",
+              timestamp: found.timeLog || "Recently",
+              text: found.issueDesc || found.description,
+            },
+          ]);
+        }
+        return;
+      }
+    } catch {}
+
+    // 2. Try server API
+    request<any[]>(`/api/v1/admin/support/tickets`)
+      .then((tickets) => {
+        if (Array.isArray(tickets)) {
+          const match = tickets.find(
+            (t) =>
+              String(t.id).toLowerCase() === ticketId.toLowerCase() ||
+              ticketId.toLowerCase().includes(String(t.id).toLowerCase())
+          );
+          if (match) {
+            setTicketData({
+              id: String(match.id),
+              client: match.client || "Client",
+              email: match.email || "client@creo.agency",
+              tier: match.tier || "Active Retainer",
+              title: match.title || match.subject || "Support Request",
+              description: match.description || "",
+              priority: match.priority || "Urgent",
+              status: match.status || "Open",
+              time: match.time || "Recently",
+            });
+            if (match.status === "resolved") {
+              setIsResolved(true);
+            }
+            if (match.description) {
+              setMessages([
+                {
+                  id: "msg-initial",
+                  author: match.client || "Client Account",
+                  role: `${match.tier || "Active Retainer"} • Client`,
+                  avatar: (match.client || "C")[0].toUpperCase(),
+                  avatarBg: "bg-slate-800",
+                  timestamp: match.time || "Recently",
+                  text: match.description,
+                },
+              ]);
+            }
+          }
+        }
+      })
+      .catch(() => {});
+  }, [ticketId]);
 
   const showToast = (text: string, type: "success" | "error" | "info" = "success") => {
     setToastMessage({ type, text });
@@ -352,7 +450,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
           <div className="space-y-2.5">
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                API Webhook Timeout on Deliverables Sync
+                {ticketData?.title || "API Webhook Timeout on Deliverables Sync"}
               </h1>
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${
@@ -366,7 +464,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-rose-500 text-white shadow-xs">
                 <Zap className="size-3" />
-                {isEscalated ? "P0 (CRITICAL BLOCKER)" : "URGENT (P1)"}
+                {isEscalated ? "P0 (CRITICAL BLOCKER)" : (ticketData?.priority || "URGENT")}
               </span>
               {isEscalated && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-indigo-600 text-white shadow-xs animate-pulse">
@@ -377,11 +475,15 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
             </div>
             <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-[#97A0B3] font-medium">
               <span>
-                Client: <strong className="text-white font-bold">Northwind Labs</strong>
+                Client: <strong className="text-white font-bold">{ticketData?.client || "Northwind Labs"}</strong>
               </span>
               <span>•</span>
               <span>
-                Reported via: <strong className="text-white">Automated Sentry & Email</strong>
+                Tier: <strong className="text-[#7FA0D6] font-bold">{ticketData?.tier || "Enterprise Gold"}</strong>
+              </span>
+              <span>•</span>
+              <span>
+                Reported via: <strong className="text-white">{ticketData?.email || "Automated Sentry & Email"}</strong>
               </span>
               <span>•</span>
               <span>

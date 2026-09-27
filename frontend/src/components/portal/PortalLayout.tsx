@@ -9,7 +9,7 @@ export function PortalLayout() {
   useRouteMemory();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B111C] text-[#F8FAFC] pb-[72px] xl:pb-0">
+    <div className="portal-dark min-h-screen flex flex-col bg-[#0B111C] text-[#F8FAFC] pb-[72px] xl:pb-0">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:rounded-lg focus:bg-[#BCCCE6] focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-[#0B111C] focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#7FA0D6] focus:ring-offset-2"

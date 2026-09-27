@@ -580,6 +580,7 @@ aside .scrollbar-thin,
 [data-kpi-card="true"]:hover {
   border-color: #7FA0D6 !important;
   box-shadow: 0 6px 24px rgba(127, 160, 214, 0.16) !important;
+  transform: translateY(-2px) !important;
 }
 
 /* Appended from Dashboard template — Nebula Theme */
@@ -595,6 +596,266 @@ aside .scrollbar-thin,
 
 .card-interactive {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PORTAL INNOVATIVE ANIMATIONS & MICRO-INTERACTIONS
+───────────────────────────────────────────────────────────────────────────── */
+@keyframes portalFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes portalFadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes portalPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(127, 160, 214, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(127, 160, 214, 0);
+  }
+}
+
+@keyframes portalStatusBreathe {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes portalShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes portalFloatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-portal-fade-in {
+  animation: portalFadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-portal-scale-in {
+  animation: portalFadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-status-breathe {
+  animation: portalStatusBreathe 2.5s ease-in-out infinite;
+}
+
+.animate-float-gentle {
+  animation: portalFloatGentle 4s ease-in-out infinite;
+}
+
+.hover-card-innovative {
+  transition: transform 0.28s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.hover-card-innovative:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45), 0 0 16px 1px rgba(127, 160, 214, 0.2);
+}
+
+.hover-glow-subtle {
+  transition: all 0.25s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.hover-glow-subtle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.25);
+  border-color: rgba(127, 160, 214, 0.6);
+}
+
+.interactive-pill {
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.interactive-pill:hover {
+  transform: translateY(-1px);
+}
+
+.interactive-pill:active {
+  transform: scale(0.96);
+}
+
+.smooth-progress-fill {
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal-glass-panel {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Antigravity Portal Canvas Atmosphere */
+[data-surface="ops"] {
+  background-color: transparent !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PORTAL DARK THEME OVERRIDES — Full Black Theme
+   Applied via .portal-dark wrapper on all portal routes
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Card surface override */
+.portal-dark .card-surface {
+  background-color: #161F2D !important;
+  border: 1px solid rgba(42, 52, 70, 0.7) !important;
+  color: #F1F5F9 !important;
+}
+
+/* ── Global bg-white nuke ── */
+.portal-dark [class*="bg-white"],
+.portal-dark [class*="bg-slate-50"],
+.portal-dark [class*="bg-slate-100"] {
+  background-color: #161F2D !important;
+  color: #F1F5F9 !important;
+  border-color: rgba(42, 52, 70, 0.7) !important;
+}
+
+/* Ensure /95 opacity white variants also get overridden */
+.portal-dark [class*="bg-white/95"],
+.portal-dark [class*="bg-white/90"] {
+  background-color: rgba(22, 31, 45, 0.97) !important;
+}
+
+/* ── Navbar & Headers ── */
+.portal-dark header,
+.portal-dark [class*="bg-\\[\\#F8F9FC\\]"] {
+  background-color: #0B111C !important;
+  border-color: rgba(42, 52, 70, 0.7) !important;
+}
+
+/* ── Nav pill background ── */
+.portal-dark nav[class*="bg-"] {
+  background-color: rgba(11, 17, 28, 0.8) !important;
+  border-color: rgba(42, 52, 70, 0.5) !important;
+}
+
+/* Active nav link styling — keep visible */
+.portal-dark [class*="bg-white"][class*="shadow"] {
+  background-color: rgba(42, 52, 70, 0.9) !important;
+  color: #F1F5F9 !important;
+}
+
+/* ── Text color overrides ── */
+.portal-dark [class*="text-slate-900"],
+.portal-dark [class*="text-\\[\\#0D2137\\]"],
+.portal-dark [class*="text-\\[\\#0F172A\\]"],
+.portal-dark [class*="text-slate-800"],
+.portal-dark [class*="text-slate-700"] {
+  color: #F1F5F9 !important;
+}
+
+.portal-dark [class*="text-slate-500"],
+.portal-dark [class*="text-slate-400"],
+.portal-dark [class*="text-slate-600"] {
+  color: #97A0B3 !important;
+}
+
+/* ── Dropdowns & Modals ── */
+.portal-dark [class*="shadow-xl"],
+.portal-dark [class*="shadow-2xl"],
+.portal-dark [class*="shadow-lg"] {
+  --tw-shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+/* ── Borders ── */
+.portal-dark [class*="border-slate-200"],
+.portal-dark [class*="border-slate-100"],
+.portal-dark [class*="border-border"] {
+  border-color: rgba(42, 52, 70, 0.7) !important;
+}
+
+/* ── Hover states ── */
+.portal-dark [class*="hover:bg-slate-50"]:hover,
+.portal-dark [class*="hover:bg-slate-100"]:hover {
+  background-color: rgba(42, 52, 70, 0.6) !important;
+}
+
+/* ── Notification/hover tints ── */
+.portal-dark [class*="bg-blue-50"],
+.portal-dark [class*="bg-indigo-50"],
+.portal-dark [class*="bg-\\[\\#EEF4FF\\]"],
+.portal-dark [class*="bg-\\[\\#EBF3FF\\]"],
+.portal-dark [class*="bg-\\[\\#E8F4FD\\]"],
+.portal-dark [class*="bg-\\[\\#D5EBFA\\]"] {
+  background-color: rgba(42, 52, 70, 0.5) !important;
+}
+
+/* ── Bottom nav ── */
+.portal-dark nav[class*="fixed"][class*="bottom-0"] {
+  background-color: rgba(11, 17, 28, 0.97) !important;
+  border-color: rgba(42, 52, 70, 0.7) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+/* ── Inputs & selects ── */
+.portal-dark input,
+.portal-dark select,
+.portal-dark textarea {
+  background-color: #0B111C !important;
+  border-color: rgba(42, 52, 70, 0.7) !important;
+  color: #F1F5F9 !important;
+}
+
+.portal-dark input::placeholder,
+.portal-dark textarea::placeholder {
+  color: #64748B !important;
+}
+
+/* ── Light bg containers in AdminSubPages ── */
+.portal-dark [class*="bg-\\[\\#F1F5F9\\]"] {
+  background-color: rgba(22, 31, 45, 0.5) !important;
+}
+
+/* ── SLA Performance page light bg cards ── */
+.portal-dark [class*="bg-\\[\\#E0E7FF\\]"],
+.portal-dark [class*="bg-\\[\\#DBEAFE\\]"],
+.portal-dark [class*="bg-\\[\\#FEE2E2\\]"] {
+  background-color: rgba(42, 52, 70, 0.4) !important;
+}
+
+/* ── Scrollbar dark mode ── */
+.portal-dark ::-webkit-scrollbar-track {
+  background: #0B111C;
+}
+.portal-dark ::-webkit-scrollbar-thumb {
+  background: #2A3446;
+  border-radius: 6px;
+}
+.portal-dark ::-webkit-scrollbar-thumb:hover {
+  background: #3B4A5F;
 }
 
 .card-interactive:hover {
@@ -809,5 +1070,3 @@ aside .scrollbar-thin,
 .portal-main .border-blue-200 {
   border-color: #2A3446 !important;
 }
-
-

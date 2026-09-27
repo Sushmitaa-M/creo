@@ -82,8 +82,8 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       pending: 6,
       percentage: 91,
       color: "bg-blue-600",
-      textColor: "text-blue-600",
-      badgeColor: "bg-blue-50 text-blue-600",
+      textColor: "text-[#7FA0D6]",
+      badgeColor: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
       progressBg: "bg-blue-600",
     },
     {
@@ -97,7 +97,7 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       percentage: 94,
       color: "bg-[#0EA5E9]",
       textColor: "text-[#0EA5E9]",
-      badgeColor: "bg-sky-50 text-sky-600",
+      badgeColor: "bg-[#0EA5E9]/15 text-[#0EA5E9]",
       progressBg: "bg-[#0EA5E9]",
     },
     {
@@ -111,7 +111,7 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       percentage: 84,
       color: "bg-[#6366F1]",
       textColor: "text-[#6366F1]",
-      badgeColor: "bg-indigo-50 text-indigo-600",
+      badgeColor: "bg-[#6366F1]/15 text-[#6366F1]",
       progressBg: "bg-[#6366F1]",
     },
     {
@@ -123,10 +123,10 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       completed: 50,
       pending: 5,
       percentage: 91,
-      color: "bg-[#1E293B]",
-      textColor: "text-[#1E293B]",
-      badgeColor: "bg-slate-100 text-slate-700",
-      progressBg: "bg-[#1E293B]",
+      color: "bg-[#334155]",
+      textColor: "text-[#97A0B3]",
+      badgeColor: "bg-[#1F2C3F] text-[#F1F5F9]",
+      progressBg: "bg-[#7FA0D6]",
     },
   ];
 
@@ -149,13 +149,13 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
   return (
     <div
       onClick={() => navigate("/admin/team")}
-      className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-blue-200/80 transition-all p-4 sm:p-5 flex flex-col w-full h-full font-sans cursor-pointer group"
+      className="bg-[#161F2D] rounded-2xl border border-[#2A3446] shadow-sm hover:border-[#7FA0D6]/50 transition-all p-4 sm:p-5 flex flex-col w-full h-full font-sans cursor-pointer group hover-card-innovative"
     >
       {/* Toast Feedback */}
       {toast && (
-        <div className="mb-3 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold rounded-xl animate-fade-in flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+        <div className="mb-3 px-3 py-1.5 bg-emerald-950/40 border border-emerald-800/60 text-emerald-400 text-xs font-bold rounded-xl animate-fade-in flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
           <span>{toast}</span>
-          <button onClick={() => setToast(null)} className="text-emerald-500 hover:text-emerald-800">
+          <button onClick={() => setToast(null)} className="text-emerald-400 hover:text-emerald-200">
             &times;
           </button>
         </div>
@@ -164,31 +164,31 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="text-base font-black text-gray-900 group-hover:text-blue-600 transition-colors tracking-tight">Team Details</h2>
-          <p className="text-[11px] text-gray-400 font-medium">Team structure & delivery status</p>
+          <h2 className="text-base font-black text-white group-hover:text-[#7FA0D6] transition-colors tracking-tight">Team Details</h2>
+          <p className="text-[11px] text-[#97A0B3] font-medium">Team structure & delivery status</p>
         </div>
-        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold text-blue-600 bg-blue-50/80 border border-blue-100/80">
+        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold text-[#7FA0D6] bg-[#7FA0D6]/15 border border-[#7FA0D6]/30">
           9 teams
         </span>
       </div>
 
       {/* Top 4 Metrics Row */}
       <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-3">
-        <div className="bg-slate-50/90 border border-slate-100 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
-          <span className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-none">9</span>
-          <span className="text-[8.5px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Teams</span>
+        <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
+          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">9</span>
+          <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Teams</span>
         </div>
-        <div className="bg-slate-50/90 border border-slate-100 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
-          <span className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-none">36</span>
-          <span className="text-[8.5px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Members</span>
+        <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
+          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">36</span>
+          <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Members</span>
         </div>
-        <div className="bg-slate-50/90 border border-slate-100 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
-          <span className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-none">32</span>
-          <span className="text-[8.5px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Active</span>
+        <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
+          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">32</span>
+          <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Active</span>
         </div>
-        <div className="bg-slate-50/90 border border-slate-100 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
-          <span className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-none">486</span>
-          <span className="text-[8.5px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Done</span>
+        <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
+          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">486</span>
+          <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Done</span>
         </div>
       </div>
 
@@ -197,7 +197,7 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
         {defaultPods.map((pod) => (
           <div
             key={pod.id}
-            className="border border-slate-100 rounded-xl p-3 bg-white shadow-2xs flex flex-col justify-between hover:border-blue-100 transition-all"
+            className="border border-[#2A3446] rounded-xl p-3 bg-[#0B111C] shadow-2xs flex flex-col justify-between hover:border-[#7FA0D6]/30 transition-all"
           >
             <div>
               {/* Pod Header */}
@@ -207,8 +207,8 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
                     {pod.letter}
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-xs font-bold text-gray-900 leading-snug truncate">{pod.name}</span>
-                    <span className="text-[9px] text-gray-400 font-medium truncate">{pod.lead}</span>
+                    <span className="text-xs font-bold text-white leading-snug truncate">{pod.name}</span>
+                    <span className="text-[9px] text-[#97A0B3] font-medium truncate">{pod.lead}</span>
                   </div>
                 </div>
 
@@ -219,14 +219,14 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
               </div>
 
               {/* Stats Line */}
-              <div className="flex items-center justify-between text-[9px] text-gray-400 font-semibold mb-1.5">
+              <div className="flex items-center justify-between text-[9px] text-[#97A0B3] font-semibold mb-1.5">
                 <span>{pod.completed} Comp · {pod.pending} Pend</span>
                 <span className={`text-[10px] font-black ${pod.textColor}`}>{pod.percentage}%</span>
               </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div className="w-full bg-[#1F2C3F] h-1.5 rounded-full overflow-hidden">
               <div className={`h-full ${pod.progressBg} rounded-full`} style={{ width: `${pod.percentage}%` }} />
             </div>
           </div>
@@ -234,13 +234,13 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       </div>
 
       {/* Pending Leave Requests Section */}
-      <div className="bg-[#F6F9FD] border border-blue-100/60 rounded-2xl p-3 space-y-2 mb-3">
+      <div className="bg-[#0B111C] border border-[#2A3446] rounded-2xl p-3 space-y-2 mb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-            <h3 className="text-xs font-bold text-gray-900">Pending Leave Requests</h3>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
+            <h3 className="text-xs font-bold text-white">Pending Leave Requests</h3>
           </div>
-          <span className="px-2 py-0.2 rounded-full text-[9px] font-bold text-blue-600 bg-white border border-blue-100 shadow-2xs">
+          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold text-[#7FA0D6] bg-[#161F2D] border border-[#2A3446] shadow-2xs">
             {pendingLeavesList.length} to review
           </span>
         </div>
@@ -249,7 +249,7 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
           {pendingLeavesList.map((leave) => (
             <div
               key={leave.id}
-              className="bg-white border border-slate-100 rounded-xl p-2 flex items-center justify-between shadow-2xs hover:border-slate-200 transition-colors"
+              className="bg-[#161F2D] border border-[#2A3446] rounded-xl p-2 flex items-center justify-between shadow-2xs hover:border-[#7FA0D6]/30 transition-colors"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <div className={`w-7 h-7 rounded-full ${leave.avatarBg} text-white font-bold text-[10px] flex items-center justify-center shrink-0`}>
@@ -257,10 +257,10 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
                 </div>
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1">
-                    <span className="text-xs font-bold text-gray-900 truncate">{leave.user_name}</span>
-                    <span className="text-[9px] text-gray-400">({leave.pod})</span>
+                    <span className="text-xs font-bold text-white truncate">{leave.user_name}</span>
+                    <span className="text-[9px] text-[#97A0B3]">({leave.pod})</span>
                   </div>
-                  <span className="text-[9px] text-gray-400 truncate">
+                  <span className="text-[9px] text-[#97A0B3] truncate">
                     {leave.type} · {leave.dates}
                   </span>
                 </div>
@@ -269,13 +269,13 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
               <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={(e) => handleApproveLeave(e, leave.id, leave.user_name)}
-                  className="px-2.5 py-1 text-[11px] font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                  className="px-2.5 py-1 text-[11px] font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer shadow-2xs"
                 >
                   Approve
                 </button>
                 <button
                   onClick={(e) => handleDeclineLeave(e, leave.id, leave.user_name)}
-                  className="px-2 py-1 text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                  className="px-2 py-1 text-[11px] font-semibold text-[#97A0B3] hover:text-white transition-colors cursor-pointer"
                 >
                   Decline
                 </button>
@@ -284,7 +284,7 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
           ))}
 
           {pendingLeavesList.length === 0 && (
-            <div className="text-center py-2 text-xs font-medium text-gray-400">
+            <div className="text-center py-2 text-xs font-medium text-[#97A0B3]">
               No pending leave requests.
             </div>
           )}
@@ -292,11 +292,11 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       </div>
 
       {/* Footer */}
-      <div className="pt-2 border-t border-slate-100 flex items-center justify-end text-xs" onClick={(e) => e.stopPropagation()}>
+      <div className="pt-2 border-t border-[#2A3446] flex items-center justify-end text-xs" onClick={(e) => e.stopPropagation()}>
         <Link
           to="/admin/team"
           onClick={(e) => e.stopPropagation()}
-          className="text-blue-600 font-bold hover:text-blue-800 transition-colors flex items-center gap-1 text-[11px]"
+          className="text-[#7FA0D6] font-bold hover:text-blue-300 transition-colors flex items-center gap-1 text-[11px]"
         >
           Manage teams &rarr;
         </Link>

@@ -106,6 +106,42 @@ export function AdminTicketDetailPage() {
   ]);
 
   useEffect(() => {
+    // Special predefined details for ticket 1781
+    if (ticketId === "1781" || ticketId.includes("1781")) {
+      setTicketData({
+        id: "1781",
+        client: "Sushmitaa",
+        email: "sushmitaa1407@gmail.com",
+        tier: "Enterprise Acceleration",
+        title: "deliverables not received on time, checkout",
+        description: "I've not received my deliverables which was scheduled yesterday",
+        priority: "High",
+        status: "Resolved",
+        time: "Yesterday, 4:15 PM",
+      });
+      setIsResolved(true);
+      setMessages([
+        {
+          id: "msg-1781-1",
+          author: "Sushmitaa",
+          role: "Enterprise Acceleration • Client",
+          avatar: "S",
+          avatarBg: "bg-blue-600",
+          timestamp: "Yesterday at 4:15 PM",
+          text: "I've not received my deliverables which was scheduled yesterday",
+        },
+        {
+          id: "msg-1781-2",
+          author: "Maya Lin",
+          role: "Pod Lead • Creative Pod Alpha",
+          avatar: "ML",
+          avatarBg: "bg-[#0F172A]",
+          timestamp: "Yesterday at 4:48 PM",
+          text: "Hi Sushmitaa, we apologize for the short delay! The final 4K color grade has been expedited and is now ready in your Deliverables tab.",
+        },
+      ]);
+    }
+
     // 1. Try shared storage
     try {
       const stored = JSON.parse(localStorage.getItem("creo_support_tickets") || "[]");

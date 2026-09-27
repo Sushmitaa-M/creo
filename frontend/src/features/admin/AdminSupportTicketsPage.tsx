@@ -31,6 +31,23 @@ interface TicketItem {
 
 const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
   {
+    id: "1781",
+    client: "Sushmitaa",
+    tier: "Enterprise Acceleration",
+    email: "sushmitaa1407@gmail.com",
+    avatarBg: "bg-[#0F172A]",
+    issueTitle: "deliverables not received on time, checkout",
+    issueDesc: "I've not received my deliverables which was scheduled yesterday",
+    priority: "High",
+    timeLog: "Logged yesterday",
+    agent: "Maya Lin",
+    pod: "Pod Alpha",
+    agentInitials: "ML",
+    status: "Resolved",
+    primaryAction: "Reopen",
+    secondaryAction: "Assign",
+  },
+  {
     id: "1042",
     client: "Ryze",
     tier: "Starter Growth",
@@ -126,7 +143,11 @@ export function AdminSupportTicketsPage() {
         const status: TicketItem["status"] =
           stat === "resolved" ? "Resolved" : stat === "in_progress" ? "In Progress" : stat === "waiting_on_client" ? "Pending Client" : "Open";
         const initials = (st.assignee_name || st.agent || "Maya Lin").split(" ").map((w: string) => w[0]).join("").toUpperCase();
-        const shortId = String(st.id).length > 8 ? String(st.id).slice(0, 8).toUpperCase() : String(st.id);
+        const shortId = String(st.id).includes("1781")
+          ? "1781"
+          : String(st.id).length > 8
+          ? String(st.id).replace(/-/g, "").slice(-4).toUpperCase()
+          : String(st.id);
 
         return {
           id: shortId,

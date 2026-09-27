@@ -24,6 +24,18 @@ interface TicketRecord {
 }
 
 const DEFAULT_TICKETS: TicketRecord[] = [
+  {
+    id: "1781",
+    title: "deliverables not received on time, checkout",
+    client: "Sushmitaa",
+    clientInitials: "S",
+    avatarBg: "bg-blue-600",
+    priority: "High",
+    timeLog: "Logged yesterday",
+    agent: "Maya Lin",
+    pod: "Pod Alpha",
+    status: "resolved",
+  },
   // Open Tickets
   {
     id: "1042",

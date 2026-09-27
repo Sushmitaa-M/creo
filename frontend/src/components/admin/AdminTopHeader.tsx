@@ -1,5 +1,4 @@
 import { Link, useLocation, useNavigate } from "react-router";
-import { createPortal } from "react-dom";
 import { 
   Bell, 
   ChevronLeft, 
@@ -14,27 +13,14 @@ import {
   Trash2, 
   LogOut, 
   MessageSquare,
-  Menu,
-  X,
-  LayoutDashboard,
-  TrendingUp,
-  FileText,
-  Briefcase,
-  Layers,
-  CheckSquare,
-  Calendar,
-  ListTodo,
-  Building2,
-  LifeBuoy,
-  Megaphone,
-  BarChart3,
-  Settings
+  Menu
 } from "lucide-react";
 import { AdminKPIs } from "../../types/ops";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../lib/auth-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "../../lib/http";
+import { useAdminSidebar } from "./AdminSidebarContext";
 
 interface AdminTopHeaderProps {
   title?: string;
@@ -99,6 +85,7 @@ export function AdminTopHeader({
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const queryClient = useQueryClient();
+  const { toggleMobile } = useAdminSidebar();
 
   const isMemberRole =
     user?.role === "team_member" ||
@@ -108,7 +95,6 @@ export function AdminTopHeader({
     location.pathname.startsWith("/member") ||
     location.pathname === "/slack";
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
@@ -116,143 +102,6 @@ export function AdminTopHeader({
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-
-  // Close sidebar on Escape key & lock body scrolling when open
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setSidebarOpen(false);
-      }
-    }
-    if (sidebarOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [sidebarOpen]);
-
-  // Close sidebar on navigation change
-  useEffect(() => {
-    setSidebarOpen(false);
-  }, [location.pathname]);
-
-  // Check if a nav item is active
-  const isPathActive = (href: string) => {
-    if (href === "/admin") return location.pathname === "/admin";
-    if (href === "/workstation") return location.pathname === "/workstation" || location.pathname === "/workstation/overview";
-    return location.pathname.startsWith(href);
-  };
-
-  // Structured sidebar navigation sections - all directly visible, no hover required
-  const adminNavSections = [
-    {
-      label: "Overview",
-      items: [
-        { label: "Admin Ops Dashboard", href: "/admin", icon: LayoutDashboard },
-      ],
-    },
-    {
-      label: "Revenue Engine",
-      items: [
-        { label: "Manage Revenues", href: "/admin/revenue", icon: TrendingUp },
-        { label: "Plans & Negotiations", href: "/admin/plans", icon: FileText },
-      ],
-    },
-    {
-      label: "Team Management",
-      items: [
-        { label: "Team Management", href: "/admin/team", icon: Users },
-        { label: "Leave Requests & Approvals", href: "/admin/leaves", icon: CalendarCheck },
-        { label: "Pod Lead Dashboard", href: "/admin/pod-dashboard", icon: Briefcase },
-      ],
-    },
-    {
-      label: "Content Engine",
-      items: [
-        { label: "Deliverables Review", href: "/admin/deliverables", icon: Layers },
-        { label: "Publishing Calendar", href: "/admin/calendar", icon: Calendar },
-        { label: "Production Task Queue", href: "/admin/tasks", icon: ListTodo },
-      ],
-    },
-    {
-      label: "Client Details",
-      items: [
-        { label: "Client Directory & Portals", href: "/admin/clients", icon: Building2 },
-      ],
-    },
-    {
-      label: "Support & Operations",
-      items: [
-        { label: "Support Desk", href: "/admin/support", icon: LifeBuoy },
-        { label: "SLA Performance Hub", href: "/admin/support/sla", icon: ShieldCheck },
-        { label: "Slack Workspace Hub", href: "/slack", icon: MessageSquare, badge: "Chat" },
-      ],
-    },
-    {
-      label: "Governance & Settings",
-      items: [
-        { label: "Announcements", href: "/admin/announcements", icon: Megaphone },
-        { label: "Executive Analytics & KPIs", href: "/admin/reports", icon: BarChart3 },
-        { label: "Add-ons Catalog", href: "/admin/addons", icon: Layers },
-        { label: "System Settings", href: "/admin/settings", icon: Settings },
-      ],
-    },
-  ];
-
-  const leadNavSections = [
-    {
-      label: "Team Management",
-      items: [
-        { label: "Pod Lead Dashboard", href: "/admin/pod-dashboard", icon: Briefcase },
-        { label: "Leave Approvals & Schedule", href: "/lead/schedule", icon: CalendarCheck },
-      ],
-    },
-    {
-      label: "Content Engine",
-      items: [
-        { label: "Pod Task Board & Backlog", href: "/lead/tasks", icon: ListTodo },
-        { label: "Deliverables Review & Sign-Off", href: "/lead/deliverables", icon: Layers },
-        { label: "Publishing Calendar", href: "/admin/calendar", icon: Calendar },
-      ],
-    },
-    {
-      label: "Client Details",
-      items: [
-        { label: "Client Allocations", href: "/lead/clients", icon: Building2 },
-      ],
-    },
-    {
-      label: "Support & SLA",
-      items: [
-        { label: "SLA Performance Hub", href: "/admin/sla", icon: ShieldCheck },
-        { label: "Support Desk", href: "/admin/support", icon: LifeBuoy },
-        { label: "Slack Workspace Hub", href: "/slack", icon: MessageSquare, badge: "Chat" },
-      ],
-    },
-  ];
-
-  const memberNavSections = [
-    {
-      label: "Workstation",
-      items: [
-        { label: "Workstation Overview", href: "/workstation", icon: LayoutDashboard },
-        { label: "My Production Tasks", href: "/workstation/tasks", icon: CheckSquare },
-        { label: "My Schedule & PTO", href: "/workstation/schedule", icon: Calendar },
-        { label: "Slack Workspace Hub", href: "/slack", icon: MessageSquare, badge: "Chat" },
-      ],
-    },
-  ];
-
-  const currentNavSections = isMemberRole
-    ? memberNavSections
-    : user?.role === "team_lead"
-    ? leadNavSections
-    : adminNavSections;
 
   const { data: serverNotifications = [] } = useQuery<NotificationItem[]>({
     queryKey: ["admin-notifications"],
@@ -451,16 +300,15 @@ export function AdminTopHeader({
       : activeTab);
 
   return (
-    <>
-      <div className="sticky top-0 z-40 w-full bg-[#0B111C]/90 backdrop-blur-md pt-3 sm:pt-4 pb-2.5 sm:pb-3 px-3.5 sm:px-8 transition-all">
+    <div className="sticky top-0 z-40 w-full bg-[#0B111C]/90 backdrop-blur-md pt-3 sm:pt-4 pb-2.5 sm:pb-3 px-3.5 sm:px-8 transition-all">
       <header className="max-w-[1500px] mx-auto bg-[#161F2D] rounded-2xl sm:rounded-full border border-[#2A3446] px-4 sm:px-7 lg:px-9 py-2.5 sm:py-3.5 flex items-center justify-between shadow-[0_8px_32px_rgba(5,8,16,0.6)] min-h-[58px] sm:min-h-[66px]">
-        {/* Left Section: Hamburger Menu + Back Button + Brand Logo + Title */}
+        {/* Left Section: Mobile Hamburger + Back Button + Mobile Brand Logo + Title */}
         <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
-          {/* Hamburger Menu Toggle Button */}
+          {/* Mobile Hamburger Menu Toggle Button */}
           <button
             type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="size-10 rounded-full flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] transition-all cursor-pointer border border-transparent hover:border-[#2A3446] focus:outline-none focus:ring-2 focus:ring-[#7FA0D6] shrink-0"
+            onClick={toggleMobile}
+            className="md:hidden size-10 rounded-full flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] transition-all cursor-pointer border border-transparent hover:border-[#2A3446] focus:outline-none focus:ring-2 focus:ring-[#7FA0D6] shrink-0"
             aria-label="Open navigation sidebar"
             title="Open navigation menu"
           >
@@ -477,10 +325,10 @@ export function AdminTopHeader({
             </Link>
           )}
 
-          {/* Brand Logo */}
+          {/* Brand Logo - visible on mobile where sidebar is inside drawer */}
           <Link
             to={isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
-            className="flex items-center gap-0.5 font-black text-white text-base sm:text-lg tracking-tight shrink-0 px-1 hover:opacity-85 transition-opacity"
+            className="md:hidden flex items-center gap-0.5 font-black text-white text-base sm:text-lg tracking-tight shrink-0 px-1 hover:opacity-85 transition-opacity"
             title="creo. Home"
           >
             creo<span className="text-[#7FA0D6] text-lg sm:text-xl leading-none">.</span>
@@ -805,132 +653,5 @@ export function AdminTopHeader({
         </div>
       </header>
     </div>
-
-    {typeof document !== "undefined" &&
-      createPortal(
-        <>
-          {/* Sidebar Backdrop Overlay */}
-          {sidebarOpen && (
-            <div
-              className="fixed inset-0 bg-[#050810]/75 backdrop-blur-sm z-[9998] transition-opacity duration-300"
-              onClick={() => setSidebarOpen(false)}
-              aria-hidden="true"
-            />
-          )}
-
-          {/* Slide-out Sidebar Drawer */}
-          <aside
-            className={`fixed top-0 bottom-0 left-0 h-screen h-[100dvh] w-80 sm:w-88 max-w-[88vw] bg-[#161F2D] border-r border-[#2A3446] shadow-[0_25px_60px_rgba(5,8,16,0.95)] z-[9999] flex flex-col transition-all duration-300 ease-in-out ${
-              sidebarOpen
-                ? "translate-x-0 opacity-100 visible"
-                : "-translate-x-full opacity-0 invisible pointer-events-none"
-            }`}
-            aria-label="Admin Navigation Drawer"
-          >
-            {/* Drawer Header */}
-            <div className="p-4 sm:p-5 border-b border-[#2A3446] flex items-center justify-between bg-[#0B111C]/60 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <Link
-                  to={isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
-                  onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-0.5 font-black text-white text-xl tracking-tight"
-                >
-                  creo<span className="text-[#7FA0D6] text-2xl leading-none">.</span>
-                </Link>
-                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
-                  {isMemberRole ? "Workstation" : user?.role === "team_lead" ? "Pod Lead" : "Admin Ops"}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSidebarOpen(false)}
-                className="size-8 rounded-xl flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] border border-transparent hover:border-[#2A3446] transition-colors cursor-pointer"
-                aria-label="Close navigation sidebar"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Drawer Navigation List - All sections & items directly listed, zero hover */}
-            <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5 scrollbar-thin text-left">
-              {currentNavSections.map((section) => (
-                <div key={section.label} className="space-y-1">
-                  <div className="px-3 pb-1 text-[10px] font-black uppercase tracking-wider text-[#7FA0D6]">
-                    {section.label}
-                  </div>
-                  <div className="space-y-0.5">
-                    {section.items.map((item) => {
-                      const Icon = item.icon;
-                      const active = isPathActive(item.href);
-                      return (
-                        <Link
-                          key={item.href}
-                          to={item.href}
-                          onClick={() => setSidebarOpen(false)}
-                          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                            active
-                              ? "bg-[#BCCCE6] text-[#0B111C] shadow-sm font-black"
-                              : "text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F]"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <Icon className={`w-4 h-4 shrink-0 ${active ? "text-[#0B111C]" : "text-[#7FA0D6]"}`} />
-                            <span className="truncate">{item.label}</span>
-                          </div>
-                          {item.badge && (
-                            <span
-                              className={`text-[10px] px-1.5 py-0.5 rounded font-black shrink-0 ${
-                                active ? "bg-[#0B111C]/20 text-[#0B111C]" : "bg-[#7FA0D6]/20 text-[#7FA0D6]"
-                              }`}
-                            >
-                              {item.badge}
-                            </span>
-                          )}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Drawer Footer: User Profile Card & Direct Sign Out */}
-            <div className="p-3.5 border-t border-[#2A3446] bg-[#0B111C]/80 shrink-0 space-y-2 text-left">
-              <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#161F2D] border border-[#2A3446]">
-                <div className="size-9 rounded-full bg-[#BCCCE6] text-[#0B111C] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
-                  {(user?.full_name?.[0] || user?.email?.[0] || (isMemberRole ? "D" : "A")).toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h4 className="text-xs font-bold text-white truncate">
-                    {user?.full_name || (isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
-                  </h4>
-                  <p className="text-[10px] text-[#97A0B3] font-medium truncate">
-                    {user?.email || (isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    setSidebarOpen(false);
-                    try {
-                      await logout();
-                    } catch {
-                      // ignore
-                    }
-                    navigate("/auth");
-                  }}
-                  className="p-1.5 rounded-lg text-[#97A0B3] hover:text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
-                  title="Sign Out / Log Out"
-                  aria-label="Sign Out"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </aside>
-        </>,
-        document.body
-      )}
-    </>
   );
 }

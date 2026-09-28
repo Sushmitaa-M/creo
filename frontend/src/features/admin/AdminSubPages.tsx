@@ -231,58 +231,20 @@ export function AdminClientsPage() {
         lastAuditDate: "Sep 20, 2026",
       },
       pod: {
-        name: "Pod C",
-        tagline: "Motion & Performance Creative",
-        leadName: "Lena Ortiz",
+        name: "Pod B",
+        tagline: "Performance & Video Ops",
+        leadName: "Sarah Connor",
         leadTitle: "Lead Video Producer",
-        leadAvatar: "LO",
+        leadAvatar: "SC",
         squad: [
-          { name: "Omar K.", role: "Motion & Reels Specialist", hoursPerWeek: 12, avatar: "OK" },
-          { name: "Lena V.", role: "Senior Copywriter", hoursPerWeek: 10, avatar: "LV" },
-          { name: "Theo P.", role: "Graphic Designer", hoursPerWeek: 10, avatar: "TP" },
+          { name: "David Kim", role: "Video Editor", hoursPerWeek: 16, avatar: "DK" },
+          { name: "Elena Rostova", role: "Graphic Designer", hoursPerWeek: 16, avatar: "ER" },
         ],
         capacityAllocatedHrs: 32,
-        bandwidthPercent: 82,
+        bandwidthPercent: 75,
         dailySyncTime: "11:00 AM IST",
       },
-      deliverables: [
-        {
-          id: "rz-101",
-          title: "Morning Routine High-Energy Reel",
-          description: "4K 9:16 vertical motion video showcasing functional ingredients & instant mental clarity.",
-          format: "9:16 Vertical Video",
-          status: "IN REVIEW",
-          statusColor: "bg-amber-50 text-amber-700 border-amber-200",
-          code: "#RZ-101",
-          dueDate: "Tomorrow 4:00 PM",
-          assignedTo: "Omar K.",
-          actions: ["Approve", "Decline", "Preview Video Draft (0:45)"],
-        },
-        {
-          id: "rz-102",
-          title: "3x Nutrition Breakdown Carousel",
-          description: "Educational multi-slide carousel highlighting clinical trial results and bio-availability.",
-          format: "4:5 Carousel (3 slides)",
-          status: "IN PRODUCTION",
-          statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-          code: "#RZ-102",
-          dueDate: "Sep 30, 2026",
-          assignedTo: "Theo P.",
-          actions: ["Preview Canvas", "Request Revisions"],
-        },
-        {
-          id: "rz-103",
-          title: "Weekend Flash Sale Static Poster",
-          description: "High-contrast promotional hero visual for Instagram Feed and Story swipe-ups.",
-          format: "1:1 Square Static",
-          status: "APPROVED",
-          statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-          code: "#RZ-103",
-          dueDate: "Oct 2, 9:00 AM",
-          assignedTo: "Lena V.",
-          actions: ["Auto-Publish Locked", "View Scheduled Meta"],
-        },
-      ],
+      deliverables: [],
     },
     aravindan: {
       id: "aravindan",
@@ -343,32 +305,18 @@ export function AdminClientsPage() {
       pod: {
         name: "Pod A",
         tagline: "Creative & Brand Strategy",
-        leadName: "Maya Lin",
-        leadTitle: "Senior Art Director (Lead)",
-        leadAvatar: "ML",
+        leadName: "Vikram Malhotra",
+        leadTitle: "Pod A Lead Producer",
+        leadAvatar: "VM",
         squad: [
-          { name: "Omar K.", role: "Dedicated Motion Lead", hoursPerWeek: 12, avatar: "OK" },
-          { name: "Lena V.", role: "Senior Copywriter", hoursPerWeek: 10, avatar: "LV" },
-          { name: "Theo P.", role: "Graphic & Vector Specialist", hoursPerWeek: 10, avatar: "TP" },
+          { name: "Karthik Raja", role: "Video Editor", hoursPerWeek: 16, avatar: "KR" },
+          { name: "Ananya Deshmukh", role: "Graphic Designer", hoursPerWeek: 16, avatar: "AD" },
         ],
         capacityAllocatedHrs: 32,
         bandwidthPercent: 85,
         dailySyncTime: "10:30 AM IST",
       },
-      deliverables: [
-        {
-          id: "ar-201",
-          title: "Cloud Database Architecture Infographic",
-          description: "Technical visual schematic explaining zero-latency failover clustering.",
-          format: "4:5 Carousel (4 slides)",
-          status: "IN PRODUCTION",
-          statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-          code: "#AR-201",
-          dueDate: "Tomorrow 6:00 PM",
-          assignedTo: "Theo P.",
-          actions: ["Preview Canvas", "Request Revisions"],
-        },
-      ],
+      deliverables: [],
     },
     shanmugaraj: {
       id: "shanmugaraj",
@@ -429,31 +377,18 @@ export function AdminClientsPage() {
       pod: {
         name: "Pod A",
         tagline: "Creative & Brand Strategy",
-        leadName: "Maya Lin",
-        leadTitle: "Senior Art Director (Lead)",
-        leadAvatar: "ML",
+        leadName: "Vikram Malhotra",
+        leadTitle: "Pod A Lead Producer",
+        leadAvatar: "VM",
         squad: [
-          { name: "Omar K.", role: "Dedicated Motion Lead", hoursPerWeek: 12, avatar: "OK" },
-          { name: "Theo P.", role: "Graphic Designer", hoursPerWeek: 10, avatar: "TP" },
+          { name: "Karthik Raja", role: "Video Editor", hoursPerWeek: 16, avatar: "KR" },
+          { name: "Ananya Deshmukh", role: "Graphic Designer", hoursPerWeek: 16, avatar: "AD" },
         ],
         capacityAllocatedHrs: 30,
         bandwidthPercent: 78,
         dailySyncTime: "10:30 AM IST",
       },
-      deliverables: [
-        {
-          id: "sm-301",
-          title: "Viral TikTok Product Hook Cut",
-          description: "Top 3 conversion hooks with sound design and rapid pacing cuts for retail launch.",
-          format: "9:16 Vertical Video",
-          status: "IN REVIEW",
-          statusColor: "bg-amber-50 text-amber-700 border-amber-200",
-          code: "#SM-301",
-          dueDate: "Tomorrow 5:00 PM",
-          assignedTo: "Omar K.",
-          actions: ["Approve", "Decline", "Preview Video Draft (0:30)"],
-        },
-      ],
+      deliverables: [],
     },
     luma: {
       id: "luma",
@@ -512,34 +447,20 @@ export function AdminClientsPage() {
         lastAuditDate: "Sep 25, 2026",
       },
       pod: {
-        name: "Pod D",
+        name: "Pod A",
         tagline: "Motion & High-Velocity Video Ops",
-        leadName: "Theo Clark",
+        leadName: "Vikram Malhotra",
         leadTitle: "Creative Lead & VFX Director",
-        leadAvatar: "TC",
+        leadAvatar: "VM",
         squad: [
-          { name: "Marcus Brody", role: "Technical 3D Designer", hoursPerWeek: 14, avatar: "MB" },
-          { name: "David Kim", role: "Short-Form Video Specialist", hoursPerWeek: 12, avatar: "DK" },
-          { name: "Elena R.", role: "Brand Visual Stylist", hoursPerWeek: 10, avatar: "ER" },
+          { name: "Karthik Raja", role: "Video Editor", hoursPerWeek: 16, avatar: "KR" },
+          { name: "Ananya Deshmukh", role: "Graphic Designer", hoursPerWeek: 16, avatar: "AD" },
         ],
-        capacityAllocatedHrs: 36,
-        bandwidthPercent: 88,
+        capacityAllocatedHrs: 32,
+        bandwidthPercent: 80,
         dailySyncTime: "11:30 AM IST",
       },
-      deliverables: [
-        {
-          id: "lm-401",
-          title: "3D Kinetic Particle Simulation Reel",
-          description: "Hyper-realistic rendering illustrating global low-latency neural data processing.",
-          format: "9:16 Vertical Video",
-          status: "IN REVIEW",
-          statusColor: "bg-amber-50 text-amber-700 border-amber-200",
-          code: "#LM-401",
-          dueDate: "Tomorrow 3:00 PM",
-          assignedTo: "Marcus Brody",
-          actions: ["Approve", "Decline", "Preview Video Draft (0:45)"],
-        },
-      ],
+      deliverables: [],
     },
     apex: {
       id: "apex",
@@ -599,30 +520,18 @@ export function AdminClientsPage() {
       pod: {
         name: "Pod A",
         tagline: "Creative & Brand Strategy",
-        leadName: "Maya Lin",
-        leadTitle: "Senior Art Director",
-        leadAvatar: "ML",
+        leadName: "Vikram Malhotra",
+        leadTitle: "Pod A Lead Producer",
+        leadAvatar: "VM",
         squad: [
-          { name: "Omar K.", role: "Motion Lead", hoursPerWeek: 12, avatar: "OK" },
+          { name: "Karthik Raja", role: "Video Editor", hoursPerWeek: 16, avatar: "KR" },
+          { name: "Ananya Deshmukh", role: "Graphic Designer", hoursPerWeek: 16, avatar: "AD" },
         ],
         capacityAllocatedHrs: 28,
         bandwidthPercent: 75,
         dailySyncTime: "10:30 AM IST",
       },
-      deliverables: [
-        {
-          id: "ap-501",
-          title: "Infrastructure Latency Infographic",
-          description: "Data breakdown for institutional treasury workflows.",
-          format: "4:5 Carousel",
-          status: "IN PRODUCTION",
-          statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-          code: "#AP-501",
-          dueDate: "Oct 5, 2026",
-          assignedTo: "Omar K.",
-          actions: ["Preview Canvas", "Request Revisions"],
-        },
-      ],
+      deliverables: [],
     },
     nova: {
       id: "nova",
@@ -680,32 +589,20 @@ export function AdminClientsPage() {
         lastAuditDate: "Sep 18, 2026",
       },
       pod: {
-        name: "Pod E",
+        name: "Pod C",
         tagline: "Creative Brand Engine",
-        leadName: "Sarah Jenkins",
+        leadName: "Rohan Mehta",
         leadTitle: "Creative Communications Lead",
-        leadAvatar: "SJ",
+        leadAvatar: "RM",
         squad: [
-          { name: "Liam Wright", role: "Medical Illustrator", hoursPerWeek: 10, avatar: "LW" },
+          { name: "Tanvi Sen", role: "Video Editor", hoursPerWeek: 16, avatar: "TS" },
+          { name: "Arjun Nair", role: "Graphic Designer", hoursPerWeek: 16, avatar: "AN" },
         ],
-        capacityAllocatedHrs: 22,
+        capacityAllocatedHrs: 32,
         bandwidthPercent: 70,
         dailySyncTime: "10:00 AM IST",
       },
-      deliverables: [
-        {
-          id: "nv-601",
-          title: "Patient Portal Explainer Video",
-          description: "Step-by-step onboarding animation narrative.",
-          format: "16:9 Explainer Video",
-          status: "APPROVED",
-          statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-          code: "#NV-601",
-          dueDate: "Oct 1, 2026",
-          assignedTo: "Sarah Jenkins",
-          actions: ["Auto-Publish Locked", "View Scheduled Meta"],
-        },
-      ],
+      deliverables: [],
     },
     solaris: {
       id: "solaris",
@@ -765,31 +662,18 @@ export function AdminClientsPage() {
       pod: {
         name: "Pod B",
         tagline: "Visual & Lifestyle Retouching",
-        leadName: "Elena Rostova",
-        leadTitle: "Senior Creative Producer",
-        leadAvatar: "ER",
+        leadName: "Sarah Connor",
+        leadTitle: "Pod B Lead Producer",
+        leadAvatar: "SC",
         squad: [
-          { name: "Julian Reyes", role: "UI & Product Stylist", hoursPerWeek: 12, avatar: "JR" },
-          { name: "Marcus Brody", role: "Video & Colorist", hoursPerWeek: 10, avatar: "MB" },
+          { name: "David Kim", role: "Video Editor", hoursPerWeek: 16, avatar: "DK" },
+          { name: "Elena Rostova", role: "Graphic Designer", hoursPerWeek: 16, avatar: "ER" },
         ],
         capacityAllocatedHrs: 28,
         bandwidthPercent: 78,
         dailySyncTime: "11:00 AM IST",
       },
-      deliverables: [
-        {
-          id: "sr-701",
-          title: "Holiday Campaign Lifestyle Retouching",
-          description: "4K Color graded editorial photos for luxury holiday collection.",
-          format: "4:5 Portrait High-Res",
-          status: "IN REVIEW",
-          statusColor: "bg-amber-50 text-amber-700 border-amber-200",
-          code: "#SR-701",
-          dueDate: "Tomorrow 2:00 PM",
-          assignedTo: "Julian Reyes",
-          actions: ["Approve", "Decline", "Preview Canvas"],
-        },
-      ],
+      deliverables: [],
     },
   };
 
@@ -806,18 +690,46 @@ export function AdminClientsPage() {
     const tierName = sc.plan_display_name || sc.plan_name || "Enterprise Retainer";
     const tier = tierName.toLowerCase();
     
-    const podLetters = ["A", "B", "C", "D", "E"];
-    const podIdx = Math.abs(formattedName.charCodeAt(0) || 0) % podLetters.length;
-    const podLetter = podLetters[podIdx] || "A";
-    const podLeads = [
-      { name: "Maya Lin", title: "Senior Art Director (Lead)", avatar: "ML" },
-      { name: "Elena Rostova", title: "Senior Creative Producer", avatar: "ER" },
-      { name: "Kenji Sato", title: "Director of Performance Creative", avatar: "KS" },
-      { name: "Theo Clark", title: "Creative Lead & VFX Director", avatar: "TC" },
-      { name: "Sarah Jenkins", title: "Creative Communications Lead", avatar: "SJ" },
+    const podConfigs = [
+      {
+        letter: "A",
+        name: "Pod A",
+        tagline: "Enterprise Brand Strategy & Video",
+        leadName: "Vikram Malhotra",
+        leadTitle: "Pod A Lead Producer",
+        leadAvatar: "VM",
+        squad: [
+          { name: "Karthik Raja", role: "Video Editor", hoursPerWeek: 16, avatar: "KR" },
+          { name: "Ananya Deshmukh", role: "Graphic Designer", hoursPerWeek: 16, avatar: "AD" },
+        ],
+      },
+      {
+        letter: "B",
+        name: "Pod B",
+        tagline: "Performance Creative & Motion Ops",
+        leadName: "Sarah Connor",
+        leadTitle: "Pod B Lead Producer",
+        leadAvatar: "SC",
+        squad: [
+          { name: "David Kim", role: "Video Editor", hoursPerWeek: 16, avatar: "DK" },
+          { name: "Elena Rostova", role: "Graphic Designer", hoursPerWeek: 16, avatar: "ER" },
+        ],
+      },
+      {
+        letter: "C",
+        name: "Pod C",
+        tagline: "3D Motion & Visual Design",
+        leadName: "Rohan Mehta",
+        leadTitle: "Pod C Lead Producer",
+        leadAvatar: "RM",
+        squad: [
+          { name: "Tanvi Sen", role: "Video Editor", hoursPerWeek: 16, avatar: "TS" },
+          { name: "Arjun Nair", role: "Graphic Designer", hoursPerWeek: 16, avatar: "AN" },
+        ],
+      },
     ];
-    const defaultLead = { name: "Maya Lin", title: "Senior Art Director (Lead)", avatar: "ML" };
-    const lead = podLeads[podIdx] ?? defaultLead;
+    const podIdx = Math.abs(formattedName.charCodeAt(0) || 0) % podConfigs.length;
+    const pod = (podConfigs[podIdx] || podConfigs[0])!;
 
     const monthlyFee = tier.includes("starter") ? 25000 : tier.includes("growth") || tier.includes("brand") ? 50000 : 95000;
     
@@ -919,58 +831,17 @@ export function AdminClientsPage() {
           lastAuditDate: "This Sprint",
         },
         pod: {
-          name: `Pod ${podLetter}`,
-          tagline: "Social & Performance Creative",
-          leadName: lead.name,
-          leadTitle: lead.title,
-          leadAvatar: lead.avatar,
-          squad: [
-            { name: "Omar K.", role: "Motion & Reels Specialist", hoursPerWeek: 12, avatar: "OK" },
-            { name: "Lena V.", role: "Senior Copywriter", hoursPerWeek: 10, avatar: "LV" },
-            { name: "Theo P.", role: "Graphic & Vector Designer", hoursPerWeek: 10, avatar: "TP" },
-          ],
+          name: pod.name,
+          tagline: pod.tagline,
+          leadName: pod.leadName,
+          leadTitle: pod.leadTitle,
+          leadAvatar: pod.leadAvatar,
+          squad: pod.squad,
           capacityAllocatedHrs: 32,
           bandwidthPercent: 80,
           dailySyncTime: "11:00 AM IST",
         },
-        deliverables: [
-          {
-            id: `deliv-${sc.client_id}-1`,
-            title: `${formattedName} Q4 Cinematic Reel`,
-            description: "High-impact motion animation with dynamic subtitles and audio sync.",
-            format: "9:16 Vertical Video",
-            status: "IN REVIEW",
-            statusColor: "bg-amber-50 text-amber-700 border-amber-200",
-            code: `#${podLetter}-101`,
-            dueDate: "Tomorrow 4:00 PM",
-            assignedTo: "Omar K.",
-            actions: ["Approve", "Decline", "Preview Video Draft (0:45)"],
-          },
-          {
-            id: `deliv-${sc.client_id}-2`,
-            title: "3× Multi-Slide Carousel Deck",
-            description: "Visual infographics highlighting key value propositions and features.",
-            format: "4:5 Carousel (3 slides)",
-            status: "IN PRODUCTION",
-            statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-            code: `#${podLetter}-102`,
-            dueDate: "Nov 20, 2024",
-            assignedTo: "Theo P.",
-            actions: ["Preview Canvas", "Request Revisions"],
-          },
-          {
-            id: `deliv-${sc.client_id}-3`,
-            title: "Brand Announcement Static Hero",
-            description: "1:1 high-resolution brand campaign poster for Instagram and LinkedIn.",
-            format: "1:1 Square Static",
-            status: "APPROVED",
-            statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-            code: `#${podLetter}-103`,
-            dueDate: "Nov 22, 9:00 AM",
-            assignedTo: "Lena V.",
-            actions: ["Auto-Publish Locked", "View Scheduled Meta"],
-          },
-        ],
+        deliverables: [],
       };
     }
   });
@@ -1670,9 +1541,16 @@ export function AdminClientsPage() {
                 </div>
               </div>
 
-              {/* 4 Deliverable Cards Grid matching Screenshot */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                {filteredDeliverables.map((deliv) => (
+              {/* Deliverable Cards Grid with Empty State */}
+              {filteredDeliverables.length === 0 ? (
+                <div className="py-12 border border-dashed border-[#2A3446] rounded-2xl text-center space-y-2">
+                  <CheckCircle2 className="size-8 text-[#97A0B3] mx-auto opacity-40" />
+                  <p className="text-sm font-bold text-white">No Deliverables in Queue</p>
+                  <p className="text-xs text-[#97A0B3]">No active deliverables requiring attention for this client.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                  {filteredDeliverables.map((deliv) => (
                   <div
                     key={deliv.id}
                     className="bg-[#161F2D] rounded-3xl border border-[#2A3446] shadow-[0_2px_15px_rgba(0,0,0,0.03)] p-5 space-y-4 flex flex-col justify-between hover:shadow-lg hover:border-[#7FA0D6]/30 transition-all"
@@ -1807,9 +1685,10 @@ export function AdminClientsPage() {
                   </div>
                 ))}
               </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
+      )}
 
         {/* ═════════════════════════════════════════════════════════════════
             MODALS
@@ -2069,158 +1948,7 @@ export function AdminDeliverablesPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const [deliverablesList, setDeliverablesList] = useState([
-    {
-      id: "deliv-1",
-      assetCode: "NW-8921",
-      client: "Northwind Labs",
-      clientInitial: "N",
-      clientBg: "bg-blue-600",
-      tier: "GROWTH",
-      tierBadge: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      status: "in_review",
-      statusLabel: "In Review",
-      statusBadge: "bg-amber-50 text-amber-700 border-amber-100",
-      title: "Fintech 3D App Rebrand - Hero Asset Suite",
-      format: "Blender 3D Render • 4K EXR",
-      formatType: "3d",
-      pod: "Pod A",
-      podLead: "Maya Lin",
-      podAvatars: ["ML"],
-      retainer: "12/20 Monthly Retainer",
-      slaType: "overdue",
-      slaText: "SLA Overdue: 2h ago",
-      slaColor: "text-rose-600 font-bold",
-      commentsCount: 2,
-      previewUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop",
-      description: "Hero 3D asset suite rendered for dark-mode onboarding experience with physical metal displacement shaders.",
-    },
-    {
-      id: "deliv-2",
-      assetCode: "NW-8922",
-      client: "Northwind Labs",
-      clientInitial: "N",
-      clientBg: "bg-blue-600",
-      tier: "GROWTH",
-      tierBadge: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      status: "in_review",
-      statusLabel: "In Review",
-      statusBadge: "bg-amber-50 text-amber-700 border-amber-100",
-      title: "Q4 Keynote Slide Deck (60 slides)",
-      format: "Keynote / PDF / PPTX Package",
-      formatType: "deck",
-      pod: "Pod A",
-      podLead: "Elena Rostova",
-      podAvatars: ["ER"],
-      retainer: "14/20 Monthly Retainer",
-      slaType: "target",
-      slaText: "Target: Today 4:30 PM",
-      slaColor: "text-amber-600 font-bold",
-      commentsCount: 3,
-      previewUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&auto=format&fit=crop",
-      description: "Comprehensive 60-slide executive pitch deck with custom infographics, typography hierarchy, and branded motion transitions.",
-    },
-    {
-      id: "deliv-3",
-      assetCode: "BS-4412",
-      client: "Bloom Studio",
-      clientInitial: "B",
-      clientBg: "bg-violet-600",
-      tier: "SCALE",
-      tierBadge: "bg-purple-50 text-purple-700 border-purple-200",
-      status: "in_production",
-      statusLabel: "In Production",
-      statusBadge: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      title: "Holiday Campaign Lifestyle Retouching",
-      format: "10x High-Res TIFF (Print Ready)",
-      formatType: "photo",
-      pod: "Pod B",
-      podLead: "Anya Taylor",
-      podAvatars: ["AT"],
-      retainer: "18/25 Scale Retainer",
-      slaType: "target",
-      slaText: "Today 3:00 PM (1h left)",
-      slaColor: "text-amber-600 font-bold",
-      commentsCount: 0,
-      previewUrl: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&auto=format&fit=crop",
-      description: "Clean high-fashion editorial retouching with precise skin tone color grading and high-frequency separation.",
-    },
-    {
-      id: "deliv-4",
-      assetCode: "NW-8920",
-      client: "Northwind Labs",
-      clientInitial: "N",
-      clientBg: "bg-blue-600",
-      tier: "GROWTH",
-      tierBadge: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      status: "in_production",
-      statusLabel: "In Production",
-      statusBadge: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      title: "TikTok Viral Hook Reel 9:16 (Batch #1 & #2)",
-      format: "MP4 1080x1920 • 60fps",
-      formatType: "video",
-      pod: "Pod C",
-      podLead: "Kenji Sato",
-      podAvatars: ["KS"],
-      retainer: "20/20 Enterprise Plan",
-      slaType: "target",
-      slaText: "Today 6:00 PM (4h left)",
-      slaColor: "text-amber-600 font-bold",
-      commentsCount: 1,
-      previewUrl: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&auto=format&fit=crop",
-      description: "High-retention UGC hooks tailored for algorithmic engagement with kinetic captions and sound effects.",
-    },
-    {
-      id: "deliv-5",
-      assetCode: "AC-2198",
-      client: "Atlas Commerce",
-      clientInitial: "A",
-      clientBg: "bg-indigo-600",
-      tier: "ENTERPRISE",
-      tierBadge: "bg-indigo-50 text-indigo-700 border-indigo-200",
-      status: "approved",
-      statusLabel: "Approved",
-      statusBadge: "bg-emerald-50 text-emerald-700 border-emerald-100",
-      title: "Black Friday Dynamic Ad Set",
-      format: "Meta & Google Ads Bundle",
-      formatType: "banner",
-      pod: "Pod C",
-      podLead: "Lena O.",
-      podAvatars: ["LO"],
-      retainer: "Enterprise Retainer",
-      slaType: "completed",
-      slaText: "Delivered Yesterday",
-      slaColor: "text-emerald-600 font-bold",
-      commentsCount: 0,
-      previewUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&auto=format&fit=crop",
-      description: "Complete dynamic creative optimization (DCO) ad templates for Black Friday cyber week campaigns.",
-    },
-    {
-      id: "deliv-6",
-      assetCode: "VM-0144",
-      client: "Vanguard Mobility",
-      clientInitial: "V",
-      clientBg: "bg-slate-800",
-      tier: "ENTERPRISE",
-      tierBadge: "bg-indigo-50 text-indigo-700 border-indigo-200",
-      status: "in_production",
-      statusLabel: "In Production",
-      statusBadge: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      title: "WebGL 3D Interactive Configurator",
-      format: "Three.js / React Fiber Bundle",
-      formatType: "interactive",
-      pod: "Pod D",
-      podLead: "David Vance",
-      podAvatars: ["DV"],
-      retainer: "Custom Project Retainer",
-      slaType: "target",
-      slaText: "Tomorrow 12:00 PM",
-      slaColor: "text-[#7FA0D6] font-bold",
-      commentsCount: 4,
-      previewUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop",
-      description: "Interactive real-time 3D automotive exterior configurator with custom PBR paint shaders.",
-    },
-  ]);
+  const [deliverablesList, setDeliverablesList] = useState<any[]>([]);
 
   const handleApprove = (id: string, title: string) => {
     setDeliverablesList((prev) =>
@@ -2427,7 +2155,16 @@ export function AdminDeliverablesPage() {
           </div>
         </div>
 
-        {/* 3-Column Deliverables Grid */}
+        {/* 3-Column Deliverables Grid or Empty State */}
+        {filteredDeliverables.length === 0 ? (
+          <div className="bg-[#161F2D] rounded-3xl border border-[#2A3446] p-12 text-center text-[#97A0B3] space-y-3">
+            <Layers className="w-10 h-10 text-[#2A3446] mx-auto" />
+            <h3 className="text-base font-bold text-white">No deliverables in queue</h3>
+            <p className="text-xs text-[#97A0B3] max-w-sm mx-auto">
+              Creative pod sprints will automatically submit finished reels, brand assets, and creative packages here for admin review.
+            </p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDeliverables.map((item) => (
             <div
@@ -2539,6 +2276,7 @@ export function AdminDeliverablesPage() {
             </div>
           ))}
         </div>
+        )}
 
         {/* Media Preview Modal */}
         {previewItem && (
@@ -2680,113 +2418,17 @@ export function AdminTasksPage() {
 
   const [newTaskForm, setNewTaskForm] = useState({
     title: "",
-    client: "Northwind Labs",
+    client: "Ryze Mushroom Coffee",
     pod: "Pod A",
     category: "3D Render / Blender",
     sp: 4,
     dueDate: "Tomorrow",
     priority: "High",
-    assignee: "Maya Lin",
+    assignee: "Vikram Malhotra",
     column: "todo",
   });
 
-  const [kanbanTasks, setKanbanTasks] = useState([
-    {
-      id: "task-1",
-      column: "todo",
-      client: "Northwind Labs",
-      clientPill: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      priority: "High",
-      priorityPill: "bg-rose-50 text-rose-600 border-rose-100",
-      title: "Fintech Mobile App Rebrand - Hero 3D Asset",
-      type: "3D Render / Blender",
-      imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop",
-      avatar: "ML",
-      avatarBg: "bg-blue-600",
-      assigneeName: "Maya Lin",
-      sp: 4,
-      due: "Tomorrow",
-      pod: "Pod A",
-    },
-    {
-      id: "task-2",
-      column: "todo",
-      client: "Atlas Commerce",
-      clientPill: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      priority: "Normal",
-      priorityPill: "bg-[#1F2C3F] text-[#F1F5F9] border-[#2A3446]",
-      title: "Black Friday Motion Teaser - Reel Cut",
-      type: "Instagram Reel 9:16",
-      avatar: "LO",
-      avatarBg: "bg-slate-800",
-      assigneeName: "Lena O.",
-      sp: 6,
-      due: "in 3d",
-      pod: "Pod C",
-    },
-    {
-      id: "task-3",
-      column: "in_progress",
-      client: "Bloom Studio",
-      clientPill: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      priority: "Urgent",
-      priorityPill: "bg-rose-600 text-white font-black",
-      title: "Holiday Campaign Lifestyle Retouching (Batch #1)",
-      imageUrl: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop",
-      avatar: "AT",
-      avatarBg: "bg-purple-600",
-      assigneeName: "Anya Taylor",
-      sp: 8,
-      due: "Today 3 PM",
-      pod: "Pod B",
-    },
-    {
-      id: "task-4",
-      column: "in_progress",
-      client: "Northwind Labs",
-      clientPill: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      priority: "Urgent",
-      priorityPill: "bg-rose-600 text-white font-black",
-      title: "Q4 Investor Pitch Deck Polish",
-      avatar: "OV",
-      avatarBg: "bg-indigo-600",
-      assigneeName: "Omar Vance",
-      sp: 5,
-      due: "Today 4:30 PM",
-      pod: "Pod A",
-    },
-    {
-      id: "task-5",
-      column: "under_review",
-      client: "Northwind Labs",
-      clientPill: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      priority: "In Review",
-      priorityPill: "bg-amber-50 text-amber-700 border-amber-200",
-      title: "B2B Brand Guidelines Refresh v2.1",
-      avatar: "ER",
-      avatarBg: "bg-emerald-600",
-      assigneeName: "Elena Rostova",
-      sp: 7,
-      due: "In Client Review",
-      pod: "Pod A",
-    },
-    {
-      id: "task-6",
-      column: "approved",
-      client: "Atlas Commerce",
-      clientPill: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      priority: "Delivered",
-      priorityPill: "bg-emerald-100 text-emerald-800 font-bold",
-      title: "Brand Identity Vector Kit & Iconography",
-      imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop",
-      avatar: "LO",
-      avatarBg: "bg-slate-800",
-      assigneeName: "Lena O.",
-      sp: 10,
-      due: "Delivered",
-      pod: "Pod C",
-    },
-  ]);
+  const [kanbanTasks, setKanbanTasks] = useState<any[]>([]);
 
   const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -2892,12 +2534,10 @@ export function AdminTasksPage() {
               aria-label="Filter Task Pod"
               className="px-3 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
             >
-              <option value="all">All Pods (A-E)</option>
+              <option value="all">All Pods (A, B, C)</option>
               <option value="Pod A">Pod A (Brand Strategy)</option>
-              <option value="Pod B">Pod B (3D &amp; Motion)</option>
-              <option value="Pod C">Pod C (UGC &amp; Video)</option>
-              <option value="Pod D">Pod D (Interactive Web)</option>
-              <option value="Pod E">Pod E (Social &amp; Growth)</option>
+              <option value="Pod B">Pod B (Performance &amp; Video)</option>
+              <option value="Pod C">Pod C (3D Motion &amp; Design)</option>
             </select>
 
             <select
@@ -2907,9 +2547,7 @@ export function AdminTasksPage() {
               className="px-3 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
             >
               <option value="all">All Clients</option>
-              <option value="Northwind">Northwind Labs</option>
-              <option value="Bloom">Bloom Studio</option>
-              <option value="Atlas">Atlas Commerce</option>
+              <option value="Ryze">Ryze Mushroom Coffee</option>
             </select>
 
             <button
@@ -3152,9 +2790,7 @@ export function AdminTasksPage() {
                       onChange={(e) => setNewTaskForm({ ...newTaskForm, client: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl border border-[#2A3446] text-xs font-medium"
                     >
-                      <option value="Northwind Labs">Northwind Labs</option>
-                      <option value="Bloom Studio">Bloom Studio</option>
-                      <option value="Atlas Commerce">Atlas Commerce</option>
+                      <option value="Ryze Mushroom Coffee">Ryze Mushroom Coffee</option>
                     </select>
                   </div>
                   <div>
@@ -3165,8 +2801,8 @@ export function AdminTasksPage() {
                       className="w-full px-3 py-2 rounded-xl border border-[#2A3446] text-xs font-medium"
                     >
                       <option value="Pod A">Pod A (Brand Strategy)</option>
-                      <option value="Pod B">Pod B (3D &amp; Motion)</option>
-                      <option value="Pod C">Pod C (UGC &amp; Video)</option>
+                      <option value="Pod B">Pod B (Performance &amp; Video)</option>
+                      <option value="Pod C">Pod C (3D Motion &amp; Design)</option>
                     </select>
                   </div>
                 </div>
@@ -3655,8 +3291,6 @@ export function AdminCalendarPage() {
                 <option value="Pod A">Pod A</option>
                 <option value="Pod B">Pod B</option>
                 <option value="Pod C">Pod C</option>
-                <option value="Pod D">Pod D</option>
-                <option value="Pod E">Pod E</option>
               </select>
             )}
 
@@ -3996,8 +3630,6 @@ export function AdminCalendarPage() {
                       <option value="Pod A">Pod A</option>
                       <option value="Pod B">Pod B</option>
                       <option value="Pod C">Pod C</option>
-                      <option value="Pod D">Pod D</option>
-                      <option value="Pod E">Pod E</option>
                     </select>
                   </div>
 
@@ -4158,417 +3790,198 @@ export function AdminTeamManagementPage() {
       id: "pod-a",
       name: "Pod A",
       letter: "A",
-      lead: "Maya Lin",
-      leadRole: "VP Creative & Pod Lead",
-      membersCount: 8,
-      velocityPct: 92,
-      tasksClosed: 42,
-      pendingReview: 6,
-      allocatedHours: 320,
-      totalHours: 360,
+      lead: "Vikram Malhotra",
+      leadRole: "Pod Lead & Creative Director",
+      membersCount: 3,
+      velocityPct: 100,
+      tasksClosed: 0,
+      pendingReview: 0,
+      allocatedHours: 120,
+      totalHours: 120,
       color: "bg-blue-600",
       textColor: "text-[#7FA0D6]",
       pillBg: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      squadLoad: 78,
-      activeEngagements: 11,
-      readyReview: 3,
-      description: "Cross-functional squad leading enterprise brand repositioning, design systems, executive pitch narratives, and multimodal creative sprints.",
+      squadLoad: 40,
+      activeEngagements: 1,
+      readyReview: 0,
+      description: "Pod Alpha specializes in DTC brand acceleration, static visual identity, and cinematic reel production.",
     },
     {
       id: "pod-b",
       name: "Pod B",
       letter: "B",
-      lead: "Omar Vance",
-      leadRole: "Principal Strategist & Pod Lead",
-      membersCount: 10,
-      velocityPct: 92,
-      tasksClosed: 54,
-      pendingReview: 9,
-      allocatedHours: 410,
-      totalHours: 440,
+      lead: "Sarah Connor",
+      leadRole: "Pod Lead & Creative Strategist",
+      membersCount: 3,
+      velocityPct: 100,
+      tasksClosed: 0,
+      pendingReview: 0,
+      allocatedHours: 120,
+      totalHours: 120,
       color: "bg-[#0EA5E9]",
       textColor: "text-[#0EA5E9]",
       pillBg: "bg-sky-50 text-sky-600 border-sky-100",
-      squadLoad: 84,
-      activeEngagements: 14,
-      readyReview: 5,
-      description: "Performance marketing, conversion motion reels, and viral video campaign execution squad.",
+      squadLoad: 40,
+      activeEngagements: 1,
+      readyReview: 0,
+      description: "Pod Beta executes performance marketing, viral reel mechanics, and high-impact wellness narratives.",
     },
     {
       id: "pod-c",
       name: "Pod C",
       letter: "C",
-      lead: "Kenji Sato",
-      leadRole: "Lead Motion Designer & Pod Lead",
-      membersCount: 7,
-      velocityPct: 95,
-      tasksClosed: 38,
-      pendingReview: 4,
-      allocatedHours: 290,
-      totalHours: 310,
+      lead: "Rohan Mehta",
+      leadRole: "Pod Lead & Design Director",
+      membersCount: 3,
+      velocityPct: 100,
+      tasksClosed: 0,
+      pendingReview: 0,
+      allocatedHours: 120,
+      totalHours: 120,
       color: "bg-emerald-600",
       textColor: "text-emerald-600",
       pillBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
-      squadLoad: 72,
-      activeEngagements: 9,
-      readyReview: 2,
-      description: "3D animation, VFX motion graphics, and high-fidelity product visualization pod.",
-    },
-    {
-      id: "pod-d",
-      name: "Pod D",
-      letter: "D",
-      lead: "David Vance",
-      leadRole: "Tech Art & Media Director",
-      membersCount: 6,
-      velocityPct: 78,
-      tasksClosed: 29,
-      pendingReview: 8,
-      allocatedHours: 240,
-      totalHours: 320,
-      color: "bg-purple-600",
-      textColor: "text-purple-600",
-      pillBg: "bg-purple-50 text-purple-600 border-purple-100",
-      squadLoad: 68,
-      activeEngagements: 8,
-      readyReview: 4,
-      description: "On-location commercial shoots, product photography, studio cinematography, and color grading squad.",
+      squadLoad: 40,
+      activeEngagements: 1,
+      readyReview: 0,
+      description: "Pod Gamma drives luxury lifestyle aesthetics, minimal typography, and 3D visual motion.",
     },
   ]);
 
   const [membersList, setMembersList] = useState<TeamMember[]>([
-    // --- POD A (Includes Lead, Designer, Editor, Videographer, Photographer) ---
+    // --- POD A (Pod Alpha) ---
     {
       id: "m-101",
       podId: "pod-a",
-      name: "Maya Lin",
-      role: "VP Creative & Design Systems",
+      name: "Vikram Malhotra",
+      role: "Pod Lead & Creative Director",
       category: "lead",
       isLead: true,
-      email: "maya.lin@creo.agency",
-      handle: "@mayalin",
+      email: "lead.alpha@creo.agency",
+      handle: "@vikram",
       status: "Pod Lead",
       statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      allocatedPct: 85,
-      projectsCount: 3,
-      capabilities: ["Creative Direction", "Brand Identity", "Pitch Decks"],
+      allocatedPct: 60,
+      projectsCount: 1,
+      capabilities: ["Creative Direction", "Brand Systems", "Campaign Strategy"],
     },
     {
       id: "m-102",
       podId: "pod-a",
-      name: "Omar Vance",
-      role: "Principal Brand Strategist",
-      category: "lead",
-      email: "omar.v@creo.agency",
-      handle: "@ovance",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 55,
+      name: "Karthik Raja",
+      role: "Video Editor & Motion Designer",
+      category: "editor",
+      email: "editor.alpha@creo.agency",
+      handle: "@karthik",
+      status: "Sprint Ready",
+      statusColor: "bg-sky-50 text-sky-700 border-sky-200",
+      allocatedPct: 50,
       projectsCount: 1,
-      capabilities: ["Market Positioning", "Narrative Architecture", "GTM Roadmaps"],
+      capabilities: ["Premiere Pro", "After Effects", "Reels Editing"],
     },
     {
       id: "m-103",
       podId: "pod-a",
-      name: "Elena Rostova",
-      role: "Senior Motion & 3D Designer",
+      name: "Ananya Deshmukh",
+      role: "Brand Graphic Designer",
       category: "designer",
-      email: "elena.r@creo.agency",
-      handle: "@erostova",
-      status: "Fully Booked",
-      statusColor: "bg-rose-50 text-rose-700 border-rose-200",
-      allocatedPct: 100,
-      projectsCount: 4,
-      capabilities: ["3D Render", "Motion Graphics", "Cinema 4D"],
-    },
-    {
-      id: "m-104",
-      podId: "pod-a",
-      name: "Julian Reyes",
-      role: "Lead Product & UI Architect",
-      category: "designer",
-      email: "julian.r@creo.agency",
-      handle: "@jreyes",
+      email: "designer.alpha@creo.agency",
+      handle: "@ananya",
       status: "Accepting Work",
       statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 60,
-      projectsCount: 2,
-      capabilities: ["Figma Tokens", "Design Systems", "Prototyping"],
-    },
-    {
-      id: "m-105",
-      podId: "pod-a",
-      name: "Marcus Chen",
-      role: "Senior Video & Content Editor",
-      category: "editor",
-      email: "marcus.c@creo.agency",
-      handle: "@mchen",
-      status: "Sprint Ready",
-      statusColor: "bg-sky-50 text-sky-700 border-sky-200",
-      allocatedPct: 75,
-      projectsCount: 3,
-      capabilities: ["4K Video Editing", "Premiere Pro", "Color Grading"],
-    },
-    {
-      id: "m-106",
-      podId: "pod-a",
-      name: "Leo Zhang",
-      role: "Lead Cinematographer & Videographer",
-      category: "videographer",
-      email: "leo.z@creo.agency",
-      handle: "@lzhang",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 70,
-      projectsCount: 2,
-      capabilities: ["Multi-cam Shoots", "Lighting & Framing", "RED 8K Rigging"],
-    },
-    {
-      id: "m-107",
-      podId: "pod-a",
-      name: "Chloe Bennett",
-      role: "Commercial Photographer & Visual Stylist",
-      category: "photographer",
-      email: "chloe.b@creo.agency",
-      handle: "@cbennett",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 65,
-      projectsCount: 2,
-      capabilities: ["Studio Lighting", "Product Photography", "High-End Retouching"],
-    },
-    {
-      id: "m-108",
-      podId: "pod-a",
-      name: "Sarah Connor",
-      role: "Junior Visual Designer",
-      category: "designer",
-      email: "sarah.c@creo.agency",
-      handle: "@sconnor",
-      status: "On Leave",
-      statusColor: "bg-amber-50 text-amber-700 border-amber-200",
-      allocatedPct: 0,
-      projectsCount: 0,
-      capabilities: ["Social Layouts", "Illustration", "Canva Kits"],
+      allocatedPct: 40,
+      projectsCount: 1,
+      capabilities: ["Figma", "Photoshop", "Brand Design", "Posters"],
     },
 
-    // --- POD B ---
+    // --- POD B (Pod Beta) ---
     {
       id: "m-201",
       podId: "pod-b",
-      name: "Omar Vance",
-      role: "Principal Strategist & Pod Lead",
+      name: "Sarah Connor",
+      role: "Pod Lead & Creative Strategist",
       category: "lead",
       isLead: true,
-      email: "omar.v@creo.agency",
-      handle: "@omarv",
+      email: "lead.beta@creo.agency",
+      handle: "@sarah",
       status: "Pod Lead",
       statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      allocatedPct: 80,
-      projectsCount: 4,
-      capabilities: ["Strategy", "Campaign Architecture"],
+      allocatedPct: 60,
+      projectsCount: 1,
+      capabilities: ["Campaign Architecture", "Creative Direction", "Viral Hooks"],
     },
     {
       id: "m-202",
       podId: "pod-b",
-      name: "Hannah Abbott",
-      role: "Senior Graphic Designer",
-      category: "designer",
-      email: "hannah.a@creo.agency",
-      handle: "@habbott",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 70,
-      projectsCount: 2,
-      capabilities: ["Ad Creatives", "Brand Collateral"],
+      name: "David Kim",
+      role: "Video Editor & Reel Specialist",
+      category: "editor",
+      email: "editor.beta@creo.agency",
+      handle: "@davidk",
+      status: "Sprint Ready",
+      statusColor: "bg-sky-50 text-sky-700 border-sky-200",
+      allocatedPct: 50,
+      projectsCount: 1,
+      capabilities: ["DaVinci Resolve", "Sound Design", "Mobile 9:16 Reels"],
     },
     {
       id: "m-203",
       podId: "pod-b",
-      name: "David Miller",
-      role: "Lead Motion Video Editor",
-      category: "editor",
-      email: "david.m@creo.agency",
-      handle: "@dmiller",
-      status: "Fully Booked",
-      statusColor: "bg-rose-50 text-rose-700 border-rose-200",
-      allocatedPct: 95,
-      projectsCount: 4,
-      capabilities: ["Reels Editing", "Sound Design"],
-    },
-    {
-      id: "m-204",
-      podId: "pod-b",
-      name: "Vikram Shah",
-      role: "Documentary Videographer",
-      category: "videographer",
-      email: "vikram.s@creo.agency",
-      handle: "@vshah",
+      name: "Elena Rostova",
+      role: "Visual & Poster Designer",
+      category: "designer",
+      email: "designer.beta@creo.agency",
+      handle: "@elena",
       status: "Accepting Work",
       statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 60,
-      projectsCount: 2,
-      capabilities: ["On-Location Production", "Drone Footage"],
-    },
-    {
-      id: "m-205",
-      podId: "pod-b",
-      name: "Zara Thorne",
-      role: "Fashion & Lifestyle Photographer",
-      category: "photographer",
-      email: "zara.t@creo.agency",
-      handle: "@zthorne",
-      status: "Sprint Ready",
-      statusColor: "bg-sky-50 text-sky-700 border-sky-200",
-      allocatedPct: 50,
+      allocatedPct: 40,
       projectsCount: 1,
-      capabilities: ["Lookbook Shoots", "Color Correction"],
+      capabilities: ["Typography", "Social Banners", "Carousel Design"],
     },
 
-    // --- POD C ---
+    // --- POD C (Pod Gamma) ---
     {
       id: "m-301",
       podId: "pod-c",
-      name: "Kenji Sato",
-      role: "Lead Motion Designer & Pod Lead",
+      name: "Rohan Mehta",
+      role: "Pod Lead & Design Director",
       category: "lead",
       isLead: true,
-      email: "kenji.s@creo.agency",
-      handle: "@kenjis",
+      email: "lead.gamma@creo.agency",
+      handle: "@rohan",
       status: "Pod Lead",
       statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      allocatedPct: 85,
-      projectsCount: 3,
-      capabilities: ["3D Motion", "Octane Render"],
+      allocatedPct: 60,
+      projectsCount: 1,
+      capabilities: ["Art Direction", "Minimal Aesthetics", "Design Systems"],
     },
     {
       id: "m-302",
       podId: "pod-c",
-      name: "Aria Montgomery",
-      role: "3D Product Designer",
-      category: "designer",
-      email: "aria.m@creo.agency",
-      handle: "@amontgomery",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 75,
-      projectsCount: 2,
-      capabilities: ["Blender 3D", "Texture Design"],
-    },
-    {
-      id: "m-303",
-      podId: "pod-c",
-      name: "Lucas Scott",
-      role: "VFX & Post-Production Editor",
+      name: "Tanvi Sen",
+      role: "Video & Motion Editor",
       category: "editor",
-      email: "lucas.s@creo.agency",
-      handle: "@lscott",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 65,
-      projectsCount: 2,
-      capabilities: ["Nuke VFX", "Compositing"],
-    },
-    {
-      id: "m-304",
-      podId: "pod-c",
-      name: "Rohan Kapoor",
-      role: "High-Speed Video Director",
-      category: "videographer",
-      email: "rohan.k@creo.agency",
-      handle: "@rkapoor",
+      email: "editor.gamma@creo.agency",
+      handle: "@tanvi",
       status: "Sprint Ready",
       statusColor: "bg-sky-50 text-sky-700 border-sky-200",
       allocatedPct: 50,
       projectsCount: 1,
-      capabilities: ["Phantom High-Speed", "Robotic Arm Control"],
+      capabilities: ["Motion Graphics", "Color Grading", "Short-Form Video"],
     },
     {
-      id: "m-305",
+      id: "m-303",
       podId: "pod-c",
-      name: "Sophie Laurent",
-      role: "Architecture & Still Photography",
-      category: "photographer",
-      email: "sophie.l@creo.agency",
-      handle: "@slaurent",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 60,
-      projectsCount: 2,
-      capabilities: ["Spatial Lighting", "HDR Stills"],
-    },
-
-    // --- POD D ---
-    {
-      id: "m-401",
-      podId: "pod-d",
-      name: "David Vance",
-      role: "Tech Art Lead & Pod Lead",
-      category: "lead",
-      isLead: true,
-      email: "david.v@creo.agency",
-      handle: "@dvance",
-      status: "Pod Lead",
-      statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      allocatedPct: 80,
-      projectsCount: 3,
-      capabilities: ["Technical Direction", "Pipeline Automation"],
-    },
-    {
-      id: "m-402",
-      podId: "pod-d",
-      name: "Nora Allen",
-      role: "Senior Visual Designer",
+      name: "Arjun Nair",
+      role: "Graphic & UI Specialist",
       category: "designer",
-      email: "nora.a@creo.agency",
-      handle: "@nallen",
+      email: "designer.gamma@creo.agency",
+      handle: "@arjun",
       status: "Accepting Work",
       statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 70,
-      projectsCount: 2,
-      capabilities: ["UI Kits", "Brand Guidelines"],
-    },
-    {
-      id: "m-403",
-      podId: "pod-d",
-      name: "Felix Dupuis",
-      role: "Short-Form Video Editor",
-      category: "editor",
-      email: "felix.d@creo.agency",
-      handle: "@fdupuis",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 60,
-      projectsCount: 2,
-      capabilities: ["CapCut / DaVinci", "Kinetic Subtitles"],
-    },
-    {
-      id: "m-404",
-      podId: "pod-d",
-      name: "Gavin Ross",
-      role: "Outdoor & Aerial Videographer",
-      category: "videographer",
-      email: "gavin.r@creo.agency",
-      handle: "@gross",
-      status: "Fully Booked",
-      statusColor: "bg-rose-50 text-rose-700 border-rose-200",
-      allocatedPct: 95,
-      projectsCount: 4,
-      capabilities: ["FPV Drone Pilot", "Action Cinematography"],
-    },
-    {
-      id: "m-405",
-      podId: "pod-d",
-      name: "Iris West",
-      role: "Editorial & Portrait Photographer",
-      category: "photographer",
-      email: "iris.w@creo.agency",
-      handle: "@iwest",
-      status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      allocatedPct: 55,
+      allocatedPct: 40,
       projectsCount: 1,
-      capabilities: ["Headshots", "Editorial Layouts"],
+      capabilities: ["Illustrations", "Figma", "Social Banners"],
     },
   ]);
 
@@ -5756,7 +5169,6 @@ export function AdminTeamManagementPage() {
                       <option value="pod-a">Pod A • Enterprise Brand & Design</option>
                       <option value="pod-b">Pod B • Performance & Video</option>
                       <option value="pod-c">Pod C • 3D Motion & VFX</option>
-                      <option value="pod-d">Pod D • Commercial Photo & Cine</option>
                     </select>
                   </div>
                 </div>
@@ -5807,44 +5219,7 @@ export function AdminLeaveApprovalsPage() {
   const [filterTab, setFilterTab] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
-  const [leaveRequests, setLeaveRequests] = useState([
-    {
-      id: "lr-1",
-      name: "Elena Rostova",
-      department: "Video & Design",
-      pod: "Pod A",
-      startDate: "2024-11-20",
-      endDate: "2024-11-22",
-      days: 3,
-      reason: "Scheduled personal leave and medical checkup.",
-      status: "pending",
-      submittedAt: "Yesterday 4:15 PM",
-    },
-    {
-      id: "lr-2",
-      name: "Omar Vance",
-      department: "Creative Strategy",
-      pod: "Pod B",
-      startDate: "2024-11-28",
-      endDate: "2024-11-29",
-      days: 2,
-      reason: "Thanksgiving holiday travel.",
-      status: "approved",
-      submittedAt: "Nov 12",
-    },
-    {
-      id: "lr-3",
-      name: "Kenji Sato",
-      department: "Motion Graphics",
-      pod: "Pod C",
-      startDate: "2024-12-05",
-      endDate: "2024-12-08",
-      days: 4,
-      reason: "Annual family visit.",
-      status: "approved",
-      submittedAt: "Nov 10",
-    },
-  ]);
+  const [leaveRequests, setLeaveRequests] = useState<any[]>([]);
 
   const handleAction = (id: string, action: "approved" | "rejected") => {
     setLeaveRequests((prev) =>
@@ -5857,6 +5232,9 @@ export function AdminLeaveApprovalsPage() {
   const filteredRequests = leaveRequests.filter(
     (lr) => filterTab === "all" || lr.status === filterTab
   );
+
+  const onLeaveCount = leaveRequests.filter((l) => l.status === "approved").length;
+  const inOfficeCount = 9 - onLeaveCount;
 
   return (
     <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
@@ -5905,14 +5283,14 @@ export function AdminLeaveApprovalsPage() {
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-white tracking-tight">29</span>
-              <span className="text-xs font-semibold text-[#97A0B3]">Active in Office</span>
+              <span className="text-3xl font-black text-white tracking-tight">{inOfficeCount}</span>
+              <span className="text-xs font-semibold text-[#97A0B3]">Active in Pods</span>
             </div>
             <div className="mt-6 pt-4 border-t border-[#2A3446] flex items-center justify-between text-xs font-semibold text-[#97A0B3]">
               <span className="flex items-center gap-1.5 text-emerald-600">
-                <span className="w-2 h-2 rounded-full bg-emerald-600" /> 32 Total Team Members
+                <span className="w-2 h-2 rounded-full bg-emerald-600" /> 9 Total Pod Specialists
               </span>
-              <span className="text-white font-bold">91% In-Office</span>
+              <span className="text-white font-bold">{Math.round((inOfficeCount / 9) * 100)}% In-Office</span>
             </div>
           </div>
 
@@ -5926,12 +5304,12 @@ export function AdminLeaveApprovalsPage() {
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-white tracking-tight">3</span>
+              <span className="text-3xl font-black text-white tracking-tight">{onLeaveCount}</span>
               <span className="text-xs font-semibold text-[#97A0B3]">Specialists Away</span>
             </div>
             <div className="mt-6 pt-4 border-t border-[#2A3446] flex items-center justify-between text-xs font-semibold text-[#97A0B3]">
-              <span className="text-[#97A0B3]">Sarah C. (Pod A), Julian R. (Pod D)</span>
-              <span className="text-amber-600 font-bold">9% Away</span>
+              <span className="text-[#97A0B3]">Pod A, B, C Active</span>
+              <span className="text-emerald-500 font-bold">{onLeaveCount === 0 ? "Full Capacity" : `${onLeaveCount} on leave`}</span>
             </div>
           </div>
         </div>
@@ -5966,7 +5344,14 @@ export function AdminLeaveApprovalsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 font-medium">
-              {filteredRequests.map((lr) => (
+              {filteredRequests.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-5 py-8 text-center text-[#97A0B3] text-xs font-medium">
+                    No leave requests found
+                  </td>
+                </tr>
+              ) : (
+                filteredRequests.map((lr) => (
                 <tr key={lr.id} className="hover:bg-[#0B111C]/60">
                   <td className="px-5 py-4">
                     <div className="font-bold text-white">{lr.name}</div>
@@ -5991,29 +5376,28 @@ export function AdminLeaveApprovalsPage() {
                     </span>
                   </td>
                   <td className="px-5 py-4 text-right">
-                    {lr.status === "pending" ? (
+                    {lr.status === "pending" && (
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           type="button"
                           onClick={() => handleAction(lr.id, "approved")}
-                          className="px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-700 transition-colors"
                         >
                           Approve
                         </button>
                         <button
                           type="button"
                           onClick={() => handleAction(lr.id, "rejected")}
-                          className="px-3 py-1 rounded-lg bg-[#1F2C3F] text-[#F1F5F9] font-bold text-xs hover:bg-rose-50 hover:text-rose-600 cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold text-[11px] hover:bg-rose-700 transition-colors"
                         >
                           Reject
                         </button>
                       </div>
-                    ) : (
-                      <span className="text-[#97A0B3] text-xs">—</span>
                     )}
                   </td>
                 </tr>
-              ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -6118,89 +5502,20 @@ export function AdminRevenuePage() {
   const [newInvAmount, setNewInvAmount] = useState("");
   const [newInvMethod, setNewInvMethod] = useState("Stripe ACH");
 
-  // Transactions Data matching user's image exactly
-  const [transactions, setTransactions] = useState<TransactionItem[]>([
-    {
-      id: "CR-9481",
-      client: "Northwind Labs",
-      clientInitials: "NL",
-      scope: "Enterprise Retainer • Nov 2024",
-      amount: 95000,
-      method: "Razorpay UPI",
-      status: "Paid",
-      date: "Nov 12",
-      badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      avatarBg: "bg-[#7FA0D6]/20 text-blue-800",
-    },
-    {
-      id: "CR-9480",
-      client: "Bloom Studio",
-      clientInitials: "BS",
-      scope: "Growth Retainer + 1x Addon Reel",
-      amount: 60000,
-      method: "Bank Wire",
-      status: "Paid",
-      date: "Nov 10",
-      badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      avatarBg: "bg-purple-100 text-purple-800",
-    },
-    {
-      id: "CR-9479",
-      client: "Atlas Commerce",
-      clientInitials: "AC",
-      scope: "Enterprise Retainer • Net 15",
-      amount: 95000,
-      method: "Invoice Net 15",
-      status: "Pending",
-      date: "Due Nov 20",
-      badgeClass: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      avatarBg: "bg-sky-100 text-sky-800",
-    },
-    {
-      id: "CR-9478",
-      client: "Horizon Digital",
-      clientInitials: "HD",
-      scope: "Starter Launch Package",
-      amount: 25000,
-      method: "Mastercard •• 4912",
-      status: "Paid",
-      date: "Nov 08",
-      badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      avatarBg: "bg-indigo-100 text-indigo-800",
-    },
-    {
-      id: "CR-9477",
-      client: "Zenith Brands",
-      clientInitials: "ZB",
-      scope: "Growth Retainer • Nov 2024",
-      amount: 50000,
-      method: "Razorpay UPI",
-      status: "Paid",
-      date: "Nov 05",
-      badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      avatarBg: "bg-amber-100 text-amber-800",
-    },
-    {
-      id: "CR-9476",
-      client: "Apex Media",
-      clientInitials: "AM",
-      scope: "Add-on Asset Pack (SaaS Motion)",
-      amount: 15000,
-      method: "Visa •• 8841",
-      status: "Paid",
-      date: "Nov 03",
-      badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      avatarBg: "bg-rose-100 text-rose-800",
-    },
-  ]);
+  // Transactions Data (Clean baseline: 0 mock entries)
+  const [transactions, setTransactions] = useState<TransactionItem[]>([]);
+
+  const totalMrr = transactions.reduce((acc, t) => acc + (t.status === "Paid" ? t.amount : 0), 0);
+  const totalCollected = totalMrr;
+  const projectedArr = totalMrr * 12;
 
   // Chart Trend Data
-  const trajectoryPoints = [
-    { label: "Oct 15 (₹9.8L)", value: 980000, target: 1000000 },
-    { label: "Oct 22", value: 1042000, target: 1050000 },
-    { label: "Oct 29", value: 1125000, target: 1100000 },
-    { label: "Nov 05", value: 1184000, target: 1150000 },
-    { label: "Nov 14 (₹12.5L)", value: 1248000, target: 1200000 },
+  const trajectoryPoints = totalMrr > 0 ? [
+    { label: "Current Inflow", value: totalMrr, target: totalMrr }
+  ] : [
+    { label: "Day 1", value: 0, target: 0 },
+    { label: "Day 15", value: 0, target: 0 },
+    { label: "Day 30", value: 0, target: 0 },
   ];
 
   // Actions: Create Invoice
@@ -6320,13 +5635,13 @@ export function AdminRevenuePage() {
                 Total Revenue (MRR)
               </span>
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-black text-white tracking-tight">₹12,48,000</span>
-                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                  <TrendingUp className="w-3.5 h-3.5" /> +12.4%
+                <span className="text-4xl font-black text-white tracking-tight">₹{totalMrr.toLocaleString('en-IN')}</span>
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 flex items-center gap-1">
+                  Active Retainers
                 </span>
               </div>
               <div className="text-xs text-[#97A0B3] font-medium pt-1">
-                Projected ARR: <strong className="text-white font-bold">₹1,49,76,000</strong>
+                Projected ARR: <strong className="text-white font-bold">₹{projectedArr.toLocaleString('en-IN')}</strong>
               </div>
             </div>
             <div className="w-14 h-14 rounded-2xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center shrink-0 border border-[#7FA0D6]/30 font-black text-2xl">
@@ -6341,13 +5656,13 @@ export function AdminRevenuePage() {
                 Collected this Month
               </span>
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-black text-white tracking-tight">₹10,84,000</span>
+                <span className="text-4xl font-black text-white tracking-tight">₹{totalCollected.toLocaleString('en-IN')}</span>
                 <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
-                  86.8% Rate
+                  {transactions.length > 0 ? `${Math.round((transactions.filter(t => t.status === "Paid").length / transactions.length) * 100)}% Rate` : "0% Rate"}
                 </span>
               </div>
               <div className="text-xs text-[#97A0B3] font-medium pt-1">
-                Settlement Ratio: <strong className="text-white font-bold">16 of 18 Retainers</strong>
+                Settlement Ratio: <strong className="text-white font-bold">{transactions.filter(t => t.status === "Paid").length} of {transactions.length} Invoices</strong>
               </div>
             </div>
             <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
@@ -6366,7 +5681,7 @@ export function AdminRevenuePage() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight">Revenue Growth & Trajectory</h3>
-                  <p className="text-xs text-[#97A0B3]">30-Day aggregate cash flow across retainers & add-on deliverables</p>
+                  <p className="text-xs text-[#97A0B3]">Live cash flow across retainers & client billing</p>
                 </div>
 
                 <div className="flex items-center gap-4 text-xs font-bold">
@@ -6382,7 +5697,7 @@ export function AdminRevenuePage() {
               {/* Peak Marker Badge */}
               <div className="flex justify-end mb-2">
                 <span className="px-3 py-1 rounded-full text-[11px] font-black bg-[#2563EB] text-white shadow-md">
-                  ₹12,48,000 Peak • Today Nov 14
+                  ₹{totalMrr.toLocaleString('en-IN')} Current MRR
                 </span>
               </div>
 
@@ -6427,15 +5742,15 @@ export function AdminRevenuePage() {
             <div className="pt-4 border-t border-[#2A3446] grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Invoiced</span>
-                <div className="text-sm font-black text-white">₹12,48,000</div>
+                <div className="text-sm font-black text-white">₹{totalMrr.toLocaleString('en-IN')}</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Direct UPI / Wire</span>
-                <div className="text-sm font-black text-white">₹9,82,000</div>
+                <div className="text-sm font-black text-white">₹{totalCollected.toLocaleString('en-IN')}</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Cards / Razorpay</span>
-                <div className="text-sm font-black text-white">₹2,66,000</div>
+                <div className="text-sm font-black text-white">₹{totalCollected.toLocaleString('en-IN')}</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Disputed / Refunded</span>
@@ -6465,7 +5780,7 @@ export function AdminRevenuePage() {
                 </button>
               </div>
 
-              {/* Tiers List matching Image 1 */}
+              {/* Tiers List */}
               <div className="space-y-5">
                 {/* Package 1 */}
                 <div className="space-y-2 p-3 bg-[#7FA0D6]/15/40 rounded-2xl border border-[#7FA0D6]/30/60">
@@ -6473,14 +5788,14 @@ export function AdminRevenuePage() {
                     <span className="flex items-center gap-2 text-white">
                       <span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> Package 1 (Enterprise Domination)
                     </span>
-                    <span className="text-white font-black">₹5,70,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹0 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
                   <div className="w-full bg-[#7FA0D6]/20 rounded-full h-2 overflow-hidden">
-                    <div className="bg-blue-600 h-full rounded-full w-[45.6%]" />
+                    <div className="bg-blue-600 h-full rounded-full w-[0%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
-                    <span>6 Retainer Accounts</span>
-                    <span className="text-[#7FA0D6] font-bold">45.6% of MRR</span>
+                    <span>0 Retainer Accounts</span>
+                    <span className="text-[#7FA0D6] font-bold">0.0% of MRR</span>
                   </div>
                 </div>
 
@@ -6490,14 +5805,14 @@ export function AdminRevenuePage() {
                     <span className="flex items-center gap-2 text-white">
                       <span className="w-2.5 h-2.5 rounded-full bg-purple-600" /> Package 2 (Brand Accelerator)
                     </span>
-                    <span className="text-white font-black">₹4,00,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹0 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
                   <div className="w-full bg-purple-100 rounded-full h-2 overflow-hidden">
-                    <div className="bg-purple-600 h-full rounded-full w-[32.0%]" />
+                    <div className="bg-purple-600 h-full rounded-full w-[0%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
-                    <span>8 Retainer Accounts</span>
-                    <span className="text-purple-700 font-bold">32.0% of MRR</span>
+                    <span>0 Retainer Accounts</span>
+                    <span className="text-purple-700 font-bold">0.0% of MRR</span>
                   </div>
                 </div>
 
@@ -6507,14 +5822,14 @@ export function AdminRevenuePage() {
                     <span className="flex items-center gap-2 text-white">
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" /> Package 3 (Starter Growth)
                     </span>
-                    <span className="text-white font-black">₹1,00,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹0 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
                   <div className="w-full bg-emerald-100 rounded-full h-2 overflow-hidden">
-                    <div className="bg-emerald-600 h-full rounded-full w-[8.0%]" />
+                    <div className="bg-emerald-600 h-full rounded-full w-[0%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
-                    <span>4 Retainer Accounts</span>
-                    <span className="text-emerald-700 font-bold">8.0% of MRR</span>
+                    <span>0 Retainer Accounts</span>
+                    <span className="text-emerald-700 font-bold">0.0% of MRR</span>
                   </div>
                 </div>
               </div>
@@ -6528,10 +5843,10 @@ export function AdminRevenuePage() {
                 </div>
                 <div>
                   <h4 className="font-bold text-xs text-white">Add-ons & Overages</h4>
-                  <p className="text-[11px] text-[#97A0B3] font-medium">3 viral reels + 4 performance ad sets</p>
+                  <p className="text-[11px] text-[#97A0B3] font-medium">0 active add-on asset packages</p>
                 </div>
               </div>
-              <span className="text-base font-black text-indigo-700">+₹64,000</span>
+              <span className="text-base font-black text-indigo-700">+₹0</span>
             </div>
           </div>
         </div>
@@ -6598,7 +5913,14 @@ export function AdminRevenuePage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 font-medium">
-                {filteredTx.map((tx) => (
+                {filteredTx.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-8 text-center text-[#97A0B3] text-xs font-medium">
+                      No transactions recorded yet
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTx.map((tx) => (
                   <tr key={tx.id} className="hover:bg-[#0B111C]/70 transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
@@ -6647,22 +5969,15 @@ export function AdminRevenuePage() {
                       )}
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>
 
-          {/* Table Footer matching Image 2 */}
+          {/* Table Footer */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[#2A3446] text-xs text-[#97A0B3] font-medium">
-            <span>Showing 1 to {filteredTx.length} of 18 transactions</span>
-
-            <div className="flex items-center gap-1">
-              <button type="button" className="p-2 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3]">&lt;</button>
-              <button type="button" className="w-8 h-8 rounded-lg bg-[#2563EB] text-white font-bold">1</button>
-              <button type="button" className="w-8 h-8 rounded-lg hover:bg-[#1F2C3F] font-bold text-[#F1F5F9]">2</button>
-              <button type="button" className="w-8 h-8 rounded-lg hover:bg-[#1F2C3F] font-bold text-[#F1F5F9]">3</button>
-              <button type="button" className="p-2 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3]">&gt;</button>
-            </div>
+            <span>Showing {filteredTx.length} of {transactions.length} transactions</span>
           </div>
         </div>
 

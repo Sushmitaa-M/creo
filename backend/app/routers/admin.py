@@ -231,24 +231,14 @@ async def get_revenue_trend(
         WHERE s.status IN ('trialing', 'active');
     """)
     total_res = await db.execute(total_sql)
-    total_row = total_res.fetchone()
-    total_revenue = total_row[0] if total_row and total_row[0] > 0 else 45000000 # fallback ₹450k
-    total_clients = total_row[1] if total_row and total_row[1] > 0 else 12
+    total_revenue = int(total_row[0]) if total_row and total_row[0] else 0
+    total_clients = int(total_row[1]) if total_row and total_row[1] else 0
 
     # Map database bucket values if present
     db_map = {r[0].strip(): int(r[1]) for r in rows if r[0]}
 
-    # Create realistic curve with smooth wave & variance for active dynamic visual curve
-    base_val = total_revenue / max(num_points, 1)
-    
-    for i, lbl in enumerate(labels):
-        if lbl in db_map and db_map[lbl] > 0:
-            val = db_map[lbl]
-        else:
-            # Smooth sine wave + mild noise for organic dynamic curve
-            wave = math.sin(i * 0.5) * 0.35 + math.cos(i * 0.2) * 0.15
-            variance = 1.0 + wave + ((i * 37) % 7 - 3) * 0.03
-            val = int(base_val * max(0.4, variance))
+    for lbl in labels:
+        val = db_map.get(lbl, 0)
         points.append({"label": lbl, "value": val})
 
     return {
@@ -3368,19 +3358,6 @@ POD_DEFINITIONS = [
         "lead_email": "lead.gamma@creo.agency",
         "editor_email": "editor.gamma@creo.agency",
         "designer_email": "designer.gamma@creo.agency",
-    },
-    {
-        "id": "pod-delta",
-        "key": "delta",
-        "letter": "D",
-        "name": "Pod Delta",
-        "color": "bg-[#1E293B]",
-        "textColor": "text-[#1E293B]",
-        "badgeColor": "bg-slate-100 text-slate-700",
-        "progressBg": "bg-[#1E293B]",
-        "lead_email": "lead.delta@creo.agency",
-        "editor_email": "editor.delta@creo.agency",
-        "designer_email": "designer.delta@creo.agency",
     },
 ]
 

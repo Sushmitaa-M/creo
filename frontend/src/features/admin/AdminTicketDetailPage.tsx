@@ -74,9 +74,9 @@ export function AdminTicketDetailPage() {
 
   // Form states for modals
   const [selectedLead, setSelectedLead] = useState({
-    name: "Maya Lin",
-    pod: "Pod A (Core Infra)",
-    initials: "ML",
+    name: "Vikram Malhotra",
+    pod: "Pod A (Brand & Video)",
+    initials: "VM",
     role: "Pod Lead",
   });
   const [reassignReason, setReassignReason] = useState("");
@@ -1162,11 +1162,9 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                 <label className="block font-bold text-[#F1F5F9] mb-1.5">Select Pod & Lead Specialist</label>
                 <div className="space-y-2">
                   {[
-                    { name: "Maya Lin", pod: "Pod A (Core Infra)", initials: "ML", role: "Pod Lead" },
-                    { name: "Omar V.", pod: "Pod B (Creative Sync)", initials: "OV", role: "Creative Lead" },
-                    { name: "Lena Ortiz", pod: "Pod C (Finance & SLA)", initials: "LO", role: "Operations Lead" },
-                    { name: "Theo Clark", pod: "Pod D (Video Rendering)", initials: "TC", role: "Technical Lead" },
-                    { name: "Core DevOps", pod: "Infrastructure Fleet", initials: "DV", role: "SRE Lead" },
+                    { name: "Vikram Malhotra", pod: "Pod A (Brand Strategy & Video)", initials: "VM", role: "Pod Lead" },
+                    { name: "Sarah Connor", pod: "Pod B (Performance & Motion)", initials: "SC", role: "Pod Lead" },
+                    { name: "Rohan Mehta", pod: "Pod C (3D Motion & Design)", initials: "RM", role: "Pod Lead" },
                   ].map((lead) => (
                     <div
                       key={lead.name}

@@ -23,133 +23,7 @@ interface TicketRecord {
   status: "open" | "pending" | "resolved";
 }
 
-const DEFAULT_TICKETS: TicketRecord[] = [
-  {
-    id: "1781",
-    title: "deliverables not received on time, checkout",
-    client: "Sushmitaa",
-    clientInitials: "S",
-    avatarBg: "bg-blue-600",
-    priority: "High",
-    timeLog: "Logged yesterday",
-    agent: "Maya Lin",
-    pod: "Pod Alpha",
-    status: "resolved",
-  },
-  // Open Tickets
-  {
-    id: "1042",
-    title: "API Webhook Timeout on Deliverables Sync",
-    client: "Northwind Labs",
-    clientInitials: "N",
-    avatarBg: "bg-blue-600",
-    priority: "Urgent",
-    timeLog: "18m remaining",
-    agent: "Maya Lin",
-    pod: "Pod A",
-    status: "open",
-  },
-  {
-    id: "1032",
-    title: "Video Format Encoding Artifacts in 4K",
-    client: "Vanguard Mobility",
-    clientInitials: "V",
-    avatarBg: "bg-gray-800",
-    priority: "High",
-    timeLog: "Logged 2h ago",
-    agent: "Theo Clark",
-    pod: "Pod D",
-    status: "open",
-  },
-  {
-    id: "1039",
-    title: "Asset Upload Sync Error in Reels Batch 34",
-    client: "Bloom Studio",
-    clientInitials: "B",
-    avatarBg: "bg-indigo-600",
-    priority: "Medium",
-    timeLog: "Logged 28m ago",
-    agent: "Omar V.",
-    pod: "Pod B",
-    status: "open",
-  },
-
-  // Pending Tickets
-  {
-    id: "1035",
-    title: "Billing Invoice Inquiry & Add-on Pricing",
-    client: "Atlas Commerce",
-    clientInitials: "A",
-    avatarBg: "bg-blue-700",
-    priority: "Normal",
-    timeLog: "Logged 1h ago",
-    agent: "Lena Ortiz",
-    pod: "Pod C",
-    status: "pending",
-  },
-  {
-    id: "1031",
-    title: "Brand Asset Vector Scalability Check",
-    client: "Lumina Health",
-    clientInitials: "L",
-    avatarBg: "bg-purple-600",
-    priority: "Medium",
-    timeLog: "Logged 3h ago",
-    agent: "Sarah J.",
-    pod: "Pod E",
-    status: "pending",
-  },
-  {
-    id: "1029",
-    title: "Audio Stems Re-Sync for Holiday Promo",
-    client: "Bloom Studio",
-    clientInitials: "B",
-    avatarBg: "bg-indigo-600",
-    priority: "Normal",
-    timeLog: "Logged 4h ago",
-    agent: "Chloe Tan",
-    pod: "Pod B",
-    status: "pending",
-  },
-
-  // Resolved Tickets
-  {
-    id: "1028",
-    title: "Font Licensing Verification for Q4 Campaign",
-    client: "Lumina Health",
-    clientInitials: "L",
-    avatarBg: "bg-purple-600",
-    priority: "Normal",
-    timeLog: "Resolved 3h ago",
-    agent: "Sarah J.",
-    pod: "Pod E",
-    status: "resolved",
-  },
-  {
-    id: "1025",
-    title: "Custom Palette Token Ingestion",
-    client: "Northwind Labs",
-    clientInitials: "N",
-    avatarBg: "bg-blue-600",
-    priority: "Normal",
-    timeLog: "Resolved 5h ago",
-    agent: "Maya Lin",
-    pod: "Pod A",
-    status: "resolved",
-  },
-  {
-    id: "1021",
-    title: "Aspect Ratio Re-format 4:5 to 9:16",
-    client: "Atlas Commerce",
-    clientInitials: "A",
-    avatarBg: "bg-blue-700",
-    priority: "Normal",
-    timeLog: "Resolved 1d ago",
-    agent: "Elena R.",
-    pod: "Pod A",
-    status: "resolved",
-  },
-];
+const DEFAULT_TICKETS: TicketRecord[] = [];
 
 export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
   const navigate = useNavigate();
@@ -274,10 +148,10 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
   } | null>(null);
 
   // Derive counts dynamically
-  const openCount = tickets.filter((t) => t.status === "open").length + (slas.length > 0 ? slas.length : 11);
-  const urgentCount = tickets.filter((t) => t.status === "open" && t.priority === "Urgent").length + 4;
-  const pendingCount = tickets.filter((t) => t.status === "pending").length + 3;
-  const resolvedCount = tickets.filter((t) => t.status === "resolved").length + 35;
+  const openCount = tickets.filter((t) => t.status === "open").length + slas.length;
+  const urgentCount = tickets.filter((t) => t.status === "open" && t.priority === "Urgent").length;
+  const pendingCount = tickets.filter((t) => t.status === "pending").length;
+  const resolvedCount = tickets.filter((t) => t.status === "resolved").length;
 
   const currentTabTickets = tickets.filter((t) => t.status === activeTab);
 
@@ -411,7 +285,12 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
 
         {/* Ticket List Container */}
         <div className="flex flex-col gap-2">
-          {currentTabTickets.slice(0, 3).map((t) => (
+          {currentTabTickets.length === 0 ? (
+            <div className="py-6 text-center text-xs text-[#97A0B3] font-medium bg-[#0B111C]/60 rounded-xl border border-[#2A3446]">
+              No tickets in {activeTab} status
+            </div>
+          ) : (
+            currentTabTickets.slice(0, 3).map((t) => (
             <div
               key={t.id}
               onClick={(e) => {
@@ -477,7 +356,8 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
                 )}
               </button>
             </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 

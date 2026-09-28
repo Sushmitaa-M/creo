@@ -62,113 +62,7 @@ interface ClientAccount {
   hasReviewToday: boolean;
 }
 
-const INITIAL_CLIENTS: ClientAccount[] = [
-  {
-    id: "client-northwind",
-    name: "Northwind Labs",
-    avatar: "NL",
-    avatarBg: "bg-[#0F172A]",
-    tierBadge: "PREMIUM",
-    tierBadgeColor: "bg-purple-50 text-purple-700 border-purple-200",
-    statusBadge: "● Stable",
-    statusBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    contact: "Sarah L. (VP Marketing)",
-    slackChannel: "#northwind-creo-pod-a",
-    reviewAssetsCount: 2,
-    deliverableTitle: "Fintech Reel Set (1080x1920 60fps) & Product Carousel",
-    deliverables: [
-      { label: "Reels", current: 4, target: 4, percent: 100, color: "bg-emerald-500" },
-      { label: "Stories", current: 8, target: 8, percent: 100, color: "bg-emerald-500" },
-      { label: "Posts", current: 12, target: 12, percent: 100, color: "bg-emerald-500" },
-    ],
-    assignees: [
-      { name: "David Kim", role: "Motion", avatar: "DK", bg: "bg-[#0F172A]" },
-      { name: "Elena R.", role: "Brand", avatar: "ER", bg: "bg-blue-600" },
-    ],
-    nextHandoff: "Fintech Reel Set due in 2h",
-    isHighPriority: false,
-    hasReviewToday: true,
-  },
-  {
-    id: "client-atlas",
-    name: "Atlas Commerce",
-    avatar: "AC",
-    avatarBg: "bg-[#1E293B]",
-    tierBadge: "ENTERPRISE",
-    tierBadgeColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-    statusBadge: "Urgent SLA (1h 14m)",
-    statusBadgeColor: "bg-rose-50 text-rose-700 border-rose-200 font-black",
-    contact: "Marcus Groot (Director of Brand)",
-    slackChannel: "#atlas-commerce-urgent",
-    reviewAssetsCount: 3,
-    isUrgent: true,
-    deliverableTitle: "Black Friday Story Revision awaiting sign-off",
-    deliverables: [
-      { label: "Reels", current: 6, target: 6, percent: 100, color: "bg-emerald-500" },
-      { label: "Stories", current: 1, target: 3, percent: 33, color: "bg-rose-500", note: "33% Attention" },
-      { label: "Posts", current: 18, target: 18, percent: 100, color: "bg-emerald-500" },
-    ],
-    assignees: [
-      { name: "Elena R.", role: "Brand", avatar: "ER", bg: "bg-blue-600" },
-      { name: "David Kim", role: "Motion", avatar: "DK", bg: "bg-[#0F172A]" },
-    ],
-    nextHandoff: "Black Friday Story Revision awaiting sign-off",
-    isHighPriority: true,
-    hasReviewToday: true,
-  },
-  {
-    id: "client-bloom",
-    name: "Bloom Studio",
-    avatar: "BS",
-    avatarBg: "bg-indigo-900",
-    tierBadge: "GROWTH",
-    tierBadgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
-    statusBadge: "● Optimal Flow",
-    statusBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    contact: "Helena Vance",
-    slackChannel: "#bloom-studio-sync",
-    reviewAssetsCount: 1,
-    deliverableTitle: "Q4 Reel Concept & Brand Manifesto",
-    deliverables: [
-      { label: "Reels", current: 2, target: 2, percent: 100, color: "bg-emerald-500" },
-      { label: "Stories", current: 4, target: 4, percent: 100, color: "bg-emerald-500" },
-      { label: "Posts", current: 8, target: 12, percent: 66, color: "bg-blue-600" },
-    ],
-    assignees: [
-      { name: "Chloe Tan", role: "Video", avatar: "CT", bg: "bg-teal-600" },
-      { name: "Marcus Vance", role: "Copy", avatar: "MV", bg: "bg-indigo-600" },
-    ],
-    nextHandoff: "Q4 Reel Concept in 4h 30m",
-    isHighPriority: false,
-    hasReviewToday: false,
-  },
-  {
-    id: "client-ryze",
-    name: "Ryze",
-    avatar: "RZ",
-    avatarBg: "bg-[#166534]",
-    tierBadge: "STARTER GROWTH",
-    tierBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    statusBadge: "● Active Sprint",
-    statusBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    contact: "Sushmitaa S. (Brand Team)",
-    slackChannel: "#ryze-creo-pod-c",
-    reviewAssetsCount: 2,
-    deliverableTitle: "Morning Routine High-Energy Reel & Benefit Deck",
-    deliverables: [
-      { label: "Reels", current: 4, target: 4, percent: 100, color: "bg-emerald-500" },
-      { label: "Stories", current: 8, target: 10, percent: 80, color: "bg-emerald-500" },
-      { label: "Posts", current: 6, target: 8, percent: 75, color: "bg-blue-600" },
-    ],
-    assignees: [
-      { name: "Omar K.", role: "Motion", avatar: "OK", bg: "bg-[#0F172A]" },
-      { name: "Lena Ortiz", role: "Lead", avatar: "LO", bg: "bg-emerald-700" },
-    ],
-    nextHandoff: "Morning Routine Reel in Review",
-    isHighPriority: false,
-    hasReviewToday: true,
-  },
-];
+const INITIAL_CLIENTS: ClientAccount[] = [];
 
 export function PodClientAllocationsPage() {
   const navigate = useNavigate();
@@ -206,57 +100,47 @@ export function PodClientAllocationsPage() {
   });
 
   useEffect(() => {
-    if (!rosterData || rosterData.length === 0) return;
-    setClients((prev) => {
-      const existingIds = new Set(prev.map((c) => c.id.toLowerCase()));
-      const existingNames = new Set(prev.map((c) => c.name.toLowerCase()));
+    if (!rosterData || rosterData.length === 0) {
+      setClients([]);
+      return;
+    }
+    const dynamicClients: ClientAccount[] = rosterData.map((r) => {
+      const name = String(r.company_name || (r.instagram_username ? `@${r.instagram_username}` : (r.email ? r.email.split("@")[0] : "Client")));
+      const initials = name.slice(0, 2).toUpperCase();
+      const reelsQuota = r.quota_usage?.find((q) => q.kind === "reel")?.quota || 4;
+      const reelsUsed = r.quota_usage?.find((q) => q.kind === "reel")?.used || 0;
+      const postersQuota = r.quota_usage?.find((q) => q.kind === "poster")?.quota || 8;
+      const postersUsed = r.quota_usage?.find((q) => q.kind === "poster")?.used || 0;
+      const storiesQuota = r.quota_usage?.find((q) => q.kind === "story")?.quota || 8;
+      const storiesUsed = r.quota_usage?.find((q) => q.kind === "story")?.used || 0;
 
-      const dynamicClients: ClientAccount[] = rosterData
-        .filter((r) => {
-          const rawName = String(r.company_name || (r.instagram_username ? `@${r.instagram_username}` : (r.email ? r.email.split("@")[0] : "client")));
-          const name = rawName.toLowerCase();
-          return !existingIds.has((r.client_id || "").toLowerCase()) && !existingNames.has(name);
-        })
-        .map((r) => {
-          const name = String(r.company_name || (r.instagram_username ? `@${r.instagram_username}` : (r.email ? r.email.split("@")[0] : "Client")));
-          const initials = name.slice(0, 2).toUpperCase();
-          const reelsQuota = r.quota_usage?.find((q) => q.kind === "reel")?.quota || 4;
-          const reelsUsed = r.quota_usage?.find((q) => q.kind === "reel")?.used || 0;
-          const postersQuota = r.quota_usage?.find((q) => q.kind === "poster")?.quota || 8;
-          const postersUsed = r.quota_usage?.find((q) => q.kind === "poster")?.used || 0;
-          const storiesQuota = r.quota_usage?.find((q) => q.kind === "story")?.quota || 8;
-          const storiesUsed = r.quota_usage?.find((q) => q.kind === "story")?.used || 0;
-
-          return {
-            id: r.client_id || "",
-            name,
-            avatar: initials,
-            avatarBg: "bg-[#0F172A]",
-            tierBadge: (r.plan_display_name || r.plan_name || "GROWTH").toUpperCase(),
-            tierBadgeColor: "bg-blue-50 text-blue-700 border-blue-200",
-            statusBadge: "● Active Sprint",
-            statusBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
-            contact: r.email || "",
-            slackChannel: `#${name.toLowerCase().replace(/[^a-z0-9]/g, "")}-creo`,
-            reviewAssetsCount: 0,
-            deliverableTitle: `${name} Active Campaign Cadence`,
-            deliverables: [
-              { label: "Reels", current: reelsUsed, target: reelsQuota, percent: Math.round((reelsUsed / (reelsQuota || 1)) * 100), color: "bg-emerald-500" },
-              { label: "Stories", current: storiesUsed, target: storiesQuota, percent: Math.round((storiesUsed / (storiesQuota || 1)) * 100), color: "bg-emerald-500" },
-              { label: "Posts", current: postersUsed, target: postersQuota, percent: Math.round((postersUsed / (postersQuota || 1)) * 100), color: "bg-blue-600" },
-            ],
-            assignees: [
-              { name: "Creative Pod", role: "Creative", avatar: "CP", bg: "bg-purple-600" },
-            ],
-            nextHandoff: "Scheduled Cadence Active",
-            isHighPriority: false,
-            hasReviewToday: false,
-          };
-        });
-
-      if (dynamicClients.length === 0) return prev;
-      return [...prev, ...dynamicClients];
+      return {
+        id: r.client_id || "",
+        name,
+        avatar: initials,
+        avatarBg: "bg-[#0F172A]",
+        tierBadge: (r.plan_display_name || r.plan_name || "GROWTH").toUpperCase(),
+        tierBadgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+        statusBadge: "● Active Sprint",
+        statusBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        contact: r.email || "",
+        slackChannel: `#${name.toLowerCase().replace(/[^a-z0-9]/g, "")}-creo`,
+        reviewAssetsCount: 0,
+        deliverableTitle: `${name} Active Campaign Cadence`,
+        deliverables: [
+          { label: "Reels", current: reelsUsed, target: reelsQuota, percent: Math.round((reelsUsed / (reelsQuota || 1)) * 100), color: "bg-emerald-500" },
+          { label: "Stories", current: storiesUsed, target: storiesQuota, percent: Math.round((storiesUsed / (storiesQuota || 1)) * 100), color: "bg-emerald-500" },
+          { label: "Posts", current: postersUsed, target: postersQuota, percent: Math.round((postersUsed / (postersQuota || 1)) * 100), color: "bg-blue-600" },
+        ],
+        assignees: [
+          { name: "Creative Pod", role: "Creative", avatar: "CP", bg: "bg-purple-600" },
+        ],
+        nextHandoff: "Scheduled Cadence Active",
+        isHighPriority: false,
+        hasReviewToday: false,
+      };
     });
+    setClients(dynamicClients);
   }, [rosterData]);
 
   const podName = data?.pod?.name || "Pod A";
@@ -656,7 +540,14 @@ export function PodClientAllocationsPage() {
 
           {/* Account Cards */}
           <div className="space-y-3">
-            {filteredClients.map((client) => (
+            {filteredClients.length === 0 ? (
+              <div className="bg-[#161F2D] rounded-2xl p-10 border border-[#2A3446]/80 text-center space-y-2">
+                <Briefcase className="size-8 text-[#97A0B3] mx-auto opacity-50" />
+                <h3 className="text-sm font-bold text-white">No Assigned Clients</h3>
+                <p className="text-xs text-[#97A0B3]">No active clients are currently allocated to this pod filter.</p>
+              </div>
+            ) : (
+              filteredClients.map((client) => (
               <div
                 key={client.id}
                 className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover:border-[#7FA0D6]/30 hover:shadow-xs transition-all space-y-3.5"
@@ -794,7 +685,7 @@ export function PodClientAllocationsPage() {
                   </div>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
         </div>
       </main>
@@ -1038,10 +929,14 @@ export function PodClientAllocationsPage() {
             <div className="space-y-3 text-xs">
               <div>
                 <label className="font-bold text-[#F1F5F9] block mb-1">Target Account</label>
-                <select className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium">
-                  <option>Atlas Commerce (Surge load)</option>
-                  <option>Northwind Labs</option>
-                  <option>Bloom Studio</option>
+                <select className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white">
+                  {clients.length > 0 ? (
+                    clients.map((c) => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))
+                  ) : (
+                    <option value="Ryze">Ryze Mushroom Coffee</option>
+                  )}
                 </select>
               </div>
               <div>

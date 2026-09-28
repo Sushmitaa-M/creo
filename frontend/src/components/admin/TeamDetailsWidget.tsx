@@ -20,29 +20,8 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
     queryFn: fetchLeaveRequests,
   });
 
-  // Fallback / mock leave requests matching the exact design if none exist
-  const [localLeaves, setLocalLeaves] = useState([
-    {
-      id: "leave-1",
-      user_name: "Sarah Jenkins",
-      pod: "Pod B",
-      avatar: "SJ",
-      avatarBg: "bg-[#1E293B]",
-      type: "Sick Leave",
-      dates: "Oct 24–25 (2d)",
-      status: "pending",
-    },
-    {
-      id: "leave-2",
-      user_name: "Lena Ortiz",
-      pod: "Pod C",
-      avatar: "LO",
-      avatarBg: "bg-[#4F46E5]",
-      type: "Annual Vacation",
-      dates: "Nov 03–07 (5d)",
-      status: "pending",
-    },
-  ]);
+  // Leave requests local fallback (empty by default so no fake mock data appears)
+  const [localLeaves, setLocalLeaves] = useState<any[]>([]);
 
   const approveMutation = useMutation({
     mutationFn: approveLeaveRequest,
@@ -70,17 +49,17 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // 4 Standard Pods matching the design
+  // Strictly 3 Pods: Pod A, Pod B, Pod C
   const defaultPods = [
     {
       id: "pod-a",
       name: "Pod A",
       letter: "A",
-      lead: "Maya Lin",
-      ratio: "4/4",
-      completed: 58,
-      pending: 6,
-      percentage: 91,
+      lead: "Vikram M.",
+      ratio: "3/3",
+      completed: 0,
+      pending: 0,
+      percentage: 100,
       color: "bg-blue-600",
       textColor: "text-[#7FA0D6]",
       badgeColor: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
@@ -90,11 +69,11 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       id: "pod-b",
       name: "Pod B",
       letter: "B",
-      lead: "Omar Va...",
-      ratio: "3/4",
-      completed: 62,
-      pending: 4,
-      percentage: 94,
+      lead: "Sarah C.",
+      ratio: "3/3",
+      completed: 0,
+      pending: 0,
+      percentage: 100,
       color: "bg-[#0EA5E9]",
       textColor: "text-[#0EA5E9]",
       badgeColor: "bg-[#0EA5E9]/15 text-[#0EA5E9]",
@@ -104,29 +83,15 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
       id: "pod-c",
       name: "Pod C",
       letter: "C",
-      lead: "Lena Ortiz",
-      ratio: "3/4",
-      completed: 48,
-      pending: 9,
-      percentage: 84,
-      color: "bg-[#6366F1]",
-      textColor: "text-[#6366F1]",
-      badgeColor: "bg-[#6366F1]/15 text-[#6366F1]",
-      progressBg: "bg-[#6366F1]",
-    },
-    {
-      id: "pod-d",
-      name: "Pod D",
-      letter: "D",
-      lead: "Theo Cla...",
-      ratio: "4/4",
-      completed: 50,
-      pending: 5,
-      percentage: 91,
-      color: "bg-[#334155]",
-      textColor: "text-[#97A0B3]",
-      badgeColor: "bg-[#1F2C3F] text-[#F1F5F9]",
-      progressBg: "bg-[#7FA0D6]",
+      lead: "Rohan M.",
+      ratio: "3/3",
+      completed: 0,
+      pending: 0,
+      percentage: 100,
+      color: "bg-[#10B981]",
+      textColor: "text-[#10B981]",
+      badgeColor: "bg-[#10B981]/15 text-[#10B981]",
+      progressBg: "bg-[#10B981]",
     },
   ];
 
@@ -168,32 +133,32 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
           <p className="text-[11px] text-[#97A0B3] font-medium">Team structure & delivery status</p>
         </div>
         <span className="px-2.5 py-0.5 rounded-full text-xs font-bold text-[#7FA0D6] bg-[#7FA0D6]/15 border border-[#7FA0D6]/30">
-          9 teams
+          3 pods
         </span>
       </div>
 
       {/* Top 4 Metrics Row */}
       <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-3">
         <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
+          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">3</span>
+          <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Pods</span>
+        </div>
+        <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
           <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">9</span>
-          <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Teams</span>
+          <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Specialists</span>
         </div>
         <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
-          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">36</span>
-          <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Members</span>
-        </div>
-        <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
-          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">32</span>
+          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">9</span>
           <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Active</span>
         </div>
         <div className="bg-[#0B111C]/90 border border-[#2A3446] rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center">
-          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">486</span>
+          <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">0</span>
           <span className="text-[8.5px] sm:text-[9px] text-[#97A0B3] font-bold uppercase tracking-wider mt-0.5">Done</span>
         </div>
       </div>
 
-      {/* 2x2 Pods Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3.5 flex-1 overflow-y-auto min-h-0 pr-0.5 custom-scrollbar">
+      {/* 3 Pods Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-3.5 flex-1 overflow-y-auto min-h-0 pr-0.5 custom-scrollbar">
         {defaultPods.map((pod) => (
           <div
             key={pod.id}
@@ -245,50 +210,50 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
           </span>
         </div>
 
-        <div className="space-y-1.5">
-          {pendingLeavesList.map((leave) => (
-            <div
-              key={leave.id}
-              className="bg-[#161F2D] border border-[#2A3446] rounded-xl p-2 flex items-center justify-between shadow-2xs hover:border-[#7FA0D6]/30 transition-colors"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <div className={`w-7 h-7 rounded-full ${leave.avatarBg} text-white font-bold text-[10px] flex items-center justify-center shrink-0`}>
-                  {leave.avatar}
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs font-bold text-white truncate">{leave.user_name}</span>
-                    <span className="text-[9px] text-[#97A0B3]">({leave.pod})</span>
+        {pendingLeavesList.length === 0 ? (
+          <div className="py-2.5 text-center text-[11px] text-[#97A0B3] font-medium">
+            No pending leave requests
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            {pendingLeavesList.map((leave) => (
+              <div
+                key={leave.id}
+                className="bg-[#161F2D] border border-[#2A3446] rounded-xl p-2 flex items-center justify-between shadow-2xs hover:border-[#7FA0D6]/30 transition-colors"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className={`w-7 h-7 rounded-full ${leave.avatarBg} text-white font-bold text-[10px] flex items-center justify-center shrink-0`}>
+                    {leave.avatar}
                   </div>
-                  <span className="text-[9px] text-[#97A0B3] truncate">
-                    {leave.type} · {leave.dates}
-                  </span>
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs font-bold text-white truncate">{leave.user_name}</span>
+                      <span className="text-[9px] text-[#97A0B3]">({leave.pod})</span>
+                    </div>
+                    <span className="text-[9px] text-[#97A0B3] truncate">
+                      {leave.type} · {leave.dates}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={(e) => handleApproveLeave(e, leave.id, leave.user_name)}
+                    className="px-2.5 py-1 text-[11px] font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer shadow-2xs"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={(e) => handleDeclineLeave(e, leave.id, leave.user_name)}
+                    className="px-2 py-1 text-[11px] font-semibold text-[#97A0B3] hover:text-white transition-colors cursor-pointer"
+                  >
+                    Decline
+                  </button>
                 </div>
               </div>
-
-              <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-                <button
-                  onClick={(e) => handleApproveLeave(e, leave.id, leave.user_name)}
-                  className="px-2.5 py-1 text-[11px] font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer shadow-2xs"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={(e) => handleDeclineLeave(e, leave.id, leave.user_name)}
-                  className="px-2 py-1 text-[11px] font-semibold text-[#97A0B3] hover:text-white transition-colors cursor-pointer"
-                >
-                  Decline
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {pendingLeavesList.length === 0 && (
-            <div className="text-center py-2 text-xs font-medium text-[#97A0B3]">
-              No pending leave requests.
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Footer */}

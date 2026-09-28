@@ -45,35 +45,7 @@ interface NotificationItem {
   is_read?: boolean;
 }
 
-const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "n-1",
-    title: "Leave Request Submitted",
-    message: "Elena Rostova requested 3 days of medical/personal leave.",
-    link: "/admin/leaves",
-    type: "leave",
-    created_at: "10 mins ago",
-    is_read: false,
-  },
-  {
-    id: "n-2",
-    title: "Retainer Counter-Offer",
-    message: "Northwind Labs proposed ₹85,000/mo for Enterprise Tier.",
-    link: "/admin/revenue",
-    type: "revenue",
-    created_at: "45 mins ago",
-    is_read: false,
-  },
-  {
-    id: "n-3",
-    title: "Pod A Delivery Warning",
-    message: "Sprint capacity at 92%. Review task queue allocation.",
-    link: "/admin/team",
-    type: "team",
-    created_at: "2 hours ago",
-    is_read: true,
-  },
-];
+const DEFAULT_NOTIFICATIONS: NotificationItem[] = [];
 
 export function AdminTopHeader({
   title,

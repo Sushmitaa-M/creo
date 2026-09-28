@@ -90,8 +90,8 @@ export function PodDeliverablesReviewPage() {
           <div
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-lg animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-rose-50 border-rose-200 text-rose-700"
-                : "bg-emerald-50 border-emerald-200 text-emerald-700"
+                ? "bg-rose-950/80 border-rose-800 text-rose-300"
+                : "bg-emerald-950/80 border-emerald-800 text-emerald-300"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -104,7 +104,7 @@ export function PodDeliverablesReviewPage() {
         {/* 1. Quick Actions Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#161F2D] p-2.5 sm:px-4 sm:py-2.5 rounded-2xl border border-[#2A3446]/80 shadow-2xs">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-[#7FA0D6]/150 animate-pulse" />
+            <span className="size-2 rounded-full bg-[#7FA0D6] animate-pulse" />
             <span className="text-xs font-bold text-[#F1F5F9]">{podName} Review Hub · Frame.io Sync Gate</span>
           </div>
 
@@ -147,7 +147,7 @@ export function PodDeliverablesReviewPage() {
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Deliverables</span>
               </div>
               <div className="flex items-center gap-2 text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
-                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1">
                   ● 2 Urgent
                 </span>
                 <span className="text-[#97A0B3] font-medium">Within 2h SLA threshold</span>
@@ -175,7 +175,7 @@ export function PodDeliverablesReviewPage() {
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="text-[#97A0B3] font-medium">Benchmark: &lt; 2.0h</span>
-                <span className="font-bold text-emerald-600">↗ 68% Faster</span>
+                <span className="font-bold text-emerald-400">↗ 68% Faster</span>
               </div>
             </div>
           </motion.div>
@@ -189,7 +189,7 @@ export function PodDeliverablesReviewPage() {
           >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">QA First-Pass Pass Rate</span>
-              <div className="size-6 sm:size-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
                 <ShieldCheck className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -208,9 +208,9 @@ export function PodDeliverablesReviewPage() {
         </div>
 
         {/* 3. Urgent SLA Alert Banner */}
-        <div className="bg-gradient-to-r from-rose-50/90 via-red-50/50 to-white rounded-2xl p-3.5 sm:p-4 border border-rose-200 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs">
+        <div className="bg-rose-950/40 rounded-2xl p-3.5 sm:p-4 border border-rose-800/50 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="size-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+            <div className="size-8 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center shrink-0">
               <AlertTriangle className="size-4" />
             </div>
             <div>
@@ -221,7 +221,7 @@ export function PodDeliverablesReviewPage() {
                 <span className="text-xs font-bold text-[#F1F5F9]">Atlas Commerce · Deliverable #03</span>
               </div>
               <p className="text-[11px] text-[#F1F5F9] font-medium mt-0.5">
-                Post Carousel SLA: <span className="font-bold text-rose-600">01h 14m remaining</span> until escalation.
+                Post Carousel SLA: <span className="font-bold text-rose-400">01h 14m remaining</span> until escalation.
               </p>
             </div>
           </div>
@@ -256,7 +256,7 @@ export function PodDeliverablesReviewPage() {
                 </p>
               </div>
 
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1 self-start sm:self-auto">
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1 self-start sm:self-auto">
                 <Clock className="size-3" />
                 Due in 2 hours
               </span>
@@ -289,7 +289,7 @@ export function PodDeliverablesReviewPage() {
                         <span className="text-sm font-black text-white block leading-none">₹45,230.75</span>
                         <span className="text-[9px] font-bold text-emerald-400 block">+14.2%</span>
                         <div className="h-10 w-full bg-gradient-to-t from-blue-600/30 to-emerald-400/20 rounded-lg flex items-end p-1">
-                          <div className="h-6 w-full bg-[#7FA0D6]/150/40 rounded-sm" />
+                          <div className="h-6 w-full bg-[#7FA0D6]/40 rounded-sm" />
                         </div>
                       </div>
                       <span className="text-[8px] font-bold tracking-widest text-[#97A0B3] uppercase">
@@ -364,11 +364,11 @@ export function PodDeliverablesReviewPage() {
                       onClick={() => setRubric1(!rubric1)}
                       className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
                         rubric1
-                          ? "bg-[#7FA0D6]/15/50 border-[#7FA0D6]/30 text-blue-900"
-                          : "bg-[#161F2D] border-[#2A3446] text-[#F1F5F9]"
+                          ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
+                          : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
                       }`}
                     >
-                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric1 ? "bg-blue-600 text-white" : "border border-[#2A3446]"}`}>
+                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric1 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
                         {rubric1 && <Check className="size-3.5 stroke-[3]" />}
                       </div>
                       <span className="text-xs font-bold">Brand contrast & typography guidelines passed</span>
@@ -378,11 +378,11 @@ export function PodDeliverablesReviewPage() {
                       onClick={() => setRubric2(!rubric2)}
                       className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
                         rubric2
-                          ? "bg-[#7FA0D6]/15/50 border-[#7FA0D6]/30 text-blue-900"
-                          : "bg-[#161F2D] border-[#2A3446] text-[#F1F5F9]"
+                          ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
+                          : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
                       }`}
                     >
-                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric2 ? "bg-blue-600 text-white" : "border border-[#2A3446]"}`}>
+                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric2 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
                         {rubric2 && <Check className="size-3.5 stroke-[3]" />}
                       </div>
                       <span className="text-xs font-bold">Sound stems synchronized</span>
@@ -392,11 +392,11 @@ export function PodDeliverablesReviewPage() {
                       onClick={() => setRubric3(!rubric3)}
                       className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
                         rubric3
-                          ? "bg-[#7FA0D6]/15/50 border-[#7FA0D6]/30 text-blue-900"
-                          : "bg-[#161F2D] border-[#2A3446] text-[#F1F5F9]"
+                          ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
+                          : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
                       }`}
                     >
-                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric3 ? "bg-blue-600 text-white" : "border border-[#2A3446]"}`}>
+                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric3 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
                         {rubric3 && <Check className="size-3.5 stroke-[3]" />}
                       </div>
                       <span className="text-xs font-bold">Safe-zone compliance (9:16 Reels & Stories)</span>
@@ -411,31 +411,31 @@ export function PodDeliverablesReviewPage() {
                     value={feedbackNote}
                     onChange={(e) => setFeedbackNote(e.target.value)}
                     placeholder="Add specific feedback or revision instructions for David..."
-                    className="w-full text-xs p-3.5 rounded-2xl border border-[#2A3446] bg-[#0B111C]/50 focus:bg-[#161F2D] focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                    className="w-full text-xs p-3.5 rounded-2xl border border-[#2A3446] bg-[#0B111C]/50 focus:bg-[#161F2D] focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-white"
                   />
                 </div>
 
                 {/* Action Buttons (Image 3) */}
                 <div className="flex items-center justify-end gap-3 pt-2">
                   {reviewState === "approved" ? (
-                    <div className="w-full p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between">
+                    <div className="w-full p-3 rounded-2xl bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-xs font-bold flex items-center justify-between">
                       <span className="flex items-center gap-2">
-                        <Check className="size-4 text-emerald-600 stroke-[3]" />
+                        <Check className="size-4 text-emerald-400 stroke-[3]" />
                         Approved & Dispatched to Client Frame.io Portal
                       </span>
                       <button
                         onClick={() => setReviewState("pending")}
-                        className="text-[11px] underline text-emerald-700 hover:text-emerald-900 cursor-pointer font-bold"
+                        className="text-[11px] underline text-emerald-400 hover:text-emerald-200 cursor-pointer font-bold"
                       >
                         Reset Review
                       </button>
                     </div>
                   ) : reviewState === "revision" ? (
-                    <div className="w-full p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center justify-between">
+                    <div className="w-full p-3 rounded-2xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs font-bold flex items-center justify-between">
                       <span>Revision request active • Specialist notified</span>
                       <button
                         onClick={() => setReviewState("pending")}
-                        className="text-[11px] underline text-rose-700 hover:text-rose-900 cursor-pointer font-bold"
+                        className="text-[11px] underline text-rose-400 hover:text-rose-200 cursor-pointer font-bold"
                       >
                         Cancel Revision
                       </button>

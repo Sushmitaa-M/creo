@@ -403,7 +403,7 @@ export function PortalCalendarPage() {
             {/* Weekday Headers */}
             <div className="grid grid-cols-7 mb-4">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day: string) => (
-                <div key={day} className="py-2 text-center text-[12px] font-bold text-slate-400">
+                <div key={day} className="py-2 text-center text-xs sm:text-sm font-black text-slate-500 uppercase tracking-wider">
                   {day}
                 </div>
               ))}
@@ -437,7 +437,7 @@ export function PortalCalendarPage() {
                         : "border-slate-50 hover:border-slate-200 bg-white shadow-xs hover:shadow-md"
                     }`}
                   >
-                    <span className={`text-[15px] font-black ${
+                    <span className={`text-base sm:text-lg font-black ${
                       isSelected ? "text-[#0052FF]" : isTodayCell ? "text-slate-900" : "text-slate-800 group-hover:text-slate-900"
                     }`}>
                       {day}
@@ -445,27 +445,27 @@ export function PortalCalendarPage() {
                     
                     <div className="mt-auto flex flex-col gap-1.5 w-full">
                       {scheduled > 0 && scheduled !== approved && (
-                        <div className="w-full rounded-lg bg-[#0052FF] text-white px-2.5 py-1 text-[10px] font-bold truncate text-left shadow-sm">
+                        <div className="w-full rounded-lg bg-[#0052FF] text-white px-2.5 py-1 text-xs font-extrabold truncate text-left shadow-sm">
                           {scheduled} Deliverables
                         </div>
                       )}
                       {approved > 0 && (
-                        <div className="w-full rounded-lg bg-[#E6F8F3] text-[#059669] px-2.5 py-1 text-[10px] font-bold truncate text-left border border-[#A7F3D0]/50">
+                        <div className="w-full rounded-lg bg-[#E6F8F3] text-[#059669] px-2.5 py-1 text-xs font-extrabold truncate text-left border border-[#A7F3D0]/50">
                           {approved} Approved
                         </div>
                       )}
                       {scheduled > 0 && approved === 0 && (
-                         <div className="w-full rounded-lg bg-[#F3E8FF] text-[#7C3AED] px-2.5 py-1 text-[10px] font-bold truncate text-left">
+                         <div className="w-full rounded-lg bg-[#F3E8FF] text-[#7C3AED] px-2.5 py-1 text-xs font-extrabold truncate text-left">
                           {scheduled} Scheduled
                         </div>
                       )}
                       {dayEntries.length === 0 && day === 15 && (
-                         <div className="w-full rounded-lg bg-[#F3E8FF] text-[#7C3AED] px-2.5 py-1 text-[10px] font-bold truncate text-left">
+                         <div className="w-full rounded-lg bg-[#F3E8FF] text-[#7C3AED] px-2.5 py-1 text-xs font-extrabold truncate text-left">
                           3 Scheduled
                         </div>
                       )}
                       {dayEntries.length === 0 && isSlaReview && (
-                         <div className="w-full rounded-lg bg-[#FFFBEB] text-[#D97706] px-2.5 py-1 text-[10px] font-bold truncate text-left">
+                         <div className="w-full rounded-lg bg-[#FFFBEB] text-[#D97706] px-2.5 py-1 text-xs font-extrabold truncate text-left">
                           SLA Review
                         </div>
                       )}

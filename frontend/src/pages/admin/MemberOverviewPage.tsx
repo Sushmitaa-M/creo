@@ -885,17 +885,8 @@ export function MemberOverviewPage() {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="pt-6 pb-2 border-t border-[#2A3446]/80 flex flex-col sm:flex-row items-center justify-between text-xs text-[#97A0B3] gap-2">
-          <div className="flex items-center gap-2">
-            <span className="font-black text-white">creo.</span>
-            <span>Team Member Workstation – Pod A Studio Operations</span>
-          </div>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span>© 2025 Creo Design Systems. Confidential</span>
-            <span className="hover:underline cursor-pointer">Security & Compliance</span>
-          </div>
-        </footer>
+
+
       </main>
 
       {/* ─────────────────────────────────────────────────────────────

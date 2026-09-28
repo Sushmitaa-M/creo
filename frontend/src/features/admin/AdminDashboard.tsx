@@ -117,44 +117,45 @@ export function AdminDashboard({ actorRole = "admin" }: { actorRole?: string }) 
           )}
         </AnimatePresence>
 
-        {/* Top Widgets Grid (3 Columns) */}
-        <div className={`grid grid-cols-1 ${activeTab === "Dashboard" ? "lg:grid-cols-3" : "lg:grid-cols-1 max-w-4xl mx-auto"} gap-3.5 sm:gap-4`}>
-          {/* Column 1: Revenue */}
+        {/* Top 3 Containers Aligned in 1 Single Row (3 Columns) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4 items-stretch mb-3.5 sm:mb-4">
+          {/* Container 1: Revenue Engine */}
           {(activeTab === "Dashboard" || activeTab === "Revenue") && (
             <motion.div 
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.05, ease: "easeOut" }}
-              className="flex flex-col gap-3.5 sm:gap-4 h-full hover-card-innovative rounded-2xl"
+              className="flex flex-col h-full min-h-0 hover-card-innovative rounded-3xl"
             >
               <RevenueEngineWidget kpis={kpis} clients={clients} />
             </motion.div>
           )}
 
-          {/* Column 2: Team */}
+          {/* Container 2: Team Details */}
           {(activeTab === "Dashboard" || activeTab === "Team Details") && (
             <motion.div 
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.1, ease: "easeOut" }}
-              className="flex flex-col gap-3.5 sm:gap-4 h-full hover-card-innovative rounded-2xl"
+              className="flex flex-col h-full min-h-0 hover-card-innovative rounded-3xl"
             >
               <TeamDetailsWidget queue={queue} />
             </motion.div>
           )}
 
-          {/* Column 3: Content */}
+          {/* Container 3: Content Engine */}
           {(activeTab === "Dashboard" || activeTab === "Content Engine") && (
             <motion.div 
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.15, ease: "easeOut" }}
-              className="flex flex-col gap-3.5 sm:gap-4 h-full hover-card-innovative rounded-2xl"
+              className="flex flex-col h-full min-h-0 hover-card-innovative rounded-3xl"
             >
               <ContentEngineWidget queue={queue} />
             </motion.div>
           )}
         </div>
+
 
         {/* Full Width Row: Client Details */}
         {(activeTab === "Dashboard" || activeTab === "Client Details") && (

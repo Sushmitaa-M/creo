@@ -383,22 +383,22 @@ export function PodScheduleLeavePage() {
             {/* 1. Monthly Calendar Widget */}
             <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Calendar className="size-3.5 text-[#7FA0D6]" />
-                  <h3 className="text-xs font-black text-white">November 2025</h3>
+                <div className="flex items-center gap-2">
+                  <Calendar className="size-4 text-[#7FA0D6]" />
+                  <h3 className="text-sm font-black text-white">November 2025</h3>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button className="p-1 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3]">
-                    <ChevronLeft className="size-3.5" />
+                  <button className="p-1.5 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3] cursor-pointer">
+                    <ChevronLeft className="size-4" />
                   </button>
-                  <button className="p-1 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3]">
-                    <ChevronRight className="size-3.5" />
+                  <button className="p-1.5 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3] cursor-pointer">
+                    <ChevronRight className="size-4" />
                   </button>
                 </div>
               </div>
 
               {/* Day headers */}
-              <div className="grid grid-cols-7 gap-1 text-center text-[9px] font-bold text-[#97A0B3]">
+              <div className="grid grid-cols-7 gap-1 text-center text-xs font-black text-white">
                 <span>Mo</span>
                 <span>Tu</span>
                 <span>We</span>
@@ -409,51 +409,51 @@ export function PodScheduleLeavePage() {
               </div>
 
               {/* Calendar Grid */}
-              <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold">
-                <span className="py-1 text-slate-300 text-[11px]">27</span>
-                <span className="py-1 text-slate-300 text-[11px]">28</span>
-                <span className="py-1 text-slate-300 text-[11px]">29</span>
-                <span className="py-1 text-slate-300 text-[11px]">30</span>
-                <span className="py-1 text-slate-300 text-[11px]">31</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">1</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">2</span>
+              <div className="grid grid-cols-7 gap-1.5 text-center text-xs sm:text-sm font-black">
+                <span className="py-2 text-slate-500 rounded-lg">27</span>
+                <span className="py-2 text-slate-500 rounded-lg">28</span>
+                <span className="py-2 text-slate-500 rounded-lg">29</span>
+                <span className="py-2 text-slate-500 rounded-lg">30</span>
+                <span className="py-2 text-slate-500 rounded-lg">31</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">1</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">2</span>
 
                 {/* Week 2 with highlighted active days */}
-                <span className="py-1 rounded-lg bg-blue-600 text-white shadow-2xs text-[11px]">3</span>
-                <span className="py-1 rounded-lg bg-[#7FA0D6]/20 text-blue-800 text-[11px]">4</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">5</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">6</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">7</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">8</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">9</span>
+                <span className="py-2 rounded-lg bg-blue-600 text-white shadow-md font-black">3</span>
+                <span className="py-2 rounded-lg bg-[#7FA0D6]/20 text-[#7FA0D6] border border-[#7FA0D6]/40 font-black">4</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">5</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">6</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">7</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">8</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">9</span>
 
-                <span className="py-1 text-[#F1F5F9] text-[11px]">10</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">11</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">12</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">13</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">14</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">15</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">16</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">10</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">11</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">12</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">13</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">14</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">15</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">16</span>
 
-                <span className="py-1 text-[#F1F5F9] text-[11px]">17</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">18</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">19</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">20</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">21</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">22</span>
-                <span className="py-1 text-[#F1F5F9] text-[11px]">23</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">17</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">18</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">19</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">20</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">21</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">22</span>
+                <span className="py-2 text-[#F1F5F9] rounded-lg bg-[#0B111C] border border-[#2A3446]">23</span>
               </div>
 
               {/* Legend */}
-              <div className="flex items-center justify-between text-[9.5px] font-bold text-[#97A0B3] pt-2 border-t border-[#2A3446]">
-                <span className="flex items-center gap-1">
-                  <span className="size-1.5 rounded-full bg-blue-600" /> Today (Duty)
+              <div className="flex items-center justify-between text-xs font-extrabold text-[#97A0B3] pt-2 border-t border-[#2A3446]">
+                <span className="flex items-center gap-1.5">
+                  <span className="size-2 rounded-full bg-blue-600" /> Today (Duty)
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="size-1.5 rounded-full bg-blue-200" /> Pending / PTO
+                <span className="flex items-center gap-1.5">
+                  <span className="size-2 rounded-full bg-[#7FA0D6]" /> Pending / PTO
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="size-1.5 rounded-full bg-emerald-500" /> Full Team
+                <span className="flex items-center gap-1.5">
+                  <span className="size-2 rounded-full bg-emerald-500" /> Full Team
                 </span>
               </div>
             </div>

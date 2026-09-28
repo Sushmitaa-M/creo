@@ -15,6 +15,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
+import { useAuth } from "../../lib/auth-context";
 
 interface ChatMessage {
   id: string;
@@ -40,6 +41,14 @@ interface ChatMessage {
 
 export function SlackChatPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const getDefaultPersona = () => {
+    if (user?.role === "admin" || user?.role === "super_admin") return "Admin Operations";
+    if (user?.role === "team_lead") return "Maya Lin";
+    if (user?.role === "client") return "Sarah Jenkins (Client)";
+    return "David Kim";
+  };
 
   // Active channel / DM selection
   const [activeChannel, setActiveChannel] = useState<string>("pod-a-general");
@@ -49,7 +58,7 @@ export function SlackChatPage() {
   const [mobileView, setMobileView] = useState<"channels" | "chat">("chat");
 
   // Persona switch (Admin, Team Lead Maya, Member David, Client Sarah)
-  const [currentPersona, setCurrentPersona] = useState<"David Kim" | "Maya Lin" | "Admin Operations" | "Sarah Jenkins (Client)">("David Kim");
+  const [currentPersona, setCurrentPersona] = useState<"David Kim" | "Maya Lin" | "Admin Operations" | "Sarah Jenkins (Client)">(getDefaultPersona);
 
   // Input states
   const [messageText, setMessageText] = useState("");
@@ -332,10 +341,10 @@ export function SlackChatPage() {
         <aside
           className={`${
             mobileView === "channels" ? "flex w-full" : "hidden md:flex md:w-72"
-          } bg-slate-900 text-slate-300 rounded-2xl sm:rounded-3xl flex-col shadow-xl border border-slate-800 shrink-0 overflow-hidden h-full`}
+          } bg-[#161F2D]/90 backdrop-blur-xl text-slate-300 rounded-2xl sm:rounded-3xl flex-col shadow-xl border border-[#2A3446] shrink-0 overflow-hidden h-full`}
         >
           {/* Workspace Title & Persona Switcher */}
-          <div className="p-4 border-b border-slate-800/80 bg-slate-950/50 space-y-2.5">
+          <div className="p-4 border-b border-[#2A3446] bg-[#0B111C]/80 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="size-3 rounded-md bg-[#2563EB]" />
@@ -386,7 +395,7 @@ export function SlackChatPage() {
               className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 text-white font-black text-xs shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
             >
               <Plus className="size-4" />
-              + Assign Task in Chat
+              Assign Task in Chat
             </button>
 
             {/* Channels Section */}
@@ -538,11 +547,11 @@ export function SlackChatPage() {
           </div>
 
           {/* Messages Feed */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-[#FAFAFA]/40">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-[#0B111C]/90 backdrop-blur-xl">
             {currentMessages.map((msg) => (
               <div
                 key={msg.id}
-                className="group relative p-3 sm:p-3.5 rounded-2xl hover:bg-[#161F2D] hover:shadow-sm border border-transparent hover:border-[#2A3446] transition-all flex items-start gap-2.5 sm:gap-3.5"
+                className="group relative p-3 sm:p-3.5 rounded-2xl hover:bg-[#161F2D]/90 border border-transparent hover:border-[#2A3446] transition-all flex items-start gap-2.5 sm:gap-3.5"
               >
                 {/* Avatar */}
                 <div className={`size-8 sm:size-10 rounded-xl sm:rounded-2xl ${msg.avatarBg} text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs`}>
@@ -596,8 +605,9 @@ export function SlackChatPage() {
                         </span>
                         <button
                           onClick={() => {
-                            showToast(`Opened task ${msg.taskData?.id} in sprint Kanban board!`);
-                            navigate("/workstation/tasks");
+                            showToast(`Opened task ${msg.taskData?.id} in Kanban board!`);
+                            const targetBoard = (user?.role === "admin" || user?.role === "super_admin") ? "/admin/tasks" : "/workstation/tasks";
+                            navigate(targetBoard);
                           }}
                           className="px-3 py-1 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-xs cursor-pointer shrink-0"
                         >

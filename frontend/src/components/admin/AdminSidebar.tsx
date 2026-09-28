@@ -16,9 +16,6 @@ import {
   Building2,
   LifeBuoy,
   ShieldCheck,
-  Megaphone,
-  BarChart3,
-  Settings,
   CreditCard
 } from "lucide-react";
 import { useEffect } from "react";
@@ -54,8 +51,7 @@ export function AdminSidebar() {
       user?.role === "editor" ||
       user?.role === "designer" ||
       location.pathname.startsWith("/workstation") ||
-      location.pathname.startsWith("/member") ||
-      location.pathname === "/slack");
+      location.pathname.startsWith("/member"));
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -85,14 +81,16 @@ export function AdminSidebar() {
     if (href === "/portal") return location.pathname === "/portal" || location.pathname === "/portal/";
     if (href === "/admin") return location.pathname === "/admin";
     if (href === "/workstation") return location.pathname === "/workstation" || location.pathname === "/workstation/overview";
-    return location.pathname.startsWith(href);
+    if (href === "/admin/support") return location.pathname === "/admin/support" || location.pathname.startsWith("/admin/support/tickets");
+    if (location.pathname === href) return true;
+    return location.pathname.startsWith(href + "/");
   };
 
   const adminNavSections: NavSection[] = [
     {
       label: "Overview",
       items: [
-        { label: "Admin Ops Dashboard", href: "/admin", icon: LayoutDashboard },
+        { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
       ],
     },
     {
@@ -107,7 +105,6 @@ export function AdminSidebar() {
       items: [
         { label: "Team Management", href: "/admin/team", icon: Users },
         { label: "Leave Requests & Approvals", href: "/admin/leaves", icon: CalendarCheck },
-        { label: "Pod Lead Dashboard", href: "/admin/pod-dashboard", icon: Briefcase },
       ],
     },
     {
@@ -115,7 +112,7 @@ export function AdminSidebar() {
       items: [
         { label: "Deliverables Review", href: "/admin/deliverables", icon: Layers },
         { label: "Publishing Calendar", href: "/admin/calendar", icon: Calendar },
-        { label: "Production Task Queue", href: "/admin/tasks", icon: ListTodo },
+        { label: "Task Queue", href: "/admin/tasks", icon: ListTodo },
       ],
     },
     {
@@ -132,29 +129,20 @@ export function AdminSidebar() {
         { label: "Slack Workspace Hub", href: "/slack", icon: MessageSquare, badge: "Chat" },
       ],
     },
-    {
-      label: "Governance & Settings",
-      items: [
-        { label: "Announcements", href: "/admin/announcements", icon: Megaphone },
-        { label: "Executive Analytics & KPIs", href: "/admin/reports", icon: BarChart3 },
-        { label: "Add-ons Catalog", href: "/admin/addons", icon: Layers },
-        { label: "System Settings", href: "/admin/settings", icon: Settings },
-      ],
-    },
   ];
 
   const leadNavSections: NavSection[] = [
     {
       label: "Team Management",
       items: [
-        { label: "Pod Lead Dashboard", href: "/admin/pod-dashboard", icon: Briefcase },
+        { label: "Dashboard", href: "/admin/pod-dashboard", icon: Briefcase },
         { label: "Leave Approvals & Schedule", href: "/lead/schedule", icon: CalendarCheck },
       ],
     },
     {
       label: "Content Engine",
       items: [
-        { label: "Pod Task Board & Backlog", href: "/lead/tasks", icon: ListTodo },
+        { label: "Task Queue", href: "/lead/tasks", icon: ListTodo },
         { label: "Deliverables Review & Sign-Off", href: "/lead/deliverables", icon: Layers },
         { label: "Publishing Calendar", href: "/admin/calendar", icon: Calendar },
       ],

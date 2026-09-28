@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion } from "motion/react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
+import { fetchPodDashboard, fetchClientRoster, type PodDashboardData } from "../../lib/ops-api";
+import type { ClientRosterItem } from "../../types/ops";
 import {
   Briefcase,
   Layers,
@@ -198,6 +199,65 @@ export function PodClientAllocationsPage() {
     queryKey: ["pod_dashboard"],
     queryFn: () => fetchPodDashboard(),
   });
+
+  const { data: rosterData } = useQuery<ClientRosterItem[]>({
+    queryKey: ["admin_clients_roster"],
+    queryFn: () => fetchClientRoster(),
+  });
+
+  useEffect(() => {
+    if (!rosterData || rosterData.length === 0) return;
+    setClients((prev) => {
+      const existingIds = new Set(prev.map((c) => c.id.toLowerCase()));
+      const existingNames = new Set(prev.map((c) => c.name.toLowerCase()));
+
+      const dynamicClients: ClientAccount[] = rosterData
+        .filter((r) => {
+          const rawName = String(r.company_name || (r.instagram_username ? `@${r.instagram_username}` : (r.email ? r.email.split("@")[0] : "client")));
+          const name = rawName.toLowerCase();
+          return !existingIds.has((r.client_id || "").toLowerCase()) && !existingNames.has(name);
+        })
+        .map((r) => {
+          const name = String(r.company_name || (r.instagram_username ? `@${r.instagram_username}` : (r.email ? r.email.split("@")[0] : "Client")));
+          const initials = name.slice(0, 2).toUpperCase();
+          const reelsQuota = r.quota_usage?.find((q) => q.kind === "reel")?.quota || 4;
+          const reelsUsed = r.quota_usage?.find((q) => q.kind === "reel")?.used || 0;
+          const postersQuota = r.quota_usage?.find((q) => q.kind === "poster")?.quota || 8;
+          const postersUsed = r.quota_usage?.find((q) => q.kind === "poster")?.used || 0;
+          const storiesQuota = r.quota_usage?.find((q) => q.kind === "story")?.quota || 8;
+          const storiesUsed = r.quota_usage?.find((q) => q.kind === "story")?.used || 0;
+
+          return {
+            id: r.client_id || "",
+            name,
+            avatar: initials,
+            avatarBg: "bg-[#0F172A]",
+            tierBadge: (r.plan_display_name || r.plan_name || "GROWTH").toUpperCase(),
+            tierBadgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+            statusBadge: "● Active Sprint",
+            statusBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+            contact: r.email || "",
+            slackChannel: `#${name.toLowerCase().replace(/[^a-z0-9]/g, "")}-creo`,
+            reviewAssetsCount: 0,
+            deliverableTitle: `${name} Active Campaign Cadence`,
+            deliverables: [
+              { label: "Reels", current: reelsUsed, target: reelsQuota, percent: Math.round((reelsUsed / (reelsQuota || 1)) * 100), color: "bg-emerald-500" },
+              { label: "Stories", current: storiesUsed, target: storiesQuota, percent: Math.round((storiesUsed / (storiesQuota || 1)) * 100), color: "bg-emerald-500" },
+              { label: "Posts", current: postersUsed, target: postersQuota, percent: Math.round((postersUsed / (postersQuota || 1)) * 100), color: "bg-blue-600" },
+            ],
+            assignees: [
+              { name: "Creative Pod", role: "Creative", avatar: "CP", bg: "bg-purple-600" },
+            ],
+            nextHandoff: "Scheduled Cadence Active",
+            isHighPriority: false,
+            hasReviewToday: false,
+          };
+        });
+
+      if (dynamicClients.length === 0) return prev;
+      return [...prev, ...dynamicClients];
+    });
+  }, [rosterData]);
 
   const podName = data?.pod?.name || "Pod A";
 

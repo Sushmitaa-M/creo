@@ -120,8 +120,57 @@ const INITIAL_TASKS: TaskDeliverable[] = [
       specialistNotes: "Dynamic text boxes and color controllers linked to Premiere Pro mogrt schema.",
     },
   },
+  {
+    id: "task-ryze-1",
+    title: "Mushroom Coffee Benefit Deck Carousel & Poster",
+    client: "Ryze Mushroom Coffee",
+    clientColor: "text-emerald-400",
+    clientBadgeBg: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+    format: "1080x1350 Poster & 9:16 Story",
+    estimatedHours: 3.0,
+    priority: "Normal",
+    status: "assigned",
+    deadline: "Tomorrow at 02:00 PM",
+    description: "Design clean infographic carousel highlighting focus, sustained energy without jitters, and gut health.",
+    tags: ["Infographic", "Benefit Deck", "Figma"],
+  },
 
   // COLUMN 2: In Active Production
+  {
+    id: "task-ryze-2",
+    title: "Morning Routine High-Energy Reel Cut v1",
+    client: "Ryze Mushroom Coffee",
+    clientColor: "text-emerald-400",
+    clientBadgeBg: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+    format: "9:16 Vertical Reel (60fps)",
+    estimatedHours: 4.5,
+    timeSpentHours: 2.0,
+    priority: "High",
+    status: "production",
+    deadline: "Today at 06:00 PM",
+    progress: 65,
+    description: "Pacing cut with rapid hook, kinetic typography, mushroom blend macro b-roll, and brand color grade.",
+    tags: ["9:16 Reel", "Brand Grade", "Morning Hook"],
+    renderInfo: {
+      node: "CREO-GPU-04",
+      frame: "1420 / 1800",
+      pass: "Color Grading (Rec.709)",
+    },
+    reviewData: {
+      reviewer: "Lena Ortiz",
+      reviewerRole: "Team Lead & Account Director",
+      reviewerAvatar: "LO",
+      status: "Under Review",
+      rubricChecks: {
+        colorSpace: true,
+        resolution: true,
+        audioLoudness: true,
+        transparency: true,
+        namingConvention: true,
+      },
+      specialistNotes: "Hook synced to upbeat tempo, sound stems normalized to -14 LUFS.",
+    },
+  },
   {
     id: "task-3",
     title: "Render 3D Product Teaser (15s Reel)",
@@ -629,6 +678,7 @@ export function MemberTaskBoardPage() {
                 { label: "All Clients", count: tasks.length },
                 { label: "Northwind", count: tasks.filter((t) => t.client.includes("Northwind")).length },
                 { label: "Atlas", count: tasks.filter((t) => t.client.includes("Atlas")).length },
+                { label: "Ryze", count: tasks.filter((t) => t.client.includes("Ryze")).length },
                 { label: "Bloom", count: tasks.filter((t) => t.client.includes("Bloom")).length },
               ].map((c) => (
                 <button
@@ -639,6 +689,8 @@ export function MemberTaskBoardPage() {
                         ? "Northwind Labs"
                         : c.label === "Atlas"
                         ? "Atlas Commerce"
+                        : c.label === "Ryze"
+                        ? "Ryze Mushroom Coffee"
                         : c.label === "Bloom"
                         ? "Bloom Studio"
                         : "All Clients"

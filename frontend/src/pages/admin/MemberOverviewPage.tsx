@@ -528,6 +528,40 @@ export function MemberOverviewPage() {
                   </div>
                 </div>
 
+                <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-emerald-500/30 space-y-2">
+                  <div className="flex items-start justify-between gap-1.5">
+                    <div>
+                      <span className="text-[9px] font-bold text-emerald-400 uppercase">Ryze Mushroom Coffee</span>
+                      <h4 className="text-xs font-black text-white leading-snug">Morning Routine High-Energy Reel</h4>
+                      <div className="text-[10px] text-[#97A0B3] font-medium">9:16 Vertical Reel (60fps)</div>
+                    </div>
+                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                      P1 HIGH
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]/60 text-xs">
+                    <span className="font-bold text-emerald-400 text-[10px]">Today 6:00 PM (4h left)</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => {
+                          setUploadClient("Ryze Mushroom Coffee");
+                          setUploadAssetTitle("Morning Routine Reel Cut v1");
+                          setUploadModalOpen(true);
+                        }}
+                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
+                      >
+                        Upload
+                      </button>
+                      <button
+                        onClick={() => showToast("Opened Brand DNA brief for Ryze Mushroom Coffee")}
+                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
+                      >
+                        Notes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-[#2A3446]/80 space-y-2">
                   <div className="flex items-start justify-between gap-1.5">
                     <div>
@@ -593,6 +627,38 @@ export function MemberOverviewPage() {
                         </button>
                         <button
                           onClick={() => showToast("Opened production notes for NW-004")}
+                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
+                        >
+                          Notes
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr className="hover:bg-[#0B111C]/60 transition-colors">
+                      <td className="py-2.5 px-2.5">
+                        <div className="font-bold text-white text-xs">Morning Routine High-Energy Reel</div>
+                        <div className="text-[10px] text-[#97A0B3]">9:16 Vertical Reel (60fps · Brand Grade)</div>
+                      </td>
+                      <td className="py-2.5 px-2.5 font-semibold text-emerald-400 text-xs">Ryze Mushroom Coffee</td>
+                      <td className="py-2.5 px-2.5">
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          P1 HIGH
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-2.5 font-black text-emerald-400 text-xs">4h 15m left</td>
+                      <td className="py-2.5 px-2.5 text-right space-x-1.5">
+                        <button
+                          onClick={() => {
+                            setUploadClient("Ryze Mushroom Coffee");
+                            setUploadAssetTitle("Morning Routine Reel Cut v1");
+                            setUploadModalOpen(true);
+                          }}
+                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
+                        >
+                          Upload
+                        </button>
+                        <button
+                          onClick={() => showToast("Opened Brand DNA brief for Ryze Mushroom Coffee")}
                           className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
                         >
                           Notes

@@ -290,6 +290,132 @@ const MOCK_CLIENT_PROFILES: Record<string, ClientBrandProfile> = {
       },
     },
   },
+  "client-ryze": {
+    client_id: "client-ryze",
+    full_name: "Ryze Brand Team",
+    company_name: "Ryze",
+    email: "sushmitaa1407@gmail.com",
+    account_status: "active",
+    onboarding_stage: 5,
+    onboarding_completed_at: "2024-01-15T10:00:00Z",
+    instagram_username: "ryzesocial",
+    timezone: "IST (UTC+5:30)",
+    brand_summary: "DTC functional wellness, clean organic nutrition, and mushroom superfood coffee rituals crafted for sustained focus and vitality.",
+    brand_dna_source: "onboarding",
+    brand_dna_version: 1,
+    created_at: "2024-01-10T10:00:00Z",
+    subscription: {
+      plan_name: "starter",
+      plan_display_name: "Starter Growth Retainer",
+      status: "active",
+      monthly_price: 25000,
+      started_at: "2024-01-10T10:00:00Z",
+    },
+    assigned_team: [
+      { id: "lo-1", name: "Lena Ortiz", email: "lena.ortiz@creo.agency", role_key: "lead", role_label: "Lead Video Producer (Pod C)", is_primary: true },
+      { id: "ok-1", name: "Omar K.", email: "omar.k@creo.agency", role_key: "motion", role_label: "Motion & Reels Specialist", is_primary: false },
+      { id: "lv-1", name: "Lena V.", email: "lena.v@creo.agency", role_key: "copy", role_label: "Senior Copywriter", is_primary: false },
+      { id: "tp-1", name: "Theo P.", email: "theo.p@creo.agency", role_key: "graphic", role_label: "Graphic Designer", is_primary: false },
+    ],
+    task_stats: { total: 22, pending: 3, completed: 17, in_review: 2 },
+    quota_usage: [
+      { kind: "Reels", quota: 4, used: 4 },
+      { kind: "Stories", quota: 10, used: 8 },
+      { kind: "Posts", quota: 8, used: 6 },
+    ],
+    brand_dna: {
+      positioning: "Clean functional superfood rituals crafted for sustained daily focus, holistic gut health & sustained energy.",
+      tone: {
+        voice_words: ["Vitality", "High Energy", "Clean Aesthetics", "Holistic"],
+        anti_voice_words: ["Clinical", "Gimmicky", "Aggressive", "Sedentary"],
+        writing_rules: [
+          "Lead with immediate sensory morning rituals and all-day sustained energy.",
+          "Highlight clean organic adaptogenic ingredients (Lion's Mane, Reishi, Cordyceps) with zero crash.",
+          "Keep aesthetic warm, grounded, and minimalist with modern typography."
+        ],
+      },
+      visual_direction: {
+        primary_colors: ["#166534", "#FEFCE8", "#0F172A", "#F59E0B"],
+        styles: ["Organic Minimalism", "Warm Natural Sunlight", "Kinetic Hook Video Edits", "Modern Editorial Typography"],
+      },
+      content_pillars: [
+        { name: "Morning Rituals & Habit Stacking", stage: "reach", angle: "Aesthetic POV reels showing the froth, aroma, and mindful start to the day." },
+        { name: "Mushroom Science & Clean Focus", stage: "authority", angle: "Scientific breakdowns of adaptogens vs jittery caffeine spikes with infographic carousels." },
+        { name: "Customer Transformations & Taste Tests", stage: "conversion", angle: "Real community reviews, barista recipe variations, and iced wellness pairings." },
+      ],
+      audience_segments: [
+        { name: "Conscious Achievers & High Performers", description: "Founders, creatives, and athletes looking for sustained mental clarity without afternoon jitters or caffeine crashes." },
+        { name: "Holistic Wellness Enthusiasts", description: "Health-focused consumers prioritizing organic gut wellness, adaptogenic herbs, and mindful daily self-care rituals." },
+      ],
+      production: {
+        feasible_formats: ["Reel", "Story", "Post"],
+        default_reel_style: "Warm Ambient Natural Light & Kinetic Hook Beat Cuts",
+      },
+    },
+  },
+  "ryze": {
+    client_id: "ryze",
+    full_name: "Ryze Brand Team",
+    company_name: "Ryze",
+    email: "sushmitaa1407@gmail.com",
+    account_status: "active",
+    onboarding_stage: 5,
+    onboarding_completed_at: "2024-01-15T10:00:00Z",
+    instagram_username: "ryzesocial",
+    timezone: "IST (UTC+5:30)",
+    brand_summary: "DTC functional wellness, clean organic nutrition, and mushroom superfood coffee rituals crafted for sustained focus and vitality.",
+    brand_dna_source: "onboarding",
+    brand_dna_version: 1,
+    created_at: "2024-01-10T10:00:00Z",
+    subscription: {
+      plan_name: "starter",
+      plan_display_name: "Starter Growth Retainer",
+      status: "active",
+      monthly_price: 25000,
+      started_at: "2024-01-10T10:00:00Z",
+    },
+    assigned_team: [
+      { id: "lo-1", name: "Lena Ortiz", email: "lena.ortiz@creo.agency", role_key: "lead", role_label: "Lead Video Producer (Pod C)", is_primary: true },
+      { id: "ok-1", name: "Omar K.", email: "omar.k@creo.agency", role_key: "motion", role_label: "Motion & Reels Specialist", is_primary: false },
+      { id: "lv-1", name: "Lena V.", email: "lena.v@creo.agency", role_key: "copy", role_label: "Senior Copywriter", is_primary: false },
+      { id: "tp-1", name: "Theo P.", email: "theo.p@creo.agency", role_key: "graphic", role_label: "Graphic Designer", is_primary: false },
+    ],
+    task_stats: { total: 22, pending: 3, completed: 17, in_review: 2 },
+    quota_usage: [
+      { kind: "Reels", quota: 4, used: 4 },
+      { kind: "Stories", quota: 10, used: 8 },
+      { kind: "Posts", quota: 8, used: 6 },
+    ],
+    brand_dna: {
+      positioning: "Clean functional superfood rituals crafted for sustained daily focus, holistic gut health & sustained energy.",
+      tone: {
+        voice_words: ["Vitality", "High Energy", "Clean Aesthetics", "Holistic"],
+        anti_voice_words: ["Clinical", "Gimmicky", "Aggressive", "Sedentary"],
+        writing_rules: [
+          "Lead with immediate sensory morning rituals and all-day sustained energy.",
+          "Highlight clean organic adaptogenic ingredients (Lion's Mane, Reishi, Cordyceps) with zero crash.",
+          "Keep aesthetic warm, grounded, and minimalist with modern typography."
+        ],
+      },
+      visual_direction: {
+        primary_colors: ["#166534", "#FEFCE8", "#0F172A", "#F59E0B"],
+        styles: ["Organic Minimalism", "Warm Natural Sunlight", "Kinetic Hook Video Edits", "Modern Editorial Typography"],
+      },
+      content_pillars: [
+        { name: "Morning Rituals & Habit Stacking", stage: "reach", angle: "Aesthetic POV reels showing the froth, aroma, and mindful start to the day." },
+        { name: "Mushroom Science & Clean Focus", stage: "authority", angle: "Scientific breakdowns of adaptogens vs jittery caffeine spikes with infographic carousels." },
+        { name: "Customer Transformations & Taste Tests", stage: "conversion", angle: "Real community reviews, barista recipe variations, and iced wellness pairings." },
+      ],
+      audience_segments: [
+        { name: "Conscious Achievers & High Performers", description: "Founders, creatives, and athletes looking for sustained mental clarity without afternoon jitters or caffeine crashes." },
+        { name: "Holistic Wellness Enthusiasts", description: "Health-focused consumers prioritizing organic gut wellness, adaptogenic herbs, and mindful daily self-care rituals." },
+      ],
+      production: {
+        feasible_formats: ["Reel", "Story", "Post"],
+        default_reel_style: "Warm Ambient Natural Light & Kinetic Hook Beat Cuts",
+      },
+    },
+  },
 };
 
 export function AdminClientBrandPage() {
@@ -304,8 +430,49 @@ export function AdminClientBrandPage() {
     enabled: !!clientId,
   });
 
-  const fallbackKey = clientId ? (MOCK_CLIENT_PROFILES[clientId] ? clientId : Object.keys(MOCK_CLIENT_PROFILES).find(k => k.includes(clientId) || clientId.includes(k.replace("client-", ""))) || "client-northwind") : "client-northwind";
-  const client: ClientBrandProfile = serverClient || MOCK_CLIENT_PROFILES[fallbackKey] || MOCK_CLIENT_PROFILES["client-northwind"]!;
+  const normalizedId = (clientId || "").toLowerCase().trim();
+  const cleanId = normalizedId.replace(/^client-/, "");
+
+  const fallbackKey = (() => {
+    if (!clientId) return "client-northwind";
+    // 1. Direct key match
+    if (MOCK_CLIENT_PROFILES[clientId]) return clientId;
+    if (MOCK_CLIENT_PROFILES[normalizedId]) return normalizedId;
+    if (MOCK_CLIENT_PROFILES[`client-${cleanId}`]) return `client-${cleanId}`;
+
+    // 2. Specific key matching for known clients
+    if (normalizedId.includes("ryze") || cleanId.includes("ryze") || normalizedId.includes("sushmitaa")) {
+      return "client-ryze";
+    }
+    if (normalizedId.includes("northwind") || cleanId.includes("northwind") || normalizedId.includes("sarah")) {
+      return "client-northwind";
+    }
+    if (normalizedId.includes("atlas") || cleanId.includes("atlas") || normalizedId.includes("marcus")) {
+      return "client-atlas";
+    }
+    if (normalizedId.includes("bloom") || cleanId.includes("bloom") || normalizedId.includes("helena")) {
+      return "client-bloom";
+    }
+
+    // 3. Fallback search
+    const found = Object.keys(MOCK_CLIENT_PROFILES).find((k) => {
+      const kClean = k.toLowerCase().replace(/^client-/, "");
+      return k.includes(normalizedId) || normalizedId.includes(kClean) || kClean.includes(cleanId) || cleanId.includes(kClean);
+    });
+
+    return found || "client-northwind";
+  })();
+
+  const hasValidServerDna =
+    serverClient &&
+    serverClient.brand_dna &&
+    typeof serverClient.brand_dna === "object" &&
+    Object.keys(serverClient.brand_dna).length > 0;
+
+  const client: ClientBrandProfile =
+    hasValidServerDna
+      ? serverClient!
+      : (MOCK_CLIENT_PROFILES[fallbackKey] || MOCK_CLIENT_PROFILES["client-ryze"] || MOCK_CLIENT_PROFILES["client-northwind"]!);
 
   if (isLoading && !serverClient && !client) {
     return (

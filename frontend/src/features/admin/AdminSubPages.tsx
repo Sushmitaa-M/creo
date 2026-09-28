@@ -1242,6 +1242,12 @@ export function AdminClientsPage() {
 
                 {/* Header Action Buttons */}
                 <div className="flex items-center gap-2.5 shrink-0">
+                  <Link
+                    to={`/admin/clients/${activeClient?.id || "ryze"}/brand`}
+                    className="px-4 py-2.5 rounded-xl border border-[#7FA0D6]/40 bg-[#7FA0D6]/15 hover:bg-[#7FA0D6]/25 text-xs font-bold text-[#7FA0D6] flex items-center gap-1.5 shadow-2xs cursor-pointer transition-all"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-[#7FA0D6]" /> Brand Brief & Profile
+                  </Link>
                   <button
                     type="button"
                     onClick={() => setIsEditProfileOpen(true)}
@@ -1517,6 +1523,13 @@ export function AdminClientsPage() {
                     <span className="cursor-pointer hover:underline flex items-center gap-1">
                       <ExternalLink className="w-3.5 h-3.5" /> {activeClient?.brand.figmaLink}
                     </span>
+                    <span>•</span>
+                    <Link
+                      to={`/admin/clients/${activeClient?.id || "ryze"}/brand`}
+                      className="cursor-pointer hover:underline flex items-center gap-1 text-[#7FA0D6]"
+                    >
+                      Brand DNA & Brief →
+                    </Link>
                   </div>
                   <span>Last audit {activeClient?.brand.lastAuditDate}</span>
                 </div>

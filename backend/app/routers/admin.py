@@ -514,7 +514,7 @@ async def get_client_roster(
 
 @router.get("/clients/{client_id}")
 async def get_client_brand_profile(
-    client_id: uuid.UUID,
+    client_id: str,
     db: AsyncSession = Depends(get_db),
     actor: Actor = StaffActor,
 ) -> dict[str, Any]:
@@ -523,13 +523,45 @@ async def get_client_brand_profile(
     Access: Admin/Super Admin can view any client.
     Team members can only view clients assigned to them via ClientAssignment.
     """
-    # 1. Access control for non-admin staff
+    target_uuid: uuid.UUID | None = None
+    try:
+        target_uuid = uuid.UUID(client_id)
+    except (ValueError, AttributeError):
+        pass
+
+    # 1. Fetch client user
+    if target_uuid:
+        client_user = await db.get(User, target_uuid)
+    else:
+        clean_slug = client_id.lower().replace("client-", "").strip()
+        search_stmt = (
+            select(User)
+            .join(ClientProfile, ClientProfile.user_id == User.id, isouter=True)
+            .where(
+                User.role == "client",
+                or_(
+                    User.email.ilike(f"%{clean_slug}%"),
+                    ClientProfile.company_name.ilike(f"%{clean_slug}%"),
+                    ClientProfile.instagram_username.ilike(f"%{clean_slug}%"),
+                ),
+            )
+            .limit(1)
+        )
+        res = await db.execute(search_stmt)
+        client_user = res.scalar_one_or_none()
+
+    if not client_user or client_user.role != "client":
+        raise NotFound(f"Client {client_id} not found", code="CLIENT_NOT_FOUND")
+
+    client_uuid = client_user.id
+
+    # 2. Access control for non-admin staff
     is_admin_role = actor.role in ("admin", "super_admin")
     if not is_admin_role:
         # Check that the calling user is assigned to this client
         ca_check = await db.execute(
             select(ClientAssignment.id).where(
-                ClientAssignment.client_id == client_id,
+                ClientAssignment.client_id == client_uuid,
                 ClientAssignment.user_id == actor.user_id,
             )
         )
@@ -539,20 +571,15 @@ async def get_client_brand_profile(
                 code="NOT_ASSIGNED_TO_CLIENT",
             )
 
-    # 2. Fetch client user
-    client_user = await db.get(User, client_id)
-    if not client_user or client_user.role != "client":
-        raise NotFound(f"Client {client_id} not found", code="CLIENT_NOT_FOUND")
-
     # 3. Fetch client profile with brand DNA
-    profile_stmt = select(ClientProfile).where(ClientProfile.user_id == client_id)
+    profile_stmt = select(ClientProfile).where(ClientProfile.user_id == client_uuid)
     profile = (await db.execute(profile_stmt)).scalar_one_or_none()
 
     # 4. Fetch subscription
     sub_stmt = select(Subscription, Plan).join(
         Plan, Plan.id == Subscription.plan_id, isouter=True
     ).where(
-        Subscription.client_id == client_id,
+        Subscription.client_id == client_uuid,
         Subscription.status.in_(["active", "trialing"]),
     ).order_by(Subscription.created_at.desc()).limit(1)
     sub_row = (await db.execute(sub_stmt)).first()
@@ -572,7 +599,7 @@ async def get_client_brand_profile(
     ca_stmt = (
         select(ClientAssignment, User)
         .join(User, User.id == ClientAssignment.user_id)
-        .where(ClientAssignment.client_id == client_id)
+        .where(ClientAssignment.client_id == client_uuid)
     )
     ca_rows = (await db.execute(ca_stmt)).all()
 
@@ -604,7 +631,7 @@ async def get_client_brand_profile(
         FROM tasks
         WHERE client_id = :cid
     """)
-    task_row = (await db.execute(task_stats_sql, {"cid": client_id})).first()
+    task_row = (await db.execute(task_stats_sql, {"cid": client_uuid})).first()
     task_stats = {
         "total": task_row[0] if task_row else 0,
         "pending": task_row[1] if task_row else 0,
@@ -613,7 +640,7 @@ async def get_client_brand_profile(
     }
 
     # 7. Quota usage
-    usage_stmt = select(UsageCounter).where(UsageCounter.client_id == client_id)
+    usage_stmt = select(UsageCounter).where(UsageCounter.client_id == client_uuid)
     usage_rows = (await db.execute(usage_stmt)).scalars().all()
     quota_usage = [
         {"kind": uc.kind, "quota": uc.quota, "used": uc.used}
@@ -637,7 +664,7 @@ async def get_client_brand_profile(
         onboarding_stage = 1
 
     return {
-        "client_id": str(client_id),
+        "client_id": str(client_uuid),
         "full_name": client_user.full_name,
         "email": client_user.email,
         "account_status": client_user.account_status,

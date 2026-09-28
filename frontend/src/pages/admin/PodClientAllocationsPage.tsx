@@ -141,6 +141,32 @@ const INITIAL_CLIENTS: ClientAccount[] = [
     isHighPriority: false,
     hasReviewToday: false,
   },
+  {
+    id: "client-ryze",
+    name: "Ryze",
+    avatar: "RZ",
+    avatarBg: "bg-[#166534]",
+    tierBadge: "STARTER GROWTH",
+    tierBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    statusBadge: "● Active Sprint",
+    statusBadgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    contact: "Sushmitaa S. (Brand Team)",
+    slackChannel: "#ryze-creo-pod-c",
+    reviewAssetsCount: 2,
+    deliverableTitle: "Morning Routine High-Energy Reel & Benefit Deck",
+    deliverables: [
+      { label: "Reels", current: 4, target: 4, percent: 100, color: "bg-emerald-500" },
+      { label: "Stories", current: 8, target: 10, percent: 80, color: "bg-emerald-500" },
+      { label: "Posts", current: 6, target: 8, percent: 75, color: "bg-blue-600" },
+    ],
+    assignees: [
+      { name: "Omar K.", role: "Motion", avatar: "OK", bg: "bg-[#0F172A]" },
+      { name: "Lena Ortiz", role: "Lead", avatar: "LO", bg: "bg-emerald-700" },
+    ],
+    nextHandoff: "Morning Routine Reel in Review",
+    isHighPriority: false,
+    hasReviewToday: true,
+  },
 ];
 
 export function PodClientAllocationsPage() {

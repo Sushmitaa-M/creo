@@ -1134,10 +1134,27 @@ aside .scrollbar-thin,
   color: var(--nebula-periwinkle) !important;
 }
 
-.bento-theme p, .bento-theme span, .bento-theme div,
+.bento-theme p,
 .bento-theme .text-slate-500, .bento-theme .text-slate-400, .bento-theme .text-slate-600, .bento-theme .text-gray-500,
-.bento-theme .text-\[\#64748B\], .bento-theme .text-\[\#97A0B3\] {
+.bento-theme .text-\[\#64748B\], .bento-theme .text-\[\#97A0B3\],
+.bento-theme .text-nebula-mist {
   color: var(--nebula-mist) !important;
+}
+
+/* --- High contrast active pill tabs & buttons --- */
+.bento-theme .bg-\[\#BCCCE6\],
+.bento-theme [class*="bg-\\[\\#BCCCE6\\]"],
+.bento-theme .bg-nebula-periwinkle {
+  background-color: #BCCCE6 !important;
+  color: #0B111C !important;
+}
+
+.bento-theme .bg-\[\#BCCCE6\] span,
+.bento-theme [class*="bg-\\[\\#BCCCE6\\]"] span,
+.bento-theme .bg-nebula-periwinkle span,
+.bento-theme .bg-\[\#BCCCE6\] *,
+.bento-theme [class*="bg-\\[\\#BCCCE6\\]"] * {
+  color: #0B111C !important;
 }
 
 .bento-theme .text-blue-600, .bento-theme .text-blue-500, .bento-theme .text-\[\#0052FF\], .bento-theme .text-\[\#2B7BC4\],

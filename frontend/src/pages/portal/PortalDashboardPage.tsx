@@ -274,26 +274,30 @@ export function PortalDashboardPage() {
 
       {/* Filter Pills */}
       <div className="grid grid-cols-4 items-center bg-[#0B111C] p-1.5 rounded-2xl border border-[#2A3446] text-xs font-bold gap-1 w-full">
-        {["All", "Reels", "Posts", "Stories"].map((filterName) => (
-          <button
-            key={filterName}
-            onClick={() => setActiveCalendarFilter(filterName)}
-            className={`py-2 px-1.5 sm:px-3 rounded-xl text-center transition-all cursor-pointer truncate ${
-              activeCalendarFilter === filterName
-                ? "bg-[#BCCCE6] text-[#0B111C] font-black shadow-sm"
-                : "text-[#97A0B3] hover:text-white hover:bg-[#161F2D]"
-            }`}
-          >
-            {filterName === "All" ? (
-              <>
-                <span className="hidden sm:inline">All Instagram</span>
-                <span className="sm:hidden">All</span>
-              </>
-            ) : (
-              filterName
-            )}
-          </button>
-        ))}
+        {["All", "Reels", "Posts", "Stories"].map((filterName) => {
+          const isSelected = activeCalendarFilter === filterName;
+          return (
+            <button
+              key={filterName}
+              type="button"
+              onClick={() => setActiveCalendarFilter(filterName)}
+              className={`py-2 px-1.5 sm:px-3 rounded-xl text-center transition-all cursor-pointer truncate font-bold ${
+                isSelected
+                  ? "!bg-[#BCCCE6] !text-[#0B111C] font-black shadow-sm"
+                  : "!text-[#97A0B3] hover:!text-white hover:bg-[#161F2D]"
+              }`}
+            >
+              <span
+                className={`truncate ${
+                  isSelected ? "!text-[#0B111C] font-black" : "!text-[#97A0B3] hover:!text-white font-bold"
+                }`}
+              >
+                <span className="hidden sm:inline">{filterName === "All" ? "All Instagram" : filterName}</span>
+                <span className="sm:hidden">{filterName}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
 
@@ -431,26 +435,30 @@ export function PortalDashboardPage() {
 
       {/* Filter Pills */}
       <div className="grid grid-cols-4 items-center bg-[#0B111C] p-1.5 rounded-2xl border border-[#2A3446] text-xs font-bold gap-1 w-full">
-        {["All", "Pending", "In Prod", "Approved"].map((filterName) => (
-          <button
-            key={filterName}
-            onClick={() => setActiveDeliverableFilter(filterName)}
-            className={`py-2 px-1.5 sm:px-3 rounded-xl text-center transition-all cursor-pointer truncate ${
-              activeDeliverableFilter === filterName
-                ? "bg-[#BCCCE6] text-[#0B111C] font-black shadow-sm"
-                : "text-[#97A0B3] hover:text-white hover:bg-[#161F2D]"
-            }`}
-          >
-            {filterName === "All" ? (
-              <>
-                <span className="hidden sm:inline">All Assets</span>
-                <span className="sm:hidden">All</span>
-              </>
-            ) : (
-              filterName
-            )}
-          </button>
-        ))}
+        {["All", "Pending", "In Prod", "Approved"].map((filterName) => {
+          const isSelected = activeDeliverableFilter === filterName;
+          return (
+            <button
+              key={filterName}
+              type="button"
+              onClick={() => setActiveDeliverableFilter(filterName)}
+              className={`py-2 px-1.5 sm:px-3 rounded-xl text-center transition-all cursor-pointer truncate font-bold ${
+                isSelected
+                  ? "!bg-[#BCCCE6] !text-[#0B111C] font-black shadow-sm"
+                  : "!text-[#97A0B3] hover:!text-white hover:bg-[#161F2D]"
+              }`}
+            >
+              <span
+                className={`truncate ${
+                  isSelected ? "!text-[#0B111C] font-black" : "!text-[#97A0B3] hover:!text-white font-bold"
+                }`}
+              >
+                <span className="hidden sm:inline">{filterName === "All" ? "All Assets" : filterName}</span>
+                <span className="sm:hidden">{filterName}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
     

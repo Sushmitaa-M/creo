@@ -153,7 +153,7 @@ export function PortalCalendarPage() {
       (subData?.is_active === true ||
         (!!subData?.subscription && ["active", "trialing"].includes(subData?.subscription?.status))));
 
-  const { data: rawEntries = [], isLoading: isEntriesLoading } = useQuery<CalendarEntry[]>({
+  const { data: rawEntriesData, isLoading: isEntriesLoading } = useQuery<CalendarEntry[]>({
     queryKey: ["calendar-entries", user?.id],
     queryFn: async () => {
       try {
@@ -167,7 +167,8 @@ export function PortalCalendarPage() {
   });
 
   const entries: CalendarEntry[] = useMemo(() => {
-    return rawEntries.map((e) => {
+    const list = rawEntriesData || [];
+    return list.map((e) => {
       let resolvedType: DeliverableType = "poster";
       const rawType = (e.type || "").toLowerCase();
       const rawFile = (e.file_type || "").toLowerCase();
@@ -194,7 +195,7 @@ export function PortalCalendarPage() {
         scheduled_time: e.scheduled_time || "11:00 AM",
       };
     });
-  }, [rawEntries]);
+  }, [rawEntriesData]);
 
   const navigateMonth = (direction: number) => {
     const totalMonths = currentYear * 12 + currentMonth + direction;

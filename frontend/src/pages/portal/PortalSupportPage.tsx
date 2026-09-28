@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
-import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
 import type { TicketItem } from "../../types/api";
 
 interface MessageEntry {
@@ -76,36 +75,22 @@ export function PortalSupportPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Subscription verification
-  const { data: subData, isLoading: isSubLoading } = useQuery({
+  // Subscription data for ticket metadata
+  const { data: subData } = useQuery({
     queryKey: ["client-subscription"],
     queryFn: () => request<any>("/api/v1/payments/subscription"),
-    staleTime: 0,
-    refetchOnMount: "always",
+    staleTime: 60000,
   });
-
-  const isExpired =
-    subData?.is_expired === true ||
-    subData?.subscription?.status === "expired" ||
-    subData?.subscription?.status === "canceled";
-
-  const isStaffOrAdmin = user?.role && user.role !== "client";
-
-  const isSubscribed =
-    isStaffOrAdmin ||
-    (!isExpired &&
-      (subData?.is_active === true ||
-        (!!subData?.subscription && ["active", "trialing"].includes(subData?.subscription?.status))));
 
   // Dashboard context
   const { data: dashData } = useQuery({
     queryKey: ["portal-dashboard", user?.id],
     queryFn: () => request<any>("/api/v1/portal/dashboard"),
-    enabled: isSubscribed,
+    enabled: !!user?.id,
   });
 
   // Real tickets query
-  const { data: serverTickets = [] } = useQuery<TicketItem[]>({
+  const { data: serverTickets } = useQuery<TicketItem[]>({
     queryKey: ["tickets", user?.id],
     queryFn: async () => {
       try {
@@ -115,7 +100,6 @@ export function PortalSupportPage() {
         return [];
       }
     },
-    enabled: isSubscribed,
     refetchInterval: 12000,
   });
 
@@ -229,12 +213,26 @@ export function PortalSupportPage() {
       }
     }
 
-    setTicketsList(merged);
-  }, [serverTickets, user]);
+    setTicketsList((prev) => {
+      if (prev.length === merged.length) {
+        const matches = prev.every((p, i) => {
+          const m = merged[i];
+          if (!m) return false;
+          return p.id === m.id && p.status === m.status && (p.messages?.length || 0) === (m.messages?.length || 0);
+        });
+        if (matches) return prev;
+      }
+      return merged;
+    });
+  }, [serverTickets, user?.full_name]);
 
   useEffect(() => {
     syncTickets();
-    const handleStorage = () => syncTickets();
+    const handleStorage = (e: StorageEvent) => {
+      if (!e.key || e.key === "creo_support_tickets") {
+        syncTickets();
+      }
+    };
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, [syncTickets]);
@@ -396,31 +394,6 @@ export function PortalSupportPage() {
     return true;
   });
 
-  if (isSubLoading) {
-    return (
-      <div className="animate-page-in space-y-6 max-w-[1440px] mx-auto px-4 md:px-8">
-        <div className="bg-[#161F2D] border border-[#2A3446] rounded-3xl p-12 text-center flex flex-col items-center justify-center min-h-[320px]">
-          <Loader2 className="size-8 text-[#7FA0D6] animate-spin mb-3" />
-          <p className="text-xs font-semibold text-[#97A0B3]">Checking Support Workspace Access...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isSubscribed) {
-    return (
-      <div className="animate-page-in space-y-6 max-w-[1440px] mx-auto px-4 md:px-8">
-        <SubscriptionLockedState
-          title={isExpired ? "Creative Retainer Expired" : "Support Desk Workspace Locked"}
-          description={
-            isExpired
-              ? "Your monthly creative retainer billing cycle has concluded. Priority support queue access is paused until you renew."
-              : "Access to dedicated support managers, priority hotline, and ticket queues requires an active retainer plan. Choose a plan to activate support workflows."
-          }
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="animate-page-in space-y-6 max-w-[1440px] mx-auto px-4 md:px-8 pb-12">

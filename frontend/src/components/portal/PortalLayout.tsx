@@ -1,6 +1,5 @@
 import { Outlet } from "react-router";
 import { CreoBottomNavbar } from "./CreoBottomNavbar";
-
 import { useRouteMemory } from "../../lib/useRouteMemory";
 import { AdminSidebarProvider } from "../admin/AdminSidebarContext";
 import { AdminSidebar } from "../admin/AdminSidebar";
@@ -36,9 +35,6 @@ export function PortalLayout() {
             <Outlet />
           </main>
 
-
-
-
           {/* Mobile Bottom Navigation Bar */}
           <CreoBottomNavbar />
         </div>
@@ -46,4 +42,3 @@ export function PortalLayout() {
     </AdminSidebarProvider>
   );
 }
-

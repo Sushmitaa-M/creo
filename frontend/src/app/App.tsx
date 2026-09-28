@@ -32,6 +32,7 @@ import { PortalPaymentsPage } from "../pages/portal/PortalPaymentsPage";
 import { PortalSupportPage } from "../pages/portal/PortalSupportPage";
 import { PortalAccountPage } from "../pages/portal/PortalAccountPage";
 import { PortalCreativePodPage } from "../pages/portal/PortalCreativePodPage";
+import { PortalLibraryPage } from "../pages/portal/PortalLibraryPage";
 
 // Ops Layout & Features
 import { OpsLayout } from "../components/ops/OpsLayout";
@@ -358,6 +359,7 @@ export function App() {
                 <Route path="payments" element={<PortalPaymentsPage />} />
                 <Route path="support" element={<PortalSupportPage />} />
                 <Route path="account" element={<PortalAccountPage />} />
+                <Route path="library" element={<PortalLibraryPage />} />
               </Route>
 
               {/* 5. Agency Operations Surface (Ops Paper Surface - Admin, Super Admin, Team) */}

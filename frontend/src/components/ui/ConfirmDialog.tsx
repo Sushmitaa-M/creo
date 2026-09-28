@@ -224,34 +224,34 @@ export function ConfirmDialog({
   const getToneBadgeStyle = () => {
     switch (tone) {
       case "success":
-        return "bg-emerald-50 border-emerald-200 text-emerald-600";
+        return "bg-emerald-500/10 border-emerald-500/20 text-emerald-500";
       case "warning":
-        return "bg-amber-50 border-amber-200 text-amber-600";
+        return "bg-amber-500/10 border-amber-500/20 text-amber-500";
       case "info":
-        return "bg-blue-50 border-blue-200 text-[#2B7BC4]";
+        return "bg-[#2B7BC4]/10 border-[#2B7BC4]/20 text-[#2B7BC4]";
       case "danger":
       default:
-        return "bg-rose-50 border-rose-200 text-rose-600";
+        return "bg-rose-500/10 border-rose-500/20 text-rose-500";
     }
   };
 
   const getConfirmButtonStyle = () => {
     switch (tone) {
       case "success":
-        return "bg-emerald-600 bg-gradient-to-r from-emerald-600 to-teal-700 hover:bg-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white shadow-md shadow-emerald-600/25";
+        return "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-900/20 border border-emerald-500/50";
       case "warning":
-        return "bg-amber-600 bg-gradient-to-r from-amber-600 to-amber-700 hover:bg-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-md shadow-amber-600/25";
+        return "bg-amber-600 hover:bg-amber-700 text-white shadow-md shadow-amber-900/20 border border-amber-500/50";
       case "info":
-        return "bg-[#2B7BC4] bg-gradient-to-r from-[#2B7BC4] to-[#1E609A] hover:brightness-110 text-white shadow-md shadow-blue-500/25";
+        return "bg-[#2B7BC4] hover:brightness-110 text-white shadow-md shadow-blue-900/20 border border-[#2B7BC4]/50";
       case "danger":
       default:
-        return "bg-rose-600 bg-gradient-to-r from-rose-600 to-rose-700 hover:bg-rose-700 hover:from-rose-700 hover:to-rose-800 text-white shadow-md shadow-rose-600/25";
+        return "bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-900/20 border border-rose-500/50";
     }
   };
 
   return createPortal(
     <div
-      className={`fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md transition-opacity duration-200 overflow-y-auto ${className || ""}`}
+      className={`fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center p-4 bg-[#05080F]/80 backdrop-blur-md transition-opacity duration-200 overflow-y-auto ${className || ""}`}
       onClick={(e) => {
         if (e.target === e.currentTarget && !isProcessing) {
           onClose();
@@ -259,7 +259,7 @@ export function ConfirmDialog({
       }}
     >
       <div
-        className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-slate-200/90 text-left transition-all duration-200 transform scale-100"
+        className="relative w-full max-w-md rounded-[24px] bg-[#161C2D] p-6 shadow-2xl border border-white/[0.05] text-left transition-all duration-200 transform scale-100"
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
@@ -269,7 +269,7 @@ export function ConfirmDialog({
           type="button"
           onClick={onClose}
           disabled={isProcessing}
-          className="absolute top-4 right-4 size-8 rounded-full bg-slate-100/80 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+          className="absolute top-4 right-4 size-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-[#9CA3AF] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
           aria-label="Close dialog"
         >
           <X className="size-4" />
@@ -286,13 +286,13 @@ export function ConfirmDialog({
           <div className="flex-1 pr-4">
             <h3
               id="confirm-dialog-title"
-              className="text-base sm:text-lg font-black text-[#0D2137] tracking-tight leading-snug"
+              className="text-base sm:text-lg font-black text-white tracking-tight leading-snug"
             >
               {title}
             </h3>
 
             {description && (
-              <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#9CA3AF] mt-1.5 leading-relaxed">
                 {description}
               </p>
             )}
@@ -302,20 +302,20 @@ export function ConfirmDialog({
         {/* Structured Details Bullet Points if provided */}
         {details && details.length > 0 && (
           <div
-            className={`mt-4 rounded-2xl p-3.5 border ${
+            className={`mt-4 rounded-[16px] p-3.5 border ${
               tone === "danger"
-                ? "bg-rose-50/50 border-rose-100"
+                ? "bg-rose-500/5 border-rose-500/10"
                 : tone === "warning"
-                ? "bg-amber-50/50 border-amber-100"
+                ? "bg-amber-500/5 border-amber-500/10"
                 : tone === "success"
-                ? "bg-emerald-50/50 border-emerald-100"
-                : "bg-blue-50/40 border-blue-100"
+                ? "bg-emerald-500/5 border-emerald-500/10"
+                : "bg-blue-500/5 border-blue-500/10"
             }`}
           >
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] mb-2">
               Action Summary & Impacts:
             </p>
-            <ul className="space-y-1.5 text-xs text-slate-700">
+            <ul className="space-y-1.5 text-xs text-[#9CA3AF]">
               {details.map((detail, idx) => (
                 <li key={idx} className="flex items-start gap-2">
                   <span
@@ -343,7 +343,7 @@ export function ConfirmDialog({
               type="button"
               onClick={onClose}
               disabled={isProcessing}
-              className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100/80 active:scale-95 text-xs font-bold transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl border border-white/[0.12] text-white hover:bg-white/[0.05] active:scale-95 text-xs font-bold transition-all cursor-pointer"
             >
               {cancelText}
             </button>

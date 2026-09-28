@@ -324,66 +324,66 @@ export function AdminTopHeader({
       : activeTab);
 
   return (
-    <div className="sticky top-0 z-40 w-full bg-[#0B111C]/90 backdrop-blur-md pt-3 sm:pt-4 pb-2.5 sm:pb-3 px-3.5 sm:px-8 transition-all">
-      <header className="max-w-[1500px] mx-auto bg-[#161F2D] rounded-2xl sm:rounded-full border border-[#2A3446] px-4 sm:px-7 lg:px-9 py-2.5 sm:py-3.5 flex items-center justify-between shadow-[0_8px_32px_rgba(5,8,16,0.6)] min-h-[58px] sm:min-h-[66px]">
+    <div className="sticky top-0 z-40 w-full bg-[#0B111C]/90 backdrop-blur-md pt-2 sm:pt-2.5 pb-1.5 sm:pb-2 px-3.5 sm:px-6 lg:px-8 transition-all">
+      <header className="max-w-[1500px] mx-auto bg-[#161F2D] rounded-xl sm:rounded-full border border-[#2A3446] px-3.5 sm:px-5 lg:px-6 py-1.5 sm:py-2 flex items-center justify-between shadow-[0_4px_20px_rgba(5,8,16,0.5)] min-h-[44px] sm:min-h-[48px]">
         {/* Left Section: Mobile Hamburger + Back Button + Mobile Brand Logo + Title */}
-        <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           {/* Mobile Hamburger Menu Toggle Button */}
           <button
             type="button"
             onClick={toggleMobile}
-            className="md:hidden size-10 rounded-full flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] transition-all cursor-pointer border border-transparent hover:border-[#2A3446] focus:outline-none focus:ring-2 focus:ring-[#7FA0D6] shrink-0"
+            className="md:hidden size-8 rounded-full flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] transition-all cursor-pointer border border-transparent hover:border-[#2A3446] focus:outline-none focus:ring-2 focus:ring-[#7FA0D6] shrink-0"
             aria-label="Open navigation sidebar"
             title="Open navigation menu"
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-4 h-4" />
           </button>
 
           {showBackButton && (
             <Link
               to={isClientRole ? "/portal" : isMemberRole ? "/workstation" : "/admin"}
-              className="p-1.5 rounded-full hover:bg-[#1F2C3F] text-[#97A0B3] hover:text-white transition-colors shrink-0"
+              className="p-1 rounded-full hover:bg-[#1F2C3F] text-[#97A0B3] hover:text-white transition-colors shrink-0"
               title="Go Back"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </Link>
           )}
 
           {/* Brand Logo - visible on mobile where sidebar is inside drawer */}
           <Link
             to={isClientRole ? "/portal" : isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
-            className="md:hidden flex items-center gap-0.5 font-black text-white text-base sm:text-lg tracking-tight shrink-0 px-1 hover:opacity-85 transition-opacity"
+            className="md:hidden flex items-center gap-0.5 font-black text-white text-sm sm:text-base tracking-tight shrink-0 px-1 hover:opacity-85 transition-opacity"
             title="creo. Home"
           >
-            creo<span className="text-[#7FA0D6] text-lg sm:text-xl leading-none">.</span>
+            creo<span className="text-[#7FA0D6] text-base sm:text-lg leading-none">.</span>
           </Link>
 
-          <span className="h-5 w-px bg-[#2A3446] mx-1 hidden sm:block shrink-0" />
+          <span className="h-4 w-px bg-[#2A3446] mx-1 hidden sm:block shrink-0" />
 
           {/* Active Page Title */}
-          <h1 className="text-xs sm:text-sm lg:text-base font-black text-white tracking-tight truncate">
+          <h1 className="text-xs sm:text-sm font-bold text-white tracking-tight truncate">
             {resolvedTitle}
           </h1>
         </div>
 
         {/* Right Utility Icons (Bell with Functional Dropdown, Profile with Dropdown) */}
-        <div className="flex items-center gap-2 sm:gap-3.5 shrink-0 justify-end">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 justify-end">
           {/* Functional Notification Bell Container */}
           <div className="relative" ref={notifRef}>
             <button
               type="button"
               title="Notifications"
               onClick={() => setNotificationOpen(!notificationOpen)}
-              className={`size-10 sm:size-11 rounded-full flex items-center justify-center transition-all relative cursor-pointer ${
+              className={`size-8 sm:size-8.5 rounded-full flex items-center justify-center transition-all relative cursor-pointer ${
                 notificationOpen
                   ? "bg-[#1F2C3F] text-white shadow-sm border border-[#7FA0D6]"
                   : "text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F]"
               }`}
               aria-label="Notifications"
             >
-              <Bell className="size-5 sm:size-5.5" />
+              <Bell className="size-4 sm:size-4.5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 size-4 sm:size-4.5 bg-[#7FA0D6] text-[#0B111C] rounded-full text-[10px] sm:text-[11px] font-black flex items-center justify-center border-2 border-[#161F2D] animate-pulse">
+                <span className="absolute -top-0.5 -right-0.5 size-3.5 sm:size-4 bg-[#7FA0D6] text-[#0B111C] rounded-full text-[9px] sm:text-[10px] font-black flex items-center justify-center border border-[#161F2D] animate-pulse">
                   {unreadCount}
                 </span>
               )}
@@ -525,7 +525,7 @@ export function AdminTopHeader({
               type="button"
               title={user?.full_name || "Profile & Account"}
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-              className="size-10 sm:size-11 rounded-full bg-[#BCCCE6] hover:bg-[#D4E2F5] text-[#0B111C] font-black text-sm sm:text-base flex items-center justify-center shadow-md shadow-[#050810]/40 cursor-pointer ml-1 transition-all focus:outline-none focus:ring-2 focus:ring-[#7FA0D6]"
+              className="size-8 sm:size-8.5 rounded-full bg-[#BCCCE6] hover:bg-[#D4E2F5] text-[#0B111C] font-black text-xs sm:text-sm flex items-center justify-center shadow-md shadow-[#050810]/40 cursor-pointer ml-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#7FA0D6]"
               aria-label="User profile menu"
             >
               {(user?.full_name?.[0] || user?.email?.[0] || (isClientRole ? "C" : isMemberRole ? "D" : "A")).toUpperCase()}

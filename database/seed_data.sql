@@ -374,30 +374,107 @@ VALUES
 ON CONFLICT (team_id, user_id) DO NOTHING;
 
 -- -----------------------------------------------------------------------------
--- 4. STAFF PROFILES (Department, Skills, Capacity)
+-- 4. STAFF PROFILES (Department, Craft Role, Skills, Capacity)
 -- -----------------------------------------------------------------------------
+-- Ensure required columns exist on staff_profiles
+ALTER TABLE staff_profiles ADD COLUMN IF NOT EXISTS agency_id UUID REFERENCES agencies(id) ON DELETE CASCADE;
+ALTER TABLE staff_profiles ADD COLUMN IF NOT EXISTS craft_role VARCHAR(30) DEFAULT 'graphic_designer' NOT NULL;
+ALTER TABLE staff_profiles ADD COLUMN IF NOT EXISTS daily_capacity INT DEFAULT 4 NOT NULL;
+ALTER TABLE staff_profiles ADD COLUMN IF NOT EXISTS daily_points INT DEFAULT 8 NOT NULL;
+ALTER TABLE staff_profiles ADD COLUMN IF NOT EXISTS monthly_points INT DEFAULT 100 NOT NULL;
+ALTER TABLE staff_profiles ADD COLUMN IF NOT EXISTS skills TEXT[] DEFAULT '{}'::text[] NOT NULL;
+ALTER TABLE staff_profiles ADD COLUMN IF NOT EXISTS sub_skills TEXT[] DEFAULT '{}'::text[] NOT NULL;
+ALTER TABLE staff_profiles ADD COLUMN IF NOT EXISTS is_accepting_work BOOLEAN DEFAULT true NOT NULL;
+
+-- Remove any duplicate user_id rows if present before adding unique index
+DELETE FROM staff_profiles a USING staff_profiles b
+WHERE a.ctid < b.ctid AND a.user_id = b.user_id;
+
+-- Ensure unique constraint / index on user_id for ON CONFLICT resolution
+CREATE UNIQUE INDEX IF NOT EXISTS idx_staff_profiles_user_id ON staff_profiles (user_id);
+
+DO $$ 
+BEGIN 
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'staff_profiles_user_id_key'
+    ) THEN 
+        ALTER TABLE staff_profiles ADD CONSTRAINT staff_profiles_user_id_key UNIQUE (user_id);
+    END IF; 
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
+END $$;
+
 INSERT INTO staff_profiles (
-    user_id, agency_id, department, skills, weekly_capacity_hours, daily_capacity_hours, team_lead_id
+    user_id, agency_id, department, craft_role, skills, daily_capacity, daily_points, monthly_points, is_accepting_work, team_lead_id
 ) VALUES
-('00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-000000000001', 'Creative Direction', '["creative_direction", "brand_systems", "sprint_planning"]'::jsonb, 40, 8, NULL),
-('00000000-0000-0000-0000-0000000000a2', '00000000-0000-0000-0000-000000000001', 'Video Production', '["premiere_pro", "after_effects", "reels_editing", "sound_design"]'::jsonb, 40, 8, '00000000-0000-0000-0000-0000000000a1'),
-('00000000-0000-0000-0000-0000000000a3', '00000000-0000-0000-0000-000000000001', 'Visual Design', '["figma", "brand_guidelines", "typography", "social_banners"]'::jsonb, 40, 8, '00000000-0000-0000-0000-0000000000a1'),
+-- Super Admin & Admins
+('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'executive', 'super_admin', ARRAY['governance', 'finance', 'strategy', 'operations']::text[], 8, 16, 200, true, NULL),
+('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'operations', 'operations_admin', ARRAY['workflow_dispatch', 'sla_monitoring', 'quality_control', 'client_relations']::text[], 8, 16, 200, true, NULL),
+('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000001', 'creative', 'creative_admin', ARRAY['creative_direction', 'brand_strategy', 'art_direction', 'video_production']::text[], 8, 16, 200, true, NULL),
 
-('00000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-000000000001', 'Creative Direction', '["campaign_strategy", "creative_direction", "growth_marketing"]'::jsonb, 40, 8, NULL),
-('00000000-0000-0000-0000-0000000000b2', '00000000-0000-0000-0000-000000000001', 'Video Production', '["davinci_resolve", "capcut_mastery", "9_16_reels", "cinematics"]'::jsonb, 40, 8, '00000000-0000-0000-0000-0000000000b1'),
-('00000000-0000-0000-0000-0000000000b3', '00000000-0000-0000-0000-000000000001', 'Visual Design', '["carousel_design", "posters", "product_mockups", "figma"]'::jsonb, 40, 8, '00000000-0000-0000-0000-0000000000b1'),
+-- Pod Alpha (Pod A)
+('00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-000000000001', 'creative', 'team_lead', ARRAY['creative_direction', 'brand_systems', 'sprint_planning']::text[], 4, 8, 100, true, NULL),
+('00000000-0000-0000-0000-0000000000a2', '00000000-0000-0000-0000-000000000001', 'video', 'video_editor', ARRAY['premiere_pro', 'after_effects', 'reels_editing', 'sound_design']::text[], 4, 8, 100, true, '00000000-0000-0000-0000-0000000000a1'),
+('00000000-0000-0000-0000-0000000000a3', '00000000-0000-0000-0000-000000000001', 'design', 'graphic_designer', ARRAY['figma', 'brand_guidelines', 'typography', 'social_banners']::text[], 4, 8, 100, true, '00000000-0000-0000-0000-0000000000a1'),
 
-('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-000000000001', 'Creative Direction', '["art_direction", "luxury_aesthetics", "creative_direction"]'::jsonb, 40, 8, NULL),
-('00000000-0000-0000-0000-0000000000c2', '00000000-0000-0000-0000-000000000001', 'Video Production', '["motion_graphics", "short_form_editing", "color_grading"]'::jsonb, 40, 8, '00000000-0000-0000-0000-0000000000c1'),
-('00000000-0000-0000-0000-0000000000c3', '00000000-0000-0000-0000-000000000001', 'Visual Design', '["modern_minimalism", "illustrations", "figma", "social_banners"]'::jsonb, 40, 8, '00000000-0000-0000-0000-0000000000c1')
+-- Pod Beta (Pod B)
+('00000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-000000000001', 'creative', 'team_lead', ARRAY['campaign_strategy', 'creative_direction', 'growth_marketing']::text[], 4, 8, 100, true, NULL),
+('00000000-0000-0000-0000-0000000000b4', '00000000-0000-0000-0000-000000000001', 'creative', 'team_lead', ARRAY['campaign_strategy', 'creative_direction', 'growth_marketing']::text[], 4, 8, 100, true, NULL),
+('00000000-0000-0000-0000-0000000000b2', '00000000-0000-0000-0000-000000000001', 'video', 'video_editor', ARRAY['davinci_resolve', 'capcut_mastery', '9_16_reels', 'cinematics']::text[], 4, 8, 100, true, '00000000-0000-0000-0000-0000000000b1'),
+('00000000-0000-0000-0000-0000000000b5', '00000000-0000-0000-0000-000000000001', 'video', 'video_editor', ARRAY['davinci_resolve', 'capcut_mastery', '9_16_reels', 'cinematics']::text[], 4, 8, 100, true, '00000000-0000-0000-0000-0000000000b1'),
+('00000000-0000-0000-0000-0000000000b3', '00000000-0000-0000-0000-000000000001', 'design', 'graphic_designer', ARRAY['carousel_design', 'posters', 'product_mockups', 'figma']::text[], 4, 8, 100, true, '00000000-0000-0000-0000-0000000000b1'),
+
+-- Pod Gamma (Pod C)
+('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-000000000001', 'creative', 'team_lead', ARRAY['art_direction', 'luxury_aesthetics', 'creative_direction']::text[], 4, 8, 100, true, NULL),
+('00000000-0000-0000-0000-0000000000c2', '00000000-0000-0000-0000-000000000001', 'video', 'video_editor', ARRAY['motion_graphics', 'short_form_editing', 'color_grading']::text[], 4, 8, 100, true, '00000000-0000-0000-0000-0000000000c1'),
+('00000000-0000-0000-0000-0000000000c3', '00000000-0000-0000-0000-000000000001', 'design', 'graphic_designer', ARRAY['modern_minimalism', 'illustrations', 'figma', 'social_banners']::text[], 4, 8, 100, true, '00000000-0000-0000-0000-0000000000c1')
 ON CONFLICT (user_id) DO UPDATE SET
+    agency_id = EXCLUDED.agency_id,
     department = EXCLUDED.department,
+    craft_role = EXCLUDED.craft_role,
     skills = EXCLUDED.skills,
-    weekly_capacity_hours = EXCLUDED.weekly_capacity_hours,
-    daily_capacity_hours = EXCLUDED.daily_capacity_hours,
+    daily_capacity = EXCLUDED.daily_capacity,
+    daily_points = EXCLUDED.daily_points,
+    monthly_points = EXCLUDED.monthly_points,
+    is_accepting_work = EXCLUDED.is_accepting_work,
     team_lead_id = EXCLUDED.team_lead_id;
 
 -- -----------------------------------------------------------------------------
--- 5. REFRESH MATERIALIZED VIEW
+-- 5. CLIENT PROFILE (Ryze Mushroom Coffee)
 -- -----------------------------------------------------------------------------
-REFRESH MATERIALIZED VIEW mv_exec_kpis;
+CREATE TABLE IF NOT EXISTS client_profiles (
+    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    company_name TEXT,
+    instagram_username VARCHAR(255),
+    brand_summary TEXT,
+    timezone VARCHAR(50) DEFAULT 'Asia/Kolkata' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_profiles_user_id ON client_profiles (user_id);
+
+INSERT INTO client_profiles (
+    user_id, company_name, instagram_username, brand_summary, timezone
+) VALUES (
+    '00000000-0000-0000-0000-0000000000d1',
+    'Ryze Mushroom Coffee',
+    'ryzemushroomcoffee',
+    'Organic functional mushroom coffee for sustained morning energy, razor-sharp focus, and zero jitters.',
+    'Asia/Kolkata'
+)
+ON CONFLICT (user_id) DO UPDATE SET
+    company_name = EXCLUDED.company_name,
+    instagram_username = EXCLUDED.instagram_username,
+    brand_summary = EXCLUDED.brand_summary;
+
+-- -----------------------------------------------------------------------------
+-- 6. REFRESH MATERIALIZED VIEW (IF EXISTS)
+-- -----------------------------------------------------------------------------
+DO $$ 
+BEGIN 
+    IF EXISTS (SELECT 1 FROM pg_matviews WHERE matviewname = 'mv_exec_kpis') THEN 
+        REFRESH MATERIALIZED VIEW mv_exec_kpis; 
+    END IF; 
+END $$;

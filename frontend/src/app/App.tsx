@@ -31,6 +31,7 @@ import { PortalPaymentsPage } from "../pages/portal/PortalPaymentsPage";
 import { PortalSupportPage } from "../pages/portal/PortalSupportPage";
 import { PortalAccountPage } from "../pages/portal/PortalAccountPage";
 import { PortalCreativePodPage } from "../pages/portal/PortalCreativePodPage";
+import { PortalLibraryPage } from "../pages/portal/PortalLibraryPage";
 
 // Ops Layout & Features
 import { OpsLayout } from "../components/ops/OpsLayout";
@@ -130,10 +131,10 @@ const SlackChatPage = lazy(() =>
 
 function RouteLoading() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FAFAF8] text-[#14171C] text-sm">
+    <div className="flex min-h-screen items-center justify-center bg-[#0B111C] text-[#F8FAFC] text-sm">
       <div className="flex flex-col items-center gap-3">
-        <div className="size-8 animate-spin rounded-full border-3 border-[#2B7BC4] border-t-transparent" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#6B7280]">Loading Creo...</span>
+        <div className="size-8 animate-spin rounded-full border-3 border-[#7FA0D6] border-t-transparent" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#97A0B3]">Loading Creo...</span>
       </div>
     </div>
   );
@@ -379,6 +380,7 @@ export function App() {
                 <Route path="payments" element={<PortalPaymentsPage />} />
                 <Route path="support" element={<PortalSupportPage />} />
                 <Route path="account" element={<PortalAccountPage />} />
+                <Route path="library" element={<PortalLibraryPage />} />
               </Route>
 
               {/* 5. Agency Operations Surface (Ops Paper Surface - Admin, Super Admin, Team) */}

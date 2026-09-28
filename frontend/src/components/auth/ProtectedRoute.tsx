@@ -30,10 +30,10 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FAFAF8] text-[#14171C]">
+      <div className="flex min-h-screen items-center justify-center bg-[#0B111C] text-[#F8FAFC]">
         <div className="flex flex-col items-center gap-3">
-          <div className="size-8 animate-spin rounded-full border-3 border-[#2B7BC4] border-t-transparent" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+          <div className="size-8 animate-spin rounded-full border-3 border-[#7FA0D6] border-t-transparent" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#97A0B3]">
             Verifying session...
           </span>
         </div>

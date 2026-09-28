@@ -113,18 +113,18 @@ export function MemberSchedulePTOPage() {
         )}
 
         {/* 1. Leave & Capacity Ledger Action Strip */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#161F2D] p-2.5 sm:px-4 sm:py-2.5 rounded-2xl border border-[#2A3446]/80 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#161F2D] p-2.5 sm:px-4 sm:py-3 rounded-2xl border border-[#2A3446]/80 shadow-2xs">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-[#7FA0D6]/150" />
-            <span className="text-xs font-black text-white tracking-tight">LEAVE & CAPACITY LEDGER</span>
-            <span className="text-[11px] text-[#97A0B3] font-medium hidden sm:inline">• 2026 Annual Allocation & Coverage Pairing</span>
+            <span className="size-2 rounded-full bg-[#7FA0D6]" />
+            <span className="text-xs sm:text-sm font-black text-white tracking-tight">LEAVE & CAPACITY LEDGER</span>
+            <span className="text-xs text-[#97A0B3] font-medium hidden sm:inline">• 2026 Annual Allocation & Coverage Pairing</span>
           </div>
 
           <button
             onClick={() => setRequestPtoModalOpen(true)}
-            className="px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer w-full sm:w-auto"
+            className="px-3.5 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer w-full sm:w-auto"
           >
-            <Plane className="size-3.5" />
+            <Plane className="size-4" />
             <span>Request Time Off / Leave</span>
           </button>
         </div>
@@ -137,24 +137,24 @@ export function MemberSchedulePTOPage() {
           className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3"
         >
           {/* Paid Time Off */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 PAID TIME OFF (PTO)
               </span>
-              <div className="size-6 sm:size-7 rounded-lg bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
-                <Plane className="size-3 sm:size-3.5" />
+              <div className="size-7 sm:size-8 rounded-lg bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
+                <Plane className="size-4" />
               </div>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">{ptoRemaining}</span>
-                <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Days Left</span>
+                <span className="text-xl sm:text-2xl font-black text-white">{ptoRemaining}</span>
+                <span className="text-xs font-extrabold text-[#97A0B3]">Days Left</span>
               </div>
-              <div className="w-full h-1.5 bg-[#1F2C3F] rounded-full overflow-hidden my-1">
+              <div className="w-full h-2 bg-[#1F2C3F] rounded-full overflow-hidden my-1">
                 <div className="h-full bg-blue-600 rounded-full smooth-progress-fill w-[72%]" />
               </div>
-              <div className="flex items-center justify-between pt-1 border-t border-[#2A3446] text-[#97A0B3] font-medium text-[10px] sm:text-[11px]">
+              <div className="flex items-center justify-between pt-1 border-t border-[#2A3446] text-[#97A0B3] font-semibold text-xs">
                 <span>Used: 5.5 d</span>
                 <span>20 d Annual</span>
               </div>
@@ -162,42 +162,42 @@ export function MemberSchedulePTOPage() {
           </div>
 
           {/* Sick & Medical */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 SICK & MEDICAL
               </span>
-              <div className="size-6 sm:size-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <Shield className="size-3 sm:size-3.5" />
+              <div className="size-7 sm:size-8 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
+                <Shield className="size-4" />
               </div>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">{sickRemaining}</span>
-                <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Days Available</span>
+                <span className="text-xl sm:text-2xl font-black text-white">{sickRemaining}</span>
+                <span className="text-xs font-extrabold text-[#97A0B3]">Days Available</span>
               </div>
               <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]">
-                <span className="font-bold text-[#7FA0D6] text-[10px] sm:text-[11px]">● 1 pending half-day</span>
+                <span className="font-extrabold text-[#7FA0D6] text-xs">● 1 pending half-day</span>
               </div>
             </div>
           </div>
 
           {/* Floating & Comp */}
-          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
+          <div className="bg-[#161F2D] rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-[#2A3446]/80 shadow-2xs hover-card-innovative flex flex-col justify-between">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 FLOATING & COMP
               </span>
-              <div className="size-6 sm:size-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <Calendar className="size-3 sm:size-3.5" />
+              <div className="size-7 sm:size-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                <Calendar className="size-4" />
               </div>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">{compRemaining}</span>
-                <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Days Available</span>
+                <span className="text-xl sm:text-2xl font-black text-white">{compRemaining}</span>
+                <span className="text-xs font-extrabold text-[#97A0B3]">Days Available</span>
               </div>
-              <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[#97A0B3] text-[10px] sm:text-[11px]">
+              <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[#97A0B3] text-xs font-semibold">
                 <span>Valid until Dec 31, 2025</span>
               </div>
             </div>
@@ -217,12 +217,12 @@ export function MemberSchedulePTOPage() {
             <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#2A3446]">
                 <div>
-                  <h2 className="text-sm font-black text-white">Active & Historical Leave Requests</h2>
-                  <p className="text-[11px] text-[#97A0B3]">Automated handoff telemetry linked directly to Pod A render pipelines</p>
+                  <h2 className="text-base sm:text-lg font-black text-white">Active & Historical Leave Requests</h2>
+                  <p className="text-xs text-[#97A0B3]">Automated handoff telemetry linked directly to Pod A render pipelines</p>
                 </div>
                 <button
                   onClick={() => showToast("Exported PTO Audit Log CSV report", "success")}
-                  className="text-[11px] font-bold text-[#7FA0D6] hover:underline cursor-pointer"
+                  className="text-xs font-extrabold text-[#7FA0D6] hover:underline cursor-pointer"
                 >
                   Export Audit Log
                 </button>
@@ -231,42 +231,42 @@ export function MemberSchedulePTOPage() {
               {/* Active Requests List */}
               <div className="space-y-2.5">
                 {activeRequests.map((req) => (
-                  <div key={req.id} className="p-3 sm:p-3.5 rounded-xl bg-[#7FA0D6]/15/40 border border-[#7FA0D6]/30/70 hover-card-innovative space-y-2.5">
+                  <div key={req.id} className="p-3 sm:p-4 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative space-y-2.5">
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                       <div className="flex items-start gap-2.5">
-                        <div className="size-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-black">
+                        <div className="size-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 text-sm font-black shadow-md">
                           ⚡
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-xs font-black text-white">{req.title}</h4>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#7FA0D6]/20 text-blue-800">
+                            <h4 className="text-sm font-black text-white">{req.title}</h4>
+                            <span className="px-2 py-0.5 rounded-md text-xs font-extrabold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
                               {req.status}
                             </span>
                           </div>
-                          <p className="text-[11px] text-[#97A0B3] mt-0.5">{req.dateRange}</p>
+                          <p className="text-xs text-[#97A0B3] mt-0.5 font-medium">{req.dateRange}</p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 self-start">
+                      <span className="text-xs font-bold text-emerald-400 bg-emerald-500/15 px-2.5 py-1 rounded-md border border-emerald-500/30 self-start">
                         {req.tag}
                       </span>
                     </div>
 
-                    <div className="p-2.5 bg-[#161F2D] rounded-xl border border-[#2A3446] text-xs text-[#F1F5F9] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="p-3 bg-[#161F2D] rounded-xl border border-[#2A3446] text-xs text-[#F1F5F9] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
-                        <span className="font-bold text-white">Designated Pod Backup:</span>{" "}
-                        <span className="text-[11px]">{req.backup}</span>
+                        <span className="font-extrabold text-white">Designated Pod Backup:</span>{" "}
+                        <span className="text-xs text-[#97A0B3] font-medium">{req.backup}</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <button
                           onClick={() => setModifyModalOpen(true)}
-                          className="px-2.5 py-1 rounded-lg border border-[#2A3446] text-[#F1F5F9] text-xs font-bold hover:bg-[#0B111C] cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl border border-[#2A3446] text-[#F1F5F9] text-xs font-bold hover:bg-[#0B111C] cursor-pointer"
                         >
                           Modify Request
                         </button>
                         <button
                           onClick={() => setCancelModalOpen(true)}
-                          className="px-2.5 py-1 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-bold cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-bold cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -284,36 +284,36 @@ export function MemberSchedulePTOPage() {
 
               {/* Past Requests */}
               <div className="pt-2 space-y-2">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
+                <div className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                   PAST REQUESTS (SPRINT CYCLES 07 – 09)
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-slate-200 text-[#F1F5F9] flex items-center justify-center font-bold text-xs">
+                <div className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative flex items-center justify-between text-xs sm:text-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg bg-[#1F2C3F] text-white flex items-center justify-center font-bold text-sm">
                       🏖️
                     </div>
                     <div>
-                      <div className="font-bold text-white">Annual Leave – 3 Days</div>
-                      <div className="text-[11px] text-[#97A0B3]">Oct 12 – Oct 14, 2025 • Covered by Chloe Tan</div>
+                      <div className="font-black text-white text-xs sm:text-sm">Annual Leave – 3 Days</div>
+                      <div className="text-xs text-[#97A0B3]">Oct 12 – Oct 14, 2025 • Covered by Chloe Tan</div>
                     </div>
                   </div>
-                  <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-[10px]">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs">
                     Approved & Completed
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-slate-200 text-[#F1F5F9] flex items-center justify-center font-bold text-xs">
+                <div className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative flex items-center justify-between text-xs sm:text-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg bg-[#1F2C3F] text-white flex items-center justify-center font-bold text-sm">
                       🎉
                     </div>
                     <div>
-                      <div className="font-bold text-white">Floating Holiday – 1 Day</div>
-                      <div className="text-[11px] text-[#97A0B3]">Sep 22, 2025 • Standup asynchronous catchup</div>
+                      <div className="font-black text-white text-xs sm:text-sm">Floating Holiday – 1 Day</div>
+                      <div className="text-xs text-[#97A0B3]">Sep 22, 2025 • Standup asynchronous catchup</div>
                     </div>
                   </div>
-                  <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-[10px]">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs">
                     Approved & Completed
                   </span>
                 </div>
@@ -324,47 +324,47 @@ export function MemberSchedulePTOPage() {
             <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#2A3446]">
                 <div className="flex items-center gap-2.5">
-                  <h3 className="text-sm font-black text-white">November 2025</h3>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
+                  <h3 className="text-base font-black text-white">November 2025</h3>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
                     Sprint 09 / Week 45-46
                   </span>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <button className="p-1 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3]">
+                  <button className="p-1.5 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3] cursor-pointer">
                     <ChevronLeft className="size-4" />
                   </button>
-                  <span className="text-xs font-bold text-[#F1F5F9] px-1.5">Nov 2025</span>
-                  <button className="p-1 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3]">
+                  <span className="text-xs sm:text-sm font-bold text-[#F1F5F9] px-2">Nov 2025</span>
+                  <button className="p-1.5 rounded-lg hover:bg-[#1F2C3F] text-[#97A0B3] cursor-pointer">
                     <ChevronRight className="size-4" />
                   </button>
                 </div>
               </div>
 
               {/* Legend */}
-              <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-[#97A0B3]">
-                <span className="flex items-center gap-1">
-                  <span className="size-2 rounded-full bg-blue-600" />
+              <div className="flex flex-wrap items-center gap-3 text-xs font-extrabold text-[#97A0B3]">
+                <span className="flex items-center gap-1.5">
+                  <span className="size-2.5 rounded-full bg-blue-600" />
                   Duty / On-Deck
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="size-2 rounded-full bg-amber-500" />
+                <span className="flex items-center gap-1.5">
+                  <span className="size-2.5 rounded-full bg-amber-500" />
                   Leave / Pending Off
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="size-2 rounded-full bg-rose-500" />
+                <span className="flex items-center gap-1.5">
+                  <span className="size-2.5 rounded-full bg-rose-500" />
                   Sprint Deadline Lock
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="flex items-center gap-1.5">
+                  <span className="size-2.5 rounded-full bg-emerald-500" />
                   Maya Lin (Pod Lead Active)
                 </span>
               </div>
 
               {/* Calendar Grid */}
-              <div className="grid grid-cols-7 gap-1.5 text-center text-xs">
+              <div className="grid grid-cols-7 gap-1.5 text-center">
                 {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((d) => (
-                  <div key={d} className="font-bold text-[#97A0B3] text-[10px] py-0.5">
+                  <div key={d} className="font-black text-white text-xs sm:text-sm py-1">
                     {d}
                   </div>
                 ))}
@@ -409,32 +409,32 @@ export function MemberSchedulePTOPage() {
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className={`min-h-[48px] p-1 rounded-lg border flex flex-col justify-between transition-colors ${
+                    className={`min-h-[56px] sm:min-h-[64px] p-1.5 rounded-xl border flex flex-col justify-between transition-colors ${
                       item.today
-                        ? "bg-[#7FA0D6]/15/80 border-blue-400 font-black shadow-2xs ring-1 ring-blue-500/20"
+                        ? "bg-[#7FA0D6]/20 border-blue-400 font-black shadow-md ring-1 ring-blue-500/30 text-white"
                         : item.holiday
-                        ? "bg-purple-50 border-purple-200 text-purple-800"
+                        ? "bg-purple-500/15 border-purple-500/30 text-purple-300"
                         : item.warn
-                        ? "bg-amber-50 border-amber-300 text-amber-900"
+                        ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
                         : item.alert
-                        ? "bg-rose-50 border-rose-200 text-rose-800"
+                        ? "bg-rose-500/15 border-rose-500/30 text-rose-300"
                         : item.muted
-                        ? "bg-[#0B111C]/40 border-[#2A3446] text-slate-300"
-                        : "bg-[#161F2D] border-[#2A3446] hover:border-[#2A3446] text-[#F1F5F9]"
+                        ? "bg-[#0B111C]/40 border-[#2A3446] text-slate-400"
+                        : "bg-[#161F2D] border-[#2A3446] hover:border-[#7FA0D6]/40 text-[#F1F5F9]"
                     }`}
                   >
-                    <span className="text-[10px] font-bold text-left">{item.day}</span>
+                    <span className="text-xs sm:text-sm font-black text-left">{item.day}</span>
                     {item.label && (
                       <span
-                        className={`text-[8.5px] font-black rounded px-1 py-0.2 truncate ${
+                        className={`text-[10px] sm:text-xs font-extrabold rounded px-1.5 py-0.5 truncate ${
                           item.today
-                            ? "bg-blue-600 text-white"
+                            ? "bg-blue-600 text-white shadow-xs"
                             : item.warn
-                            ? "bg-amber-200 text-amber-900"
+                            ? "bg-amber-500/25 text-amber-300 border border-amber-500/40"
                             : item.alert
-                            ? "bg-rose-200 text-rose-900"
+                            ? "bg-rose-500/25 text-rose-300 border border-rose-500/40"
                             : item.holiday
-                            ? "bg-purple-200 text-purple-900"
+                            ? "bg-purple-500/25 text-purple-300 border border-purple-500/40"
                             : "bg-[#1F2C3F] text-[#F1F5F9]"
                         }`}
                       >
@@ -453,85 +453,85 @@ export function MemberSchedulePTOPage() {
             <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-2.5 border-b border-[#2A3446]">
                 <div>
-                  <h3 className="text-xs font-black text-white">Today's Pod Schedule</h3>
-                  <p className="text-[10px] text-[#97A0B3] font-medium">Monday, Nov 3 • Core Hours (09:00 - 18:00)</p>
+                  <h3 className="text-sm font-black text-white">Today's Pod Schedule</h3>
+                  <p className="text-xs text-[#97A0B3] font-medium">Monday, Nov 3 • Core Hours (09:00 - 18:00)</p>
                 </div>
-                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                   ● Active Shift
                 </span>
               </div>
 
               {/* Schedule Items */}
-              <div className="space-y-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-[#7FA0D6]/15/60 border border-[#7FA0D6]/30/80 hover-card-innovative space-y-1">
+              <div className="space-y-2.5 text-xs sm:text-sm">
+                <div className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446] hover-card-innovative space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-blue-950 text-[11px]">10:00 AM – 10:30 AM</span>
-                    <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-blue-600 text-white uppercase">
+                    <span className="font-extrabold text-[#7FA0D6] text-xs">10:00 AM – 10:30 AM</span>
+                    <span className="px-2 py-0.5 rounded text-xs font-extrabold bg-blue-600 text-white uppercase">
                       Mandatory
                     </span>
                   </div>
-                  <div className="font-black text-white text-xs">Pod A Daily Standup</div>
-                  <div className="text-[10.5px] text-[#97A0B3]">Sprint 09 Blocker Sweep & render server allocation</div>
-                  <div className="flex items-center justify-between pt-1 border-t border-[#7FA0D6]/30/50 text-[11px]">
+                  <div className="font-black text-white text-xs sm:text-sm">Pod A Daily Standup</div>
+                  <div className="text-xs text-[#97A0B3]">Sprint 09 Blocker Sweep & render server allocation</div>
+                  <div className="flex items-center justify-between pt-1 border-t border-[#2A3446] text-xs">
                     <button
                       onClick={() => setZoomModalOpen(true)}
                       className="text-[#7FA0D6] font-bold hover:underline cursor-pointer"
                     >
                       🔗 Join Zoom Session
                     </button>
-                    <span className="text-[10px] text-[#97A0B3]">5 Attendees</span>
+                    <span className="text-xs text-[#97A0B3]">5 Attendees</span>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]/80 hover-card-innovative space-y-1">
+                <div className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446]/80 hover-card-innovative space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-white text-[11px]">01:30 PM – 02:15 PM</span>
-                    <span className="text-[10px] text-[#97A0B3]">Conf Room 3</span>
+                    <span className="font-extrabold text-[#7FA0D6] text-xs">01:30 PM – 02:15 PM</span>
+                    <span className="text-xs text-[#97A0B3]">Conf Room 3</span>
                   </div>
-                  <div className="font-black text-white text-xs">Creative Handoff: Northwind Labs</div>
-                  <div className="text-[10.5px] text-[#97A0B3]">3D Renders presentation with Product Lead</div>
-                  <div className="flex items-center justify-between pt-1 border-t border-[#2A3446] text-[10px] text-[#97A0B3]">
+                  <div className="font-black text-white text-xs sm:text-sm">Creative Handoff: Northwind Labs</div>
+                  <div className="text-xs text-[#97A0B3]">3D Renders presentation with Product Lead</div>
+                  <div className="flex items-center justify-between pt-1 border-t border-[#2A3446] text-xs text-[#97A0B3]">
                     <span>Handoff Cut v.1.0</span>
-                    <span className="text-emerald-600 font-bold">Motion QA Ready</span>
+                    <span className="text-emerald-400 font-bold">Motion QA Ready</span>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]/80 hover-card-innovative space-y-1">
+                <div className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446]/80 hover-card-innovative space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-white text-[11px]">04:00 PM – 05:00 PM</span>
-                    <span className="text-[10px] text-[#97A0B3]">Designated Window</span>
+                    <span className="font-extrabold text-[#7FA0D6] text-xs">04:00 PM – 05:00 PM</span>
+                    <span className="text-xs text-[#97A0B3]">Designated Window</span>
                   </div>
-                  <div className="font-black text-white text-xs">Lead Review & Quality Sign-Off</div>
-                  <div className="text-[10.5px] text-[#97A0B3]">Synchronous review block with Maya Lin</div>
+                  <div className="font-black text-white text-xs sm:text-sm">Lead Review & Quality Sign-Off</div>
+                  <div className="text-xs text-[#97A0B3]">Synchronous review block with Maya Lin</div>
                 </div>
               </div>
             </div>
 
             {/* Pod Redundancy Partner */}
-            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-2.5">
+            <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-1.5 border-b border-[#2A3446]">
                 <div className="flex items-center gap-1.5">
-                  <Shield className="size-3.5 text-[#7FA0D6]" />
-                  <h3 className="text-xs font-black text-white">Pod Redundancy Partner</h3>
+                  <Shield className="size-4 text-[#7FA0D6]" />
+                  <h3 className="text-sm font-black text-white">Pod Redundancy Partner</h3>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446]/70 flex items-center gap-2.5">
-                <div className="size-9 rounded-xl bg-teal-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446]/70 flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-teal-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
                   CT
                 </div>
                 <div>
-                  <div className="font-black text-white text-xs">Chloe Tan</div>
-                  <div className="text-[10.5px] text-[#97A0B3] font-medium">Sr. Video Editor & 2D Motion</div>
-                  <span className="inline-block mt-0.5 text-[9.5px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">
+                  <div className="font-black text-white text-xs sm:text-sm">Chloe Tan</div>
+                  <div className="text-xs text-[#97A0B3] font-medium">Sr. Video Editor & 2D Motion</div>
+                  <span className="inline-block mt-0.5 text-xs font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-md">
                     ● Available for pairing
                   </span>
                 </div>
               </div>
 
-              <div className="text-xs text-[#97A0B3] space-y-0.5">
-                <div className="font-bold text-white text-[11px]">Handoff Protocol Active:</div>
-                <p className="leading-snug text-[10.5px]">
+              <div className="text-xs text-[#97A0B3] space-y-1">
+                <div className="font-extrabold text-white text-xs">Handoff Protocol Active:</div>
+                <p className="leading-relaxed text-xs">
                   Automatic render queue forwarding to Chloe's node triggered whenever status is switched to <strong>Out of Office (Away)</strong>.
                 </p>
               </div>
@@ -540,9 +540,9 @@ export function MemberSchedulePTOPage() {
                 onClick={() => {
                   navigate("/slack");
                 }}
-                className="w-full py-2 rounded-xl bg-[#7FA0D6]/15 hover:bg-[#7FA0D6]/20 text-[#7FA0D6] text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-xl bg-[#7FA0D6]/15 hover:bg-[#7FA0D6]/25 border border-[#7FA0D6]/30 text-[#7FA0D6] text-xs sm:text-sm font-extrabold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
               >
-                <MessageSquare className="size-3.5" />
+                <MessageSquare className="size-4" />
                 Ping Chloe on Slack
               </button>
             </div>
@@ -551,19 +551,19 @@ export function MemberSchedulePTOPage() {
             <div className="bg-[#161F2D] rounded-2xl p-4 sm:p-5 border border-[#2A3446]/80 shadow-2xs hover-card-innovative space-y-3">
               <div className="flex items-center justify-between pb-1.5 border-b border-[#2A3446]">
                 <div className="flex items-center gap-1.5">
-                  <Plane className="size-3.5 text-[#7FA0D6]" />
-                  <h3 className="text-xs font-black text-white">Submit Quick PTO</h3>
+                  <Plane className="size-4 text-[#7FA0D6]" />
+                  <h3 className="text-sm font-black text-white">Submit Quick PTO</h3>
                 </div>
-                <span className="text-[10px] text-[#97A0B3] font-medium">Auto-routed</span>
+                <span className="text-xs text-[#97A0B3] font-medium">Auto-routed</span>
               </div>
 
-              <form onSubmit={handleSubmitQuickPto} className="space-y-2.5 text-xs">
+              <form onSubmit={handleSubmitQuickPto} className="space-y-3 text-xs sm:text-sm">
                 <div>
-                  <label className="block font-bold text-[#F1F5F9] mb-1 text-[11px]">Leave Type</label>
+                  <label className="block font-extrabold text-white mb-1 text-xs">Leave Type</label>
                   <select
                     value={leaveType}
                     onChange={(e) => setLeaveType(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl border border-[#2A3446] font-semibold bg-[#161F2D] text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#0B111C] text-xs sm:text-sm text-white"
                   >
                     <option value="Paid Time Off (PTO) - 14.5d avail">Paid Time Off (PTO) – 14.5d avail</option>
                     <option value="Sick & Medical Leave - 5.0d avail">Sick & Medical Leave – 5.0d avail</option>
@@ -571,31 +571,31 @@ export function MemberSchedulePTOPage() {
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label className="block font-bold text-[#F1F5F9] mb-1 text-[11px]">Start Date</label>
+                    <label className="block font-extrabold text-white mb-1 text-xs">Start Date</label>
                     <input
                       type="date"
                       required
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full px-2 py-1 rounded-xl border border-[#2A3446] font-bold text-xs"
+                      className="w-full px-2.5 py-1.5 rounded-xl border border-[#2A3446] font-bold text-xs sm:text-sm bg-[#0B111C] text-white"
                     />
                   </div>
                   <div>
-                    <label className="block font-bold text-[#F1F5F9] mb-1 text-[11px]">End Date</label>
+                    <label className="block font-extrabold text-white mb-1 text-xs">End Date</label>
                     <input
                       type="date"
                       required
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full px-2 py-1 rounded-xl border border-[#2A3446] font-bold text-xs"
+                      className="w-full px-2.5 py-1.5 rounded-xl border border-[#2A3446] font-bold text-xs sm:text-sm bg-[#0B111C] text-white"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#F1F5F9] mb-1 text-[11px]">Designated Pod Backup</label>
+                  <label className="block font-extrabold text-white mb-1 text-xs">Designated Pod Backup</label>
                   <select
                     value={designatedBackup}
                     onChange={(e) => setDesignatedBackup(e.target.value)}
@@ -634,17 +634,8 @@ export function MemberSchedulePTOPage() {
           </div>
         </motion.div>
 
-        {/* Footer */}
-        <footer className="pt-4 pb-2 border-t border-[#2A3446]/80 flex flex-col sm:flex-row items-center justify-between text-xs text-[#97A0B3] gap-2">
-          <div className="flex items-center gap-2">
-            <span className="font-black text-white">creo.</span>
-            <span>Team Member Workstation – Pod A Studio Operations</span>
-          </div>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span>© 2025 Creo Design Systems. Confidential</span>
-            <span className="hover:underline cursor-pointer">Security & Compliance</span>
-          </div>
-        </footer>
+
+
       </main>
 
       {/* ─────────────────────────────────────────────────────────────

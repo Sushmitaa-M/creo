@@ -11,8 +11,6 @@ import {
   LifeBuoy,
   ShieldCheck,
   Layers,
-  FileText,
-  Sliders,
   X,
   Menu,
   ChevronRight,
@@ -148,8 +146,6 @@ export function AdminBottomNav() {
         { label: "SLA Performance", href: "/admin/support/sla", icon: ShieldCheck, desc: "Response & resolution metrics" },
         { label: "Content Calendar", href: "/admin/calendar", icon: CalendarDays, desc: "Agency content pipeline" },
         { label: "Task Queue", href: "/admin/tasks", icon: Layers, desc: "Agency-wide Kanban" },
-        { label: "KPI & Reports", href: "/admin/reports", icon: FileText, desc: "Analytics & financial health" },
-        { label: "System Settings", href: "/admin/settings", icon: Sliders, desc: "Agency configuration" },
       ];
 
   return (
@@ -255,7 +251,10 @@ export function AdminBottomNav() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {moreLinks.map((link) => {
                 const Icon = link.icon;
-                const isActive = location.pathname.startsWith(link.href);
+                const isActive =
+                  link.href === "/admin/support"
+                    ? location.pathname === "/admin/support" || location.pathname.startsWith("/admin/support/tickets")
+                    : location.pathname === link.href || location.pathname.startsWith(link.href + "/");
                 return (
                   <Link
                     key={link.href}

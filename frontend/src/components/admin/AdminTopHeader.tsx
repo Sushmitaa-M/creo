@@ -12,11 +12,7 @@ import {
   ShieldCheck, 
   Trash2, 
   LogOut, 
-  MessageSquare,
-  Menu,
-  LayoutDashboard,
-  Layers,
-  CreditCard
+  Menu
 } from "lucide-react";
 import { AdminKPIs } from "../../types/ops";
 import { useState, useRef, useEffect } from "react";
@@ -72,8 +68,7 @@ export function AdminTopHeader({
       user?.role === "editor" ||
       user?.role === "designer" ||
       location.pathname.startsWith("/workstation") ||
-      location.pathname.startsWith("/member") ||
-      location.pathname === "/slack");
+      location.pathname.startsWith("/member"));
 
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -532,151 +527,6 @@ export function AdminTopHeader({
                   </div>
                 </div>
 
-                {/* Quick Navigation Links */}
-                <div className="space-y-0.5 pt-1">
-                  {isClientRole ? (
-                    <>
-                      <Link
-                        to="/portal"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <LayoutDashboard className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Client Dashboard</span>
-                      </Link>
-                      <Link
-                        to="/portal/deliverables"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <Layers className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Content Deliverables</span>
-                      </Link>
-                      <Link
-                        to="/portal/calendar"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <CalendarCheck className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Content Calendar</span>
-                      </Link>
-                      <Link
-                        to="/portal/creative-pod"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <Users className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Creative Pod</span>
-                      </Link>
-                      <Link
-                        to="/portal/payments"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <CreditCard className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Plans & Billing</span>
-                      </Link>
-                      <Link
-                        to="/portal/support"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Support Desk</span>
-                      </Link>
-                    </>
-                  ) : isMemberRole ? (
-                    <>
-                      <Link
-                        to="/workstation"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <Users className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Workstation Overview</span>
-                      </Link>
-                      <Link
-                        to="/workstation/tasks"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-[#97A0B3]" />
-                        <span>My Tasks</span>
-                      </Link>
-                      <Link
-                        to="/workstation/schedule"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <CalendarCheck className="w-4 h-4 text-[#97A0B3]" />
-                        <span>My Schedule & PTO</span>
-                      </Link>
-                      <Link
-                        to="/slack"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#7FA0D6] hover:bg-[#1F2C3F] transition-colors"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                        <span>Slack Workspace Hub</span>
-                      </Link>
-                    </>
-                  ) : user?.role === "team_lead" ? (
-                    <>
-                      <Link
-                        to="/admin/pod-dashboard"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <Users className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Pod Lead Dashboard</span>
-                      </Link>
-                      <Link
-                        to="/lead/schedule"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <CalendarCheck className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Leave Approvals & Schedule</span>
-                      </Link>
-                      <Link
-                        to="/lead/tasks"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Pod Task Board</span>
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        to="/admin"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <Users className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Admin Ops Dashboard</span>
-                      </Link>
-                      <Link
-                        to="/admin/leaves"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <CalendarCheck className="w-4 h-4 text-[#97A0B3]" />
-                        <span>Leave Management</span>
-                      </Link>
-                      <Link
-                        to="/admin/sla"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] hover:text-[#7FA0D6] transition-colors"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-[#97A0B3]" />
-                        <span>SLA Performance Hub</span>
-                      </Link>
-                    </>
-                  )}
-                </div>
-
                 {/* Logout Button */}
                 <div className="pt-2 border-t border-[#2A3446]">
                   <button
@@ -690,7 +540,7 @@ export function AdminTopHeader({
                       }
                       navigate("/auth");
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#F87171] hover:bg-[#F87171]/15 hover:border-[#F87171]/30 border border-transparent transition-all cursor-pointer shadow-xs"
                   >
                     <LogOut className="w-4 h-4 text-[#F87171]" />
                     <span>Sign Out / Log Out</span>

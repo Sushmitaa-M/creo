@@ -650,11 +650,11 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`bg-[#161F2D] border rounded-2xl p-6 shadow-xs space-y-4 transition-all hover-card-innovative ${
+                  className={`bg-[#161F2D] rounded-2xl p-6 shadow-xs space-y-4 transition-all hover-card-innovative border ${
                     msg.isSystemAudit
-                      ? "border-amber-200/80 bg-gradient-to-r from-amber-50/40 to-white"
+                      ? "border-[#7FA0D6]/40 bg-[#161F2D]"
                       : msg.isInternal
-                      ? "border-amber-200 bg-amber-50/20"
+                      ? "border-amber-500/40 bg-[#161F2D]"
                       : "border-[#2A3446]"
                   }`}
                 >

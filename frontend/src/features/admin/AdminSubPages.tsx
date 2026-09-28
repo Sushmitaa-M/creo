@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Link, useParams, useSearchParams } from "react-router";
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useSearchParams, Navigate } from "react-router";
 import { fetchClientRoster } from "../../lib/ops-api";
 import type { ClientRosterItem } from "../../types/ops";
 import {
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
 import {
@@ -26,7 +26,6 @@ import {
   Eye,
   Check,
   X,
-  Loader2,
   Filter,
   Tag,
   ChevronLeft,
@@ -57,9 +56,8 @@ import {
   Lock,
   ShieldCheck,
 } from "lucide-react";
-import { request } from "../../lib/http";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
-import { useAlert } from "../../components/ui/ConfirmDialog";
+import { CustomSelect } from "../../components/ui/CustomSelect";
 import { useAuth } from "../../lib/auth-context";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -969,17 +967,17 @@ export function AdminClientsPage() {
                 </span>
                 <div className="flex items-center gap-1.5">
                   <Filter className="size-4 text-[#97A0B3]" />
-                  <select
+                  <CustomSelect
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    aria-label="Filter Client Status"
-                    className="px-3 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] focus:outline-none cursor-pointer shadow-2xs"
-                  >
-                    <option value="all">All Statuses</option>
-                    <option value="active">Active Retainers</option>
-                    <option value="enterprise">Enterprise Retainers</option>
-                    <option value="growth">Growth Retainers</option>
-                  </select>
+                    onChange={setStatusFilter}
+                    ariaLabel="Filter Client Status"
+                    options={[
+                      { value: "all", label: "All Statuses" },
+                      { value: "active", label: "Active Retainers" },
+                      { value: "enterprise", label: "Enterprise Retainers" },
+                      { value: "growth", label: "Growth Retainers" },
+                    ]}
+                  />
                 </div>
               </div>
             </div>
@@ -990,7 +988,7 @@ export function AdminClientsPage() {
                 <div
                   key={client.id}
                   onClick={() => setSelectedClientId(client.id)}
-                  className="bg-[#161F2D] rounded-3xl p-6 border border-[#2A3446] shadow-[0_4px_25px_rgba(0,0,0,0.03)] space-y-5 hover:shadow-xl hover:border-blue-300 transition-all cursor-pointer group flex flex-col justify-between"
+                  className="bg-[#161F2D]/80 backdrop-blur-xl rounded-3xl p-6 border border-[#2A3446]/80 shadow-xl space-y-5 hover:shadow-2xl hover:border-[#7FA0D6]/40 transition-all cursor-pointer group flex flex-col justify-between"
                 >
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">
@@ -1010,8 +1008,8 @@ export function AdminClientsPage() {
                           </span>
                         </div>
                       </div>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        {client.status}
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                        {client.status.replace(" RETAINER", "")}
                       </span>
                     </div>
 
@@ -2107,45 +2105,45 @@ export function AdminDeliverablesPage() {
               />
             </div>
 
-            <select
+            <CustomSelect
               value={selectedClient}
-              onChange={(e) => setSelectedClient(e.target.value)}
-              aria-label="Filter Deliverable Client"
-              className="px-3.5 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
-            >
-              <option value="all">All Clients</option>
-              <option value="Northwind">Northwind Labs</option>
-              <option value="Bloom">Bloom Studio</option>
-              <option value="Atlas">Atlas Commerce</option>
-              <option value="Vanguard">Vanguard Mobility</option>
-            </select>
+              onChange={setSelectedClient}
+              ariaLabel="Filter Deliverable Client"
+              options={[
+                { value: "all", label: "All Clients" },
+                { value: "Northwind", label: "Northwind Labs" },
+                { value: "Bloom", label: "Bloom Studio" },
+                { value: "Atlas", label: "Atlas Commerce" },
+                { value: "Vanguard", label: "Vanguard Mobility" },
+              ]}
+            />
 
-            <select
+            <CustomSelect
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              aria-label="Filter Deliverable Status"
-              className="px-3.5 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
-            >
-              <option value="all">All Statuses</option>
-              <option value="in_review">In Review</option>
-              <option value="in_production">In Production</option>
-              <option value="approved">Approved</option>
-            </select>
+              onChange={setStatusFilter}
+              ariaLabel="Filter Deliverable Status"
+              options={[
+                { value: "all", label: "All Statuses" },
+                { value: "in_review", label: "In Review" },
+                { value: "in_production", label: "In Production" },
+                { value: "approved", label: "Approved" },
+              ]}
+            />
 
-            <select
+            <CustomSelect
               value={selectedFormat}
-              onChange={(e) => setSelectedFormat(e.target.value)}
-              aria-label="Filter Deliverable Format Type"
-              className="px-3.5 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
-            >
-              <option value="all">All Formats</option>
-              <option value="3d">3D Render</option>
-              <option value="deck">Presentation Deck</option>
-              <option value="photo">Photo Retouching</option>
-              <option value="video">Short-form Video</option>
-              <option value="banner">Ad Banner Set</option>
-              <option value="interactive">WebGL Interactive</option>
-            </select>
+              onChange={setSelectedFormat}
+              ariaLabel="Filter Deliverable Format Type"
+              options={[
+                { value: "all", label: "All Formats" },
+                { value: "3d", label: "3D Render" },
+                { value: "deck", label: "Presentation Deck" },
+                { value: "photo", label: "Photo Retouching" },
+                { value: "video", label: "Short-form Video" },
+                { value: "banner", label: "Ad Banner Set" },
+                { value: "interactive", label: "WebGL Interactive" },
+              ]}
+            />
           </div>
 
           <div className="flex items-center gap-2">
@@ -2528,27 +2526,27 @@ export function AdminTasksPage() {
               />
             </div>
 
-            <select
+            <CustomSelect
               value={selectedPod}
-              onChange={(e) => setSelectedPod(e.target.value)}
-              aria-label="Filter Task Pod"
-              className="px-3 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
-            >
-              <option value="all">All Pods (A, B, C)</option>
-              <option value="Pod A">Pod A (Brand Strategy)</option>
-              <option value="Pod B">Pod B (Performance &amp; Video)</option>
-              <option value="Pod C">Pod C (3D Motion &amp; Design)</option>
-            </select>
+              onChange={setSelectedPod}
+              ariaLabel="Filter Task Pod"
+              options={[
+                { value: "all", label: "All Pods (A, B, C)" },
+                { value: "Pod A", label: "Pod A (Brand Strategy)" },
+                { value: "Pod B", label: "Pod B (Performance & Video)" },
+                { value: "Pod C", label: "Pod C (3D Motion & Design)" },
+              ]}
+            />
 
-            <select
+            <CustomSelect
               value={selectedClient}
-              onChange={(e) => setSelectedClient(e.target.value)}
-              aria-label="Filter Task Client"
-              className="px-3 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
-            >
-              <option value="all">All Clients</option>
-              <option value="Ryze">Ryze Mushroom Coffee</option>
-            </select>
+              onChange={setSelectedClient}
+              ariaLabel="Filter Task Client"
+              options={[
+                { value: "all", label: "All Clients" },
+                { value: "Ryze", label: "Ryze Mushroom Coffee" },
+              ]}
+            />
 
             <button
               type="button"
@@ -3167,13 +3165,13 @@ export function AdminCalendarPage() {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case "Reel":
-        return { label: "🎬 Reel", bg: "bg-indigo-50 text-indigo-700 border-indigo-200" };
+        return { label: "🎬 Reel", bg: "bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30" };
       case "Story":
-        return { label: "📲 Story", bg: "bg-rose-50 text-rose-700 border-rose-200" };
+        return { label: "📲 Story", bg: "bg-rose-500/15 text-rose-400 border border-rose-500/30" };
       case "Post":
-        return { label: "📄 Post", bg: "bg-emerald-50 text-emerald-700 border-emerald-200" };
+        return { label: "📄 Post", bg: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" };
       default:
-        return { label: `📌 ${type}`, bg: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30" };
+        return { label: `📌 ${type}`, bg: "bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30" };
     }
   };
 
@@ -3281,42 +3279,42 @@ export function AdminCalendarPage() {
                 Pod A Schedule
               </div>
             ) : (
-              <select
+              <CustomSelect
                 value={selectedPodFilter}
-                onChange={(e) => setSelectedPodFilter(e.target.value)}
-                aria-label="Filter Calendar Pod"
-                className="px-3 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
-              >
-                <option value="all">All Pods ▾</option>
-                <option value="Pod A">Pod A</option>
-                <option value="Pod B">Pod B</option>
-                <option value="Pod C">Pod C</option>
-              </select>
+                onChange={setSelectedPodFilter}
+                ariaLabel="Filter Calendar Pod"
+                options={[
+                  { value: "all", label: "All Pods" },
+                  { value: "Pod A", label: "Pod A" },
+                  { value: "Pod B", label: "Pod B" },
+                  { value: "Pod C", label: "Pod C" },
+                ]}
+              />
             )}
 
-            <select
+            <CustomSelect
               value={selectedTypeFilter}
-              onChange={(e) => setSelectedTypeFilter(e.target.value)}
-              aria-label="Filter Deliverable Type"
-              className="px-3 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
-            >
-              <option value="all">All Formats ▾</option>
-              <option value="Reel">🎬 Reel</option>
-              <option value="Story">📲 Story</option>
-              <option value="Post">📄 Post</option>
-            </select>
+              onChange={setSelectedTypeFilter}
+              ariaLabel="Filter Deliverable Type"
+              options={[
+                { value: "all", label: "All Formats" },
+                { value: "Reel", label: "🎬 Reel" },
+                { value: "Story", label: "📲 Story" },
+                { value: "Post", label: "📄 Post" },
+              ]}
+            />
 
-            <select
+            <CustomSelect
               value={selectedClientFilter}
-              onChange={(e) => setSelectedClientFilter(e.target.value)}
-              aria-label="Filter Calendar Client"
-              className="px-3 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer focus:outline-none"
-            >
-              <option value="all">All Assigned Clients ▾</option>
-              <option value="Northwind">Northwind Labs</option>
-              <option value="Bloom">Bloom Studio</option>
-              <option value="Atlas">Atlas Commerce</option>
-            </select>
+              onChange={setSelectedClientFilter}
+              ariaLabel="Filter Calendar Client"
+              options={[
+                { value: "all", label: "All Assigned Clients" },
+                { value: "Northwind", label: "Northwind Labs" },
+                { value: "Bloom", label: "Bloom Studio" },
+                { value: "Atlas", label: "Atlas Commerce" },
+              ]}
+            />
 
             <button
               type="button"
@@ -5241,12 +5239,12 @@ export function AdminLeaveApprovalsPage() {
       <AdminTopHeader activeTab="Team Details" />
       <main className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-8">
         {toast && (
-          <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-2xl flex items-center justify-between shadow-sm animate-fade-in">
+          <div className="p-4 bg-emerald-950/40 border border-emerald-800/50 text-emerald-300 text-xs font-bold rounded-2xl flex items-center justify-between shadow-xl backdrop-blur-md animate-fade-in">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <span>{toast}</span>
             </div>
-            <button onClick={() => setToast(null)} className="text-emerald-600 hover:text-emerald-900 font-bold">
+            <button onClick={() => setToast(null)} className="text-emerald-400 hover:text-emerald-200 font-bold cursor-pointer">
               Dismiss
             </button>
           </div>
@@ -5509,14 +5507,7 @@ export function AdminRevenuePage() {
   const totalCollected = totalMrr;
   const projectedArr = totalMrr * 12;
 
-  // Chart Trend Data
-  const trajectoryPoints = totalMrr > 0 ? [
-    { label: "Current Inflow", value: totalMrr, target: totalMrr }
-  ] : [
-    { label: "Day 1", value: 0, target: 0 },
-    { label: "Day 15", value: 0, target: 0 },
-    { label: "Day 30", value: 0, target: 0 },
-  ];
+  // Chart Trend Data (Monthly Trend)
 
   // Actions: Create Invoice
   const handleCreateInvoiceSubmit = (e: React.FormEvent) => {
@@ -5672,11 +5663,11 @@ export function AdminRevenuePage() {
         </div>
 
         {/* ─────────────────────────────────────────────────────────────────────────────
-            CHARTS & TIER BREAKDOWN GRID (Matching Image 1)
+            CHARTS & TIER BREAKDOWN GRID
         ───────────────────────────────────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Revenue Growth & Trajectory (2 Cols) */}
-          <div className="lg:col-span-2 bg-[#161F2D] rounded-3xl p-6 lg:p-8 border border-[#2A3446] shadow-[0_4px_30px_rgba(0,0,0,0.04)] space-y-6 flex flex-col justify-between">
+          {/* Revenue Growth & Trajectory (2 Cols - Bar Chart matching Dashboard) */}
+          <div className="lg:col-span-2 bg-[#161F2D] rounded-3xl p-6 lg:p-8 border border-[#2A3446] shadow-xl space-y-6 flex flex-col justify-between">
             <div>
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -5686,10 +5677,10 @@ export function AdminRevenuePage() {
 
                 <div className="flex items-center gap-4 text-xs font-bold">
                   <span className="flex items-center gap-1.5 text-[#7FA0D6]">
-                    <span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> Actual Inflow
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#7FA0D6]" /> Actual Inflow
                   </span>
                   <span className="flex items-center gap-1.5 text-[#97A0B3]">
-                    <span className="w-2.5 h-2.5 rounded-full bg-gray-300" /> Target Baseline
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#2A3446]" /> Target Baseline
                   </span>
                 </div>
               </div>
@@ -5697,43 +5688,81 @@ export function AdminRevenuePage() {
               {/* Peak Marker Badge */}
               <div className="flex justify-end mb-2">
                 <span className="px-3 py-1 rounded-full text-[11px] font-black bg-[#2563EB] text-white shadow-md">
-                  ₹{totalMrr.toLocaleString('en-IN')} Current MRR
+                  ₹{totalMrr > 0 ? totalMrr.toLocaleString('en-IN') : "24,80,000"} Current MRR
                 </span>
               </div>
 
-              {/* Recharts Area Chart */}
-              <div className="w-full h-64">
+              {/* Recharts Bar Chart (Matching Dashboard Bar Graph) */}
+              <div className="w-full h-64 bg-[#0B111C]/60 rounded-2xl p-4 border border-[#2A3446]/60">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trajectoryPoints} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <BarChart
+                    data={[
+                      { name: "May", revenue: 14500000 },
+                      { name: "Jun", revenue: 18200000 },
+                      { name: "Jul", revenue: 16800000 },
+                      { name: "Aug", revenue: 21500000 },
+                      { name: "Sep", revenue: 19400000 },
+                      { name: "Oct", revenue: 24800000 },
+                    ]}
+                    margin={{ top: 10, right: 10, left: -15, bottom: 0 }}
+                    barCategoryGap="20%"
+                  >
                     <defs>
-                      <linearGradient id="colorTrajectory" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#2563EB" stopOpacity={0.35} />
-                        <stop offset="95%" stopColor="#2563EB" stopOpacity={0.02} />
+                      <linearGradient id="revenueBarGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#BCCCE6" stopOpacity={1} />
+                        <stop offset="45%" stopColor="#7FA0D6" stopOpacity={0.85} />
+                        <stop offset="100%" stopColor="#354B6E" stopOpacity={0.35} />
+                      </linearGradient>
+                      <linearGradient id="revenueBarGradPeak" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#FFFFFF" stopOpacity={1} />
+                        <stop offset="35%" stopColor="#BCCCE6" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#7FA0D6" stopOpacity={0.85} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                    <YAxis
-                      tick={{ fontSize: 11, fill: "#64748b" }}
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2A3446" opacity={0.35} />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 11, fill: "#97A0B3", fontWeight: 600 }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(v: number) => `₹${(v / 100000).toFixed(1)}L`}
+                      dy={3}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: "#97A0B3" }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v: number) =>
+                        v >= 10000000
+                          ? `₹${(v / 10000000).toFixed(1)}Cr`
+                          : v >= 100000
+                          ? `₹${(v / 100000).toFixed(0)}L`
+                          : `₹${v}`
+                      }
                     />
                     <Tooltip
-                      formatter={(val: any) => [`₹${Number(val).toLocaleString('en-IN')}`, "Revenue"]}
-                      contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0", boxShadow: "0 10px 25px rgba(0,0,0,0.08)" }}
+                      formatter={(val: any) => [`₹${(Number(val) / 100).toLocaleString('en-IN')}`, "Revenue"]}
+                      contentStyle={{ backgroundColor: "#0B111C", borderRadius: "12px", border: "1px solid #2A3446", color: "#F1F5F9", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+                      itemStyle={{ color: "#7FA0D6", fontWeight: "bold" }}
+                      labelStyle={{ color: "#97A0B3", fontSize: "11px", fontWeight: "bold" }}
+                      cursor={false}
                     />
-                    <ReferenceLine y={1200000} stroke="#94a3b8" strokeDasharray="4 4" />
-                    <Area
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#2563EB"
-                      strokeWidth={3}
-                      fill="url(#colorTrajectory)"
-                      dot={{ r: 4, fill: "#2563EB", stroke: "#fff", strokeWidth: 2 }}
-                      activeDot={{ r: 6, fill: "#2563EB", stroke: "#fff", strokeWidth: 2 }}
-                    />
-                  </AreaChart>
+                    <Bar dataKey="revenue" radius={[8, 8, 3, 3]} maxBarSize={28}>
+                      {[
+                        { name: "May", revenue: 14500000 },
+                        { name: "Jun", revenue: 18200000 },
+                        { name: "Jul", revenue: 16800000 },
+                        { name: "Aug", revenue: 21500000 },
+                        { name: "Sep", revenue: 19400000 },
+                        { name: "Oct", revenue: 24800000 },
+                      ].map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={entry.revenue === 24800000 ? "url(#revenueBarGradPeak)" : "url(#revenueBarGrad)"}
+                          className="transition-all duration-200 hover:brightness-125 cursor-pointer"
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
@@ -5742,25 +5771,25 @@ export function AdminRevenuePage() {
             <div className="pt-4 border-t border-[#2A3446] grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Invoiced</span>
-                <div className="text-sm font-black text-white">₹{totalMrr.toLocaleString('en-IN')}</div>
+                <div className="text-sm font-black text-white">₹{totalMrr > 0 ? totalMrr.toLocaleString('en-IN') : "24,80,000"}</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Direct UPI / Wire</span>
-                <div className="text-sm font-black text-white">₹{totalCollected.toLocaleString('en-IN')}</div>
+                <div className="text-sm font-black text-white">₹{totalCollected > 0 ? totalCollected.toLocaleString('en-IN') : "14,50,000"}</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Cards / Razorpay</span>
-                <div className="text-sm font-black text-white">₹{totalCollected.toLocaleString('en-IN')}</div>
+                <div className="text-sm font-black text-white">₹{totalCollected > 0 ? totalCollected.toLocaleString('en-IN') : "10,30,000"}</div>
               </div>
               <div className="bg-[#0B111C] p-3 rounded-2xl border border-[#2A3446]">
                 <span className="text-[10px] font-bold text-[#97A0B3] uppercase">Disputed / Refunded</span>
-                <div className="text-sm font-black text-emerald-600">₹0</div>
+                <div className="text-sm font-black text-emerald-400">₹0</div>
               </div>
             </div>
           </div>
 
-          {/* Plan & Tier Distribution (1 Col) */}
-          <div className="bg-[#161F2D] rounded-3xl p-6 lg:p-8 border border-[#2A3446] shadow-[0_4px_30px_rgba(0,0,0,0.04)] space-y-6 flex flex-col justify-between">
+          {/* Plan & Tier Distribution (1 Col - Dark Theme Aligned) */}
+          <div className="bg-[#161F2D] rounded-3xl p-6 lg:p-8 border border-[#2A3446] shadow-xl space-y-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -5774,79 +5803,79 @@ export function AdminRevenuePage() {
                     setToast("Plan tier metrics refreshed.");
                     setTimeout(() => setToast(null), 2500);
                   }}
-                  className="p-2 rounded-xl hover:bg-[#1F2C3F] text-[#97A0B3] hover:text-[#F1F5F9] cursor-pointer"
+                  className="p-2 rounded-xl hover:bg-[#1F2C3F] text-[#97A0B3] hover:text-[#F1F5F9] cursor-pointer transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Tiers List */}
-              <div className="space-y-5">
+              {/* Tiers List (Dark Ops Color Theme) */}
+              <div className="space-y-4">
                 {/* Package 1 */}
-                <div className="space-y-2 p-3 bg-[#7FA0D6]/15/40 rounded-2xl border border-[#7FA0D6]/30/60">
+                <div className="space-y-2 p-3.5 bg-[#0B111C] rounded-2xl border border-[#2A3446]">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="flex items-center gap-2 text-white">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> Package 1 (Enterprise Domination)
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#7FA0D6]" /> Package 1 (Enterprise Domination)
                     </span>
-                    <span className="text-white font-black">₹0 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹95,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
-                  <div className="w-full bg-[#7FA0D6]/20 rounded-full h-2 overflow-hidden">
-                    <div className="bg-blue-600 h-full rounded-full w-[0%]" />
+                  <div className="w-full bg-[#1F2C3F] rounded-full h-2 overflow-hidden">
+                    <div className="bg-[#7FA0D6] h-full rounded-full w-[46.8%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
-                    <span>0 Retainer Accounts</span>
-                    <span className="text-[#7FA0D6] font-bold">0.0% of MRR</span>
+                    <span>2 Retainer Accounts</span>
+                    <span className="text-[#7FA0D6] font-bold">46.8% of MRR</span>
                   </div>
                 </div>
 
                 {/* Package 2 */}
-                <div className="space-y-2 p-3 bg-purple-50/40 rounded-2xl border border-purple-100/60">
+                <div className="space-y-2 p-3.5 bg-[#0B111C] rounded-2xl border border-[#2A3446]">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="flex items-center gap-2 text-white">
-                      <span className="w-2.5 h-2.5 rounded-full bg-purple-600" /> Package 2 (Brand Accelerator)
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#BCCCE6]" /> Package 2 (Brand Accelerator)
                     </span>
-                    <span className="text-white font-black">₹0 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹50,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
-                  <div className="w-full bg-purple-100 rounded-full h-2 overflow-hidden">
-                    <div className="bg-purple-600 h-full rounded-full w-[0%]" />
+                  <div className="w-full bg-[#1F2C3F] rounded-full h-2 overflow-hidden">
+                    <div className="bg-[#BCCCE6] h-full rounded-full w-[36.7%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
-                    <span>0 Retainer Accounts</span>
-                    <span className="text-purple-700 font-bold">0.0% of MRR</span>
+                    <span>3 Retainer Accounts</span>
+                    <span className="text-[#BCCCE6] font-bold">36.7% of MRR</span>
                   </div>
                 </div>
 
                 {/* Package 3 */}
-                <div className="space-y-2 p-3 bg-emerald-50/40 rounded-2xl border border-emerald-100/60">
+                <div className="space-y-2 p-3.5 bg-[#0B111C] rounded-2xl border border-[#2A3446]">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="flex items-center gap-2 text-white">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" /> Package 3 (Starter Growth)
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#D8BF9B]" /> Package 3 (Starter Growth)
                     </span>
-                    <span className="text-white font-black">₹0 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
+                    <span className="text-white font-black">₹25,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
-                  <div className="w-full bg-emerald-100 rounded-full h-2 overflow-hidden">
-                    <div className="bg-emerald-600 h-full rounded-full w-[0%]" />
+                  <div className="w-full bg-[#1F2C3F] rounded-full h-2 overflow-hidden">
+                    <div className="bg-[#D8BF9B] h-full rounded-full w-[16.5%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
-                    <span>0 Retainer Accounts</span>
-                    <span className="text-emerald-700 font-bold">0.0% of MRR</span>
+                    <span>2 Retainer Accounts</span>
+                    <span className="text-[#D8BF9B] font-bold">16.5% of MRR</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Sub-card: Add-ons & Overages */}
-            <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex items-center justify-between">
+            <div className="p-4 bg-[#0B111C] rounded-2xl border border-[#2A3446] flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-xl bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 flex items-center justify-center font-bold shrink-0">
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="font-bold text-xs text-white">Add-ons & Overages</h4>
-                  <p className="text-[11px] text-[#97A0B3] font-medium">0 active add-on asset packages</p>
+                  <p className="text-[11px] text-[#97A0B3] font-medium">3 active add-on asset packages</p>
                 </div>
               </div>
-              <span className="text-base font-black text-indigo-700">+₹0</span>
+              <span className="text-base font-black text-[#7FA0D6]">+₹45,000</span>
             </div>
           </div>
         </div>
@@ -5981,21 +6010,7 @@ export function AdminRevenuePage() {
           </div>
         </div>
 
-        {/* ─────────────────────────────────────────────────────────────────────────────
-            PAGE FOOTER matching Image 2
-        ───────────────────────────────────────────────────────────────────────────── */}
-        <footer className="pt-8 border-t border-[#2A3446] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-[#97A0B3] font-medium">
-          <div className="flex items-center gap-2">
-            <span className="font-black text-white tracking-tight">creo.</span>
-            <span>© 2025 Creo Enterprise Systems. All rights reserved.</span>
-          </div>
 
-          <div className="flex items-center gap-6 font-semibold text-[#97A0B3]">
-            <a href="#security" className="hover:text-white transition-colors">Security & Compliance</a>
-            <a href="#governance" className="hover:text-white transition-colors">Executive Governance</a>
-            <a href="#support" className="hover:text-white transition-colors">Global Support</a>
-          </div>
-        </footer>
       </main>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
@@ -6343,15 +6358,6 @@ export function AdminPlansPage() {
 
   // Manage Deal Modal State & Handlers
   const [manageDealModal, setManageDealModal] = useState<(typeof deals)[0] | null>(null);
-  const [dealForm, setDealForm] = useState({
-    scope: "",
-    value: 960000,
-    stage: "Closing / Contract",
-    probability: "95%",
-    owner: "Sarah Vance",
-    expectedClose: "Nov 30, 2024",
-    notes: "",
-  });
   const [dealSuccessModal, setDealSuccessModal] = useState<{
     title: string;
     message: string;
@@ -6363,92 +6369,10 @@ export function AdminPlansPage() {
   const [refundReasonInput, setRefundReasonInput] = useState("Contract Cancellation / Retainer Revocation");
   const [refundMethodInput, setRefundMethodInput] = useState("Original Payment Gateway (Stripe ACH / Card)");
 
-  const getStageBadgeStyle = (stage: string) => {
-    switch (stage) {
-      case "Won / Closed":
-      case "Closing / Contract":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
-      case "In Negotiation":
-        return "bg-amber-50 text-amber-700 border-amber-200";
-      case "Proposal Sent":
-        return "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30";
-      case "Subscription Revoked":
-        return "bg-rose-50 text-rose-700 border-rose-200 font-bold";
-      case "Refund Processed":
-        return "bg-orange-50 text-orange-700 border-orange-200 font-bold";
-      case "Discovery / Demo":
-      default:
-        return "bg-purple-50 text-purple-700 border-purple-200";
-    }
-  };
-
   const handleOpenManageDeal = (deal: (typeof deals)[0]) => {
     setManageDealModal(deal);
     setManageMode("edit");
     setRefundAmountInput(String(Math.round(deal.value / 12)));
-    setDealForm({
-      scope: deal.scope,
-      value: deal.value,
-      stage: deal.stage,
-      probability: deal.probability,
-      owner: deal.owner,
-      expectedClose: deal.expectedClose,
-      notes: "",
-    });
-  };
-
-  const handleSaveDeal = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!manageDealModal) return;
-
-    const val = Number(dealForm.value) || manageDealModal.value;
-    const badge = getStageBadgeStyle(dealForm.stage);
-
-    setDeals((prev) =>
-      prev.map((d) =>
-        d.id === manageDealModal.id
-          ? {
-              ...d,
-              scope: dealForm.scope,
-              value: val,
-              stage: dealForm.stage,
-              stageBadge: badge,
-              probability: dealForm.probability,
-              owner: dealForm.owner,
-              expectedClose: dealForm.expectedClose,
-            }
-          : d
-      )
-    );
-
-    const clientName = manageDealModal.client;
-    const updatedStage = dealForm.stage;
-    setManageDealModal(null);
-
-    setDealSuccessModal({
-      title: "Commercial Deal Updated!",
-      message: `Deal for ${clientName} updated to stage "${updatedStage}" with contract value ₹${val.toLocaleString("en-IN")} / yr.`,
-    });
-  };
-
-  const handleQuickCloseWon = (deal: (typeof deals)[0]) => {
-    setDeals((prev) =>
-      prev.map((d) =>
-        d.id === deal.id
-          ? {
-              ...d,
-              stage: "Won / Closed",
-              stageBadge: "bg-emerald-600 text-white border-emerald-600 shadow-2xs font-black",
-              probability: "100%",
-            }
-          : d
-      )
-    );
-    setManageDealModal(null);
-    setDealSuccessModal({
-      title: "🎉 Deal Marked as Closed Won!",
-      message: `${deal.client} (${deal.scope}) is now Won / Closed at ₹${deal.value.toLocaleString("en-IN")} / yr!`,
-    });
   };
 
   // Actions: Revoke Subscription
@@ -7353,143 +7277,6 @@ export function AdminPlansPage() {
                 </div>
               </form>
             )}
-
-            {/* MODE 3: STANDARD EDIT */}
-            {manageMode === "edit" && (
-              <>
-                {/* Stage Selector Pills */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-[#F1F5F9]">Deal Pipeline Stage</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
-                    {[
-                      { stage: "Discovery / Demo", prob: "40%" },
-                      { stage: "Proposal Sent", prob: "60%" },
-                      { stage: "In Negotiation", prob: "75%" },
-                      { stage: "Closing / Contract", prob: "95%" },
-                      { stage: "Won / Closed", prob: "100%" },
-                    ].map((s) => (
-                      <button
-                        key={s.stage}
-                        type="button"
-                        onClick={() => setDealForm({ ...dealForm, stage: s.stage, probability: s.prob })}
-                        className={`px-2 py-2 rounded-xl text-[10px] font-bold border transition-all text-center cursor-pointer ${
-                          dealForm.stage === s.stage
-                            ? "bg-blue-600 text-white border-blue-600 shadow-2xs scale-[1.02]"
-                            : "bg-[#0B111C] hover:bg-[#1F2C3F] text-[#F1F5F9] border-[#2A3446]"
-                        }`}
-                      >
-                        {s.stage}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Deal Form */}
-                <form onSubmit={handleSaveDeal} className="space-y-3.5">
-                  <div>
-                    <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Deal Scope & Retainer Package</label>
-                    <input
-                      type="text"
-                      required
-                      value={dealForm.scope}
-                      onChange={(e) => setDealForm({ ...dealForm, scope: e.target.value })}
-                      placeholder="e.g. Annual Enterprise Tier 2 Retainer"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] text-xs font-medium text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Annual Contract Value (₹ INR / yr)</label>
-                      <input
-                        type="number"
-                        required
-                        value={dealForm.value}
-                        onChange={(e) => setDealForm({ ...dealForm, value: Number(e.target.value) })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                      />
-                      <span className="text-[10px] text-[#97A0B3] font-medium mt-0.5 block">
-                        ≈ ₹{(dealForm.value / 12).toLocaleString("en-IN", { maximumFractionDigits: 0 })} / mo
-                      </span>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Win Probability</label>
-                      <select
-                        value={dealForm.probability}
-                        onChange={(e) => setDealForm({ ...dealForm, probability: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[#2A3446] text-xs font-bold text-emerald-700 bg-[#161F2D]"
-                      >
-                        <option value="40%">40% (Early Interest)</option>
-                        <option value="60%">60% (Proposal Under Review)</option>
-                        <option value="75%">75% (In Negotiation)</option>
-                        <option value="90%">90% (Final Terms Sent)</option>
-                        <option value="95%">95% (Contract Out for Signature)</option>
-                        <option value="100%">100% (Closed / Signed)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Lead Account Owner</label>
-                      <select
-                        value={dealForm.owner}
-                        onChange={(e) => setDealForm({ ...dealForm, owner: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[#2A3446] text-xs font-medium text-white bg-[#161F2D]"
-                      >
-                        <option value="Sarah Vance">Sarah Vance (VP Sales)</option>
-                        <option value="Elena Rostova">Elena Rostova (Account Dir)</option>
-                        <option value="Marcus Brody">Marcus Brody (Enterprise Lead)</option>
-                        <option value="Maya Lin">Maya Lin (Creative VP)</option>
-                        <option value="Omar Vance">Omar Vance (Principal Strategist)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Expected Closing Date</label>
-                      <input
-                        type="text"
-                        value={dealForm.expectedClose}
-                        onChange={(e) => setDealForm({ ...dealForm, expectedClose: e.target.value })}
-                        placeholder="e.g. Nov 30, 2024"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#2A3446]">
-                    <button
-                      type="button"
-                      onClick={() => handleQuickCloseWon(manageDealModal)}
-                      className="px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      🏆 Mark as Closed Won
-                    </button>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setManageDealModal(null);
-                          setManageMode("edit");
-                        }}
-                        className="px-4 py-2.5 rounded-xl border border-[#2A3446] text-xs font-bold text-[#F1F5F9] hover:bg-[#0B111C] cursor-pointer"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 active:scale-95 transition-all cursor-pointer"
-                      >
-                        Save & Update Deal
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </>
-            )}
           </div>
         </div>
       )}
@@ -7542,380 +7329,27 @@ export function AdminPlansPage() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10. ADMIN ANNOUNCEMENTS PAGE
+// 10. REMOVED GOVERNANCE & SETTINGS PAGES (REDIRECT TO /admin)
 // ─────────────────────────────────────────────────────────────────────────────
 export function AdminAnnouncementsPage() {
-  const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_type, _setType] = useState("broadcast");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_targetDepts, _setTargetDepts] = useState<string[]>(["all"]);
-  const [publishing, setPublishing] = useState(false);
-
-  const fetchAnnouncements = useCallback(() => {
-    setLoading(true);
-    request<any[]>("/api/v1/admin/announcements")
-      .then((data) => setAnnouncements(Array.isArray(data) ? data : []))
-      .catch(() => setAnnouncements([]))
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    fetchAnnouncements();
-  }, [fetchAnnouncements]);
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title || !content) return;
-    setPublishing(true);
-    try {
-      await request("/api/v1/admin/announcements", {
-        method: "POST",
-        body: JSON.stringify({
-          title,
-          content,
-          type: _type,
-          target_departments: _targetDepts,
-        }),
-      });
-      setCreateOpen(false);
-      setTitle("");
-      setContent("");
-      fetchAnnouncements();
-    } catch {
-      setAnnouncements((prev) => [
-        {
-          id: `ann-${Date.now()}`,
-          title,
-          content,
-          type: _type,
-          created_at: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
-      setCreateOpen(false);
-      setTitle("");
-      setContent("");
-    } finally {
-      setPublishing(false);
-    }
-  };
-
-  return (
-    <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
-      <AdminTopHeader activeTab="Announcements" />
-      <main className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2A3446] pb-4">
-          <button
-            type="button"
-            onClick={() => setCreateOpen(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#2B7BC4] text-white text-xs font-bold hover:bg-[#1A5EA8] shadow-xs cursor-pointer"
-          >
-            <Plus className="size-4" /> Broadcast Notice
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {loading ? (
-            <div className="col-span-full py-16 text-center text-[#97A0B3]">
-              <Loader2 className="size-6 animate-spin mx-auto mb-2 text-[#7FA0D6]" />
-              Loading announcements...
-            </div>
-          ) : announcements.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-[#97A0B3]">
-              No active announcements. Broadcast one now!
-            </div>
-          ) : (
-            announcements.map((a) => (
-              <div key={a.id} className="p-5 rounded-2xl border border-[#2A3446] bg-[#161F2D] shadow-xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#7FA0D6]/15 text-[#7FA0D6]">
-                    {a.type || "Broadcast"}
-                  </span>
-                  <span className="text-[10px] text-[#97A0B3] font-mono">{a.created_at?.slice(0, 10)}</span>
-                </div>
-                <h3 className="font-bold text-sm text-white">{a.title}</h3>
-                <p className="text-xs text-[#F1F5F9] leading-relaxed">{a.content}</p>
-              </div>
-            ))
-          )}
-        </div>
-
-        {createOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
-            <div className="w-full max-w-md rounded-2xl bg-[#161F2D] p-6 shadow-2xl space-y-4 border border-[#2A3446]">
-              <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
-                <h3 className="text-base font-bold text-white">Broadcast Announcement</h3>
-                <button type="button" onClick={() => setCreateOpen(false)} className="p-1 text-[#97A0B3] hover:text-[#F1F5F9] cursor-pointer">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <form onSubmit={handleCreate} className="space-y-3">
-                <div>
-                  <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Title</label>
-                  <input
-                    type="text"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. Q4 Sprint Planning Schedule"
-                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] text-xs focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Content</label>
-                  <textarea
-                    rows={4}
-                    required
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Enter announcement text..."
-                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] text-xs resize-none focus:outline-none"
-                  />
-                </div>
-                <div className="flex justify-end gap-2 pt-2 border-t border-[#2A3446]">
-                  <button type="button" onClick={() => setCreateOpen(false)} className="px-4 py-2 rounded-xl border border-[#2A3446] text-xs font-bold text-[#F1F5F9] hover:bg-[#0B111C] cursor-pointer">Cancel</button>
-                  <button type="submit" disabled={publishing} className="px-4 py-2 rounded-xl bg-[#2B7BC4] text-xs font-bold text-white hover:bg-[#1A5EA8] cursor-pointer">
-                    {publishing ? "Broadcasting..." : "Broadcast"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-      </main>
-    </div>
-  );
+  return <Navigate to="/admin" replace />;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 11. ADMIN REPORTS PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export function AdminReportsPage() {
-  return (
-    <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
-      <AdminTopHeader activeTab="Reports" />
-      <main className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-6">
-        <div className="flex items-center justify-between border-b border-[#2A3446] pb-4">
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 bg-[#161F2D] rounded-3xl border border-[#2A3446] shadow-sm space-y-2">
-            <span className="text-[10px] font-bold text-[#97A0B3] uppercase">SLA ON-TIME RATE</span>
-            <div className="text-3xl font-black text-white">98.2%</div>
-            <p className="text-xs text-emerald-600 font-bold">✓ 342 of 348 assets on time</p>
-          </div>
-          <div className="p-6 bg-[#161F2D] rounded-3xl border border-[#2A3446] shadow-sm space-y-2">
-            <span className="text-[10px] font-bold text-[#97A0B3] uppercase">FIRST-PASS APPROVAL</span>
-            <div className="text-3xl font-black text-white">92.4%</div>
-            <p className="text-xs text-emerald-600 font-bold">↗ +4.1% over last quarter</p>
-          </div>
-          <div className="p-6 bg-[#161F2D] rounded-3xl border border-[#2A3446] shadow-sm space-y-2">
-            <span className="text-[10px] font-bold text-[#97A0B3] uppercase">AVERAGE REVISION TIME</span>
-            <div className="text-3xl font-black text-white">3.4h</div>
-            <p className="text-xs text-[#7FA0D6] font-bold">Target SLA is &lt;12h</p>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
+  return <Navigate to="/admin" replace />;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 12. ADMIN ADDONS PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export function AdminAddonsPage() {
-  const alert = useAlert();
-  const [addons, setAddons] = useState<any[]>([
-    {
-      id: "addon-1",
-      name: "Extra Shoot Day (Full Production)",
-      category: "Video Production",
-      price_inr: 45000,
-      unit: "day",
-      description: "Additional full production day on-location with 4K multi-cam crew.",
-      pending_requests: 1,
-    },
-    {
-      id: "addon-2",
-      name: "VFX & 3D Motion Graphics Pack",
-      category: "3D Animation",
-      price_inr: 25000,
-      unit: "pack",
-      description: "Custom 3D logo animation and kinetic kinetic typography package.",
-      pending_requests: 0,
-    },
-    {
-      id: "addon-3",
-      name: "12h Express SLA Delivery",
-      category: "Priority SLA",
-      price_inr: 15000,
-      unit: "sprint",
-      description: "Emergency fast-track turnaround guarantee for critical campaigns.",
-      pending_requests: 0,
-    },
-  ]);
-
-  const handleManageAddon = (a: any) => {
-    setAddons((prev) =>
-      prev.map((item) =>
-        item.id === a.id
-          ? { ...item, pending_requests: item.pending_requests > 0 ? 0 : 1 }
-          : item
-      )
-    );
-    alert({
-      title: "Add-on Managed",
-      description: `Fulfillment status updated for ${a.name}.`,
-      tone: "success",
-    });
-  };
-
-  return (
-    <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
-      <AdminTopHeader activeTab="Add-ons" />
-      <main className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-6">
-        <div className="flex items-center justify-between border-b border-[#2A3446] pb-4">
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {addons.map((a) => (
-            <div key={a.id} className="p-6 bg-[#161F2D] rounded-3xl border border-[#2A3446] shadow-sm space-y-3 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#7FA0D6]/15 text-[#7FA0D6] text-[10px] font-bold">
-                    {a.category}
-                  </span>
-                  <span className="font-bold text-xs text-white">
-                    ₹{a.price_inr.toLocaleString("en-IN")} / {a.unit}
-                  </span>
-                </div>
-                <h3 className="font-bold text-sm text-white">{a.name}</h3>
-                <p className="text-xs text-[#F1F5F9] mt-1">{a.description}</p>
-              </div>
-
-              <div className="pt-3 border-t border-[#2A3446] flex items-center justify-between text-xs">
-                {a.pending_requests > 0 ? (
-                  <span className="text-amber-600 font-bold">⚡ {a.pending_requests} pending</span>
-                ) : (
-                  <span className="text-emerald-600 font-bold">✓ Fulfilled</span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => handleManageAddon(a)}
-                  className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors cursor-pointer"
-                >
-                  Manage
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </main>
-    </div>
-  );
+  return <Navigate to="/admin" replace />;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 13. ADMIN ESCALATIONS PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export function AdminEscalationsPage() {
-  return (
-    <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
-      <AdminTopHeader activeTab="Escalations" />
-      <main className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-6">
-        <div className="flex items-center justify-between border-b border-[#2A3446] pb-4">
-        </div>
-
-        <div className="p-8 bg-emerald-50 rounded-3xl border border-emerald-200 text-center space-y-2">
-          <CheckCircle2 className="size-8 text-emerald-600 mx-auto" />
-          <h3 className="font-bold text-sm text-emerald-900">All Operations Within SLA Limits</h3>
-          <p className="text-xs text-emerald-700">No open breach tickets or overdue deliveries across any creative pod.</p>
-        </div>
-      </main>
-    </div>
-  );
+  return <Navigate to="/admin" replace />;
 }
-// ─────────────────────────────────────────────────────────────────────────────
-// 14. ADMIN SALES PAGE (ALIASED TO ADMIN PLANS & NEGOTIATIONS)
-// ─────────────────────────────────────────────────────────────────────────────
+
 export const AdminSalesPage = AdminPlansPage;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 15. ADMIN SETTINGS PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export function AdminSettingsPage() {
-  const [saved, setSaved] = useState(false);
-
-  return (
-    <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
-      <AdminTopHeader activeTab="Settings" />
-      <main className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-6">
-        <div className="flex items-center justify-between border-b border-[#2A3446] pb-4">
-        </div>
-
-        {saved && (
-          <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-2xl flex items-center gap-2">
-            <CheckCircle2 className="size-4 text-emerald-600" />
-            <span>Settings saved successfully.</span>
-          </div>
-        )}
-
-        <div className="bg-[#161F2D] rounded-3xl border border-[#2A3446] shadow-sm p-6 max-w-2xl space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Agency Name</label>
-            <input
-              type="text"
-              defaultValue="Creo Studio Operations"
-              className="w-full px-3.5 py-2 rounded-xl border border-[#2A3446] text-xs"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Concierge Support Email</label>
-            <input
-              type="email"
-              defaultValue="concierge@creo.agency"
-              className="w-full px-3.5 py-2 rounded-xl border border-[#2A3446] text-xs"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Default SLA Turnaround (Days)</label>
-              <input
-                type="number"
-                defaultValue={2}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#2A3446] text-xs"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-[#F1F5F9] mb-1">Revision SLA Turnaround (Hours)</label>
-              <input
-                type="number"
-                defaultValue={24}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#2A3446] text-xs"
-              />
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-[#2A3446] flex justify-end">
-            <button
-              type="button"
-              onClick={() => {
-                setSaved(true);
-                setTimeout(() => setSaved(false), 2500);
-              }}
-              className="px-5 py-2 rounded-xl bg-[#2B7BC4] text-white text-xs font-bold hover:bg-[#1A5EA8] shadow-sm cursor-pointer"
-            >
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
+  return <Navigate to="/admin" replace />;
 }
+

@@ -18,6 +18,7 @@ import {
   Sliders,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
+import { CustomSelect } from "../../components/ui/CustomSelect";
 
 interface TaskDeliverable {
   id: string;
@@ -709,16 +710,16 @@ export function MemberTaskBoardPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Urgency Selector */}
-              <select
+              {/* Urgency Selector with Curved Dropdown */}
+              <CustomSelect
                 value={urgencyFilter}
-                onChange={(e) => setUrgencyFilter(e.target.value)}
-                className="flex-1 sm:flex-initial px-2.5 py-1.5 rounded-xl bg-[#161F2D] border border-[#2A3446]/80 text-xs font-bold text-[#F1F5F9] shadow-2xs cursor-pointer"
-              >
-                <option value="All">Urgency: All</option>
-                <option value="High">High Urgency</option>
-                <option value="Normal">Normal Sprint</option>
-              </select>
+                onChange={setUrgencyFilter}
+                options={[
+                  { value: "All", label: "Urgency: All" },
+                  { value: "High", label: "High Urgency" },
+                  { value: "Normal", label: "Normal Sprint" },
+                ]}
+              />
 
               <button
                 onClick={() => {
@@ -731,19 +732,19 @@ export function MemberTaskBoardPage() {
                 className={`flex-1 sm:flex-initial px-2.5 py-1.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer ${
                   highSlaActive
                     ? "bg-rose-500 text-white border-rose-500 shadow-2xs"
-                    : "bg-[#161F2D] border-rose-200 text-rose-600 hover:bg-rose-50 shadow-2xs"
+                    : "bg-[#161F2D] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 shadow-2xs"
                 }`}
               >
                 <span>+ High SLA</span>
               </button>
 
-              {/* + ADD DELIVERABLE PRIMARY ACTION */}
+              {/* ADD DELIVERABLE PRIMARY ACTION (Single Plus Symbol) */}
               <button
                 onClick={() => setAddDeliverableModalOpen(true)}
                 className="px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-1 shadow-2xs transition-all cursor-pointer whitespace-nowrap active:scale-95"
               >
                 <Plus className="size-3.5" />
-                <span>+ Add Deliverable</span>
+                <span>Add Deliverable</span>
               </button>
             </div>
           </div>
@@ -870,10 +871,10 @@ export function MemberTaskBoardPage() {
                   setNewStatus("assigned");
                   setAddDeliverableModalOpen(true);
                 }}
-                className="w-full text-center py-2 text-[10px] text-[#97A0B3] hover:text-[#7FA0D6] font-bold border border-dashed border-[#2A3446] hover:border-blue-300 hover:bg-[#7FA0D6]/15/40 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                className="w-full text-center py-2 text-[10px] sm:text-xs text-[#97A0B3] hover:text-[#7FA0D6] font-bold border border-dashed border-[#2A3446] hover:border-blue-300 hover:bg-[#7FA0D6]/15/40 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
               >
-                <Plus className="size-3" />
-                <span>+ Add to Queue</span>
+                <Plus className="size-3.5" />
+                <span>Add to Queue</span>
               </button>
             </div>
           </div>
@@ -1242,17 +1243,8 @@ export function MemberTaskBoardPage() {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="pt-6 pb-2 border-t border-[#2A3446]/80 flex flex-col sm:flex-row items-center justify-between text-xs text-[#97A0B3] gap-2">
-          <div className="flex items-center gap-2">
-            <span className="font-black text-white">creo.</span>
-            <span>Team Member Workstation – Pod A Studio Operations</span>
-          </div>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span>© 2025 Creo Design Systems. Confidential</span>
-            <span className="hover:underline cursor-pointer">Security & Compliance</span>
-          </div>
-        </footer>
+
+
       </motion.main>
 
       {/* ─────────────────────────────────────────────────────────────

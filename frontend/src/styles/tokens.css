@@ -858,6 +858,65 @@ aside .scrollbar-thin,
   background: #3B4A5F;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLOBAL HOVER & HIGHLIGHT MICRO-ANIMATION SYSTEM (Admin, TL, Team Members)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Interactive Container Glow & Lift Micro-Animation */
+[data-surface="ops"] .hover-card-innovative,
+[data-surface="ops"] .card-surface,
+[data-surface="ops"] .kpi-card,
+[data-surface="ops"] [data-kpi-card="true"],
+.hover-card-innovative,
+.card-interactive {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-surface="ops"] .hover-card-innovative:hover,
+[data-surface="ops"] .card-surface:hover,
+[data-surface="ops"] .kpi-card:hover,
+[data-surface="ops"] [data-kpi-card="true"]:hover,
+.hover-card-innovative:hover,
+.card-interactive:hover {
+  transform: translateY(-2.5px) scale(1.008) !important;
+  border-color: rgba(127, 160, 214, 0.55) !important;
+  box-shadow: 0 10px 30px -4px rgba(5, 8, 16, 0.7), 0 0 20px 2px rgba(127, 160, 214, 0.18) !important;
+}
+
+/* Inner Element & Table Row Hover Highlights */
+[data-surface="ops"] table tbody tr:hover {
+  background-color: rgba(31, 44, 63, 0.6) !important;
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* Highlight borders on hover for internal grid cards & boxes */
+[data-surface="ops"] .bg-\[\#161F2D\]:hover,
+[data-surface="ops"] .bg-\[\#0B111C\]:hover {
+  border-color: rgba(127, 160, 214, 0.45);
+}
+
+/* Micro-animations for buttons and interactive badges */
+[data-surface="ops"] button:hover,
+[data-surface="ops"] a:hover {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
+}
+
+@keyframes highlightGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(127, 160, 214, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 12px 3px rgba(127, 160, 214, 0.25);
+  }
+}
+
+.highlight-glow-active {
+  animation: highlightGlowPulse 2.5s ease-in-out infinite;
+}
+
 .card-interactive:hover {
   border-color: #7FA0D6;
   box-shadow: 0 8px 30px -4px rgba(127, 160, 214, 0.14);

@@ -11,8 +11,6 @@ import {
   FileCheck2,
   Star,
   Search,
-  LayoutGrid,
-  List,
   Clock,
   FileText,
   Plus,
@@ -69,7 +67,6 @@ export function PodClientAllocationsPage() {
   const [clients, setClients] = useState<ClientAccount[]>(INITIAL_CLIENTS);
   const [filterTab, setFilterTab] = useState<"all" | "sla" | "review">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [reallocationModal, setReallocationModal] = useState(false);
 
@@ -359,27 +356,6 @@ export function PodClientAllocationsPage() {
                 placeholder="Filter clients..."
                 className="pl-7 pr-3 py-1 rounded-xl bg-[#0B111C] border border-[#2A3446] text-xs font-medium w-44 sm:w-52 focus:w-60 focus:bg-[#161F2D] focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
               />
-            </div>
-
-            <div className="flex items-center bg-[#1F2C3F] p-0.5 rounded-xl">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-1 rounded-lg transition cursor-pointer ${
-                  viewMode === "grid" ? "bg-[#161F2D] text-[#7FA0D6] shadow-2xs" : "text-[#97A0B3]"
-                }`}
-                aria-label="Grid view"
-              >
-                <LayoutGrid className="size-3.5" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-1 rounded-lg transition cursor-pointer ${
-                  viewMode === "list" ? "bg-[#161F2D] text-[#7FA0D6] shadow-2xs" : "text-[#97A0B3]"
-                }`}
-                aria-label="List view"
-              >
-                <List className="size-3.5" />
-              </button>
             </div>
           </div>
         </div>

@@ -64,12 +64,6 @@ const AdminSLAPerformancePage = lazy(() =>
   import("../features/admin/AdminSLAPerformancePage").then((m) => ({ default: m.AdminSLAPerformancePage }))
 );
 
-const AdminAnnouncementsPage = lazy(() =>
-  import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminAnnouncementsPage }))
-);
-const AdminReportsPage = lazy(() =>
-  import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminReportsPage }))
-);
 const AdminRevenuePage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminRevenuePage }))
 );
@@ -78,12 +72,6 @@ const AdminPlansPage = lazy(() =>
 );
 const AdminSalesPage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminSalesPage }))
-);
-const AdminAddonsPage = lazy(() =>
-  import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminAddonsPage }))
-);
-const AdminSettingsPage = lazy(() =>
-  import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminSettingsPage }))
 );
 
 const AdminTeamManagementPage = lazy(() =>
@@ -445,23 +433,9 @@ export function App() {
                 />
                 <Route path="/admin/leave" element={<AdminLeaveApprovalsPage />} />
                 <Route path="/admin/leaves" element={<AdminLeaveApprovalsPage />} />
-                <Route path="/admin/announcements" element={<AdminAnnouncementsPage />} />
-                <Route
-                  path="/admin/reports"
-                  element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "investor_relations"]}>
-                      <AdminReportsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/kpi"
-                  element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "investor_relations"]}>
-                      <AdminReportsPage />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="/admin/announcements" element={<Navigate to="/admin" replace />} />
+                <Route path="/admin/reports" element={<Navigate to="/admin" replace />} />
+                <Route path="/admin/kpi" element={<Navigate to="/admin" replace />} />
                 <Route
                   path="/admin/revenue"
                   element={
@@ -488,11 +462,7 @@ export function App() {
                 />
                 <Route
                   path="/admin/addons"
-                  element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
-                      <AdminAddonsPage />
-                    </ProtectedRoute>
-                  }
+                  element={<Navigate to="/admin" replace />}
                 />
                 <Route
                   path="/admin/escalations"
@@ -500,11 +470,7 @@ export function App() {
                 />
                 <Route
                   path="/admin/settings"
-                  element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
-                      <AdminSettingsPage />
-                    </ProtectedRoute>
-                  }
+                  element={<Navigate to="/admin" replace />}
                 />
                 <Route
                   path="/admin/pod-dashboard"

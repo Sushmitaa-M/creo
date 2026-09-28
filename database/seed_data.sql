@@ -9,6 +9,8 @@
 -- -----------------------------------------------------------------------------
 -- 0. DEFAULT AGENCY & TEAMS
 -- -----------------------------------------------------------------------------
+CREATE UNIQUE INDEX IF NOT EXISTS idx_agencies_slug ON agencies (slug);
+
 INSERT INTO agencies (
     id, name, slug, status, plan_tier, max_clients, max_staff, branding, timezone
 ) VALUES (
@@ -30,6 +32,8 @@ ON CONFLICT (slug) DO UPDATE SET
 -- -----------------------------------------------------------------------------
 -- 1. SUBSCRIPTION PLANS
 -- -----------------------------------------------------------------------------
+CREATE UNIQUE INDEX IF NOT EXISTS idx_plans_name ON plans (name);
+
 INSERT INTO plans (
     id, agency_id, name, display_name, price_minor, currency, monthly_price,
     poster_quota, reel_quota, story_quota, revision_rounds,
@@ -126,6 +130,8 @@ ON CONFLICT (name) DO UPDATE SET
 -- 2. CORE USERS & LOGINS (Password for all: Admin123!)
 -- Hash: $2b$12$4lmZSL2E1NcdI71mrdQtoutEfXPilLObmHfj7oE7X2SIhwqk7UFSm
 -- -----------------------------------------------------------------------------
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users (email);
+
 INSERT INTO users (
     id, agency_id, auth_id, email, full_name, hashed_password, role, account_status, email_verified_at, must_reset_password
 ) VALUES
@@ -329,6 +335,12 @@ ON CONFLICT (email) DO UPDATE SET
 -- -----------------------------------------------------------------------------
 -- 3. TEAMS (Strictly 3 Pods: Pod Alpha, Pod Beta, Pod Gamma)
 -- -----------------------------------------------------------------------------
+-- Ensure unique index on teams (agency_id, name)
+DELETE FROM teams a USING teams b
+WHERE a.ctid < b.ctid AND a.agency_id = b.agency_id AND a.name = b.name;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_teams_agency_name ON teams (agency_id, name);
+
 INSERT INTO teams (id, agency_id, name, lead_id, is_active)
 VALUES
 (
@@ -357,6 +369,12 @@ ON CONFLICT (agency_id, name) DO UPDATE SET
     is_active = EXCLUDED.is_active;
 
 -- Team Members mapping
+-- Ensure unique index on team_members (team_id, user_id)
+DELETE FROM team_members a USING team_members b
+WHERE a.ctid < b.ctid AND a.team_id = b.team_id AND a.user_id = b.user_id;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_team_members_unique ON team_members (team_id, user_id);
+
 INSERT INTO team_members (agency_id, team_id, user_id, is_home)
 VALUES
 -- Pod Alpha
@@ -371,7 +389,7 @@ VALUES
 ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000c0', '00000000-0000-0000-0000-0000000000c1', true),
 ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000c0', '00000000-0000-0000-0000-0000000000c2', true),
 ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000c0', '00000000-0000-0000-0000-0000000000c3', true)
-ON CONFLICT (team_id, user_id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 -- -----------------------------------------------------------------------------
 -- 4. STAFF PROFILES (Department, Craft Role, Skills, Capacity)

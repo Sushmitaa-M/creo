@@ -33,7 +33,7 @@ export function PortalLibraryPage() {
     status: item.status === "pending_approval" ? "Needs you" : item.status === "approved" ? "Approved" : item.status === "in_production" ? "Scheduled" : "Published",
     type: (item.type || (item.file_type?.includes("video") ? "reel" : "post")).toUpperCase(),
     title: item.title || `${item.type || "Asset"} Draft`,
-    image: item.thumbnail_url || item.file_url || "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=600&h=600&fit=crop",
+    image: item.thumbnail_url || item.file_url || "",
     fileUrl: item.file_url
   }));
 
@@ -187,12 +187,18 @@ export function PortalLibraryPage() {
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 {/* Image Box */}
-                <div className="relative aspect-square overflow-hidden bg-[#0E1420]">
-                  <img
-                    src={asset.image}
-                    alt={asset.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                <div className="relative aspect-square overflow-hidden bg-[#0E1420] flex items-center justify-center">
+                  {asset.image ? (
+                    <img
+                      src={asset.image}
+                      alt={asset.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <span className="text-xs font-bold text-[#6B7280] tracking-wider uppercase">{asset.type}</span>
+                    </div>
+                  )}
                   <div className="absolute top-3 left-3">
                     <span className={`px-2.5 py-1 rounded-full text-[11px] font-medium backdrop-blur-md ${badgeClass}`}>
                       {asset.status}

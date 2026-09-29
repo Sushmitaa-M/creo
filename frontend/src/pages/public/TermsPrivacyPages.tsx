@@ -46,7 +46,7 @@ const TERMS_SECTIONS = [
       "All subscription payments are processed through secure, PCI DSS-compliant payment gateways:",
       "Domestic (India) Transactions — Payments are processed via authorized PCI DSS-compliant payment gateways supporting UPI, net banking, credit/debit cards, and digital wallets.",
       "International Transactions — Payments are processed via global PCI DSS-compliant payment gateways supporting major international cards and localized payment methods.",
-      "Your subscription is billed on a recurring monthly or annual basis, depending on the billing cycle you selected at sign-up. Failed payments are retried automatically for up to 5 business days before the subscription is marked as lapsed.",
+      "Your subscription is billed on a recurring monthly basis. Failed payments are retried automatically for up to 5 business days before the subscription is marked as lapsed.",
       "All prices are displayed in Indian Rupees (INR) for domestic subscribers and US Dollars (USD) for international subscribers, inclusive of applicable taxes unless otherwise stated.",
     ],
   },

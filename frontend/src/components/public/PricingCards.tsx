@@ -1,251 +1,157 @@
-import { useState } from "react";
 import { Link } from "react-router";
-import { Star, Leaf, Building2 } from "lucide-react";
 
 interface PricingCardsProps {
   showBillingToggle?: boolean;
-  defaultCycle?: "annual" | "monthly";
+  defaultCycle?: string;
+  className?: string;
 }
 
-export function PricingCards({ showBillingToggle = true, defaultCycle = "annual" }: PricingCardsProps) {
-  const [billingCycle, setBillingCycle] = useState<"annual" | "monthly">(defaultCycle);
+const PLANS = [
+  {
+    id: "starter",
+    name: "Starter",
+    badge: null,
+    price: "₹25,000",
+    period: "/month",
+    unitCost: "≈ ₹1,136 per asset · 22 assets",
+    stats: [
+      { count: "4", label: "Reels" },
+      { count: "8", label: "Posts" },
+      { count: "10", label: "Stories" },
+    ],
+    features: [
+      "1 revision round per asset",
+      "3 business-day batch SLA",
+      "Shared account lead",
+    ],
+    isFeatured: false,
+    ctaText: "Start with a free sample",
+    ctaLink: "/signup?plan=starter",
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    badge: "Best value per asset",
+    price: "₹50,000",
+    period: "/month",
+    unitCost: "≈ ₹1,042 per asset · 48 assets",
+    stats: [
+      { count: "10", label: "Reels" },
+      { count: "16", label: "Posts" },
+      { count: "22", label: "Stories" },
+    ],
+    features: [
+      "2 revision rounds per asset",
+      "2 business-day batch SLA",
+      "Dedicated account director",
+    ],
+    isFeatured: true,
+    ctaText: "Start with a free sample",
+    ctaLink: "/signup?plan=growth",
+  },
+  {
+    id: "scale",
+    name: "Scale",
+    badge: null,
+    price: "₹95,000",
+    period: "/month",
+    unitCost: "≈ ₹990 per asset · 96 assets",
+    stats: [
+      { count: "20", label: "Reels" },
+      { count: "32", label: "Posts" },
+      { count: "44", label: "Stories" },
+    ],
+    features: [
+      "3 revision rounds per asset",
+      "24-hour priority SLA",
+      "Director + monthly strategy review",
+    ],
+    isFeatured: false,
+    ctaText: "Start with a free sample",
+    ctaLink: "/signup?plan=scale",
+  },
+];
 
+export function PricingCards({ className = "" }: PricingCardsProps) {
   return (
-    <div className="w-full">
-      {/* Billing Switcher Toggle */}
-      {showBillingToggle && (
-        <div className="flex justify-center mb-10 sm:mb-12">
-          <div className="bg-[#0A0F18] border border-[#222F44] p-1 rounded-full inline-flex mx-auto">
-            <button
-              type="button"
-              onClick={() => setBillingCycle("monthly")}
-              className={`font-medium text-xs px-4 py-1.5 transition-all duration-300 ease-out rounded-full cursor-pointer ${
-                billingCycle === "monthly"
-                  ? "bg-[#121926] border border-[#222F44] text-[#F8FAFC] shadow-sm"
-                  : "text-[#97A0B3] hover:text-[#F8FAFC]"
-              }`}
-            >
-              Monthly Billing
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingCycle("annual")}
-              className={`font-semibold text-xs px-4 py-1.5 rounded-full flex items-center gap-1.5 transition-all duration-300 ease-out cursor-pointer ${
-                billingCycle === "annual"
-                  ? "bg-[#121926] border border-[#222F44] text-[#F8FAFC] shadow-sm"
-                  : "text-[#97A0B3] hover:text-[#F8FAFC]"
-              }`}
-            >
-              Annual Billing (Save 20%) ⚡
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 3 Pricing Tier Bento Cards */}
+    <div className={`w-full ${className}`}>
+      {/* 3 Pricing Tier Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        
-        {/* Card 1: Boutique Studio */}
-        <div className="bg-[#121926] border border-[#222F44] rounded-2xl p-6 flex flex-col justify-between hover:border-[#7FA0D6]/40 transition-colors">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-[#0A0F18] border border-[#222F44] p-2 rounded-lg text-white w-9 h-9 flex items-center justify-center shrink-0">
-                <Star className="size-4" />
-              </div>
-              <div>
-                <h3 className="text-[#F8FAFC] font-bold text-base">Boutique Studio</h3>
-                <p className="text-[#97A0B3] text-[10px]">Starter OS</p>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <div className="flex items-end gap-1">
-                <span className="text-3xl font-black text-[#F8FAFC]">
-                  {billingCycle === "annual" ? "₹14,900" : "₹18,625"}
-                </span>
-                <span className="text-[#97A0B3] text-xs font-medium mb-1">/month</span>
-              </div>
-              <div className="text-[#97A0B3] text-[10px] mt-1">
-                (Billed {billingCycle === "annual" ? "annually" : "monthly"})
-              </div>
-            </div>
-
-            <p className="text-xs text-[#97A0B3] my-4 leading-relaxed">
-              For emerging creative shops replacing messy WhatsApp chasing and Drive links.
-            </p>
-
-            <div className="bg-[#0A0F18] border border-[#222F44] text-[11px] text-[#F8FAFC] font-medium py-1.5 px-3 rounded-lg text-center mb-6">
-              Up to 10 Team Seats &bull; 15 Active Client Pods
-            </div>
-
-            <ul className="space-y-3 mb-8">
-              {[
-                "Six-milestone workflow rail (Lead to Report)",
-                "1-Click Client Approval Portal with revision timers",
-                "Real-time Team Capacity Pod (Utilization radar)",
-                "Centralized asset dossiers & Figma/Adobe sync",
-                "Standard email & Slack support",
-              ].map((feature, i) => (
-                <li key={i} className="flex items-start gap-3 py-1">
-                  <div className="w-4 h-4 rounded-full bg-[#7FA0D6] text-[#050810] flex items-center justify-center shrink-0 mt-0.5">
-                    <svg className="size-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-xs text-[#F8FAFC] leading-snug">{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Link
-            to="/pricing"
-            className="w-full bg-[#0A0F18] border border-[#222F44] hover:bg-[#1A2333] text-[#F8FAFC] text-xs font-semibold py-3 rounded-full text-center mt-auto transition block"
+        {PLANS.map((plan) => (
+          <div
+            key={plan.id}
+            className={`rounded-2xl p-7 flex flex-col justify-between transition-all duration-300 ${
+              plan.isFeatured
+                ? "bg-[#141C2B] border-2 border-[#7FA0D6]/80 shadow-[0_0_35px_rgba(127,160,214,0.12)]"
+                : "bg-[#121926] border border-[#222F44] hover:border-white/[0.15]"
+            }`}
           >
-            Deploy Boutique OS &rarr;
-          </Link>
-        </div>
-
-        {/* Card 2: Growth OS (Featured / Most Popular) */}
-        <div className="bg-[#121926] border-2 border-[#7FA0D6] rounded-2xl p-6 flex flex-col justify-between relative shadow-[0_0_30px_rgba(127,160,214,0.12)]">
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#7FA0D6] text-[#050810] font-bold text-[10px] tracking-wider uppercase px-3 py-0.5 rounded-full shadow-sm flex items-center gap-1.5 whitespace-nowrap">
-            <span className="relative flex size-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#050810] opacity-40"></span>
-              <span className="relative inline-flex rounded-full size-2 bg-[#050810]"></span>
-            </span>
-            MOST POPULAR
-          </div>
-
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-[#0A0F18] border border-[#222F44] p-2 rounded-lg text-[#7FA0D6] w-9 h-9 flex items-center justify-center shrink-0">
-                <Leaf className="size-4" />
+            <div>
+              {/* Plan Name & Badge */}
+              <div className="flex items-center justify-between mb-4 min-h-[28px]">
+                <h3 className="text-white font-semibold text-base tracking-wide">
+                  {plan.name}
+                </h3>
+                {plan.badge && (
+                  <span className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.12] text-[11px] font-medium text-white/90">
+                    {plan.badge}
+                  </span>
+                )}
               </div>
-              <div>
-                <h3 className="text-[#F8FAFC] font-bold text-base">Growth OS</h3>
-                <p className="text-[#97A0B3] text-[10px]">Agency Standard</p>
+
+              {/* Price & Unit Cost */}
+              <div className="mb-2">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-extrabold text-white tracking-tight">
+                    {plan.price}
+                  </span>
+                  <span className="text-sm font-normal text-[#9CA3AF]">
+                    {plan.period}
+                  </span>
+                </div>
+                <p className="text-xs text-[#9CA3AF] mt-1.5 font-medium">
+                  {plan.unitCost}
+                </p>
               </div>
-            </div>
 
-            <div className="mb-4">
-              <div className="flex items-end gap-1">
-                <span className="text-3xl font-black text-[#F8FAFC]">
-                  {billingCycle === "annual" ? "₹34,900" : "₹43,625"}
-                </span>
-                <span className="text-[#97A0B3] text-xs font-medium mb-1">/month</span>
-              </div>
-              <div className="text-[#97A0B3] text-[10px] mt-1">
-                (Billed {billingCycle === "annual" ? "annually" : "monthly"})
-              </div>
-            </div>
+              {/* Separator */}
+              <div className="border-t border-white/[0.08] my-6" />
 
-            <p className="text-xs text-[#97A0B3] my-4 leading-relaxed">
-              For scaling content and design studios requiring real-time unit economics and zero burnout.
-            </p>
-
-            <div className="bg-[#0A0F18] border border-[#222F44] text-[11px] text-[#F8FAFC] font-medium py-1.5 px-3 rounded-lg text-center mb-6">
-              Up to 30 Team Seats &bull; Unlimited Client Pods
-            </div>
-
-            <div className="text-[11px] font-bold text-[#F8FAFC] mb-3">
-              Everything in Boutique Studio, plus:
-            </div>
-
-            <ul className="space-y-3 mb-8">
-              {[
-                "Astra Living Retainer Unit Economics Ledger (41.25% Margin Tracker)",
-                "Automated Revision SLA Tickets & Auto-Assign to Leads",
-                "Collections Pipeline engine (Automated Auto-Chase 7-Day Cadence)",
-                "Multi-pod Bottleneck Radar & Editorial Calendar tables",
-                "White-label client portal branding",
-              ].map((feature, i) => (
-                <li key={i} className="flex items-start gap-3 py-1">
-                  <div className="w-4 h-4 rounded-full bg-[#7FA0D6] text-[#050810] flex items-center justify-center shrink-0 mt-0.5">
-                    <svg className="size-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
+              {/* Quotas 3-column stats */}
+              <div className="grid grid-cols-3 gap-3 mb-8">
+                {plan.stats.map((stat) => (
+                  <div key={stat.label}>
+                    <div className="text-2xl font-bold text-white tracking-tight">
+                      {stat.count}
+                    </div>
+                    <div className="text-xs text-[#9CA3AF] mt-0.5 font-medium">
+                      {stat.label}
+                    </div>
                   </div>
-                  <span className="text-xs text-[#F8FAFC] leading-snug">{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Link
-            to="/pricing"
-            className="w-full bg-[#BCCCE6] hover:bg-white text-[#050810] text-xs font-bold py-3 rounded-full text-center mt-auto transition block shadow-sm"
-          >
-            Launch Growth OS &rarr;
-          </Link>
-        </div>
-
-        {/* Card 3: Agency Network */}
-        <div className="bg-[#121926] border border-[#222F44] rounded-2xl p-6 flex flex-col justify-between hover:border-[#7FA0D6]/40 transition-colors">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-[#0A0F18] border border-[#222F44] p-2 rounded-lg text-white w-9 h-9 flex items-center justify-center shrink-0">
-                <Building2 className="size-4" />
+                ))}
               </div>
-              <div>
-                <h3 className="text-[#F8FAFC] font-bold text-base">Agency Network</h3>
-                <p className="text-[#97A0B3] text-[10px]">Scale &amp; Enterprise</p>
-              </div>
-            </div>
 
-            <div className="mb-4">
-              <div className="flex items-end gap-1">
-                <span className="text-3xl font-black text-[#F8FAFC]">
-                  {billingCycle === "annual" ? "₹79,900" : "₹99,875"}
-                </span>
-                <span className="text-[#97A0B3] text-xs font-medium mb-1">/month</span>
-              </div>
-              <div className="text-[#97A0B3] text-[10px] mt-1">
-                (Billed {billingCycle === "annual" ? "annually" : "monthly"})
-              </div>
-            </div>
-
-            <p className="text-xs text-[#97A0B3] my-4 leading-relaxed">
-              For multi-department creative networks demanding custom integrations and governance.
-            </p>
-
-            <div className="bg-[#0A0F18] border border-[#222F44] text-[11px] text-[#F8FAFC] font-medium py-1.5 px-3 rounded-lg text-center mb-6">
-              Unlimited Seats &bull; Unlimited Dedicated Pods
-            </div>
-
-            <div className="text-[11px] font-bold text-[#F8FAFC] mb-3">
-              Everything in Growth OS, plus:
-            </div>
-
-            <ul className="space-y-3 mb-8">
-              {[
-                "Custom agency domain white-labeling (portal.youragency.com)",
-                "Multi-entity consolidated profit & loss reporting",
-                "SOC-2 Type II enterprise compliance & data encryption",
-                "Dedicated Agency Solutions Architect & 24/7 priority SLA",
-                "Custom API webhooks & billing automation",
-              ].map((feature, i) => (
-                <li key={i} className="flex items-start gap-3 py-1">
-                  <div className="w-4 h-4 rounded-full bg-[#7FA0D6] text-[#050810] flex items-center justify-center shrink-0 mt-0.5">
-                    <svg className="size-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
+              {/* Features List */}
+              <div className="space-y-3.5 mb-8 text-[13px] text-[#D1D5DB] leading-relaxed">
+                {plan.features.map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span>{feature}</span>
                   </div>
-                  <span className="text-xs text-[#F8FAFC] leading-snug">{feature}</span>
-                </li>
-              ))}
-            </ul>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="mt-auto pt-2">
+              <Link
+                to={plan.ctaLink}
+                className="w-full bg-[#BCCCE6] hover:bg-[#CAD8EE] text-[#0E1420] text-sm font-bold py-3.5 px-4 rounded-xl text-center transition-colors block shadow-sm"
+              >
+                {plan.ctaText}
+              </Link>
+            </div>
           </div>
-
-          <a
-            href="https://wa.me/919941999415"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full bg-[#0A0F18] border border-[#222F44] hover:bg-[#1A2333] text-[#F8FAFC] text-xs font-semibold py-3 rounded-full text-center mt-auto transition block"
-          >
-            Contact Solutions Team &rarr;
-          </a>
-        </div>
-
+        ))}
       </div>
     </div>
   );

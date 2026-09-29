@@ -40,14 +40,6 @@ interface DashboardData {
 
 
 
-/* ── Batch Progress Steps ── */
-const BATCH_STEPS = [
-  { label: "Brief", completed: true },
-  { label: "Production", completed: true },
-  { label: "Internal QA", completed: true },
-  { label: "Your review", completed: false, active: true },
-  { label: "Scheduled", completed: false },
-];
 
 export function PortalDashboardPage() {
   const { user } = useAuth();
@@ -215,45 +207,69 @@ export function PortalDashboardPage() {
           <div className="bg-[#161C2D] rounded-2xl p-6 border border-white/[0.05]">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-base font-semibold text-white">Batch 05 · this week</h2>
+              <h2 className="text-base font-semibold text-white">
+                {pendingDeliverables.length > 0 
+                  ? "Deliverables · Ready for Review" 
+                  : upcomingEntries.length > 0 
+                  ? "Publishing Cadence · On Track" 
+                  : "Production Pipeline"}
+              </h2>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-[#93C5FD]/10 text-[#93C5FD]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#93C5FD]" />
-                On track · 2 days early
+                {pendingDeliverables.length > 0 ? `${pendingDeliverables.length} awaiting review` : "Active cycle"}
               </span>
             </div>
 
             {/* Progress Steps */}
-            <div className="flex gap-2 mb-8">
-              {BATCH_STEPS.map((step) => (
-                <div key={step.label} className="flex-1 flex flex-col">
-                  <div
-                    className={`h-1.5 w-full rounded-full mb-3 ${
-                      step.completed || step.active
-                        ? "bg-[#3B82F6]"
-                        : "bg-white/[0.08]"
-                    }`}
-                  />
-                  <span
-                    className={`text-[12px] text-center tracking-wide ${
-                      step.active
-                        ? "text-white font-bold"
-                        : step.completed
-                        ? "text-[#9CA3AF] font-medium"
-                        : "text-[#6B7280] font-medium"
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+            {(() => {
+              const inProd = deliverablesData?.items?.filter((d: any) => d.status === "in_production" || d.status === "draft")?.length || 0;
+              const hasScheduled = (upcomingEntries.length > 0) || (deliverablesData?.items?.some((d: any) => d.status === "scheduled" || d.status === "approved"));
+              const hasReview = pendingDeliverables.length > 0;
 
-            {/* Alert Box */}
-            <div className="bg-[#1E2536] rounded-xl p-4 mb-8">
-              <p className="text-[13px] text-[#9CA3AF] leading-relaxed">
-                Please review by <span className="text-white font-medium">Wed 30 Sep, 18:00</span>. Reviewing on time keeps your batch on its SLA; if we're late, your next cycle is credited automatically.
-              </p>
-            </div>
+              const dynamicSteps = [
+                { label: "Brief", completed: true, active: false },
+                { label: "Production", completed: hasReview || hasScheduled, active: inProd > 0 && !hasReview },
+                { label: "Internal QA", completed: hasReview || hasScheduled, active: false },
+                { label: "Your review", completed: hasScheduled && !hasReview, active: hasReview },
+                { label: "Scheduled", completed: false, active: hasScheduled && !hasReview },
+              ];
+
+              return (
+                <div className="flex gap-2 mb-8">
+                  {dynamicSteps.map((step) => (
+                    <div key={step.label} className="flex-1 flex flex-col">
+                      <div
+                        className={`h-1.5 w-full rounded-full mb-3 ${
+                          step.completed || step.active
+                            ? "bg-[#3B82F6]"
+                            : "bg-white/[0.08]"
+                        }`}
+                      />
+                      <span
+                        className={`text-[12px] text-center tracking-wide ${
+                          step.active
+                            ? "text-white font-bold"
+                            : step.completed
+                            ? "text-[#9CA3AF] font-medium"
+                            : "text-[#6B7280] font-medium"
+                        }`}
+                      >
+                        {step.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
+            {/* Alert Box (Only when review is needed) */}
+            {pendingDeliverables.length > 0 && (
+              <div className="bg-[#1E2536] rounded-xl p-4 mb-8">
+                <p className="text-[13px] text-[#9CA3AF] leading-relaxed">
+                  You have <span className="text-white font-medium">{pendingDeliverables.length} {pendingDeliverables.length === 1 ? 'deliverable' : 'deliverables'}</span> awaiting your review. Approving or requesting changes keeps your batch on its delivery SLA.
+                </p>
+              </div>
+            )}
 
             {/* Asset List */}
             {pendingDeliverables.length === 0 ? (

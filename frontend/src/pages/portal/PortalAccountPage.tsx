@@ -146,7 +146,7 @@ export function PortalAccountPage() {
 
             <div>
               <label className="block text-[13px] font-semibold text-white mb-2">What do you sell, in one line?</label>
-              <input type="text" value={form.whatYouSell} onChange={(e) => setForm({...form, whatYouSell: e.target.value})} className="w-full bg-[#0E1420] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/[0.2]" placeholder="Slow-fermented sourdough and festive boxes, pre-order only." />
+              <input type="text" value={form.whatYouSell} onChange={(e) => setForm({...form, whatYouSell: e.target.value})} className="w-full bg-[#0E1420] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/[0.2]" placeholder="e.g. Premium sustainable activewear and performance essentials." />
             </div>
 
             <div>
@@ -162,12 +162,12 @@ export function PortalAccountPage() {
 
             <div>
               <label className="block text-[13px] font-semibold text-white mb-2">Who buys from you?</label>
-              <textarea rows={2} value={form.audience} onChange={(e) => setForm({...form, audience: e.target.value})} className="w-full bg-[#0E1420] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white resize-none focus:outline-none focus:border-white/[0.2]" placeholder="25-40, Chennai + Bengaluru, weekend bakers and gift buyers." />
+              <textarea rows={2} value={form.audience} onChange={(e) => setForm({...form, audience: e.target.value})} className="w-full bg-[#0E1420] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white resize-none focus:outline-none focus:border-white/[0.2]" placeholder="e.g. Urban professionals aged 25-40, fitness and wellness enthusiasts." />
             </div>
 
             <div>
               <label className="block text-[13px] font-semibold text-white mb-2">Two or three brands you admire (or compete with)</label>
-              <input type="text" value={form.competitors} onChange={(e) => setForm({...form, competitors: e.target.value})} className="w-full bg-[#0E1420] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/[0.2]" placeholder="@theboxbakery, @loafandco" />
+              <input type="text" value={form.competitors} onChange={(e) => setForm({...form, competitors: e.target.value})} className="w-full bg-[#0E1420] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/[0.2]" placeholder="e.g. @brandone, @brandtwo" />
             </div>
 
             <div>
@@ -237,7 +237,7 @@ export function PortalAccountPage() {
             <div className="bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-6 lg:p-8">
               <h3 className="text-[15px] font-bold text-white mb-4">Voice</h3>
               <p className="text-[13px] text-[#9CA3AF] mb-5 leading-relaxed">
-                Warm, patient, a little nerdy about fermentation. We explain the craft without showing off.
+                {profile?.brand_dna?.summary_line || form.whatYouSell || "Strategic, engaging, and aligned with your target audience brand guidelines."}
               </p>
               <div className="flex flex-wrap gap-2">
                 {form.voiceWords.map(word => (
@@ -249,11 +249,13 @@ export function PortalAccountPage() {
             <div className="bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-6 lg:p-8 flex gap-8">
               <div className="flex-1">
                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280] mb-2">MAIN AUDIENCE</h3>
-                <p className="text-[13px] text-white leading-relaxed">{form.audience || "25-40, Chennai + Bengaluru, weekend bakers and gift buyers."}</p>
+                <p className="text-[13px] text-white leading-relaxed">{form.audience || profile?.brand_dna?.target_audience || "Target customer demographic and core audience segment."}</p>
               </div>
               <div className="flex-1">
                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280] mb-2">WHAT THEY CARE ABOUT</h3>
-                <p className="text-[13px] text-white leading-relaxed">Real ingredients, pre-order convenience, festive gifting.</p>
+                <p className="text-[13px] text-white leading-relaxed">
+                  {profile?.brand_dna?.value_propositions || "Authenticity, product quality, value proposition, and brand reliability."}
+                </p>
               </div>
             </div>
 
@@ -263,17 +265,29 @@ export function PortalAccountPage() {
                 <div className="flex-1 space-y-3">
                   <h4 className="text-[13px] font-bold text-white">Do</h4>
                   <ul className="text-[13px] text-[#9CA3AF] space-y-2">
-                    <li>Show hands and process</li>
-                    <li>Natural light, warm tones</li>
-                    <li>Lead with the smell and texture</li>
+                    {profile?.brand_dna?.guidelines?.dos?.length > 0 ? (
+                      profile.brand_dna.guidelines.dos.map((item: string, i: number) => <li key={i}>{item}</li>)
+                    ) : (
+                      <>
+                        <li>Highlight clear product value & storytelling</li>
+                        <li>Consistent brand palette & typography</li>
+                        <li>High-definition native vertical formats</li>
+                      </>
+                    )}
                   </ul>
                 </div>
                 <div className="flex-1 space-y-3">
                   <h4 className="text-[13px] font-bold text-[#F87171]">Don't</h4>
                   <ul className="text-[13px] text-[#9CA3AF] space-y-2">
-                    <li>Stock photos</li>
-                    <li>Neon or cool colours</li>
-                    <li>Discount-first hooks</li>
+                    {profile?.brand_dna?.guidelines?.donts?.length > 0 ? (
+                      profile.brand_dna.guidelines.donts.map((item: string, i: number) => <li key={i}>{item}</li>)
+                    ) : (
+                      <>
+                        <li>Generic stock photos without custom grading</li>
+                        <li>Cluttered typography or off-palette overlays</li>
+                        <li>Unclear or missing calls to action</li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </div>
@@ -282,58 +296,57 @@ export function PortalAccountPage() {
 
           <div className="space-y-6">
             <div className="bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-6 lg:p-8">
-              <h3 className="text-[15px] font-bold text-white mb-6">Look</h3>
+              <h3 className="text-[15px] font-bold text-white mb-6">Palette</h3>
               <div className="grid grid-cols-4 gap-3 mb-6">
-                {[
-                  { name: "Crust", hex: form.colors[0] },
-                  { name: "Flour", hex: form.colors[1] },
-                  { name: "Oven", hex: form.colors[2] },
-                  { name: "Basil", hex: form.colors[3] },
-                ].map((c) => (
-                  <div key={c.name}>
-                    <div className="w-full aspect-[4/3] rounded-lg mb-2" style={{ backgroundColor: c.hex || "#000000" }} />
-                    <p className="text-[11px] font-bold text-white">{c.name}</p>
-                    <p className="text-[10px] text-[#6B7280]">{c.hex ? c.hex.toUpperCase() : ""}</p>
+                {form.colors.map((hex, idx) => (
+                  <div key={idx}>
+                    <div className="w-full aspect-[4/3] rounded-lg mb-2 border border-white/[0.05]" style={{ backgroundColor: hex || "#1E2536" }} />
+                    <p className="text-[11px] font-bold text-white">Color {idx + 1}</p>
+                    <p className="text-[10px] text-[#6B7280] uppercase">{hex || "None"}</p>
                   </div>
                 ))}
               </div>
               <div className="pt-4 border-t border-white/[0.05]">
                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280] mb-1">TYPE</h3>
-                <p className="text-[13px] text-[#9CA3AF]">Headlines: Recoleta · Body: Inter <span className="text-[#6B7280]">(from your brand kit)</span></p>
+                <p className="text-[13px] text-[#9CA3AF]">
+                  Headlines: {profile?.brand_dna?.typography?.headline || "Inter"} · Body: {profile?.brand_dna?.typography?.body || "Inter"}
+                </p>
               </div>
             </div>
 
             <div className="bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-6 lg:p-8">
-              <h3 className="text-[15px] font-bold text-white mb-5">Hooks that worked</h3>
+              <h3 className="text-[15px] font-bold text-white mb-5">High-Performing Hooks</h3>
               <div className="space-y-2">
-                {[
-                  "We start baking 36 hours before you order.",
-                  "The crackle you can hear.",
-                  "Why our Diwali box sells out by Monday.",
-                ].map(hook => (
-                  <div key={hook} className="flex items-center justify-between gap-4 py-3 border-b border-white/[0.05] last:border-0 last:pb-0">
-                    <p className="text-[13px] text-white flex-1 leading-relaxed">"{hook}"</p>
-                    <span className="px-2 py-0.5 rounded bg-[#1E3A8A]/30 text-[#93C5FD] text-[10px] font-bold whitespace-nowrap">approved first round</span>
-                  </div>
-                ))}
+                {profile?.brand_dna?.hooks && profile.brand_dna.hooks.length > 0 ? (
+                  profile.brand_dna.hooks.map((hook: string, i: number) => (
+                    <div key={i} className="flex items-center justify-between gap-4 py-3 border-b border-white/[0.05] last:border-0 last:pb-0">
+                      <p className="text-[13px] text-white flex-1 leading-relaxed">"{hook}"</p>
+                      <span className="px-2 py-0.5 rounded bg-[#1E3A8A]/30 text-[#93C5FD] text-[10px] font-bold whitespace-nowrap">approved</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-[13px] text-[#6B7280] py-2">
+                    Campaign hook angles and high-CTR concepts generated during sprints will appear here.
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-6 lg:p-8">
-              <h3 className="text-[15px] font-bold text-white mb-5">Brand files</h3>
+              <h3 className="text-[15px] font-bold text-white mb-5">Brand Files</h3>
               <div className="space-y-2 mb-5">
-                <div className="flex items-center justify-between py-2 text-[13px]">
-                  <span className="text-[#9CA3AF]">Logo pack.zip</span>
-                  <span className="text-[#6B7280] text-[11px]">4 files</span>
-                </div>
-                <div className="flex items-center justify-between py-2 text-[13px]">
-                  <span className="text-[#9CA3AF]">Product photos - Sept</span>
-                  <span className="text-[#6B7280] text-[11px]">38 photos</span>
-                </div>
-                <div className="flex items-center justify-between py-2 text-[13px]">
-                  <span className="text-[#9CA3AF]">Menu 2026.pdf</span>
-                  <span className="text-[#6B7280] text-[11px]">1.2 MB</span>
-                </div>
+                {profile?.brand_dna?.files && profile.brand_dna.files.length > 0 ? (
+                  profile.brand_dna.files.map((file: any, idx: number) => (
+                    <div key={idx} className="flex items-center justify-between py-2 text-[13px]">
+                      <span className="text-[#9CA3AF]">{file.name || `Asset-${idx + 1}`}</span>
+                      <span className="text-[#6B7280] text-[11px]">{file.size || "Ready"}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-[13px] text-[#6B7280] py-2">
+                    No brand files or logo packs uploaded yet.
+                  </p>
+                )}
               </div>
               <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.05] text-white text-[13px] font-medium hover:bg-white/[0.08] transition-colors">
                 <Upload className="w-4 h-4" /> Upload files

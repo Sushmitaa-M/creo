@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../lib/auth-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPortalDeliverables, approveDeliverable, requestChanges } from "../../lib/deliverables-api";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Play, Loader2 } from "lucide-react";
 import { request } from "../../lib/http";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
 
@@ -150,7 +150,7 @@ export function PortalDeliverablesPage() {
                 // Fallbacks mimicking design
                 const title = d.title || `Asset ${idx + 1}`;
                 const meta = `${d.asset_type || "Reel"} · v${d.revision_round || 1}`;
-                const thumb = d.thumbnail_url || d.file_url || "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&q=80&w=200&h=200";
+                const thumb = d.thumbnail_url || d.file_url;
 
                 return (
                   <button
@@ -162,8 +162,12 @@ export function PortalDeliverablesPage() {
                         : "border-transparent hover:bg-white/[0.02]"
                     }`}
                   >
-                    <div className="w-14 h-14 rounded-xl bg-black overflow-hidden shrink-0 border border-white/[0.05]">
-                      <img src={thumb} alt="" className="w-full h-full object-cover" />
+                    <div className="w-14 h-14 rounded-xl bg-black overflow-hidden shrink-0 border border-white/[0.05] flex items-center justify-center">
+                      {thumb ? (
+                        <img src={thumb} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <Play className="w-5 h-5 text-[#6B7280]" />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className={`text-[13px] font-bold truncate ${isSelected ? 'text-white' : 'text-[#E5E7EB]'}`}>
@@ -365,7 +369,17 @@ export function PortalDeliverablesPage() {
               </div>
 
             </div>
-          ) : null}
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[#6B7280]">
+              <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-3">
+                <Play className="w-5 h-5 text-[#6B7280]" />
+              </div>
+              <h3 className="text-sm font-semibold text-white mb-1">No Deliverable Selected</h3>
+              <p className="text-xs text-[#6B7280] max-w-xs leading-relaxed">
+                When your creative pod submits deliverables for review, select an item to inspect versions, leave timestamps or comments, and approve for scheduling.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

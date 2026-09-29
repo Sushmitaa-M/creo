@@ -51,8 +51,8 @@ export function PricingPage() {
                   <Star className="size-3" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-[#F8FAFC]">Boutique Studio</div>
-                  <div className="text-[10px] text-[#97A0B3]">Starter OS</div>
+                  <div className="text-sm font-bold text-[#F8FAFC]">Starter</div>
+                  <div className="text-[10px] text-[#97A0B3]">₹25,000 / mo</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -60,8 +60,8 @@ export function PricingPage() {
                   <Leaf className="size-3" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-[#F8FAFC]">Growth OS</div>
-                  <div className="text-[10px] text-[#97A0B3]">Agency Standard</div>
+                  <div className="text-sm font-bold text-[#F8FAFC]">Growth</div>
+                  <div className="text-[10px] text-[#97A0B3]">₹50,000 / mo</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -69,8 +69,8 @@ export function PricingPage() {
                   <Building2 className="size-3" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-[#F8FAFC]">Agency Network</div>
-                  <div className="text-[10px] text-[#97A0B3]">Scale &amp; Enterprise</div>
+                  <div className="text-sm font-bold text-[#F8FAFC]">Scale</div>
+                  <div className="text-[10px] text-[#97A0B3]">₹95,000 / mo</div>
                 </div>
               </div>
             </div>

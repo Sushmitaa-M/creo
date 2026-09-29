@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import {
   Sparkles,
   ArrowRight,
@@ -18,6 +18,8 @@ import {
   Trash2,
   Loader2,
   CheckCircle2,
+  Check,
+  RefreshCw,
 } from "lucide-react";
 
 import {
@@ -34,7 +36,7 @@ interface StageQuestionnaireProps {
   onComplete: (assignedTeam?: AssignedTeamMember[]) => void;
 }
 
-type SectionKey = "a" | "b" | "c" | "d" | "e" | "f" | "g";
+export type SectionKey = "a" | "b" | "c" | "d" | "e" | "f" | "g";
 
 interface SectionMeta {
   key: SectionKey;
@@ -47,10 +49,10 @@ interface SectionMeta {
 
 const SECTIONS: SectionMeta[] = [
   { key: "a", label: "Identity", badge: "A", isCore: true, icon: Building2, estMinutes: 2 },
-  { key: "b", label: "Audience & Positioning", badge: "B", isCore: true, icon: Users, estMinutes: 3 },
+  { key: "b", label: "Audience", badge: "B", isCore: true, icon: Users, estMinutes: 3 },
   { key: "c", label: "Voice & Tone", badge: "C", isCore: true, icon: Sliders, estMinutes: 2 },
   { key: "d", label: "Look & Assets", badge: "D", isCore: true, icon: Palette, estMinutes: 2 },
-  { key: "e", label: "Production Reality", badge: "E", isCore: true, icon: Camera, estMinutes: 3 },
+  { key: "e", label: "Production", badge: "E", isCore: true, icon: Camera, estMinutes: 3 },
   { key: "f", label: "History", badge: "F", isCore: false, icon: History, estMinutes: 2 },
   { key: "g", label: "Brand Story", badge: "G", isCore: false, icon: BookOpen, estMinutes: 3 },
 ];
@@ -196,11 +198,17 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [coreUnlocked, setCoreUnlocked] = useState(false);
-  const [, setBrandDNAResult] = useState<any>(null);
+  const [completedSections, setCompletedSections] = useState<Set<SectionKey>>(new Set());
   const [dataInitialized, setDataInitialized] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [validationBanner, setValidationBanner] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  // Section form state
-  const [secA, setSecA] = useState<any>({
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const formTopRef = useRef<HTMLDivElement | null>(null);
+
+  // Section form states
+  const [secA, setSecA] = useState({
     brand_name: "",
     instagram_handle: "",
     one_liner: "",
@@ -210,7 +218,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     goal_notes: "",
   });
 
-  const [secB, setSecB] = useState<any>({
+  const [secB, setSecB] = useState({
     ideal_customer: "",
     problem: "",
     why_chosen: "",
@@ -221,7 +229,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     locations: [{ location: "Metro India" }],
   });
 
-  const [secC, setSecC] = useState<any>({
+  const [secC, setSecC] = useState({
     humour: 4,
     formality: 4,
     respectfulness: 8,
@@ -232,7 +240,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     admired_brands: [{ brand_name: "", what_you_like: "" }],
   });
 
-  const [secD, setSecD] = useState<any>({
+  const [secD, setSecD] = useState({
     brand_guidelines: "none",
     colours: [{ hex: "#0D2137", label: "primary" }, { hex: "#2B7BC4", label: "accent" }],
     fonts: "",
@@ -243,35 +251,35 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     reference_accounts: [{ handle: "", what_specifically: "" }],
   });
 
-  const [secE, setSecE] = useState<any>({
+  const [secE, setSecE] = useState({
     on_camera: ["founder"],
     founder_comfort: "yes_confident",
     shoot_locations: ["our_store_office"],
     shoot_city: "Mumbai",
     availability: ["weekday_morning"],
     samples: "yes",
-    format_exclusions: [],
+    format_exclusions: [] as string[],
     cta_destination: "website",
     cta_target: "",
     legal_constraints: "",
     approval_speed: "founder_same_day",
   });
 
-  const [secF, setSecF] = useState<any>({
+  const [secF, setSecF] = useState({
     best_posts: [{ post_url: "", why_worked: "" }],
     worst_posts: [{ post_url: "", why_failed: "" }],
     frequency: "2-3_weekly",
     what_failed: "",
   });
 
-  const [secG, setSecG] = useState<any>({
+  const [secG, setSecG] = useState({
     origin: "",
     stands_for: "",
     remembered_for: "",
     vision: "",
   });
 
-  // Load existing questionnaire state to restore previous answers on abandon/return
+  // Load existing questionnaire state
   const { data: qState, isLoading } = useQuery({
     queryKey: ["questionnaire-state", userId],
     queryFn: () => fetchQuestionnaireState(userId),
@@ -279,19 +287,44 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
 
   useEffect(() => {
     if (qState) {
-      if (qState.section_a && Object.keys(qState.section_a).length > 0) setSecA((prev: any) => ({ ...prev, ...qState.section_a }));
-      if (qState.section_b && Object.keys(qState.section_b).length > 0) setSecB((prev: any) => ({ ...prev, ...qState.section_b }));
-      if (qState.section_c && Object.keys(qState.section_c).length > 0) setSecC((prev: any) => ({ ...prev, ...qState.section_c }));
-      if (qState.section_d && Object.keys(qState.section_d).length > 0) setSecD((prev: any) => ({ ...prev, ...qState.section_d }));
-      if (qState.section_e && Object.keys(qState.section_e).length > 0) setSecE((prev: any) => ({ ...prev, ...qState.section_e }));
-      if (qState.section_f && Object.keys(qState.section_f).length > 0) setSecF((prev: any) => ({ ...prev, ...qState.section_f }));
-      if (qState.section_g && Object.keys(qState.section_g).length > 0) setSecG((prev: any) => ({ ...prev, ...qState.section_g }));
+      const completed = new Set<SectionKey>();
+
+      if (qState.section_a && Object.keys(qState.section_a).length > 0) {
+        setSecA((prev) => ({ ...prev, ...qState.section_a }));
+        if (qState.section_a.brand_name) completed.add("a");
+      }
+      if (qState.section_b && Object.keys(qState.section_b).length > 0) {
+        setSecB((prev) => ({ ...prev, ...qState.section_b }));
+        if (qState.section_b.ideal_customer) completed.add("b");
+      }
+      if (qState.section_c && Object.keys(qState.section_c).length > 0) {
+        setSecC((prev) => ({ ...prev, ...qState.section_c }));
+        if (qState.section_c.voice_words?.length) completed.add("c");
+      }
+      if (qState.section_d && Object.keys(qState.section_d).length > 0) {
+        setSecD((prev) => ({ ...prev, ...qState.section_d }));
+        if (qState.section_d.visual_direction?.length) completed.add("d");
+      }
+      if (qState.section_e && Object.keys(qState.section_e).length > 0) {
+        setSecE((prev) => ({ ...prev, ...qState.section_e }));
+        if (qState.section_e.shoot_city) completed.add("e");
+      }
+      if (qState.section_f && Object.keys(qState.section_f).length > 0) {
+        setSecF((prev) => ({ ...prev, ...qState.section_f }));
+        completed.add("f");
+      }
+      if (qState.section_g && Object.keys(qState.section_g).length > 0) {
+        setSecG((prev) => ({ ...prev, ...qState.section_g }));
+        completed.add("g");
+      }
+
+      setCompletedSections(completed);
 
       if (qState.core_completed) {
         setCoreUnlocked(true);
       }
 
-      // If initialSection was passed from status, use it; otherwise detect first incomplete section among A..E
+      // Resume at first incomplete section if not specifically requested
       if (initialSection) {
         setActiveSection(initialSection);
       } else {
@@ -300,81 +333,153 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
         const c = qState.section_c;
         const d = qState.section_d;
         const e = qState.section_e;
-        if (!a || !(a.brand_name || a.one_liner)) setActiveSection("a");
+        if (!a || !a.brand_name) setActiveSection("a");
         else if (!b || !b.ideal_customer) setActiveSection("b");
-        else if (!c || !("humour" in c || c.voice_words?.length)) setActiveSection("c");
-        else if (!d || !(d.visual_direction?.length || d.colours?.length)) setActiveSection("d");
-        else if (!e || !(e.on_camera?.length || e.shoot_locations?.length)) setActiveSection("e");
+        else if (!c || !c.voice_words?.length) setActiveSection("c");
+        else if (!d || !d.visual_direction?.length) setActiveSection("d");
+        else if (!e || !e.shoot_city) setActiveSection("e");
         else setActiveSection("a");
       }
       setDataInitialized(true);
     }
   }, [qState, initialSection]);
 
-  // Autosave current section helper
-  const handleSaveCurrentSection = async (secKey: SectionKey, secData: any) => {
-    setIsSaving(true);
-    try {
-      const res = await saveQuestionnaireSection(userId, secKey, secData);
-      if (res.core_completed) {
-        setCoreUnlocked(true);
-      }
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2000);
-    } catch (err) {
-      console.error("Autosave failed", err);
-    } finally {
-      setIsSaving(false);
+  // Current section data getter
+  const getCurrentSectionData = (secKey: SectionKey) => {
+    switch (secKey) {
+      case "a": return secA;
+      case "b": return secB;
+      case "c": return secC;
+      case "d": return secD;
+      case "e": return secE;
+      case "f": return secF;
+      case "g": return secG;
     }
   };
 
-  // Continuous debounced autosave for active section so browser closure never loses progress
+  // Continuous debounced autosave
   useEffect(() => {
-    if (!dataInitialized) return;
+    if (!dataInitialized || isSaving) return;
 
-    let currentData = secA;
-    if (activeSection === "b") currentData = secB;
-    else if (activeSection === "c") currentData = secC;
-    else if (activeSection === "d") currentData = secD;
-    else if (activeSection === "e") currentData = secE;
-    else if (activeSection === "f") currentData = secF;
-    else if (activeSection === "g") currentData = secG;
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current);
+    }
 
-    setIsSaving(true);
-    const timer = setTimeout(() => {
+    autosaveTimerRef.current = setTimeout(() => {
+      const currentData = getCurrentSectionData(activeSection);
       saveQuestionnaireSection(userId, activeSection, currentData)
         .then((res) => {
           if (res.core_completed) setCoreUnlocked(true);
-          setSaveSuccess(true);
-          setTimeout(() => setSaveSuccess(false), 2000);
         })
-        .catch((err) => console.warn("Autosave notice:", err))
-        .finally(() => setIsSaving(false));
-    }, 1200);
+        .catch((err) => console.warn("Autosave notification:", err));
+    }, 1500);
 
-    return () => clearTimeout(timer);
-  }, [activeSection, secA, secB, secC, secD, secE, secF, secG, dataInitialized, userId]);
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    };
+  }, [activeSection, secA, secB, secC, secD, secE, secF, secG, dataInitialized, isSaving, userId]);
 
-  // Flush on page unload so closing the tab never loses progress
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      let currentData = secA;
-      if (activeSection === "b") currentData = secB;
-      else if (activeSection === "c") currentData = secC;
-      else if (activeSection === "d") currentData = secD;
-      else if (activeSection === "e") currentData = secE;
-      else if (activeSection === "f") currentData = secF;
-      else if (activeSection === "g") currentData = secG;
+  // Clear errors when changing field or section
+  const clearFieldError = (fieldName: string) => {
+    if (fieldErrors[fieldName]) {
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[fieldName];
+        return copy;
+      });
+    }
+    if (validationBanner) setValidationBanner(null);
+  };
 
-      const payload = JSON.stringify({ section: activeSection, data: currentData });
-      navigator.sendBeacon?.(`/api/v1/onboarding/questionnaire/section`, new Blob([payload], { type: "application/json" }));
+  // Section Client-Side Validation Rules
+  const validateCurrentSection = (secKey: SectionKey): { valid: boolean; errors: Record<string, string>; firstKey?: string } => {
+    const errors: Record<string, string> = {};
+    let firstKey: string | undefined;
+
+    const addErr = (key: string, msg: string) => {
+      errors[key] = msg;
+      if (!firstKey) firstKey = key;
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [activeSection, secA, secB, secC, secD, secE, secF, secG]);
+    if (secKey === "a") {
+      if (!secA.brand_name || secA.brand_name.trim().length < 2) {
+        addErr("brand_name", "Please enter your brand name (at least 2 characters).");
+      }
+      const igHandle = secA.instagram_handle.trim();
+      const igRegex = /^@?[a-zA-Z0-9._]{1,30}$/;
+      if (!igHandle || !igRegex.test(igHandle)) {
+        addErr("instagram_handle", "Please enter a valid Instagram handle (e.g. @yourbrand).");
+      }
+      if (!secA.one_liner || secA.one_liner.trim().length < 10) {
+        addErr("one_liner", "Please describe what your brand does in one concise sentence (min 10 characters).");
+      }
+      if (!secA.category) {
+        addErr("category", "Please select a primary category.");
+      }
+      if (!secA.primary_goal) {
+        addErr("primary_goal", "Please select the single outcome that matters most.");
+      }
+      const firstProdName = secA.products?.[0]?.name?.trim();
+      if (!firstProdName) {
+        addErr("products", "Please enter at least one primary product or service offering.");
+      }
+    } else if (secKey === "b") {
+      if (!secB.ideal_customer || secB.ideal_customer.trim().length < 10) {
+        addErr("ideal_customer", "Please describe your ideal customer profile (min 10 characters).");
+      }
+      if (!secB.problem || secB.problem.trim().length < 10) {
+        addErr("problem", "Please describe the core friction point or problem you solve.");
+      }
+      if (!secB.why_chosen || secB.why_chosen.trim().length < 10) {
+        addErr("why_chosen", "Please explain why customers choose you over alternatives.");
+      }
+      if (!secB.languages || secB.languages.length === 0) {
+        addErr("languages", "Please select at least one primary audience language.");
+      }
+      if (!secB.caption_script) {
+        addErr("caption_script", "Please select a caption and script format.");
+      }
+    } else if (secKey === "c") {
+      if (!secC.voice_words || secC.voice_words.length < 2) {
+        addErr("voice_words", "Please select at least 2 words that describe your brand voice.");
+      }
+      if (!secC.anti_voice_words || secC.anti_voice_words.length < 1) {
+        addErr("anti_voice_words", "Please select at least 1 word your brand voice must NEVER be.");
+      }
+    } else if (secKey === "d") {
+      if (!secD.brand_guidelines) {
+        addErr("brand_guidelines", "Please indicate if you have existing brand guidelines.");
+      }
+      if (!secD.colours || secD.colours.length === 0) {
+        addErr("colours", "Please provide at least one brand colour.");
+      }
+      if (!secD.visual_direction || secD.visual_direction.length === 0) {
+        addErr("visual_direction", "Please select at least 1 visual direction style.");
+      }
+    } else if (secKey === "e") {
+      if (!secE.on_camera || secE.on_camera.length === 0) {
+        addErr("on_camera", "Please select at least one option for who can appear on camera.");
+      }
+      if (!secE.shoot_locations || secE.shoot_locations.length === 0) {
+        addErr("shoot_locations", "Please select at least one shoot location.");
+      }
+      if (!secE.shoot_city || secE.shoot_city.trim().length < 2) {
+        addErr("shoot_city", "Please enter the city for physical shoots.");
+      }
+      if (!secE.cta_destination) {
+        addErr("cta_destination", "Please select a CTA destination.");
+      }
+    }
+    // Sections F & G are optional, so errors remain empty
 
-  // Live sentence preview
+    return {
+      valid: Object.keys(errors).length === 0,
+      errors,
+      firstKey,
+    };
+  };
+
+  // Tone preview calculation
   const liveSentencePreview = useMemo(() => {
     return generateTonePreview(
       Number(secC.humour || 0),
@@ -384,22 +489,66 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     );
   }, [secC.humour, secC.formality, secC.respectfulness, secC.energy]);
 
+  // Handle Save & Continue with strict validation, background async saving, and section progression
   const handleNextSection = async () => {
-    // Save current active section
-    let currentData = secA;
-    if (activeSection === "b") currentData = secB;
-    else if (activeSection === "c") currentData = secC;
-    else if (activeSection === "d") currentData = secD;
-    else if (activeSection === "e") currentData = secE;
-    else if (activeSection === "f") currentData = secF;
-    else if (activeSection === "g") currentData = secG;
+    if (isSaving) return;
 
-    await handleSaveCurrentSection(activeSection, currentData);
+    // 1. Client-Side Validation
+    const { valid, errors, firstKey } = validateCurrentSection(activeSection);
+    if (!valid) {
+      setFieldErrors(errors);
+      setValidationBanner("Please complete the required fields before continuing.");
 
-    const currentIndex = SECTIONS.findIndex((s) => s.key === activeSection);
-    const nextSec = SECTIONS[currentIndex + 1];
-    if (nextSec) {
-      setActiveSection(nextSec.key);
+      // Smooth scroll to the first invalid field
+      if (firstKey) {
+        const el = document.getElementById(`field-${firstKey}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          if ("focus" in el && typeof el.focus === "function") {
+            el.focus();
+          }
+        }
+      }
+      return;
+    }
+
+    // 2. Clear any prior validation errors
+    setFieldErrors({});
+    setValidationBanner(null);
+    setApiError(null);
+
+    // Cancel pending debounce timer
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current);
+    }
+
+    // 3. Save asynchronously in background
+    setIsSaving(true);
+    try {
+      const currentData = getCurrentSectionData(activeSection);
+      const res = await saveQuestionnaireSection(userId, activeSection, currentData);
+      
+      if (res.core_completed) {
+        setCoreUnlocked(true);
+      }
+
+      setCompletedSections((prev) => new Set([...prev, activeSection]));
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 1200);
+
+      // 4. Advance strictly one section
+      const currentIndex = SECTIONS.findIndex((s) => s.key === activeSection);
+      const nextSec = SECTIONS[currentIndex + 1];
+      if (nextSec) {
+        setActiveSection(nextSec.key);
+        // Scroll smoothly to top of form
+        formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    } catch (err) {
+      console.error("Save & Continue API failure:", err);
+      setApiError("Failed to save section data to server. Your entered progress is preserved. Please click Retry.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -407,24 +556,49 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     const currentIndex = SECTIONS.findIndex((s) => s.key === activeSection);
     const prevSec = SECTIONS[currentIndex - 1];
     if (prevSec) {
+      setFieldErrors({});
+      setValidationBanner(null);
+      setApiError(null);
       setActiveSection(prevSec.key);
+      formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const handleSelectSectionTab = (targetKey: SectionKey) => {
+    // Only allow navigating to completed sections, current section, or immediate next unlocked
+    const targetIdx = SECTIONS.findIndex((s) => s.key === targetKey);
+    const currentIdx = SECTIONS.findIndex((s) => s.key === activeSection);
+
+    if (targetIdx <= currentIdx || completedSections.has(targetKey)) {
+      setFieldErrors({});
+      setValidationBanner(null);
+      setApiError(null);
+      setActiveSection(targetKey);
+      formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // Trying to jump ahead into an unfinished mandatory section
+      setValidationBanner(`Please complete Section ${activeSection.toUpperCase()} before jumping forward.`);
     }
   };
 
   const handleSynthesizeAndFinish = async () => {
+    if (isSynthesizing) return;
     setIsSynthesizing(true);
+    setApiError(null);
     try {
-      // Save section E
-      await handleSaveCurrentSection("e", secE);
-      // Trigger Brand DNA synthesis pipeline
-      const genRes = await queueBrandDNAGeneration(userId);
-      setBrandDNAResult(genRes.brand_dna);
+      // Save section E / active section
+      const currentData = getCurrentSectionData(activeSection);
+      await saveQuestionnaireSection(userId, activeSection, currentData);
 
-      // Complete onboarding and fetch assigned creative pod
+      // Trigger Brand DNA synthesis pipeline
+      await queueBrandDNAGeneration(userId);
+
+      // Complete onboarding and allocate creative pod
       const completeRes = await completeOnboarding(userId);
       onComplete(completeRes.assigned_team);
     } catch (err) {
       console.error("Failed to complete onboarding", err);
+      setApiError("Synthesis pipeline encountered an issue. Please retry.");
     } finally {
       setIsSynthesizing(false);
     }
@@ -433,32 +607,32 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center p-16 space-y-4">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2B7BC4]" />
-        <p className="text-sm text-slate-500 font-medium">Restoring your brand discovery session...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-[#7FA0D6]" />
+        <p className="text-xs text-[#94A3B8] font-medium">Restoring your brand discovery session...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8">
+    <div ref={formTopRef} className="w-full space-y-6">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#050810] via-[#161F2D] to-[#050810] rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-[#2A3446]">
+      <div className="bg-[#161F2D] rounded-2xl p-6 sm:p-7 text-white shadow-xl relative overflow-hidden border border-[#2A3446]">
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#7FA0D6] mb-1">
               <Sparkles className="w-4 h-4 text-[#D8BF9B]" />
               <span>Production Intake & Brand DNA Engine</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F8FAFC]">
-              Creo Production Intelligence Blueprint
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-display">
+              Creo Brand Discovery & Production Blueprint
             </h1>
-            <p className="text-sm text-[#97A0B3] mt-1 max-w-2xl">
+            <p className="text-xs sm:text-sm text-[#94A3B8] mt-1 max-w-2xl leading-relaxed">
               Sections A–E configure our editor, designer, and shoot director (~10 min).
               Sections F–G are optional creative enrichment.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             {coreUnlocked && (
               <div className="inline-flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs font-semibold px-3 py-1.5 rounded-full">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -466,176 +640,282 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
               </div>
             )}
             <div className="text-right">
-              <span className="text-xs text-[#97A0B3] block font-mono">
-                {isSaving ? "Autosaving..." : saveSuccess ? "Saved ✓" : "Autosave Active"}
+              <span className="text-xs text-[#94A3B8] font-mono flex items-center gap-1.5">
+                {isSaving ? (
+                  <>
+                    <Loader2 className="size-3 animate-spin text-[#7FA0D6]" />
+                    <span className="text-[#7FA0D6]">Saving...</span>
+                  </>
+                ) : saveSuccess ? (
+                  <>
+                    <Check className="size-3 text-emerald-400" />
+                    <span className="text-emerald-400">Saved ✓</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="size-1.5 rounded-full bg-emerald-400" />
+                    <span>Autosave Ready</span>
+                  </>
+                )}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Two-Gate Notification Banner if Core is Complete */}
+      {/* Core Discovery Complete Shortcut Banner */}
       {coreUnlocked && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-emerald-950/40 border border-emerald-800/60 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-emerald-200"
-        >
+        <div className="bg-emerald-950/40 border border-emerald-800/60 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-emerald-200 shadow-md">
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-            <span className="text-sm font-medium">
-              <strong className="text-emerald-300">Core Discovery Complete!</strong> Your production parameters are locked and calendar generation is unlocked.
+            <span className="text-xs sm:text-sm font-medium">
+              <strong className="text-emerald-300">Core Discovery Complete!</strong> Sections A–E are recorded. You may proceed directly to allocate your Creative Pod.
             </span>
           </div>
           <button
             type="button"
             onClick={handleSynthesizeAndFinish}
             disabled={isSynthesizing}
-            className="px-4 py-1.5 bg-[#BCCCE6] text-[#0B111C] hover:bg-white rounded-lg text-xs font-bold transition-all shadow-md shrink-0 flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-[#BCCCE6] text-[#0B111C] hover:bg-white rounded-xl text-xs font-bold transition-all shadow-sm shrink-0 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             {isSynthesizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowRight className="w-3.5 h-3.5" />}
-            <span>Proceed to Calendar Directly</span>
+            <span>Proceed to Creative Pod & Calendar</span>
           </button>
-        </motion.div>
+        </div>
       )}
 
-      {/* Stepper Navigation */}
+      {/* Horizontal Section Navigation Tabs: Equal-sized, correctly aligned, showing status */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
         {SECTIONS.map((sec) => {
           const isActive = activeSection === sec.key;
+          const isDone = completedSections.has(sec.key);
           const Icon = sec.icon;
+
           return (
             <button
               key={sec.key}
               type="button"
-              onClick={() => setActiveSection(sec.key)}
-              className={`flex flex-col items-start p-3 rounded-xl border text-left w-full overflow-hidden transition-all cursor-pointer ${
+              onClick={() => handleSelectSectionTab(sec.key)}
+              className={`flex flex-col items-start p-3 rounded-xl border text-left w-full transition-all cursor-pointer select-none ${
                 isActive
-                  ? "bg-[#161F2D] border-2 border-[#BCCCE6] text-[#F8FAFC] shadow-lg shadow-[#7FA0D6]/10"
-                  : "bg-[#161F2D]/60 border-[#2A3446] hover:border-[#7FA0D6]/50 text-[#97A0B3] hover:text-[#F8FAFC]"
+                  ? "bg-[#161F2D] border-2 border-[#BCCCE6] text-white shadow-lg ring-2 ring-[#BCCCE6]/20"
+                  : isDone
+                  ? "bg-[#161F2D]/90 border-[#7FA0D6]/40 text-[#CBD5E1] hover:border-[#7FA0D6]"
+                  : "bg-[#161F2D]/60 border-[#2A3446] text-[#94A3B8] hover:border-[#7FA0D6]/40"
               }`}
             >
               <div className="flex items-center justify-between w-full mb-1">
                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded font-mono ${
-                  isActive ? "bg-[#7FA0D6] text-[#0B111C]" : "bg-[#0B111C] text-[#97A0B3] border border-[#2A3446]"
+                  isActive
+                    ? "bg-[#7FA0D6] text-[#0B111C]"
+                    : isDone
+                    ? "bg-emerald-950/60 text-emerald-300 border border-emerald-800/60"
+                    : "bg-[#0B111C] text-[#94A3B8] border border-[#2A3446]"
                 }`}>
-                  {sec.badge}
+                  {isDone ? `✓ ${sec.badge}` : sec.badge}
                 </span>
-                {!sec.isCore && (
-                  <span className="text-[9px] font-bold text-[#D8BF9B] bg-[#D8BF9B]/10 border border-[#D8BF9B]/20 px-1 py-0.2 rounded shrink-0">
+                {!sec.isCore ? (
+                  <span className="text-[9px] font-bold text-[#D8BF9B] bg-[#D8BF9B]/10 border border-[#D8BF9B]/30 px-1 py-0.5 rounded shrink-0">
                     Optional
+                  </span>
+                ) : (
+                  <span className="text-[9px] font-bold text-[#7FA0D6] uppercase tracking-wider">
+                    {isDone ? "Done" : "Req"}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-1.5 mt-1 w-full min-w-0">
-                <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-[#7FA0D6]" : "text-[#97A0B3]"}`} />
-                <span className="text-[11px] sm:text-xs font-bold truncate">{sec.label}</span>
+                <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-[#7FA0D6]" : isDone ? "text-emerald-400" : "text-[#94A3B8]"}`} />
+                <span className="text-xs font-bold truncate">{sec.label}</span>
               </div>
-              <span className="text-[10px] text-[#97A0B3]/80 mt-1">~{sec.estMinutes} min</span>
+              <span className="text-[10px] text-[#94A3B8] mt-1 font-medium">~{sec.estMinutes} min</span>
             </button>
           );
         })}
       </div>
 
-      {/* Main Section Content Form */}
-      <div className="questionnaire-nebula bg-[#161F2D] rounded-2xl border border-[#2A3446] p-6 sm:p-8 shadow-xl text-[#F8FAFC]">
-        {/* SECTION A: IDENTITY */}
+      {/* Validation Banner */}
+      {validationBanner && (
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-3.5 rounded-xl bg-rose-950/50 border border-rose-800/70 text-rose-300 text-xs font-semibold flex items-center gap-2"
+        >
+          <AlertCircle className="size-4 shrink-0 text-rose-400" />
+          <span>{validationBanner}</span>
+        </motion.div>
+      )}
+
+      {/* API Error Banner with Retry */}
+      {apiError && (
+        <div className="p-4 rounded-xl bg-rose-950/50 border border-rose-800/70 text-rose-300 text-xs font-semibold flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="size-4 shrink-0 text-rose-400" />
+            <span>{apiError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleNextSection}
+            className="px-3 py-1 bg-white text-[#0B111C] rounded-lg font-bold hover:bg-[#BCCCE6] transition-colors shrink-0 flex items-center gap-1"
+          >
+            <RefreshCw className="size-3" /> Retry
+          </button>
+        </div>
+      )}
+
+      {/* Main Section Content Form (Full dark theme, high contrast) */}
+      <div className="bg-[#161F2D] rounded-2xl border border-[#2A3446] p-6 sm:p-8 shadow-xl text-white">
+        
+        {/* SECTION A: BRAND IDENTITY */}
         {activeSection === "a" && (
           <div className="space-y-6">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-lg font-bold text-slate-900">Section A: Brand Identity</h2>
-              <p className="text-xs text-slate-500">Required · Takes ~2 min to complete</p>
+            <div className="border-b border-[#2A3446] pb-4">
+              <h2 className="text-lg font-bold text-white">Section A: Brand Identity</h2>
+              <p className="text-xs text-[#94A3B8]">Required · Establishes official naming, social presence, and core category</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  A1: Brand Name (as it appears on screen) *
+              <div id="field-brand_name">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  A1: Brand Name (as it appears on screen) <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <input
                   type="text"
-                  required
                   placeholder="e.g. Lumina Botanicals"
                   value={secA.brand_name}
-                  onChange={(e) => setSecA({ ...secA, brand_name: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] focus:ring-1 focus:ring-[#2B7BC4] outline-none"
+                  onChange={(e) => {
+                    setSecA({ ...secA, brand_name: e.target.value });
+                    clearFieldError("brand_name");
+                  }}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                    fieldErrors.brand_name
+                      ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
+                      : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
+                  }`}
                 />
+                {fieldErrors.brand_name && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.brand_name}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  A2: Instagram Handle *
+              <div id="field-instagram_handle">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  A2: Instagram Handle <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <input
                   type="text"
-                  required
                   placeholder="@yourbrand"
                   value={secA.instagram_handle}
-                  onChange={(e) => setSecA({ ...secA, instagram_handle: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] focus:ring-1 focus:ring-[#2B7BC4] outline-none"
+                  onChange={(e) => {
+                    setSecA({ ...secA, instagram_handle: e.target.value });
+                    clearFieldError("instagram_handle");
+                  }}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                    fieldErrors.instagram_handle
+                      ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
+                      : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
+                  }`}
                 />
+                {fieldErrors.instagram_handle && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.instagram_handle}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <label className="block text-xs font-bold text-slate-700">
-                  A3: In one sentence, what does your brand do? *
+            <div id="field-one_liner">
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-xs font-semibold text-[#F1F5F9]">
+                  A3: In one sentence, what does your brand do? <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-[10px] text-slate-400 font-mono">
+                <span className="text-[10px] text-[#94A3B8] font-mono">
                   {secA.one_liner?.length || 0}/180
                 </span>
               </div>
               <input
                 type="text"
                 maxLength={180}
-                required
                 placeholder="Active botanical skincare formulated specifically for tropical humidity."
                 value={secA.one_liner}
-                onChange={(e) => setSecA({ ...secA, one_liner: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] focus:ring-1 focus:ring-[#2B7BC4] outline-none"
+                onChange={(e) => {
+                  setSecA({ ...secA, one_liner: e.target.value });
+                  clearFieldError("one_liner");
+                }}
+                className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                  fieldErrors.one_liner
+                    ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
+                    : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
+                }`}
               />
+              {fieldErrors.one_liner && (
+                <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                  <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.one_liner}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  A4: Primary Category *
+              <div id="field-category">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  A4: Primary Category <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <select
                   value={secA.category}
-                  onChange={(e) => setSecA({ ...secA, category: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] focus:ring-1 focus:ring-[#2B7BC4] outline-none bg-white"
+                  onChange={(e) => {
+                    setSecA({ ...secA, category: e.target.value });
+                    clearFieldError("category");
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-sm text-white focus:border-[#7FA0D6] focus:outline-none"
                 >
                   {CATEGORY_OPTIONS.map((c) => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
+                    <option key={c.value} value={c.value} className="bg-[#0B111C] text-white">
+                      {c.label}
+                    </option>
                   ))}
                 </select>
+                {fieldErrors.category && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.category}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  A6: Single Outcome That Matters Most *
+              <div id="field-primary_goal">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  A6: Single Outcome That Matters Most <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <select
                   value={secA.primary_goal}
-                  onChange={(e) => setSecA({ ...secA, primary_goal: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] focus:ring-1 focus:ring-[#2B7BC4] outline-none bg-white"
+                  onChange={(e) => {
+                    setSecA({ ...secA, primary_goal: e.target.value });
+                    clearFieldError("primary_goal");
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-sm text-white focus:border-[#7FA0D6] focus:outline-none"
                 >
                   {GOAL_OPTIONS.map((g) => (
-                    <option key={g.value} value={g.value}>{g.label}</option>
+                    <option key={g.value} value={g.value} className="bg-[#0B111C] text-white">
+                      {g.label}
+                    </option>
                   ))}
                 </select>
+                {fieldErrors.primary_goal && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.primary_goal}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">
-                A5: Products / Services (Most important first) *
+            <div id="field-products">
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-2">
+                A5: Products / Services (Most important first) <span className="text-rose-400 font-bold">*</span>
               </label>
-              <div className="space-y-2.5">
-                {secA.products?.map((prod: any, idx: number) => (
-                  <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="space-y-3">
+                {secA.products?.map((prod, idx) => (
+                  <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-[#0B111C] border border-[#2A3446] rounded-xl">
                     <input
                       type="text"
                       placeholder="Product / Service Name"
@@ -646,8 +926,9 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           next[idx] = { ...next[idx], name: e.target.value };
                           setSecA({ ...secA, products: next });
                         }
+                        clearFieldError("products");
                       }}
-                      className="w-full sm:w-1/3 px-2.5 py-1.5 text-xs bg-white rounded border border-slate-200"
+                      className="w-full sm:w-1/3 px-3 py-2 text-xs bg-[#161F2D] text-white rounded-lg border border-[#2A3446] placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
                     />
                     <input
                       type="text"
@@ -660,7 +941,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           setSecA({ ...secA, products: next });
                         }
                       }}
-                      className="w-full sm:w-1/2 px-2.5 py-1.5 text-xs bg-white rounded border border-slate-200"
+                      className="w-full sm:w-1/2 px-3 py-2 text-xs bg-[#161F2D] text-white rounded-lg border border-[#2A3446] placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
                     />
                     <select
                       value={prod.price_band}
@@ -671,7 +952,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           setSecA({ ...secA, products: next });
                         }
                       }}
-                      className="px-2 py-1.5 text-xs bg-white rounded border border-slate-200"
+                      className="px-2.5 py-2 text-xs bg-[#161F2D] text-white rounded-lg border border-[#2A3446] focus:border-[#7FA0D6] focus:outline-none"
                     >
                       <option value="budget">Budget</option>
                       <option value="mid">Mid-Tier</option>
@@ -682,28 +963,33 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                       <button
                         type="button"
                         onClick={() => {
-                          const next = secA.products.filter((_: any, i: number) => i !== idx);
+                          const next = secA.products.filter((_, i) => i !== idx);
                           setSecA({ ...secA, products: next });
                         }}
-                        className="text-slate-400 hover:text-rose-500 p-1"
+                        className="text-[#94A3B8] hover:text-rose-400 p-1.5 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </div>
                 ))}
+                {fieldErrors.products && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.products}
+                  </p>
+                )}
                 <button
                   type="button"
                   onClick={() => setSecA({ ...secA, products: [...secA.products, { name: "", description: "", price_band: "mid" }] })}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-[#2B7BC4] hover:text-[#1a5b96] cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7FA0D6] hover:text-[#BCCCE6] cursor-pointer pt-1 transition-colors"
                 >
-                  <Plus className="w-3.5 h-3.5" /> Add Another Product/Offering
+                  <Plus className="w-4 h-4" /> Add Another Product/Offering
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                 A7: Anything else about that outcome? (Optional)
               </label>
               <textarea
@@ -711,7 +997,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="Specific monthly targets, promotional events, or milestones..."
                 value={secA.goal_notes}
                 onChange={(e) => setSecA({ ...secA, goal_notes: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
           </div>
@@ -720,77 +1006,110 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
         {/* SECTION B: AUDIENCE & POSITIONING */}
         {activeSection === "b" && (
           <div className="space-y-6">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-lg font-bold text-slate-900">Section B: Audience & Positioning</h2>
-              <p className="text-xs text-slate-500">Required · Defines hooks and angles (~3 min)</p>
+            <div className="border-b border-[#2A3446] pb-4">
+              <h2 className="text-lg font-bold text-white">Section B: Audience & Positioning</h2>
+              <p className="text-xs text-[#94A3B8]">Required · Establishes audience archetype, core pain points, and why they buy</p>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                B1: Describe your ideal customer *
+            <div id="field-ideal_customer">
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                B1: Describe your ideal customer <span className="text-rose-400 font-bold">*</span>
               </label>
               <textarea
                 rows={2}
-                required
                 placeholder="Age range, city tier, occupation, what brands they currently buy, what they read..."
                 value={secB.ideal_customer}
-                onChange={(e) => setSecB({ ...secB, ideal_customer: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] outline-none"
+                onChange={(e) => {
+                  setSecB({ ...secB, ideal_customer: e.target.value });
+                  clearFieldError("ideal_customer");
+                }}
+                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                  fieldErrors.ideal_customer
+                    ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
+                    : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
+                }`}
               />
+              {fieldErrors.ideal_customer && (
+                <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                  <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.ideal_customer}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  B2: What core problem are they trying to solve? *
+              <div id="field-problem">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  B2: What core problem are they trying to solve? <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <textarea
                   rows={2}
-                  required
                   placeholder="Daily friction point, pain, or unaddressed issue..."
                   value={secB.problem}
-                  onChange={(e) => setSecB({ ...secB, problem: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] outline-none"
+                  onChange={(e) => {
+                    setSecB({ ...secB, problem: e.target.value });
+                    clearFieldError("problem");
+                  }}
+                  className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                    fieldErrors.problem
+                      ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
+                      : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
+                  }`}
                 />
+                {fieldErrors.problem && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.problem}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  B3: Why do customers choose you over alternatives? *
+              <div id="field-why_chosen">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  B3: Why do customers choose you over alternatives? <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <textarea
                   rows={2}
-                  required
                   placeholder="Unique ingredients, verified speed, premium materials, warranty..."
                   value={secB.why_chosen}
-                  onChange={(e) => setSecB({ ...secB, why_chosen: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:border-[#2B7BC4] outline-none"
+                  onChange={(e) => {
+                    setSecB({ ...secB, why_chosen: e.target.value });
+                    clearFieldError("why_chosen");
+                  }}
+                  className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                    fieldErrors.why_chosen
+                      ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
+                      : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
+                  }`}
                 />
+                {fieldErrors.why_chosen && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.why_chosen}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-4">
-              <div className="flex items-center gap-1.5 text-amber-900 font-bold text-xs mb-1">
-                <Sparkles className="w-4 h-4 text-amber-600" />
-                <span>B4: Why might someone hesitate before buying? (Crucial Content Asset) ★</span>
+            {/* B4: Objections Asset Box */}
+            <div className="bg-amber-950/30 border border-amber-800/50 rounded-xl p-4">
+              <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs mb-1">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>B4: Why might someone hesitate before buying? (Crucial Conversion Asset)</span>
               </div>
-              <p className="text-[11px] text-amber-800 mb-2">
-                Every objection here converts directly into high-converting conversion pillars. (e.g. &quot;Too expensive&quot; becomes a value-breakdown reel).
+              <p className="text-[11px] text-amber-300/80 mb-2 leading-relaxed">
+                Every objection here converts directly into high-converting video and carousel pillars.
               </p>
               <textarea
-                rows={3}
-                required
-                placeholder="e.g. Price point feels high, skeptical about claims, concerned about return shipping or sizing..."
+                rows={2}
+                placeholder="e.g. Price point feels high, skeptical about claims, return shipping or sizing..."
                 value={secB.objections}
                 onChange={(e) => setSecB({ ...secB, objections: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg bg-white border border-amber-300 focus:border-[#2B7BC4] outline-none"
+                className="w-full px-3.5 py-2 text-sm rounded-xl bg-[#0B111C] border border-amber-800/70 text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  B6: Primary Audience Languages (Select all that apply) *
+              <div id="field-languages">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  B6: Primary Audience Languages <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <div className="flex flex-wrap gap-1.5">
                   {LANGUAGE_OPTIONS.map((lang) => {
@@ -805,11 +1124,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                             ? current.filter((x: string) => x !== lang.value)
                             : [...current, lang.value];
                           setSecB({ ...secB, languages: next });
+                          clearFieldError("languages");
                         }}
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
                           isSelected
-                            ? "bg-[#2B7BC4] text-white border-[#2B7BC4]"
-                            : "bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300"
+                            ? "bg-[#7FA0D6] text-[#0B111C] border-[#7FA0D6]"
+                            : "bg-[#0B111C] text-[#CBD5E1] border-[#2A3446] hover:border-[#7FA0D6]/60"
                         }`}
                       >
                         {lang.label}
@@ -817,54 +1137,68 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     );
                   })}
                 </div>
+                {fieldErrors.languages && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.languages}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  B7: Caption & Script Format *
+              <div id="field-caption_script">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  B7: Caption & Script Format <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <select
                   value={secB.caption_script}
-                  onChange={(e) => setSecB({ ...secB, caption_script: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 bg-white outline-none"
+                  onChange={(e) => {
+                    setSecB({ ...secB, caption_script: e.target.value });
+                    clearFieldError("caption_script");
+                  }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none"
                 >
                   {SCRIPT_OPTIONS.map((s) => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
+                    <option key={s.value} value={s.value} className="bg-[#0B111C] text-white">
+                      {s.label}
+                    </option>
                   ))}
                 </select>
+                {fieldErrors.caption_script && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.caption_script}
+                  </p>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* SECTION C: VOICE (NIELSEN NORMAN GROUP FRAMEWORK) */}
+        {/* SECTION C: VOICE & TONE FRAMEWORK */}
         {activeSection === "c" && (
           <div className="space-y-6">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-lg font-bold text-slate-900">Section C: Voice & Tone Framework</h2>
-              <p className="text-xs text-slate-500">
+            <div className="border-b border-[#2A3446] pb-4">
+              <h2 className="text-lg font-bold text-white">Section C: Voice & Tone Framework</h2>
+              <p className="text-xs text-[#94A3B8]">
                 Four validated bipolar scales (NN/g) + anti-tone negative constraints (~2 min)
               </p>
             </div>
 
             {/* Live Preview Box */}
-            <div className="bg-gradient-to-r from-slate-900 to-[#122E4C] text-white rounded-xl p-4 border border-slate-800 shadow-md">
-              <div className="flex items-center gap-1.5 text-xs font-mono text-[#2B7BC4] mb-1 uppercase tracking-wider">
+            <div className="bg-[#0B111C] text-white rounded-xl p-4 border border-[#2A3446] shadow-md">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-[#7FA0D6] mb-1 uppercase tracking-wider">
                 <Sliders className="w-3.5 h-3.5" />
                 <span>Live Voice Synthesizer Preview</span>
               </div>
-              <p className="text-sm font-medium italic text-slate-100 mt-1">
+              <p className="text-sm font-medium italic text-[#CBD5E1] mt-1">
                 {liveSentencePreview}
               </p>
             </div>
 
-            {/* 4 Bipolar Sliders */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-              {/* C1: Humour */}
-              <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-700 mb-2">
+            {/* 4 Sliders */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="bg-[#0B111C] p-4 rounded-xl border border-[#2A3446]">
+                <div className="flex justify-between items-center text-xs font-bold text-[#F1F5F9] mb-2">
                   <span>C1: Serious</span>
-                  <span className="font-mono text-[#2B7BC4]">{secC.humour}/10</span>
+                  <span className="font-mono text-[#7FA0D6]">{secC.humour}/10</span>
                   <span>Funny</span>
                 </div>
                 <input
@@ -873,15 +1207,14 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   max="10"
                   value={secC.humour}
                   onChange={(e) => setSecC({ ...secC, humour: Number(e.target.value) })}
-                  className="w-full accent-[#2B7BC4] cursor-pointer"
+                  className="w-full accent-[#7FA0D6] cursor-pointer"
                 />
               </div>
 
-              {/* C2: Formality */}
-              <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-700 mb-2">
+              <div className="bg-[#0B111C] p-4 rounded-xl border border-[#2A3446]">
+                <div className="flex justify-between items-center text-xs font-bold text-[#F1F5F9] mb-2">
                   <span>C2: Formal</span>
-                  <span className="font-mono text-[#2B7BC4]">{secC.formality}/10</span>
+                  <span className="font-mono text-[#7FA0D6]">{secC.formality}/10</span>
                   <span>Casual</span>
                 </div>
                 <input
@@ -890,15 +1223,14 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   max="10"
                   value={secC.formality}
                   onChange={(e) => setSecC({ ...secC, formality: Number(e.target.value) })}
-                  className="w-full accent-[#2B7BC4] cursor-pointer"
+                  className="w-full accent-[#7FA0D6] cursor-pointer"
                 />
               </div>
 
-              {/* C3: Respectfulness */}
-              <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-700 mb-2">
+              <div className="bg-[#0B111C] p-4 rounded-xl border border-[#2A3446]">
+                <div className="flex justify-between items-center text-xs font-bold text-[#F1F5F9] mb-2">
                   <span>C3: Respectful</span>
-                  <span className="font-mono text-[#2B7BC4]">{secC.respectfulness}/10</span>
+                  <span className="font-mono text-[#7FA0D6]">{secC.respectfulness}/10</span>
                   <span>Irreverent</span>
                 </div>
                 <input
@@ -907,15 +1239,14 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   max="10"
                   value={secC.respectfulness}
                   onChange={(e) => setSecC({ ...secC, respectfulness: Number(e.target.value) })}
-                  className="w-full accent-[#2B7BC4] cursor-pointer"
+                  className="w-full accent-[#7FA0D6] cursor-pointer"
                 />
               </div>
 
-              {/* C4: Energy */}
-              <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-700 mb-2">
+              <div className="bg-[#0B111C] p-4 rounded-xl border border-[#2A3446]">
+                <div className="flex justify-between items-center text-xs font-bold text-[#F1F5F9] mb-2">
                   <span>C4: Matter-of-Fact</span>
-                  <span className="font-mono text-[#2B7BC4]">{secC.energy}/10</span>
+                  <span className="font-mono text-[#7FA0D6]">{secC.energy}/10</span>
                   <span>Enthusiastic</span>
                 </div>
                 <input
@@ -924,18 +1255,18 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   max="10"
                   value={secC.energy}
                   onChange={(e) => setSecC({ ...secC, energy: Number(e.target.value) })}
-                  className="w-full accent-[#2B7BC4] cursor-pointer"
+                  className="w-full accent-[#7FA0D6] cursor-pointer"
                 />
               </div>
             </div>
 
             {/* C5: Words that describe voice */}
-            <div>
+            <div id="field-voice_words">
               <div className="flex justify-between items-center mb-1.5">
-                <label className="text-xs font-bold text-slate-700">
-                  C5: Pick up to 4 words that describe your voice *
+                <label className="text-xs font-semibold text-[#F1F5F9]">
+                  C5: Pick up to 4 words that describe your voice <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-[11px] text-slate-400 font-mono">
+                <span className="text-[11px] text-[#94A3B8] font-mono">
                   {secC.voice_words?.length || 0}/4 selected
                 </span>
               </div>
@@ -953,11 +1284,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                         } else if (current.length < 4) {
                           setSecC({ ...secC, voice_words: [...current, word] });
                         }
+                        clearFieldError("voice_words");
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                         isSelected
-                          ? "bg-slate-900 text-white border-slate-900 shadow-xs"
-                          : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                          ? "bg-[#7FA0D6] text-[#0B111C] border-[#7FA0D6]"
+                          : "bg-[#0B111C] text-[#CBD5E1] border-[#2A3446] hover:border-[#7FA0D6]/60"
                       }`}
                     >
                       {word}
@@ -965,16 +1297,21 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   );
                 })}
               </div>
+              {fieldErrors.voice_words && (
+                <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                  <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.voice_words}
+                </p>
+              )}
             </div>
 
-            {/* C6: Anti-tone words (Crucial Guardrail) */}
-            <div className="bg-rose-50/50 border border-rose-200 rounded-xl p-4">
+            {/* C6: Anti-tone Guardrail */}
+            <div id="field-anti_voice_words" className="bg-rose-950/30 border border-rose-900/60 rounded-xl p-4">
               <div className="flex justify-between items-center mb-1">
-                <label className="text-xs font-bold text-rose-950 flex items-center gap-1.5">
-                  <ShieldAlert className="w-4 h-4 text-rose-600" />
-                  <span>C6: Pick up to 4 words your voice must NEVER be (Hard Guardrails) ★</span>
+                <label className="text-xs font-bold text-rose-200 flex items-center gap-1.5">
+                  <ShieldAlert className="w-4 h-4 text-rose-400" />
+                  <span>C6: Pick up to 4 words your voice must NEVER be (Hard Guardrails) <span className="text-rose-400 font-bold">*</span></span>
                 </label>
-                <span className="text-[11px] text-rose-700 font-mono">
+                <span className="text-[11px] text-rose-300 font-mono">
                   {secC.anti_voice_words?.length || 0}/4 selected
                 </span>
               </div>
@@ -992,11 +1329,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                         } else if (current.length < 4) {
                           setSecC({ ...secC, anti_voice_words: [...current, word] });
                         }
+                        clearFieldError("anti_voice_words");
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         isSelected
-                          ? "bg-rose-600 text-white border-rose-600 shadow-xs"
-                          : "bg-white text-slate-700 border-rose-200 hover:border-rose-300"
+                          ? "bg-rose-600 text-white border-rose-500 shadow-sm"
+                          : "bg-[#0B111C] text-rose-200 border-rose-900/50 hover:border-rose-700"
                       }`}
                     >
                       {word}
@@ -1004,11 +1342,15 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   );
                 })}
               </div>
+              {fieldErrors.anti_voice_words && (
+                <p className="text-xs text-rose-400 mt-2 flex items-center gap-1">
+                  <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.anti_voice_words}
+                </p>
+              )}
             </div>
 
-            {/* C7: Forbidden Phrases */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                 C7: Words, phrases or claims we must never use
               </label>
               <textarea
@@ -1016,7 +1358,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="e.g. Miracle cure, Guaranteed 10x, Cheap, Discount, Hack..."
                 value={secC.forbidden_phrases}
                 onChange={(e) => setSecC({ ...secC, forbidden_phrases: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
           </div>
@@ -1025,20 +1367,23 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
         {/* SECTION D: LOOK & ASSETS */}
         {activeSection === "d" && (
           <div className="space-y-6">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-lg font-bold text-slate-900">Section D: Visual Direction & Assets</h2>
-              <p className="text-xs text-slate-500">Required · Supplies our graphic designers & animators (~2 min)</p>
+            <div className="border-b border-[#2A3446] pb-4">
+              <h2 className="text-lg font-bold text-white">Section D: Visual Direction & Assets</h2>
+              <p className="text-xs text-[#94A3B8]">Required · Supplies our graphic designers & animators (~2 min)</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  D1: Do you have existing brand guidelines? *
+              <div id="field-brand_guidelines">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  D1: Do you have existing brand guidelines? <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <select
                   value={secD.brand_guidelines}
-                  onChange={(e) => setSecD({ ...secD, brand_guidelines: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 bg-white outline-none"
+                  onChange={(e) => {
+                    setSecD({ ...secD, brand_guidelines: e.target.value });
+                    clearFieldError("brand_guidelines");
+                  }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none"
                 >
                   <option value="yes_will_upload">Yes, will upload full guidelines PDF</option>
                   <option value="partial">Partial (We have logo & colors only)</option>
@@ -1047,7 +1392,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                   D3: Primary Brand Fonts (if any)
                 </label>
                 <input
@@ -1055,19 +1400,19 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   placeholder="e.g. Montserrat, Playfair Display, Inter"
                   value={secD.fonts}
                   onChange={(e) => setSecD({ ...secD, fonts: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
                 />
               </div>
             </div>
 
             {/* D2: Brand Colours */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">
-                D2: Brand Hex Colours *
+            <div id="field-colours">
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-2">
+                D2: Brand Hex Colours <span className="text-rose-400 font-bold">*</span>
               </label>
               <div className="flex flex-wrap gap-2.5">
-                {secD.colours?.map((col: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg">
+                {secD.colours?.map((col, idx) => (
+                  <div key={idx} className="flex items-center gap-2 p-2 bg-[#0B111C] border border-[#2A3446] rounded-xl">
                     <input
                       type="color"
                       value={col.hex}
@@ -1077,8 +1422,9 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           next[idx] = { ...next[idx], hex: e.target.value };
                           setSecD({ ...secD, colours: next });
                         }
+                        clearFieldError("colours");
                       }}
-                      className="w-8 h-8 rounded border-none cursor-pointer"
+                      className="w-8 h-8 rounded-lg border-none cursor-pointer bg-transparent"
                     />
                     <input
                       type="text"
@@ -1090,7 +1436,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           setSecD({ ...secD, colours: next });
                         }
                       }}
-                      className="w-20 px-2 py-1 text-xs font-mono bg-white border border-slate-200 rounded uppercase"
+                      className="w-20 px-2 py-1 text-xs font-mono bg-[#161F2D] border border-[#2A3446] text-white rounded-lg uppercase"
                     />
                     <select
                       value={col.label}
@@ -1101,7 +1447,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           setSecD({ ...secD, colours: next });
                         }
                       }}
-                      className="text-xs bg-white border border-slate-200 rounded px-1.5 py-1"
+                      className="text-xs bg-[#161F2D] text-white border border-[#2A3446] rounded-lg px-2 py-1"
                     >
                       <option value="primary">Primary</option>
                       <option value="accent">Accent</option>
@@ -1111,10 +1457,10 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                       <button
                         type="button"
                         onClick={() => {
-                          const next = secD.colours.filter((_: any, i: number) => i !== idx);
+                          const next = secD.colours.filter((_, i) => i !== idx);
                           setSecD({ ...secD, colours: next });
                         }}
-                        className="text-slate-400 hover:text-rose-500 p-1"
+                        className="text-[#94A3B8] hover:text-rose-400 p-1 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1123,25 +1469,30 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 ))}
                 <button
                   type="button"
-                  onClick={() => setSecD({ ...secD, colours: [...secD.colours, { hex: "#2B7BC4", label: "accent" }] })}
-                  className="px-3 py-2 border border-dashed border-slate-300 rounded-lg text-xs font-bold text-[#2B7BC4] hover:border-[#2B7BC4] flex items-center gap-1 cursor-pointer"
+                  onClick={() => setSecD({ ...secD, colours: [...secD.colours, { hex: "#7FA0D6", label: "accent" }] })}
+                  className="px-3.5 py-2 border border-dashed border-[#2A3446] hover:border-[#7FA0D6] rounded-xl text-xs font-bold text-[#7FA0D6] hover:text-[#BCCCE6] flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add Color
                 </button>
               </div>
+              {fieldErrors.colours && (
+                <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                  <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.colours}
+                </p>
+              )}
             </div>
 
             {/* D6: Visual Direction */}
-            <div>
+            <div id="field-visual_direction">
               <div className="flex justify-between items-center mb-1.5">
-                <label className="text-xs font-bold text-slate-700">
-                  D6: Visual Direction (Pick up to 3) *
+                <label className="text-xs font-semibold text-[#F1F5F9]">
+                  D6: Visual Direction (Pick up to 3) <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-[11px] text-slate-400 font-mono">
+                <span className="text-[11px] text-[#94A3B8] font-mono">
                   {secD.visual_direction?.length || 0}/3 selected
                 </span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {VISUAL_DIRECTION_OPTIONS.map((vd) => {
                   const isSelected = secD.visual_direction?.includes(vd.value);
                   return (
@@ -1155,11 +1506,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                         } else if (current.length < 3) {
                           setSecD({ ...secD, visual_direction: [...current, vd.value] });
                         }
+                        clearFieldError("visual_direction");
                       }}
                       className={`p-3 rounded-xl border text-left text-xs font-bold transition-all cursor-pointer ${
                         isSelected
-                          ? "bg-[#2B7BC4] text-white border-[#2B7BC4] shadow-xs"
-                          : "bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300"
+                          ? "bg-[#7FA0D6] text-[#0B111C] border-[#7FA0D6] shadow-sm"
+                          : "bg-[#0B111C] text-[#CBD5E1] border-[#2A3446] hover:border-[#7FA0D6]/60 hover:text-white"
                       }`}
                     >
                       {vd.label}
@@ -1167,19 +1519,23 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   );
                 })}
               </div>
+              {fieldErrors.visual_direction && (
+                <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                  <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.visual_direction}
+                </p>
+              )}
             </div>
 
-            {/* D7: Visual avoid */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                D7: Visual styles, colours or treatments to strictly avoid ★
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                D7: Visual styles, colours or treatments to strictly avoid
               </label>
               <textarea
                 rows={2}
                 placeholder="e.g. Neon gradients, loud yellow text, stock photo handshakes, chaotic fast cuts..."
                 value={secD.visual_avoid}
                 onChange={(e) => setSecD({ ...secD, visual_avoid: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
           </div>
@@ -1188,23 +1544,23 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
         {/* SECTION E: PRODUCTION REALITY */}
         {activeSection === "e" && (
           <div className="space-y-6">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-lg font-bold text-slate-900">Section E: Production Reality & Constraints</h2>
-              <p className="text-xs text-slate-500">
-                Required · The facts an editor, shoot coordinator, and producer need before Tuesday (~3 min)
+            <div className="border-b border-[#2A3446] pb-4">
+              <h2 className="text-lg font-bold text-white">Section E: Production Reality & Constraints</h2>
+              <p className="text-xs text-[#94A3B8]">
+                Required · The facts an editor, shoot coordinator, and producer need before Monday (~3 min)
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  E1: Who can appear on camera? *
+              <div id="field-on_camera">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  E1: Who can appear on camera? <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {ON_CAMERA_OPTIONS.map((opt) => {
                     const isChecked = secE.on_camera?.includes(opt.value);
                     return (
-                      <label key={opt.value} className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer p-1.5 rounded hover:bg-slate-50">
+                      <label key={opt.value} className="flex items-center gap-2.5 text-xs text-[#CBD5E1] cursor-pointer p-2 rounded-lg bg-[#0B111C] border border-[#2A3446] hover:border-[#7FA0D6]/40">
                         <input
                           type="checkbox"
                           checked={isChecked}
@@ -1214,24 +1570,30 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                               ? current.filter((x: string) => x !== opt.value)
                               : [...current, opt.value];
                             setSecE({ ...secE, on_camera: next });
+                            clearFieldError("on_camera");
                           }}
-                          className="rounded text-[#2B7BC4]"
+                          className="rounded border-[#2A3446] text-[#7FA0D6] accent-[#7FA0D6]"
                         />
                         <span>{opt.label}</span>
                       </label>
                     );
                   })}
                 </div>
+                {fieldErrors.on_camera && (
+                  <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.on_camera}
+                  </p>
+                )}
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  E2: Is the founder comfortable on camera? *
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  E2: Is the founder comfortable on camera? <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <select
                   value={secE.founder_comfort}
                   onChange={(e) => setSecE({ ...secE, founder_comfort: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 bg-white outline-none mb-3"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none mb-4"
                 >
                   <option value="yes_confident">Yes, confident & experienced</option>
                   <option value="yes_with_direction">Yes, with teleprompter & direction</option>
@@ -1239,64 +1601,90 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   <option value="no">No, will not film</option>
                 </select>
 
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  E3: Where can we shoot? *
-                </label>
-                <div className="space-y-1.5 mb-3">
-                  {SHOOT_LOCATION_OPTIONS.map((loc) => {
-                    const isChecked = secE.shoot_locations?.includes(loc.value);
-                    return (
-                      <label key={loc.value} className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-50">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => {
-                            const current = secE.shoot_locations || [];
-                            const next = isChecked
-                              ? current.filter((x: string) => x !== loc.value)
-                              : [...current, loc.value];
-                            setSecE({ ...secE, shoot_locations: next });
-                          }}
-                          className="rounded text-[#2B7BC4]"
-                        />
-                        <span>{loc.label}</span>
-                      </label>
-                    );
-                  })}
+                <div id="field-shoot_locations">
+                  <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                    E3: Where can we shoot? <span className="text-rose-400 font-bold">*</span>
+                  </label>
+                  <div className="space-y-2 mb-4">
+                    {SHOOT_LOCATION_OPTIONS.map((loc) => {
+                      const isChecked = secE.shoot_locations?.includes(loc.value);
+                      return (
+                        <label key={loc.value} className="flex items-center gap-2.5 text-xs text-[#CBD5E1] cursor-pointer p-2 rounded-lg bg-[#0B111C] border border-[#2A3446] hover:border-[#7FA0D6]/40">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              const current = secE.shoot_locations || [];
+                              const next = isChecked
+                                ? current.filter((x: string) => x !== loc.value)
+                                : [...current, loc.value];
+                              setSecE({ ...secE, shoot_locations: next });
+                              clearFieldError("shoot_locations");
+                            }}
+                            className="rounded border-[#2A3446] text-[#7FA0D6] accent-[#7FA0D6]"
+                          />
+                          <span>{loc.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {fieldErrors.shoot_locations && (
+                    <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                      <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.shoot_locations}
+                    </p>
+                  )}
                 </div>
 
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  E4: City for Physical Shoots *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Mumbai, Bengaluru, Delhi NCR"
-                  value={secE.shoot_city}
-                  onChange={(e) => setSecE({ ...secE, shoot_city: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
-                />
+                <div id="field-shoot_city">
+                  <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                    E4: City for Physical Shoots <span className="text-rose-400 font-bold">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Mumbai, Bengaluru, Delhi NCR"
+                    value={secE.shoot_city}
+                    onChange={(e) => {
+                      setSecE({ ...secE, shoot_city: e.target.value });
+                      clearFieldError("shoot_city");
+                    }}
+                    className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                      fieldErrors.shoot_city
+                        ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
+                        : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
+                    }`}
+                  />
+                  {fieldErrors.shoot_city && (
+                    <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                      <AlertCircle className="size-3.5 shrink-0" /> {fieldErrors.shoot_city}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  E8: Where should content send viewers? *
+              <div id="field-cta_destination">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  E8: Where should content send viewers? <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <select
                   value={secE.cta_destination}
-                  onChange={(e) => setSecE({ ...secE, cta_destination: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 bg-white outline-none"
+                  onChange={(e) => {
+                    setSecE({ ...secE, cta_destination: e.target.value });
+                    clearFieldError("cta_destination");
+                  }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none"
                 >
                   {CTA_DESTINATION_OPTIONS.map((c) => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
+                    <option key={c.value} value={c.value} className="bg-[#0B111C] text-white">
+                      {c.label}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                   E9: CTA Target Destination URL / Number
                 </label>
                 <input
@@ -1304,40 +1692,38 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   placeholder="https://yourbrand.com or +919876543210"
                   value={secE.cta_target}
                   onChange={(e) => setSecE({ ...secE, cta_target: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
                 />
               </div>
             </div>
 
-            {/* E10: Regulatory constraints */}
-            <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-4">
-              <div className="flex items-center gap-1.5 text-rose-950 font-bold text-xs mb-1">
-                <AlertCircle className="w-4 h-4 text-rose-600" />
-                <span>E10: Regulatory or Legal Constraints on Claims (Agency Liability Shield) ★</span>
+            {/* E10: Regulatory Box */}
+            <div className="bg-rose-950/30 border border-rose-900/60 rounded-xl p-4">
+              <div className="flex items-center gap-1.5 text-rose-200 font-bold text-xs mb-1">
+                <AlertCircle className="w-4 h-4 text-rose-400" />
+                <span>E10: Regulatory or Legal Constraints on Claims (Agency Liability Shield)</span>
               </div>
-              <p className="text-[11px] text-rose-800 mb-2">
+              <p className="text-[11px] text-rose-300/80 mb-2 leading-relaxed">
                 e.g. Supplements cannot claim to cure disease; FinTech must carry risk disclaimers; healthcare cannot show patient before/after results.
               </p>
               <textarea
                 rows={2}
-                required
                 placeholder="Explicit claims or terms forbidden by law or compliance..."
                 value={secE.legal_constraints}
                 onChange={(e) => setSecE({ ...secE, legal_constraints: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg bg-white border border-rose-300 outline-none"
+                className="w-full px-3.5 py-2 text-sm rounded-xl bg-[#0B111C] border border-rose-900/70 text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
 
-            {/* E11: Approval speed */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  E11: Who approves content and how fast? *
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
+                  E11: Who approves content and how fast? <span className="text-rose-400 font-bold">*</span>
                 </label>
                 <select
                   value={secE.approval_speed}
                   onChange={(e) => setSecE({ ...secE, approval_speed: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 bg-white outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none"
                 >
                   <option value="founder_same_day">Founder (Same Day Turnaround)</option>
                   <option value="founder_2_3_days">Founder (2–3 Days)</option>
@@ -1347,7 +1733,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                   E7: Formats you do NOT want produced
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -1364,8 +1750,10 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                             : [...current, f.value];
                           setSecE({ ...secE, format_exclusions: next });
                         }}
-                        className={`px-2.5 py-1 text-xs rounded border transition-colors cursor-pointer ${
-                          isExcl ? "bg-rose-100 text-rose-700 border-rose-300 font-bold" : "bg-slate-50 text-slate-600 border-slate-200"
+                        className={`px-2.5 py-1 text-xs rounded-lg border transition-colors cursor-pointer ${
+                          isExcl
+                            ? "bg-rose-900/50 text-rose-300 border-rose-700 font-semibold"
+                            : "bg-[#0B111C] text-[#CBD5E1] border-[#2A3446] hover:border-[#7FA0D6]/50"
                         }`}
                       >
                         {f.label}
@@ -1378,19 +1766,21 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
           </div>
         )}
 
-        {/* SECTION F: HISTORY (OPTIONAL) */}
+        {/* SECTION F: HISTORICAL DATA (OPTIONAL) */}
         {activeSection === "f" && (
           <div className="space-y-6">
-            <div className="border-b border-slate-100 pb-4">
+            <div className="border-b border-[#2A3446] pb-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-900">Section F: Historical Content Data</h2>
-                <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Optional Enrichment</span>
+                <h2 className="text-lg font-bold text-white">Section F: Historical Content Data</h2>
+                <span className="text-[10px] font-bold bg-[#D8BF9B]/20 text-[#D8BF9B] border border-[#D8BF9B]/30 px-2 py-0.5 rounded-full">
+                  Optional Enrichment
+                </span>
               </div>
-              <p className="text-xs text-slate-500">Helps our team avoid repeating what flopped before (~2 min)</p>
+              <p className="text-xs text-[#94A3B8] mt-1">Helps our team avoid repeating what flopped before (~2 min)</p>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                 F4: Anything that has clearly NOT worked before?
               </label>
               <textarea
@@ -1398,27 +1788,29 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="Styles, topics, formats, or angles that flopped or generated negative engagement..."
                 value={secF.what_failed}
                 onChange={(e) => setSecF({ ...secF, what_failed: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
           </div>
         )}
 
-        {/* SECTION G: STORY (THE FOUR QUESTIONS WHERE WORDS MATTER) */}
+        {/* SECTION G: STORY & VISION (OPTIONAL) */}
         {activeSection === "g" && (
           <div className="space-y-6">
-            <div className="border-b border-slate-100 pb-4">
+            <div className="border-b border-[#2A3446] pb-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-900">Section G: Founder Story & Long-Term Vision</h2>
-                <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Optional Enrichment</span>
+                <h2 className="text-lg font-bold text-white">Section G: Founder Story & Long-Term Vision</h2>
+                <span className="text-[10px] font-bold bg-[#D8BF9B]/20 text-[#D8BF9B] border border-[#D8BF9B]/30 px-2 py-0.5 rounded-full">
+                  Optional Enrichment
+                </span>
               </div>
-              <p className="text-xs text-slate-500">
-                Keep these in your own authentic words — they inform our copywriters more than any questionnaire scale.
+              <p className="text-xs text-[#94A3B8] mt-1">
+                Keep these in your own authentic words — they inform our copywriters and narrative strategists.
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                 G1: Why was the brand started?
               </label>
               <textarea
@@ -1426,12 +1818,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="The inciting moment, frustration with the industry, or origin story..."
                 value={secG.origin}
                 onChange={(e) => setSecG({ ...secG, origin: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                 G2: What does your brand stand for today?
               </label>
               <textarea
@@ -1439,13 +1831,13 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="Core conviction, moral stance, or uncompromising standard..."
                 value={secG.stands_for}
                 onChange={(e) => setSecG({ ...secG, stands_for: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                   G3: What do you want people to remember you for?
                 </label>
                 <textarea
@@ -1453,12 +1845,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   placeholder="The lingering feeling or reputation you want to hold..."
                   value={secG.remembered_for}
                   onChange={(e) => setSecG({ ...secG, remembered_for: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-[#F1F5F9] mb-1.5">
                   G4: Where do you want the brand in 1–3 years?
                 </label>
                 <textarea
@@ -1466,7 +1858,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   placeholder="Market share, global reach, revenue milestone, or new product verticals..."
                   value={secG.vision}
                   onChange={(e) => setSecG({ ...secG, vision: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
                 />
               </div>
             </div>
@@ -1474,36 +1866,60 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
         )}
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-6 border-t border-[#2A3446] mt-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-6 border-t border-[#2A3446] mt-8 gap-4">
           <button
             type="button"
             onClick={handlePrevSection}
             disabled={activeSection === "a"}
-            className="px-4 py-2 rounded-lg border border-[#2A3446] bg-[#0B111C] text-[#97A0B3] text-xs font-bold hover:text-white hover:border-[#7FA0D6] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-[#94A3B8] text-xs font-bold hover:text-white hover:border-[#7FA0D6] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back
+            <ArrowLeft className="w-4 h-4" />
+            <span>Previous Section</span>
           </button>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
             {activeSection !== "g" ? (
               <button
                 type="button"
                 onClick={handleNextSection}
                 disabled={isSaving}
-                className="px-5 py-2.5 rounded-lg bg-[#BCCCE6] hover:bg-white text-[#0B111C] text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto min-w-[200px] px-6 py-2.5 rounded-xl bg-[#BCCCE6] hover:bg-white text-[#0B111C] text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-wait"
               >
-                {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowRight className="w-3.5 h-3.5" />}
-                <span>Save & Continue</span>
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#0B111C]" />
+                    <span>Saving Progress…</span>
+                  </>
+                ) : saveSuccess ? (
+                  <>
+                    <Check className="w-4 h-4 text-[#0B111C]" />
+                    <span>Saved ✓</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Save & Continue</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             ) : (
               <button
                 type="button"
                 onClick={handleSynthesizeAndFinish}
                 disabled={isSynthesizing}
-                className="px-6 py-2.5 rounded-lg bg-[#BCCCE6] hover:bg-white text-[#0B111C] text-xs font-black transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto min-w-[240px] px-6 py-2.5 rounded-xl bg-[#BCCCE6] hover:bg-white text-[#0B111C] text-xs sm:text-sm font-black transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-wait"
               >
-                {isSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#D8BF9B]" />}
-                <span>Synthesize Brand DNA & Finish</span>
+                {isSynthesizing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#0B111C]" />
+                    <span>Synthesizing Brand DNA…</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 text-[#0B111C]" />
+                    <span>Synthesize Brand DNA & Finish</span>
+                  </>
+                )}
               </button>
             )}
           </div>

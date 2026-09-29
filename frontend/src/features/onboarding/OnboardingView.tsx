@@ -35,24 +35,24 @@ function ProgressStepper({
   onSelectStep?: (step: number) => void;
 }) {
   return (
-    <div className="w-full max-w-4xl lg:max-w-5xl mx-auto mb-8 sm:mb-10 px-2 sm:px-4">
+    <div className="w-full mb-8 sm:mb-10">
       {/* Stepper Card */}
-      <div className="relative bg-[#161F2D] rounded-2xl shadow-xl border border-[#2A3446] px-5 sm:px-8 py-4 sm:py-5">
+      <div className="relative bg-[#161F2D] rounded-2xl shadow-xl border border-[#2A3446] px-3 sm:px-8 py-5">
         <div className="flex items-start justify-between relative">
 
-          {/* Background track line */}
+          {/* Background track line - mathematically centered between step 1 (10%) and step 5 (90%) */}
           <div
-            className="absolute left-0 right-0 h-[2px] rounded-full bg-[#2A3446]"
-            style={{ top: "16px", marginLeft: "8%", marginRight: "8%" }}
+            className="absolute h-[2px] rounded-full bg-[#2A3446] -translate-y-1/2"
+            style={{ top: "18px", left: "10%", right: "10%" }}
           />
 
-          {/* Completed track line (grows with progress) */}
+          {/* Completed track line (grows with progress strictly through circle centers) */}
           <div
-            className="absolute h-[2px] rounded-full transition-all duration-500"
+            className="absolute h-[2px] rounded-full transition-all duration-500 -translate-y-1/2"
             style={{
-              top: "16px",
-              marginLeft: "8%",
-              width: `calc(${Math.max(0, ((maxUnlockedStep - 1) / (STAGES.length - 1)))} * 84%)`,
+              top: "18px",
+              left: "10%",
+              width: `${Math.max(0, Math.min(1, (maxUnlockedStep - 1) / (STAGES.length - 1))) * 80}%`,
               background: "#7FA0D6",
             }}
           />
@@ -63,26 +63,28 @@ function ProgressStepper({
             const isUnlocked = s.step <= maxUnlockedStep;
 
             return (
-              <div key={s.step} className="flex flex-col items-center flex-1 relative z-10">
-                <div
+              <div key={s.step} className="flex flex-col items-center flex-1 relative z-10 px-1">
+                <button
+                  type="button"
                   onClick={() => isUnlocked && onSelectStep?.(s.step)}
-                  className={`flex flex-col items-center select-none ${
-                    isUnlocked ? "cursor-pointer hover:opacity-90" : "cursor-not-allowed"
+                  disabled={!isUnlocked}
+                  className={`flex flex-col items-center select-none w-full group focus:outline-none ${
+                    isUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-80"
                   }`}
                 >
                   {/* Step circle */}
                   <div className="relative flex items-center justify-center">
                     <div
-                      className={`relative size-8 sm:size-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-colors duration-200 ${
+                      className={`relative size-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shrink-0 ${
                         isDone
-                          ? "bg-[#7FA0D6] text-[#0B111C]"
+                          ? "bg-[#7FA0D6] text-[#0B111C] shadow-sm"
                           : isActive
-                          ? "bg-[#BCCCE6] text-[#0B111C] font-black ring-4 ring-[#BCCCE6]/20"
-                          : "bg-[#0B111C] text-[#97A0B3] border border-[#2A3446]"
+                          ? "bg-[#BCCCE6] text-[#0B111C] font-black ring-4 ring-[#BCCCE6]/25 shadow-md"
+                          : "bg-[#0B111C] text-[#94A3B8] border border-[#2A3446] group-hover:border-[#7FA0D6]/40"
                       }`}
                     >
                       {isDone ? (
-                        <svg className="size-3.5 sm:size-4" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="size-4" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       ) : (
@@ -92,24 +94,24 @@ function ProgressStepper({
                   </div>
 
                   {/* Step label */}
-                  <div className="mt-2 text-center">
-                    <p className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mb-0.5 ${
-                      isActive ? "text-[#BCCCE6]" : isDone ? "text-[#7FA0D6]" : "text-[#97A0B3]"
+                  <div className="mt-2.5 text-center w-full">
+                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${
+                      isActive ? "text-[#BCCCE6]" : isDone ? "text-[#7FA0D6]" : "text-[#94A3B8]"
                     }`}>
                       Step {s.step}
                     </p>
-                    <p className={`text-[10px] sm:text-xs font-bold transition-colors ${
+                    <p className={`text-xs font-semibold transition-colors truncate px-0.5 ${
                       isActive
-                        ? "text-white"
+                        ? "text-white font-bold"
                         : isDone
-                        ? "text-[#7FA0D6]"
-                        : "text-[#97A0B3]"
+                        ? "text-[#CBD5E1]"
+                        : "text-[#94A3B8]"
                     }`}>
                       <span className="sm:hidden">{s.short}</span>
-                      <span className="hidden sm:inline whitespace-nowrap">{s.label}</span>
+                      <span className="hidden sm:inline">{s.label}</span>
                     </p>
                   </div>
-                </div>
+                </button>
               </div>
             );
           })}
@@ -424,7 +426,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   }
 
   return (
-    <div className="w-full flex flex-col items-center pb-20 sm:pb-28">
+    <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col items-center pb-20 sm:pb-28">
       {/* Visual Stepper */}
       <ProgressStepper
         activeStep={currentStep}
@@ -434,7 +436,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
 
       {/* Resume Onboarding Banner (shown whenever client returns with in-progress onboarding) */}
       {status && backendStage > 0 && backendStage < 8 && (
-        <div className="w-full max-w-4xl lg:max-w-5xl mx-auto mb-6 p-4 sm:p-5 rounded-2xl bg-[#161F2D] border border-[#2A3446] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="w-full mb-6 p-4 sm:p-5 rounded-2xl bg-[#161F2D] border border-[#2A3446] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="size-10 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-center text-[#7FA0D6] shrink-0 font-bold">
               ⚡
@@ -458,7 +460,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
               </p>
             </div>
           </div>
-          <div className="text-xs text-[#97A0B3] shrink-0 flex items-center gap-2">
+          <div className="text-xs text-[#94A3B8] shrink-0 flex items-center gap-2">
             <span>Progress automatically saved</span>
             <span className="inline-block size-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>

@@ -216,19 +216,19 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="max-w-[1400px] w-full mx-auto space-y-4 pb-12"
+      className="w-full space-y-6 pb-12"
     >
       {/* Header Container */}
       <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-[10px] font-extrabold uppercase tracking-widest mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-[10px] font-extrabold uppercase tracking-widest mb-3">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Stage 5 Active • Creative Pod Allocated & Brief Dispatched
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black font-display text-[#F8FAFC] tracking-tight mb-2">
+          <h2 className="text-xl sm:text-2xl font-bold font-display text-white tracking-tight mb-2">
             Your Dedicated Creative Pod is Live!
           </h2>
-          <p className="text-sm text-[#97A0B3] max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#94A3B8] max-w-2xl leading-relaxed">
             Your retainer is active, your Brand Strategy DNA is synthesized, and your dedicated
             production specialists have been briefed with your 30-day content calendar.
           </p>
@@ -236,9 +236,10 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
         <button
           type="button"
           onClick={onLaunchPortal}
-          className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#BCCCE6] hover:bg-white text-[#0B111C] font-bold text-sm shadow-md transition-all cursor-pointer"
+          className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#BCCCE6] hover:bg-white text-[#0B111C] font-bold text-sm shadow-md transition-all cursor-pointer"
         >
-          Go to Client Portal <ArrowRight className="size-4" />
+          <span>Go to Client Portal</span>
+          <ArrowRight className="size-4" />
         </button>
       </div>
 

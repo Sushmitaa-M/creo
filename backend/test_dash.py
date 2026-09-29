@@ -5,7 +5,7 @@ from app.models.user import User
 from app.routers.portal_dashboard import get_portal_dashboard
 from app.models.enums import UserRole
 
-async def test_dashboard_for_user(email):
+async def check_dashboard_for_user(email):
     async with async_session_factory() as db:
         res = await db.execute(select(User).where(User.email == email))
         user = res.scalar_one_or_none()
@@ -26,7 +26,7 @@ async def test_dashboard_for_user(email):
 
 async def main():
     for email in ["client1@stage1.com", "mukeshkumar06lav@gmail.com", "andropedia.rmp@gmail.com"]:
-        await test_dashboard_for_user(email)
+        await check_dashboard_for_user(email)
 
 if __name__ == "__main__":
     asyncio.run(main())

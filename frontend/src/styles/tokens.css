@@ -584,3 +584,50 @@ aside .scrollbar-thin,
 .card-interactive {
   @apply transition-all duration-300 ease-out hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 hover:border-slate-200;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SOLID EXECUTIVE DARK THEME — Form Controls & Inputs (Bento / Onboarding)
+   Enforces uniform CREO Nebula dark palette across all browsers and inputs
+───────────────────────────────────────────────────────────────────────────── */
+.bento-theme,
+[data-surface="review"],
+[data-surface="ops"],
+.onboarding-dark-canvas {
+  color-scheme: dark !important;
+}
+
+.bento-theme select,
+.bento-theme input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.bento-theme textarea,
+.onboarding-dark-canvas select,
+.onboarding-dark-canvas input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.onboarding-dark-canvas textarea {
+  color-scheme: dark !important;
+  background-color: #0B111C !important;
+  color: #F8FAFC !important;
+  border-color: #2A3446 !important;
+}
+
+.bento-theme select option,
+.onboarding-dark-canvas select option {
+  background-color: #0B111C !important;
+  color: #F8FAFC !important;
+}
+
+.bento-theme input::placeholder,
+.bento-theme textarea::placeholder,
+.onboarding-dark-canvas input::placeholder,
+.onboarding-dark-canvas textarea::placeholder {
+  color: #64748B !important;
+}
+
+.bento-theme input:focus,
+.bento-theme select:focus,
+.bento-theme textarea:focus,
+.onboarding-dark-canvas input:focus,
+.onboarding-dark-canvas select:focus,
+.onboarding-dark-canvas textarea:focus {
+  border-color: #7FA0D6 !important;
+  outline: none !important;
+}
+

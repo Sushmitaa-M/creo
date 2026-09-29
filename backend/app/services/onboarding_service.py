@@ -550,6 +550,27 @@ async def complete_onboarding(db: AsyncSession, client_id: uuid.UUID) -> Onboard
     # Prerequisite 3: Questionnaire Sections A-E completed
     q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
     quest = (await db.execute(q_stmt)).scalar_one_or_none()
+    if quest and not quest.core_completed_at:
+        has_a = bool(quest.section_a and (quest.section_a.get("brand_name") or quest.section_a.get("one_liner")))
+        has_b = bool(quest.section_b and quest.section_b.get("ideal_customer"))
+        has_c = bool(quest.section_c and ("humour" in quest.section_c or quest.section_c.get("voice_words")))
+        has_d = bool(quest.section_d and (quest.section_d.get("visual_direction") or quest.section_d.get("colours")))
+        has_e = bool(quest.section_e and (quest.section_e.get("on_camera") or quest.section_e.get("shoot_locations")))
+
+        if not (has_a and has_b and has_c and has_d and has_e) and quest.answers and len(quest.answers) >= 5:
+            mapped = map_legacy_answers_to_sections(quest.answers)
+            for sec_k in ["a", "b", "c", "d", "e", "f", "g"]:
+                if not getattr(quest, f"section_{sec_k}"):
+                    setattr(quest, f"section_{sec_k}", mapped[sec_k])
+            has_a = has_b = has_c = has_d = has_e = True
+
+        if has_a and has_b and has_c and has_d and has_e:
+            quest.core_completed_at = now
+            if not quest.submitted_at:
+                quest.submitted_at = now
+            await db.commit()
+            await db.refresh(quest)
+
     if not quest or not quest.core_completed_at:
         raise Conflict("Mandatory Brand Questionnaire Sections A-E must be submitted before completing onboarding", code="QUESTIONNAIRE_REQUIRED")
 

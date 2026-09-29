@@ -83,9 +83,9 @@ export function RequireOnboardingComplete({ children }: RequireOnboardingComplet
     return <Navigate to="/onboarding/questionnaire" replace />;
   }
 
-  // Brand DNA / Pod / Calendar generation in progress
+  // Brand DNA / Pod / Calendar generation in progress (Stage 4..7) -> Route to Step 5 (Activation)
   if (status.stage >= 4 && status.stage < 8) {
-    return <Navigate to="/onboarding/questionnaire?step=review" replace />;
+    return <Navigate to="/onboarding?step=5" replace />;
   }
 
   // Otherwise, route to their exact unfinished stage

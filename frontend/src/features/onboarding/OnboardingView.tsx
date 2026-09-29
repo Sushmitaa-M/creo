@@ -338,17 +338,17 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   // stage 0 -> step 1 (Email verification pending)
   // stage 1 -> step 2 (Email verified, terms pending)
   // stage 2 -> step 3 (Terms accepted, payment pending)
-  // stage 3..7 -> step 4 (Payment done, questionnaire & brand DNA & pod & calendar pending)
-  // stage 8 -> step 5 (All complete -> Launch to portal)
+  // stage 3 -> step 4 (Payment done, questionnaire core pending)
+  // stage 4..8 -> step 5 (Questionnaire complete -> Creative Pod, Brand DNA & Activation)
   const backendStage = status?.stage ?? 0;
   const isQuestionnairePath = typeof window !== "undefined" && window.location.pathname.includes("questionnaire");
 
   const computedStep = (() => {
-    if (isQuestionnairePath) return 4;
+    if (isQuestionnairePath && backendStage <= 3) return 4;
     if (backendStage === 0) return 1;
     if (backendStage === 1) return 2;
     if (backendStage === 2) return 3;
-    if (backendStage >= 3 && backendStage < 8) return 4;
+    if (backendStage === 3) return 4;
     return 5;
   })();
 
@@ -356,7 +356,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
     if (backendStage === 0) return 1;
     if (backendStage === 1) return 2;
     if (backendStage === 2) return 3;
-    if (backendStage >= 3 && backendStage < 8) return 4;
+    if (backendStage === 3) return 4;
     return 5;
   })();
 

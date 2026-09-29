@@ -320,25 +320,43 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
 
       setCompletedSections(completed);
 
-      if (qState.core_completed) {
+      const isCoreDone = Boolean(
+        qState.core_completed ||
+        (qState.section_a?.brand_name &&
+         qState.section_b?.ideal_customer &&
+         qState.section_c?.voice_words?.length &&
+         qState.section_d?.visual_direction?.length &&
+         qState.section_e?.shoot_city)
+      );
+
+      if (isCoreDone) {
         setCoreUnlocked(true);
       }
 
-      // Resume at first incomplete section if not specifically requested
-      if (initialSection) {
-        setActiveSection(initialSection);
+      // Resume at first incomplete section if core is not completed
+      const validSections: SectionKey[] = ["a", "b", "c", "d", "e", "f", "g"];
+      const effectiveInitial = initialSection && validSections.includes(initialSection) ? initialSection : null;
+
+      const a = qState.section_a;
+      const b = qState.section_b;
+      const c = qState.section_c;
+      const d = qState.section_d;
+      const e = qState.section_e;
+
+      const firstIncomplete: SectionKey =
+        (!a || !a.brand_name) ? "a" :
+        (!b || !b.ideal_customer) ? "b" :
+        (!c || !c.voice_words?.length) ? "c" :
+        (!d || !d.visual_direction?.length) ? "d" :
+        (!e || !e.shoot_city) ? "e" : "a";
+
+      if (!isCoreDone) {
+        // Enforce completing mandatory core sections first
+        setActiveSection(firstIncomplete);
+      } else if (effectiveInitial) {
+        setActiveSection(effectiveInitial);
       } else {
-        const a = qState.section_a;
-        const b = qState.section_b;
-        const c = qState.section_c;
-        const d = qState.section_d;
-        const e = qState.section_e;
-        if (!a || !a.brand_name) setActiveSection("a");
-        else if (!b || !b.ideal_customer) setActiveSection("b");
-        else if (!c || !c.voice_words?.length) setActiveSection("c");
-        else if (!d || !d.visual_direction?.length) setActiveSection("d");
-        else if (!e || !e.shoot_city) setActiveSection("e");
-        else setActiveSection("a");
+        setActiveSection("a");
       }
       setDataInitialized(true);
     }
@@ -565,11 +583,16 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   };
 
   const handleSelectSectionTab = (targetKey: SectionKey) => {
-    // Only allow navigating to completed sections, current section, or immediate next unlocked
+    // Sections F & G require core sections (A-E) to be completed first
+    if ((targetKey === "f" || targetKey === "g") && !coreUnlocked) {
+      setValidationBanner("Please complete mandatory Sections A–E before proceeding to optional creative enrichment.");
+      return;
+    }
+
     const targetIdx = SECTIONS.findIndex((s) => s.key === targetKey);
     const currentIdx = SECTIONS.findIndex((s) => s.key === activeSection);
 
-    if (targetIdx <= currentIdx || completedSections.has(targetKey)) {
+    if (targetIdx <= currentIdx || completedSections.has(targetKey) || coreUnlocked) {
       setFieldErrors({});
       setValidationBanner(null);
       setApiError(null);
@@ -583,22 +606,68 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
 
   const handleSynthesizeAndFinish = async () => {
     if (isSynthesizing) return;
+
+    // 1. Client-Side Validation: Verify Sections A through E
+    const mandatorySections: SectionKey[] = ["a", "b", "c", "d", "e"];
+    for (const secKey of mandatorySections) {
+      const { valid, errors, firstKey } = validateCurrentSection(secKey);
+      if (!valid) {
+        setActiveSection(secKey);
+        setFieldErrors(errors);
+        setValidationBanner(`Please complete the required fields in Section ${secKey.toUpperCase()} before synthesizing Brand DNA.`);
+        if (firstKey) {
+          setTimeout(() => {
+            const el = document.getElementById(`field-${firstKey}`);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "center" });
+              if ("focus" in el && typeof el.focus === "function") {
+                el.focus();
+              }
+            }
+          }, 100);
+        }
+        return;
+      }
+    }
+
     setIsSynthesizing(true);
     setApiError(null);
-    try {
-      // Save section E / active section
-      const currentData = getCurrentSectionData(activeSection);
-      await saveQuestionnaireSection(userId, activeSection, currentData);
+    setValidationBanner(null);
 
-      // Trigger Brand DNA synthesis pipeline
+    // Cancel pending debounce timer
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current);
+    }
+
+    try {
+      // 2. Persist Sections A through E (and active section if f or g) to guarantee backend database state has core_completed_at
+      const sectionsToSave: SectionKey[] = ["a", "b", "c", "d", "e"];
+      if (activeSection === "f" || activeSection === "g") {
+        sectionsToSave.push(activeSection);
+      }
+      for (const sec of sectionsToSave) {
+        const secData = getCurrentSectionData(sec);
+        const res = await saveQuestionnaireSection(userId, sec, secData);
+        if (res.core_completed) {
+          setCoreUnlocked(true);
+        }
+      }
+
+      // 3. Trigger Brand DNA synthesis pipeline
       await queueBrandDNAGeneration(userId);
 
-      // Complete onboarding and allocate creative pod
+      // 4. Complete onboarding and allocate creative pod
       const completeRes = await completeOnboarding(userId);
       onComplete(completeRes.assigned_team);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Failed to complete onboarding", err);
-      setApiError("Synthesis pipeline encountered an issue. Please retry.");
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg.includes("Sections A-E")) {
+        setActiveSection("a");
+        setValidationBanner("Please review and submit Sections A–E before finalizing Brand DNA.");
+      } else {
+        setApiError(errMsg || "Synthesis pipeline encountered an issue. Please retry.");
+      }
     } finally {
       setIsSynthesizing(false);
     }

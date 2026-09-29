@@ -123,11 +123,6 @@ export function PortalCreativePodPage() {
 
   const isStaffOrAdmin = user?.role && user.role !== "client";
 
-  const isSubscribed =
-    isStaffOrAdmin ||
-    (!isExpired &&
-      (subData?.is_active === true ||
-        (!!subData?.subscription && ["active", "trialing"].includes(subData?.subscription?.status))));
 
   const assignedTeam = dashboard?.assigned_team || [];
   const podLead = assignedTeam.find((m) => m.is_primary || m.raw_role === "team_lead" || m.raw_role === "creative_lead");
@@ -143,15 +138,12 @@ export function PortalCreativePodPage() {
     "bg-[#8B5CF6]",
   ];
 
-  if (!isSubscribed && !isLoading) {
+  if (isExpired && !isStaffOrAdmin) {
     return (
       <div className="space-y-5">
         <SubscriptionLockedState
-          title={isExpired ? "Creative Pod Access Expired" : "Creative Pod Locked"}
-          description={isExpired
-            ? "Your retainer has expired. Renew to regain access to your dedicated creative team."
-            : "An active subscription is required to access your Creative Pod team directory."
-          }
+          title="Creative Pod Access Expired"
+          description="Your retainer has expired. Renew to regain access to your dedicated creative team."
         />
       </div>
     );

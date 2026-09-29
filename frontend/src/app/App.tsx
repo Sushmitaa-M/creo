@@ -377,6 +377,7 @@ export function App() {
                 <Route path="deliverables" element={<PortalDeliverablesPage />} />
                 <Route path="calendar" element={<PortalCalendarPage />} />
                 <Route path="creative-pod" element={<PortalCreativePodPage />} />
+                <Route path="creative_pod" element={<PortalCreativePodPage />} />
                 <Route path="payments" element={<PortalPaymentsPage />} />
                 <Route path="support" element={<PortalSupportPage />} />
                 <Route path="account" element={<PortalAccountPage />} />

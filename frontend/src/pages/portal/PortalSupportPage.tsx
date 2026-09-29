@@ -45,6 +45,12 @@ export function PortalSupportPage() {
     refetchOnMount: "always",
   });
 
+  const { data: dashboard } = useQuery({
+    queryKey: ["portal-dashboard", user?.id],
+    queryFn: () => request<any>("/api/v1/portal/dashboard"),
+    enabled: !!user?.id,
+  });
+
   const isExpired =
     subData?.is_expired === true ||
     subData?.subscription?.status === "expired" ||
@@ -52,6 +58,7 @@ export function PortalSupportPage() {
   const isStaffOrAdmin = user?.role && user.role !== "client";
   const isSubscribed =
     isStaffOrAdmin ||
+    (!!dashboard?.active_plan && ["active", "trialing"].includes(dashboard?.active_plan?.status)) ||
     (!isExpired &&
       (subData?.is_active === true ||
         (!!subData?.subscription && ["active", "trialing"].includes(subData?.subscription?.status))));
@@ -150,11 +157,11 @@ export function PortalSupportPage() {
     );
   }
 
-  if (!isSubscribed) {
+  if (isExpired && !isStaffOrAdmin) {
     return (
       <SubscriptionLockedState
-        title={isExpired ? "Support Access Expired" : "Support Locked"}
-        description="An active subscription is required to access the support desk."
+        title="Support Access Expired"
+        description="Your retainer has expired. Renew to access the support desk."
       />
     );
   }

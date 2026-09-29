@@ -17,6 +17,7 @@ interface TeamMember {
 interface DashboardData {
   assigned_team?: TeamMember[];
   active_plan?: { status: string; name?: string; price_minor?: number } | null;
+  onboarding_stage?: number;
 }
 
 const ROLE_DESCRIPTIONS: Record<string, string> = {
@@ -124,12 +125,15 @@ export function PortalCreativePodPage() {
     "bg-[#8B5CF6]",
   ];
 
-  if (isExpired && !isStaffOrAdmin) {
+  const subscriptionActive = !!dashboard?.active_plan && ["active", "trialing"].includes(dashboard?.active_plan?.status);
+  const isUnlocked = isStaffOrAdmin || (subscriptionActive && !isExpired && (dashboard?.onboarding_stage ?? 1) >= 8);
+
+  if (!isUnlocked && dashboard) {
     return (
-      <div className="space-y-5">
+      <div className="flex items-center justify-center min-h-[70vh]">
         <SubscriptionLockedState
-          title="Creative Pod Access Expired"
-          description="Your retainer has expired. Renew to regain access to your dedicated creative team."
+          title="Creative Pod Access Locked"
+          description="Your dedicated creative specialists and lead producer will be provisioned once your account setup is completed."
         />
       </div>
     );

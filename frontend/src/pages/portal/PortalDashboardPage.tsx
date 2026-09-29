@@ -105,7 +105,10 @@ export function PortalDashboardPage() {
     refetchInterval: 30000,
   });
 
-  if (!subscriptionActive && dashboard) {
+  const isClient = user?.role === "client";
+  const isUnlocked = !isClient || (subscriptionActive && (dashboard?.onboarding_stage ?? 1) >= 8);
+
+  if (!isUnlocked && dashboard) {
     return (
       <div className="flex items-center justify-center min-h-[70vh]">
         <SubscriptionLockedState />

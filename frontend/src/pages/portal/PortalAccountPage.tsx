@@ -4,6 +4,7 @@ import { useAuth } from "../../lib/auth-context";
 import { useSearchParams } from "react-router";
 import { request } from "../../lib/http";
 import { Instagram, Upload, Palette } from "lucide-react";
+import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
 
 export function PortalAccountPage() {
   const { user } = useAuth();
@@ -109,18 +110,10 @@ export function PortalAccountPage() {
   if (isSetupIncomplete && dashboard) {
     return (
       <div className="flex items-center justify-center min-h-[70vh]">
-        <div className="text-center max-w-md bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-8">
-          <h2 className="text-xl font-bold text-white mb-2">Complete Your Setup</h2>
-          <p className="text-sm text-[#9CA3AF] mb-6">
-            You need to finish the onboarding process before you can fully access and manage your profile, brand DNA, and settings.
-          </p>
-          <a
-            href="/onboarding"
-            className="inline-flex items-center justify-center w-full px-5 py-3 rounded-xl bg-white text-[#0E1420] text-[13px] font-bold hover:bg-white/90 transition-colors"
-          >
-            Resume Onboarding
-          </a>
-        </div>
+        <SubscriptionLockedState
+          title="Brand Guidelines & Settings Locked"
+          description="Complete your onboarding setup to manage your brand DNA, visual assets, and workspace configuration."
+        />
       </div>
     );
   }

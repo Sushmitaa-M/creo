@@ -45,6 +45,8 @@ export function PortalCalendarPage() {
   });
   
   const subscriptionActive = !!dashboard?.active_plan && ["active", "trialing"].includes(dashboard?.active_plan?.status);
+  const isClient = user?.role === "client";
+  const isUnlocked = !isClient || (subscriptionActive && (dashboard?.onboarding_stage ?? 1) >= 8);
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<number>(new Date().getDate());
@@ -56,10 +58,13 @@ export function PortalCalendarPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  if (!subscriptionActive && dashboard) {
+  if (!isUnlocked && dashboard) {
     return (
       <div className="flex items-center justify-center min-h-[70vh]">
-        <SubscriptionLockedState />
+        <SubscriptionLockedState
+          title="Content Calendar Locked"
+          description="Your 30-day content calendar and scheduling pipeline will activate once your onboarding setup and subscription are completed."
+        />
       </div>
     );
   }

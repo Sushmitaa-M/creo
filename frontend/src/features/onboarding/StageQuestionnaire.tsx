@@ -683,7 +683,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   }
 
   return (
-    <div ref={formTopRef} className="w-full space-y-6">
+    <div ref={formTopRef} className="w-full space-y-6 onboarding-dark-canvas" style={{ colorScheme: "dark" }}>
       {/* Header Banner */}
       <div className="bg-[#161F2D] rounded-2xl p-6 sm:p-7 text-white shadow-xl relative overflow-hidden border border-[#2A3446]">
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -833,7 +833,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
       )}
 
       {/* Main Section Content Form (Full dark theme, high contrast) */}
-      <div className="bg-[#161F2D] rounded-2xl border border-[#2A3446] p-6 sm:p-8 shadow-xl text-white">
+      <div className="bg-[#161F2D] rounded-2xl border border-[#2A3446] p-6 sm:p-8 shadow-xl text-white" style={{ colorScheme: "dark" }}>
         
         {/* SECTION A: BRAND IDENTITY */}
         {activeSection === "a" && (
@@ -937,7 +937,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecA({ ...secA, category: e.target.value });
                     clearFieldError("category");
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-sm text-white focus:border-[#7FA0D6] focus:outline-none"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-sm text-white focus:border-[#7FA0D6] focus:outline-none cursor-pointer"
                 >
                   {CATEGORY_OPTIONS.map((c) => (
                     <option key={c.value} value={c.value} className="bg-[#0B111C] text-white">
@@ -962,7 +963,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecA({ ...secA, primary_goal: e.target.value });
                     clearFieldError("primary_goal");
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-sm text-white focus:border-[#7FA0D6] focus:outline-none"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-sm text-white focus:border-[#7FA0D6] focus:outline-none cursor-pointer"
                 >
                   {GOAL_OPTIONS.map((g) => (
                     <option key={g.value} value={g.value} className="bg-[#0B111C] text-white">
@@ -1014,6 +1016,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     />
                     <select
                       value={prod.price_band}
+                      style={{ colorScheme: "dark" }}
                       onChange={(e) => {
                         const next = [...(secA.products || [])];
                         if (next[idx]) {
@@ -1158,12 +1161,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             </div>
 
             {/* B4: Objections Asset Box */}
-            <div className="bg-amber-950/30 border border-amber-800/50 rounded-xl p-4">
-              <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs mb-1">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+            <div className="bg-[#0B111C] border border-[#D8BF9B]/30 rounded-xl p-4 shadow-xs">
+              <div className="flex items-center gap-1.5 text-[#D8BF9B] font-bold text-xs mb-1">
+                <Sparkles className="w-4 h-4 text-[#D8BF9B]" />
                 <span>B4: Why might someone hesitate before buying? (Crucial Conversion Asset)</span>
               </div>
-              <p className="text-[11px] text-amber-300/80 mb-2 leading-relaxed">
+              <p className="text-[11px] text-[#97A0B3] mb-2 leading-relaxed">
                 Every objection here converts directly into high-converting video and carousel pillars.
               </p>
               <textarea
@@ -1171,7 +1174,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="e.g. Price point feels high, skeptical about claims, return shipping or sizing..."
                 value={secB.objections}
                 onChange={(e) => setSecB({ ...secB, objections: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-xl bg-[#0B111C] border border-amber-800/70 text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                style={{ colorScheme: "dark" }}
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#161F2D] border border-[#2A3446] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none transition-all"
               />
             </div>
 
@@ -1223,7 +1227,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecB({ ...secB, caption_script: e.target.value });
                     clearFieldError("caption_script");
                   }}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none cursor-pointer"
                 >
                   {SCRIPT_OPTIONS.map((s) => (
                     <option key={s.value} value={s.value} className="bg-[#0B111C] text-white">
@@ -1276,7 +1281,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   max="10"
                   value={secC.humour}
                   onChange={(e) => setSecC({ ...secC, humour: Number(e.target.value) })}
-                  className="w-full accent-[#7FA0D6] cursor-pointer"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full accent-[#7FA0D6] cursor-pointer bg-transparent"
                 />
               </div>
 
@@ -1292,7 +1298,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   max="10"
                   value={secC.formality}
                   onChange={(e) => setSecC({ ...secC, formality: Number(e.target.value) })}
-                  className="w-full accent-[#7FA0D6] cursor-pointer"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full accent-[#7FA0D6] cursor-pointer bg-transparent"
                 />
               </div>
 
@@ -1308,7 +1315,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   max="10"
                   value={secC.respectfulness}
                   onChange={(e) => setSecC({ ...secC, respectfulness: Number(e.target.value) })}
-                  className="w-full accent-[#7FA0D6] cursor-pointer"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full accent-[#7FA0D6] cursor-pointer bg-transparent"
                 />
               </div>
 
@@ -1324,7 +1332,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   max="10"
                   value={secC.energy}
                   onChange={(e) => setSecC({ ...secC, energy: Number(e.target.value) })}
-                  className="w-full accent-[#7FA0D6] cursor-pointer"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full accent-[#7FA0D6] cursor-pointer bg-transparent"
                 />
               </div>
             </div>
@@ -1374,7 +1383,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             </div>
 
             {/* C6: Anti-tone Guardrail */}
-            <div id="field-anti_voice_words" className="bg-rose-950/30 border border-rose-900/60 rounded-xl p-4">
+            <div id="field-anti_voice_words" className="bg-[#0B111C] border border-rose-900/40 rounded-xl p-4">
               <div className="flex justify-between items-center mb-1">
                 <label className="text-xs font-bold text-rose-200 flex items-center gap-1.5">
                   <ShieldAlert className="w-4 h-4 text-rose-400" />
@@ -1403,7 +1412,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         isSelected
                           ? "bg-rose-600 text-white border-rose-500 shadow-sm"
-                          : "bg-[#0B111C] text-rose-200 border-rose-900/50 hover:border-rose-700"
+                          : "bg-[#161F2D] text-rose-200 border-rose-900/50 hover:border-rose-700"
                       }`}
                     >
                       {word}
@@ -1452,7 +1461,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecD({ ...secD, brand_guidelines: e.target.value });
                     clearFieldError("brand_guidelines");
                   }}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none cursor-pointer"
                 >
                   <option value="yes_will_upload">Yes, will upload full guidelines PDF</option>
                   <option value="partial">Partial (We have logo & colors only)</option>
@@ -1493,6 +1503,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                         }
                         clearFieldError("colours");
                       }}
+                      style={{ colorScheme: "dark" }}
                       className="w-8 h-8 rounded-lg border-none cursor-pointer bg-transparent"
                     />
                     <input
@@ -1509,6 +1520,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     />
                     <select
                       value={col.label}
+                      style={{ colorScheme: "dark" }}
                       onChange={(e) => {
                         const next = [...(secD.colours || [])];
                         if (next[idx]) {
@@ -1662,7 +1674,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <select
                   value={secE.founder_comfort}
                   onChange={(e) => setSecE({ ...secE, founder_comfort: e.target.value })}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none mb-4"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none mb-4 cursor-pointer"
                 >
                   <option value="yes_confident">Yes, confident & experienced</option>
                   <option value="yes_with_direction">Yes, with teleprompter & direction</option>
@@ -1742,7 +1755,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecE({ ...secE, cta_destination: e.target.value });
                     clearFieldError("cta_destination");
                   }}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none cursor-pointer"
                 >
                   {CTA_DESTINATION_OPTIONS.map((c) => (
                     <option key={c.value} value={c.value} className="bg-[#0B111C] text-white">
@@ -1767,12 +1781,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             </div>
 
             {/* E10: Regulatory Box */}
-            <div className="bg-rose-950/30 border border-rose-900/60 rounded-xl p-4">
-              <div className="flex items-center gap-1.5 text-rose-200 font-bold text-xs mb-1">
+            <div className="bg-[#0B111C] border border-rose-900/40 rounded-xl p-4 shadow-xs">
+              <div className="flex items-center gap-1.5 text-rose-300 font-bold text-xs mb-1">
                 <AlertCircle className="w-4 h-4 text-rose-400" />
                 <span>E10: Regulatory or Legal Constraints on Claims (Agency Liability Shield)</span>
               </div>
-              <p className="text-[11px] text-rose-300/80 mb-2 leading-relaxed">
+              <p className="text-[11px] text-[#97A0B3] mb-2 leading-relaxed">
                 e.g. Supplements cannot claim to cure disease; FinTech must carry risk disclaimers; healthcare cannot show patient before/after results.
               </p>
               <textarea
@@ -1780,7 +1794,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="Explicit claims or terms forbidden by law or compliance..."
                 value={secE.legal_constraints}
                 onChange={(e) => setSecE({ ...secE, legal_constraints: e.target.value })}
-                className="w-full px-3.5 py-2 text-sm rounded-xl bg-[#0B111C] border border-rose-900/70 text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                style={{ colorScheme: "dark" }}
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#161F2D] border border-rose-900/60 text-white placeholder-[#64748B] focus:border-rose-500 focus:outline-none transition-all"
               />
             </div>
 
@@ -1792,7 +1807,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <select
                   value={secE.approval_speed}
                   onChange={(e) => setSecE({ ...secE, approval_speed: e.target.value })}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none"
+                  style={{ colorScheme: "dark" }}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white focus:border-[#7FA0D6] focus:outline-none cursor-pointer"
                 >
                   <option value="founder_same_day">Founder (Same Day Turnaround)</option>
                   <option value="founder_2_3_days">Founder (2–3 Days)</option>

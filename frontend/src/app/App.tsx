@@ -1,5 +1,5 @@
-import { Suspense, lazy, Component, type ReactNode, type ErrorInfo } from "react";
-import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router";
+import { Suspense, lazy, Component, type ReactNode, type ErrorInfo, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ConfirmProvider } from "../components/ui/ConfirmDialog";
@@ -278,11 +278,32 @@ function HealthPage() {
   );
 }
 
+function ScrollToTop() {
+  const { pathname, search, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    document.documentElement.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    document.body.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname, search, hash]);
+
+  return null;
+}
+
 export function App() {
   return (
     <AuthProvider>
       <ConfirmProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Suspense fallback={<RouteLoading />}>
             <Routes>
               {/* 1. Public Marketing Pages (Open to All) */}

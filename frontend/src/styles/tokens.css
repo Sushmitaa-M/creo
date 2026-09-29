@@ -89,6 +89,7 @@
 }
 
 :root {
+  color-scheme: dark;
   --background: #050810;
   --foreground: #F8FAFC;
   --card: #ffffff;
@@ -589,6 +590,7 @@ aside .scrollbar-thin,
    SOLID EXECUTIVE DARK THEME — Form Controls & Inputs (Bento / Onboarding)
    Enforces uniform CREO Nebula dark palette across all browsers and inputs
 ───────────────────────────────────────────────────────────────────────────── */
+:root,
 .bento-theme,
 [data-surface="review"],
 [data-surface="ops"],
@@ -596,6 +598,7 @@ aside .scrollbar-thin,
   color-scheme: dark !important;
 }
 
+select,
 .bento-theme select,
 .bento-theme input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
 .bento-theme textarea,
@@ -608,6 +611,7 @@ aside .scrollbar-thin,
   border-color: #2A3446 !important;
 }
 
+select option,
 .bento-theme select option,
 .onboarding-dark-canvas select option {
   background-color: #0B111C !important;
@@ -630,4 +634,5 @@ aside .scrollbar-thin,
   border-color: #7FA0D6 !important;
   outline: none !important;
 }
+
 

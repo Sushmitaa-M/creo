@@ -31,36 +31,11 @@ export function PodScheduleLeavePage() {
     queryFn: () => fetchPodDashboard(),
   });
 
-  const podName = data?.pod?.name || "Pod A";
-  const leadName = data?.pod?.lead?.name || user?.full_name || "Maya Lin";
+  const podName = data?.pod?.name || "Pod Operations";
+  const leadName = data?.pod?.lead?.name || user?.full_name || "Pod Lead";
   
   // Pending leaves local state
-  const [pendingLeaves, setPendingLeaves] = useState([
-    {
-      id: "leave-elena",
-      name: "Elena Ortiz",
-      avatar: "EO",
-      role: "Visual Designer",
-      subrole: "Pod A Core · Joined 18 months ago",
-      type: "Paid Time Off (PTO)",
-      duration: "3 Working Days (Nov 02 - Nov 04, 2025)",
-      backup: "Marcus Vance (Atlas Commerce)",
-      reason: "Family commitment and personal travel. Handoff documentation prepared in Figma.",
-      impact: "Sprint tasks already re-routed to Marcus. Ready for pod lead check. No blocker to client delivery SLA.",
-    },
-    {
-      id: "leave-david",
-      name: "David Kim",
-      avatar: "DK",
-      role: "Sr. Motion Designer",
-      subrole: "Pod A Core · 3D & Lottie Specialist",
-      type: "Medical Leave",
-      duration: "Half Day (Tomorrow 2:00 PM - 6:00 PM)",
-      backup: "Chloe Tan (Render Queue)",
-      reason: "Routine doctor appointment and dental follow-up.",
-      impact: "Morning handoff completed with Northwind Labs. Chloe Tan handling final AfterEffects render export.",
-    },
-  ]);
+  const [pendingLeaves, setPendingLeaves] = useState<any[]>([]);
 
   const showToast = (text: string, type: "success" | "error" = "success") => {
     setToastMessage({ type, text });
@@ -95,20 +70,23 @@ export function PodScheduleLeavePage() {
 
   const handleExportAttendanceCSV = () => {
     const headers = ["Specialist Name", "Role", "Subrole", "Status", "Attendance Bandwidth", "Next Scheduled PTO"];
-    const rows = [
-      ["Maya Lin", "Pod A Lead", "Director of Brand", "On Duty", "100%", "None Scheduled"],
-      ["David Kim", "Sr. Motion Designer", "3D & Lottie Specialist", "On Duty", "100%", "Medical Half-Day (Tomorrow)"],
-      ["Elena Ortiz", "Visual Designer", "UI & Figma Systems", "On Duty", "100%", "PTO 3 Days (Nov 02 - Nov 04)"],
-      ["Marcus Vance", "Lead Copy & Strategy", "Hook Architecture", "On Duty", "100%", "None Scheduled"],
-      ["Chloe Tan", "Editor & Colorist", "Shortform Master", "On Duty", "100%", "None Scheduled"],
-    ];
+    const rows = (data?.members || []).map((m) => [
+      m.name,
+      m.role,
+      `${podName} Core`,
+      "On Duty",
+      "100%",
+      "None Scheduled",
+    ]);
 
-    const csvContent = [headers.join(","), ...rows.map(r => r.map(c => `"${c}"`).join(","))].join("\n");
+    const finalRows = rows.length > 0 ? rows : [["N/A", "-", "-", "-", "-", "-"]];
+
+    const csvContent = [headers.join(","), ...finalRows.map((r: string[]) => r.map((c) => `"${c || ""}"`).join(","))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `Pod_A_Attendance_Schedule_Ledger_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `${podName.replace(/\s+/g, "_")}_Attendance_Schedule_Ledger_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -211,17 +189,14 @@ export function PodScheduleLeavePage() {
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">1 Scheduled</span>
-                <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Tomorrow</span>
+                <span className="text-lg sm:text-xl font-black text-white">{pendingLeaves.length} Scheduled</span>
+                <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">This cycle</span>
               </div>
               <div className="pt-1.5 border-t border-[#2A3446] flex items-center justify-between text-[10px] sm:text-[11px]">
-                <div className="flex items-center gap-1.5">
-                  <div className="size-4.5 sm:size-5 rounded-md bg-blue-600 text-white font-black text-[8.5px] sm:text-[9px] flex items-center justify-center">
-                    EO
-                  </div>
-                  <span className="font-bold text-[#F1F5F9]">Elena Ortiz · PTO</span>
-                </div>
-                <span className="text-[9.5px] sm:text-[10px] text-[#97A0B3] font-medium">3 Days (Nov 02 - Nov 04)</span>
+                <span className="text-[#97A0B3] font-medium">
+                  {pendingLeaves.length === 0 ? "Full team attendance active" : `${pendingLeaves.length} pending request`}
+                </span>
+                <span className="text-emerald-400 font-bold">Optimal Coverage</span>
               </div>
             </div>
           </div>
@@ -344,36 +319,8 @@ export function PodScheduleLeavePage() {
                 </button>
               </div>
 
-              <div className="divide-y divide-slate-100 text-xs">
-                <div className="py-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-indigo-600 text-white font-black text-[9px] flex items-center justify-center">
-                      MV
-                    </div>
-                    <div>
-                      <span className="font-bold text-white text-xs">Marcus Vance</span>
-                      <span className="text-[#97A0B3] text-[10.5px] block">Personal Time Off · Oct 21 - Oct 23 (3 days)</span>
-                    </div>
-                  </div>
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Completed
-                  </span>
-                </div>
-
-                <div className="py-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-teal-600 text-white font-black text-[9px] flex items-center justify-center">
-                      CT
-                    </div>
-                    <div>
-                      <span className="font-bold text-white text-xs">Chloe Tan</span>
-                      <span className="text-[#97A0B3] text-[10.5px] block">Design Conference · Oct 14 (1 Day)</span>
-                    </div>
-                  </div>
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
-                    Archived
-                  </span>
-                </div>
+              <div className="py-4 text-center text-xs text-[#97A0B3]">
+                No historical leave requests recorded for this pod cycle.
               </div>
             </div>
           </div>
@@ -500,9 +447,9 @@ export function PodScheduleLeavePage() {
                     <span className="font-bold text-[#97A0B3]">01:00 PM - 02:15 PM</span>
                     <span className="text-[#97A0B3] font-bold text-[9px]">Conf Rm 3</span>
                   </div>
-                  <h4 className="text-xs font-black text-white">Creative Handoff: {data?.clients?.[0]?.name || "Northwind Labs"}</h4>
+                  <h4 className="text-xs font-black text-white">Creative Handoff: {data?.clients?.[0]?.name || "Client Sprint"}</h4>
                   <p className="text-[10.5px] text-[#97A0B3] font-medium leading-tight">
-                    Reviewing Q4 3D keyframe motion design renders.
+                    Reviewing sprint motion design renders and deliverables.
                   </p>
                 </div>
 
@@ -515,7 +462,7 @@ export function PodScheduleLeavePage() {
                   </div>
                   <h4 className="text-xs font-black text-white">Lead Review & Quality Sign-off</h4>
                   <p className="text-[10.5px] text-[#97A0B3] font-medium leading-tight">
-                    {leadName} sign-off for {data?.clients?.[1]?.name || "Atlas Commerce"}.
+                    {leadName} sign-off for {data?.clients?.[1]?.name || data?.clients?.[0]?.name || "Active Sprint"}.
                   </p>
                 </div>
               </div>
@@ -532,21 +479,19 @@ export function PodScheduleLeavePage() {
               </div>
 
               <div className="space-y-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-white block text-xs">Motion & Video Suite</span>
-                    <span className="text-[9.5px] text-[#97A0B3] font-medium">AfterEffects, Blender, Lottie</span>
+                {(!data?.members || data.members.length < 2) ? (
+                  <div className="p-3 text-center text-xs text-[#97A0B3]">Pod pairing managed by Operations</div>
+                ) : (
+                  <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-white block text-xs">Primary & Secondary Pairing</span>
+                      <span className="text-[9.5px] text-[#97A0B3] font-medium">Cross-functional craft coverage</span>
+                    </div>
+                    <span className="font-black text-[#7FA0D6] text-xs">
+                      {data.members[0]?.name} ⇄ {data.members[1]?.name}
+                    </span>
                   </div>
-                  <span className="font-black text-[#7FA0D6] text-xs">David K. ⇄ Chloe T.</span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-white block text-xs">Visual Design & UI</span>
-                    <span className="text-[9.5px] text-[#97A0B3] font-medium">Figma components, banners</span>
-                  </div>
-                  <span className="font-black text-[#7FA0D6] text-xs">Elena R. ⇄ Marcus V.</span>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -558,7 +503,7 @@ export function PodScheduleLeavePage() {
         <div className="fixed inset-0 w-screen h-screen z-[9999] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <div className="w-full max-w-lg bg-[#161F2D] rounded-3xl p-6 sm:p-7 shadow-2xl border border-[#2A3446] space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-black text-white">Log Pod A Daily Standup</h3>
+              <h3 className="text-base font-black text-white">Log {podName} Daily Standup</h3>
               <button onClick={() => setStandupModalOpen(false)} className="text-[#97A0B3] hover:text-[#F1F5F9]">
                 <X className="size-5" />
               </button>
@@ -570,8 +515,8 @@ export function PodScheduleLeavePage() {
               rows={4}
               value={standupNote}
               onChange={(e) => setStandupNote(e.target.value)}
-              placeholder="All 4 members present. David Kim rendering 3D pass. Elena R. finalizing Atlas deck. No critical blockers."
-              className="w-full text-xs p-3.5 rounded-2xl border border-[#2A3446] bg-[#0B111C] focus:bg-[#161F2D] focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+              placeholder="All pod members present. Tasks in progress, sprint velocity on track. No critical blockers."
+              className="w-full text-xs p-3.5 rounded-2xl border border-[#2A3446] bg-[#0B111C] focus:bg-[#161F2D] focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-white"
             />
             <div className="flex justify-end gap-3 pt-2">
               <button

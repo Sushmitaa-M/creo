@@ -19,6 +19,9 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
+import { useAuth } from "../../lib/auth-context";
 
 interface LeadNoteItem {
   id: string;
@@ -35,6 +38,20 @@ interface LeadNoteItem {
 
 export function MemberOverviewPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data } = useQuery<PodDashboardData>({
+    queryKey: ["pod_dashboard"],
+    queryFn: () => fetchPodDashboard(),
+  });
+  const podName = data?.pod?.name || "Pod A";
+  const members = data?.members || [];
+  const leadMember = members.find((m) => m.role?.toLowerCase().includes("lead"));
+  const leadName = leadMember?.full_name || "Pod Lead";
+  const clients = data?.clients || [];
+  const inProdTasks = data?.tasks?.in_production || [];
+  const qaTasks = data?.tasks?.internal_qa || [];
+  const activeSprintTasks = [...inProdTasks, ...qaTasks];
+  const completedTasks = data?.tasks?.completed || [];
 
   // State for interactive actions
   const [renderPaused, setRenderPaused] = useState(false);
@@ -45,13 +62,13 @@ export function MemberOverviewPage() {
   // Modals
   const [logHoursModalOpen, setLogHoursModalOpen] = useState(false);
   const [hoursToLog, setHoursToLog] = useState("2.5");
-  const [hoursProject, setHoursProject] = useState("Northwind Labs - 3D Product Teaser");
+  const [hoursProject, setHoursProject] = useState("Pod Sprint General Deliverables");
   const [hoursNotes, setHoursNotes] = useState("Octane shader tuning, keyframe polishing & lighting pass");
 
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [uploadClient, setUploadClient] = useState("Northwind Labs");
-  const [uploadAssetTitle, setUploadAssetTitle] = useState("Hero 3D Visual Loop v1.2");
+  const [uploadClient, setUploadClient] = useState("Pod Client Workspace");
+  const [uploadAssetTitle, setUploadAssetTitle] = useState("Sprint Deliverable Asset v1.0");
 
   const [inspectModalOpen, setInspectModalOpen] = useState(false);
   const [handoffConfirmOpen, setHandoffConfirmOpen] = useState(false);
@@ -61,18 +78,18 @@ export function MemberOverviewPage() {
   const [notesList, setNotesList] = useState<LeadNoteItem[]>([
     {
       id: "note-1",
-      author: "Maya Lin",
-      role: "Lead Motion • 22m ago",
-      badge: "NW-004",
+      author: "Lead Producer",
+      role: "Pod Lead • 22m ago",
+      badge: "Sprint QA",
       content:
-        "Fintech Ad sound stems look great, make sure CTA text adheres to Northwind brand contrast guidelines. Render passes 3 through 6 look crisp.",
+        "Audio stems and color grading pass look solid. Please verify CTA contrast against client brand guidelines before final handoff.",
       attachment: "frame_0320_markup.png",
       avatarBg: "bg-blue-600",
       avatar: "ML",
     },
     {
       id: "note-2",
-      author: "Marcus Vance",
+      author: "Senior Specialist",
       role: "Copy Lead • 1h ago",
       badge: "ATL-119",
       content:
@@ -105,7 +122,7 @@ export function MemberOverviewPage() {
     setNotesList([
       {
         id: `note-${Date.now()}`,
-        author: "David Kim",
+        author: user?.full_name || "Specialist",
         role: "Sr. Motion (You) • Just now",
         badge: "Reply",
         content: quickReplyText,
@@ -114,13 +131,13 @@ export function MemberOverviewPage() {
       },
       ...notesList,
     ]);
-    showToast(`Reply sent to Maya Lin: "${quickReplyText}"`);
+    showToast(`Reply sent to ${leadName}: "${quickReplyText}"`);
     setQuickReplyText("");
   };
 
   const handleConfirmHandoff = () => {
     setHandoffConfirmOpen(false);
-    showToast("Fintech Ad Set render output handed off to Maya Lin for sign-off review!");
+    showToast(`Sprint deliverable handed off to ${leadName} for sign-off review!`);
   };
 
   const handleSaveHours = (e: React.FormEvent) => {
@@ -165,8 +182,8 @@ export function MemberOverviewPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#161F2D] p-2.5 sm:px-4 sm:py-2.5 rounded-xl border border-[#2A3446]/80 shadow-2xs">
           <div className="flex items-center gap-2">
             <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-black text-white tracking-tight">POD A ACTIVE SHIFT</span>
-            <span className="text-[11px] text-[#97A0B3] font-medium hidden sm:inline">• Sr. Motion Specialist (David Kim)</span>
+            <span className="text-xs font-black text-white tracking-tight">{podName.toUpperCase()} ACTIVE SHIFT</span>
+            <span className="text-[11px] text-[#97A0B3] font-medium hidden sm:inline">• {user?.full_name || "Specialist"} ({user?.role?.replace("_", " ") || "Creative Specialist"})</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -206,9 +223,9 @@ export function MemberOverviewPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">3</span>
+                <span className="text-lg sm:text-xl font-black text-white">{activeSprintTasks.length}</span>
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Active</span>
-                <span className="text-[9.5px] sm:text-[10px] text-[#97A0B3] truncate">1 render · 1 QA · 1 ready</span>
+                <span className="text-[9.5px] sm:text-[10px] text-[#97A0B3] truncate">{inProdTasks.length} in progress · {qaTasks.length} in QA</span>
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="font-bold text-[#7FA0D6] flex items-center gap-1">
@@ -312,10 +329,10 @@ export function MemberOverviewPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[#7FA0D6]">Northwind Labs</span>
-                        <span className="text-[#97A0B3] text-[10px]">· NW-004-MS</span>
+                        <span className="text-xs font-bold text-[#7FA0D6]">{activeSprintTasks[0]?.client_name || "Active Sprint Client"}</span>
+                        <span className="text-[#97A0B3] text-[10px]">· P1-ACTIVE</span>
                       </div>
-                      <h3 className="text-xs font-black text-white">Fintech Ad Set - 3D Product Teaser</h3>
+                      <h3 className="text-xs font-black text-white">{activeSprintTasks[0]?.blueprint?.concept_name || "Sprint Master Render Campaign"}</h3>
                       <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-[#97A0B3] mt-0.5">
                         <span>4K 60fps ProRes 422HQ</span>
                         <span>•</span>
@@ -372,7 +389,7 @@ export function MemberOverviewPage() {
                     className="px-3 py-1.5 rounded-lg bg-[#7FA0D6]/15 hover:bg-[#7FA0D6]/20 text-[#7FA0D6] text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer ml-auto"
                   >
                     <Send className="size-3" />
-                    Handoff to Maya
+                    Handoff to Lead
                   </button>
                 </div>
               </div>
@@ -386,10 +403,10 @@ export function MemberOverviewPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-purple-600">Atlas Commerce</span>
-                        <span className="text-[#97A0B3] text-[10px]">· ATL-119-KB</span>
+                        <span className="text-xs font-bold text-purple-400">{activeSprintTasks[1]?.client_name || (clients[0]?.name || "Active Client")}</span>
+                        <span className="text-[#97A0B3] text-[10px]">· P2-SPRINT</span>
                       </div>
-                      <h3 className="text-xs font-black text-white">Holiday Promotion 3D Bumpers</h3>
+                      <h3 className="text-xs font-black text-white">{activeSprintTasks[1]?.blueprint?.concept_name || "Brand Campaign Motion Stems"}</h3>
                       <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-[#97A0B3] mt-0.5">
                         <span>1080x1080</span>
                         <span>•</span>
@@ -453,7 +470,7 @@ export function MemberOverviewPage() {
                       deliverablesTab === "active" ? "bg-[#161F2D] text-white shadow-2xs" : "text-[#97A0B3]"
                     }`}
                   >
-                    Active (3)
+                    Active ({activeSprintTasks.length})
                   </button>
                   <button
                     onClick={() => setDeliverablesTab("archived")}
@@ -466,264 +483,90 @@ export function MemberOverviewPage() {
                 </div>
               </div>
 
-              {/* Mobile Card View (< sm) */}
-              <div className="block sm:hidden space-y-2">
-                <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-[#2A3446]/80 space-y-2">
-                  <div className="flex items-start justify-between gap-1.5">
-                    <div>
-                      <span className="text-[9px] font-bold text-[#7FA0D6] uppercase">Northwind Labs</span>
-                      <h4 className="text-xs font-black text-white leading-snug">Fintech Ad Set - Teaser</h4>
-                      <div className="text-[10px] text-[#97A0B3] font-medium">Octane 3D Scene (.c4d + .exr)</div>
+              {/* Dynamic Deliverables View */}
+              {(() => {
+                const currentTasks = deliverablesTab === "active" ? activeSprintTasks : completedTasks;
+                if (currentTasks.length === 0) {
+                  return (
+                    <div className="py-10 text-center border-2 border-dashed border-[#2A3446] rounded-xl space-y-1">
+                      <p className="font-bold text-white text-xs">No {deliverablesTab} deliverables found</p>
+                      <p className="text-[11px] text-[#97A0B3]">Tasks will appear here once active in the sprint queue.</p>
                     </div>
-                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-rose-50 text-rose-700 border border-rose-200 shrink-0">
-                      P1 HIGH
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]/60 text-xs">
-                    <span className="font-bold text-[#7FA0D6] text-[10px]">2h 45m left</span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => setUploadModalOpen(true)}
-                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                      >
-                        Upload
-                      </button>
-                      <button
-                        onClick={() => showToast("Opened production notes for NW-004")}
-                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                      >
-                        Notes
-                      </button>
+                  );
+                }
+                return (
+                  <>
+                    {/* Mobile Card View (< sm) */}
+                    <div className="block sm:hidden space-y-2">
+                      {currentTasks.map((t, idx) => (
+                        <div key={t.id || idx} className="p-3 rounded-xl bg-[#0B111C]/90 border border-[#2A3446]/80 space-y-2">
+                          <div className="flex items-start justify-between gap-1.5">
+                            <div>
+                              <span className="text-[9px] font-bold text-[#7FA0D6] uppercase">{t.client_name || "Client"}</span>
+                              <h4 className="text-xs font-black text-white leading-snug">{t.blueprint?.concept_name || t.deliverable_type || "Sprint Task"}</h4>
+                              <div className="text-[10px] text-[#97A0B3] font-medium">{t.deliverable_type || "Motion Asset"}</div>
+                            </div>
+                            <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-[#7FA0D6]/20 text-[#7FA0D6] border border-[#7FA0D6]/30 shrink-0">
+                              {t.status === "in_production" ? "PROD" : t.status === "internal_qa" ? "QA" : "READY"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]/60 text-xs">
+                            <span className="font-bold text-[#7FA0D6] text-[10px]">{t.assignee_name || "Assigned"}</span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => setUploadModalOpen(true)}
+                                className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
+                              >
+                                Upload
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                </div>
 
-                <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-[#2A3446]/80 space-y-2">
-                  <div className="flex items-start justify-between gap-1.5">
-                    <div>
-                      <span className="text-[9px] font-bold text-purple-600 uppercase">Atlas Commerce</span>
-                      <h4 className="text-xs font-black text-white leading-snug">Holiday 3D Bumpers</h4>
-                      <div className="text-[10px] text-[#97A0B3] font-medium">AfterEffects Motion Stems (.aep)</div>
+                    {/* Desktop Table (sm+) */}
+                    <div className="hidden sm:block overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead>
+                          <tr className="border-b border-[#2A3446] text-[#97A0B3] font-bold uppercase tracking-wider text-[9px]">
+                            <th className="py-2 px-2.5">Asset Name & ID</th>
+                            <th className="py-2 px-2.5">Client</th>
+                            <th className="py-2 px-2.5">Status</th>
+                            <th className="py-2 px-2.5">Assignee</th>
+                            <th className="py-2 px-2.5 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800 font-medium text-[#F1F5F9]">
+                          {currentTasks.map((t, idx) => (
+                            <tr key={t.id || idx} className="hover:bg-[#0B111C]/60 transition-colors">
+                              <td className="py-2.5 px-2.5">
+                                <div className="font-bold text-white text-xs">{t.blueprint?.concept_name || t.deliverable_type || "Sprint Asset"}</div>
+                                <div className="text-[10px] text-[#97A0B3]">{t.deliverable_type || "Motion Asset"} · ID: {t.id?.slice(0, 6)}</div>
+                              </td>
+                              <td className="py-2.5 px-2.5 font-semibold text-white text-xs">{t.client_name || "Client"}</td>
+                              <td className="py-2.5 px-2.5">
+                                <span className="px-2 py-0.5 rounded text-[9px] font-black bg-[#7FA0D6]/20 text-[#7FA0D6] border border-[#7FA0D6]/30">
+                                  {t.status === "in_production" ? "IN PRODUCTION" : t.status === "internal_qa" ? "PENDING QA" : "READY"}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-2.5 font-bold text-[#F1F5F9] text-xs">{t.assignee_name || "Unassigned"}</td>
+                              <td className="py-2.5 px-2.5 text-right space-x-1.5">
+                                <button
+                                  onClick={() => setUploadModalOpen(true)}
+                                  className="px-2.5 py-1 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
+                                >
+                                  Upload
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-purple-50 text-purple-700 border border-purple-200 shrink-0">
-                      P2 MED
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]/60 text-xs">
-                    <span className="font-bold text-[#F1F5F9] text-[10px]">6h 15m left</span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => setUploadModalOpen(true)}
-                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                      >
-                        Upload
-                      </button>
-                      <button
-                        onClick={() => showToast("Opened production notes for ATL-119")}
-                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                      >
-                        Notes
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-emerald-500/30 space-y-2">
-                  <div className="flex items-start justify-between gap-1.5">
-                    <div>
-                      <span className="text-[9px] font-bold text-emerald-400 uppercase">Ryze Mushroom Coffee</span>
-                      <h4 className="text-xs font-black text-white leading-snug">Morning Routine High-Energy Reel</h4>
-                      <div className="text-[10px] text-[#97A0B3] font-medium">9:16 Vertical Reel (60fps)</div>
-                    </div>
-                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                      P1 HIGH
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]/60 text-xs">
-                    <span className="font-bold text-emerald-400 text-[10px]">Today 6:00 PM (4h left)</span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => {
-                          setUploadClient("Ryze Mushroom Coffee");
-                          setUploadAssetTitle("Morning Routine Reel Cut v1");
-                          setUploadModalOpen(true);
-                        }}
-                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                      >
-                        Upload
-                      </button>
-                      <button
-                        onClick={() => showToast("Opened Brand DNA brief for Ryze Mushroom Coffee")}
-                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                      >
-                        Notes
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-[#2A3446]/80 space-y-2">
-                  <div className="flex items-start justify-between gap-1.5">
-                    <div>
-                      <span className="text-[9px] font-bold text-[#F1F5F9] uppercase">Bloom Studio</span>
-                      <h4 className="text-xs font-black text-white leading-snug">Brand Kinetic Typography</h4>
-                      <div className="text-[10px] text-[#97A0B3] font-medium">Lottie JSON + MP4 Alpha</div>
-                    </div>
-                    <span className="px-1.5 py-0.2 rounded text-[8px] font-bold bg-[#1F2C3F] text-[#F1F5F9] shrink-0">
-                      P3 STD
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]/60 text-xs">
-                    <span className="font-bold text-[#97A0B3] text-[10px]">Tomorrow 12 PM</span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => setUploadModalOpen(true)}
-                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                      >
-                        Upload
-                      </button>
-                      <button
-                        onClick={() => showToast("Opened production notes for BLM-082")}
-                        className="px-2 py-0.5 rounded-md border border-[#2A3446] bg-[#161F2D] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                      >
-                        Notes
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Desktop Table (sm+) */}
-              <div className="hidden sm:block overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-[#2A3446] text-[#97A0B3] font-bold uppercase tracking-wider text-[9px]">
-                      <th className="py-2 px-2.5">Asset Name & ID</th>
-                      <th className="py-2 px-2.5">Client</th>
-                      <th className="py-2 px-2.5">Priority</th>
-                      <th className="py-2 px-2.5">SLA Countdown</th>
-                      <th className="py-2 px-2.5 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium text-[#F1F5F9]">
-                    <tr className="hover:bg-[#0B111C]/60 transition-colors">
-                      <td className="py-2.5 px-2.5">
-                        <div className="font-bold text-white text-xs">Fintech Ad Set - Teaser</div>
-                        <div className="text-[10px] text-[#97A0B3]">Octane 3D Scene (.c4d + .exr)</div>
-                      </td>
-                      <td className="py-2.5 px-2.5 font-semibold text-white text-xs">Northwind Labs</td>
-                      <td className="py-2.5 px-2.5">
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-50 text-rose-700 border border-rose-200">
-                          P1 HIGH
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-2.5 font-black text-[#7FA0D6] text-xs">2h 45m left</td>
-                      <td className="py-2.5 px-2.5 text-right space-x-1.5">
-                        <button
-                          onClick={() => setUploadModalOpen(true)}
-                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                        >
-                          Upload
-                        </button>
-                        <button
-                          onClick={() => showToast("Opened production notes for NW-004")}
-                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                        >
-                          Notes
-                        </button>
-                      </td>
-                    </tr>
-
-                    <tr className="hover:bg-[#0B111C]/60 transition-colors">
-                      <td className="py-2.5 px-2.5">
-                        <div className="font-bold text-white text-xs">Morning Routine High-Energy Reel</div>
-                        <div className="text-[10px] text-[#97A0B3]">9:16 Vertical Reel (60fps · Brand Grade)</div>
-                      </td>
-                      <td className="py-2.5 px-2.5 font-semibold text-emerald-400 text-xs">Ryze Mushroom Coffee</td>
-                      <td className="py-2.5 px-2.5">
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          P1 HIGH
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-2.5 font-black text-emerald-400 text-xs">4h 15m left</td>
-                      <td className="py-2.5 px-2.5 text-right space-x-1.5">
-                        <button
-                          onClick={() => {
-                            setUploadClient("Ryze Mushroom Coffee");
-                            setUploadAssetTitle("Morning Routine Reel Cut v1");
-                            setUploadModalOpen(true);
-                          }}
-                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                        >
-                          Upload
-                        </button>
-                        <button
-                          onClick={() => showToast("Opened Brand DNA brief for Ryze Mushroom Coffee")}
-                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                        >
-                          Notes
-                        </button>
-                      </td>
-                    </tr>
-
-                    <tr className="hover:bg-[#0B111C]/60 transition-colors">
-                      <td className="py-2.5 px-2.5">
-                        <div className="font-bold text-white text-xs">Holiday 3D Bumpers</div>
-                        <div className="text-[10px] text-[#97A0B3]">AfterEffects Motion Stems (.aep)</div>
-                      </td>
-                      <td className="py-2.5 px-2.5 font-semibold text-white text-xs">Atlas Commerce</td>
-                      <td className="py-2.5 px-2.5">
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-purple-50 text-purple-700 border border-purple-200">
-                          P2 MED
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-2.5 font-black text-[#F1F5F9] text-xs">6h 15m left</td>
-                      <td className="py-2.5 px-2.5 text-right space-x-1.5">
-                        <button
-                          onClick={() => setUploadModalOpen(true)}
-                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                        >
-                          Upload
-                        </button>
-                        <button
-                          onClick={() => showToast("Opened production notes for ATL-119")}
-                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                        >
-                          Notes
-                        </button>
-                      </td>
-                    </tr>
-
-                    <tr className="hover:bg-[#0B111C]/60 transition-colors">
-                      <td className="py-2.5 px-2.5">
-                        <div className="font-bold text-white text-xs">Brand Kinetic Typography Loop</div>
-                        <div className="text-[10px] text-[#97A0B3]">Lottie JSON + MP4 Alpha Channel</div>
-                      </td>
-                      <td className="py-2.5 px-2.5 font-semibold text-white text-xs">Bloom Studio</td>
-                      <td className="py-2.5 px-2.5">
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#1F2C3F] text-[#F1F5F9]">
-                          P3 STD
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-2.5 font-bold text-[#97A0B3] text-xs">Tomorrow 12:00 PM</td>
-                      <td className="py-2.5 px-2.5 text-right space-x-1.5">
-                        <button
-                          onClick={() => setUploadModalOpen(true)}
-                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                        >
-                          Upload
-                        </button>
-                        <button
-                          onClick={() => showToast("Opened production notes for BLM-082")}
-                          className="px-2 py-0.5 rounded-md border border-[#2A3446] hover:bg-[#1F2C3F] text-[#F1F5F9] font-bold text-[10px] cursor-pointer"
-                        >
-                          Notes
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
 
@@ -785,7 +628,7 @@ export function MemberOverviewPage() {
                   type="text"
                   value={quickReplyText}
                   onChange={(e) => setQuickReplyText(e.target.value)}
-                  placeholder="Quick reply to Maya or Marcus..."
+                  placeholder="Quick reply to pod lead..."
                   className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#0B111C] border border-[#2A3446] text-[11px] font-medium placeholder:text-[#97A0B3] focus:outline-none focus:bg-[#161F2D] focus:ring-1 focus:ring-blue-500"
                 />
                 <button
@@ -802,10 +645,10 @@ export function MemberOverviewPage() {
               <div className="flex items-center justify-between pb-2 border-b border-[#2A3446]">
                 <div className="flex items-center gap-1.5">
                   <Users className="size-3.5 text-[#7FA0D6]" />
-                  <h3 className="text-xs font-black text-white">Pod A Team Sync</h3>
+                  <h3 className="text-xs font-black text-white">{podName} Team Sync</h3>
                 </div>
                 <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  ● 5 Active
+                  ● {members.length || 1} Active
                 </span>
               </div>
 
@@ -825,67 +668,41 @@ export function MemberOverviewPage() {
 
               {/* Member Status List */}
               <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#0B111C] transition-colors">
-                  <div className="flex items-center gap-2">
-                    <div className="size-6 rounded-md bg-blue-600 text-white font-black text-[9px] flex items-center justify-center">
-                      ML
+                {members.length > 0 ? (
+                  members.map((m) => (
+                    <div key={m.id} className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#0B111C] transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="size-6 rounded-md bg-[#2563EB] text-white font-black text-[9px] flex items-center justify-center">
+                          {m.full_name?.slice(0, 2).toUpperCase() || "CP"}
+                        </div>
+                        <div>
+                          <span className="font-bold text-white block text-[11px]">{m.full_name}</span>
+                          <span className="text-[9px] text-[#97A0B3]">{m.role || "Pod Specialist"} • Active</span>
+                        </div>
+                      </div>
+                      <span className="size-1.5 rounded-full bg-emerald-500" />
                     </div>
-                    <div>
-                      <span className="font-bold text-white block text-[11px]">Maya Lin</span>
-                      <span className="text-[9px] text-[#97A0B3]">Lead Motion • Reviewing</span>
+                  ))
+                ) : (
+                  <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#0B111C] transition-colors">
+                    <div className="flex items-center gap-2">
+                      <div className="size-6 rounded-md bg-[#2563EB] text-white font-black text-[9px] flex items-center justify-center">
+                        {leadName.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="font-bold text-white block text-[11px]">{leadName}</span>
+                        <span className="text-[9px] text-[#97A0B3]">Lead Producer • Active</span>
+                      </div>
                     </div>
+                    <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-[#1F2C3F] text-[#F1F5F9]">
+                      Pod Lead
+                    </span>
                   </div>
-                  <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-[#1F2C3F] text-[#F1F5F9]">
-                    Pod Lead
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#0B111C] transition-colors">
-                  <div className="flex items-center gap-2">
-                    <div className="size-6 rounded-md bg-purple-600 text-white font-black text-[9px] flex items-center justify-center">
-                      EO
-                    </div>
-                    <div>
-                      <span className="font-bold text-white block text-[11px]">Elena Ortiz</span>
-                      <span className="text-[9px] text-[#97A0B3]">Brand Designer • Working</span>
-                    </div>
-                  </div>
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
-                </div>
-
-                <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#0B111C] transition-colors">
-                  <div className="flex items-center gap-2">
-                    <div className="size-6 rounded-md bg-slate-900 text-white font-black text-[9px] flex items-center justify-center">
-                      MV
-                    </div>
-                    <div>
-                      <span className="font-bold text-white block text-[11px]">Marcus Vance</span>
-                      <span className="text-[9px] text-[#97A0B3]">Copy • In sync</span>
-                    </div>
-                  </div>
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
-                </div>
-
-                <div className="flex items-center justify-between p-2 rounded-xl hover:bg-[#0B111C] transition-colors">
-                  <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-teal-600 text-white font-black text-[10px] flex items-center justify-center">
-                      CT
-                    </div>
-                    <div>
-                      <span className="font-black text-white block">Chloe Tan</span>
-                      <span className="text-[10px] text-[#97A0B3]">Backup Motion • Render spillover</span>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                    Available
-                  </span>
-                </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-
-
 
       </main>
 
@@ -930,10 +747,8 @@ export function MemberOverviewPage() {
                   onChange={(e) => setHoursProject(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#161F2D]"
                 >
-                  <option value="Northwind Labs - 3D Product Teaser">Northwind Labs · 3D Product Teaser (NW-004)</option>
-                  <option value="Atlas Commerce - Holiday Promotion Bumpers">Atlas Commerce · Holiday Promotion Bumpers (ATL-119)</option>
-                  <option value="Bloom Studio - Brand Kinetic Typography">Bloom Studio · Brand Kinetic Typography (BLM-082)</option>
-                  <option value="Pod A - Standup & Team Peer QA">Pod A · Standup & Internal Review</option>
+                  <option value="General Sprint Task">General Pod Sprint Delivery</option>
+                  {clients.map(c => <option key={c.id} value={c.name}>{c.name} · Active Sprint</option>)}
                 </select>
               </div>
 
@@ -1016,9 +831,7 @@ export function MemberOverviewPage() {
                   onChange={(e) => setUploadClient(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#161F2D]"
                 >
-                  <option value="Northwind Labs">Northwind Labs</option>
-                  <option value="Atlas Commerce">Atlas Commerce</option>
-                  <option value="Bloom Studio">Bloom Studio</option>
+                  {clients.length > 0 ? clients.map(c => <option key={c.id} value={c.name}>{c.name}</option>) : <option value="General Pod Workspace">General Pod Workspace</option>}
                 </select>
               </div>
 
@@ -1145,9 +958,9 @@ export function MemberOverviewPage() {
               <Send className="size-6" />
             </div>
             <div>
-              <h3 className="text-base font-black text-white">Handoff Cut to Lead Maya Lin?</h3>
+              <h3 className="text-base font-black text-white">Handoff Cut to Lead {leadName}?</h3>
               <p className="text-xs text-[#97A0B3] mt-1 leading-relaxed">
-                This will trigger a synchronous QA review notification for Maya Lin on the Pod A review queue.
+                This will trigger a synchronous QA review notification for {leadName} on the {podName} review queue.
               </p>
             </div>
 
@@ -1185,9 +998,9 @@ export function MemberOverviewPage() {
               <Video className="size-6" />
             </div>
             <div>
-              <h3 className="text-base font-black text-white">Pod A Daily Standup Session</h3>
+              <h3 className="text-base font-black text-white">{podName} Daily Standup Session</h3>
               <p className="text-xs text-[#97A0B3] mt-1 leading-relaxed">
-                Lead: Maya Lin • Topic: Sprint 09 Sprint Velocity & Northwind Labs Render Pass Sync
+                Lead: {leadName} • Topic: Sprint Velocity & Daily Production Sync
               </p>
             </div>
 
@@ -1207,7 +1020,7 @@ export function MemberOverviewPage() {
                 type="button"
                 onClick={() => {
                   setZoomModalOpen(false);
-                  showToast("Connecting to Pod A Standup video room...");
+                  showToast("Connecting to ${podName} Standup video room...");
                 }}
                 className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 cursor-pointer"
               >

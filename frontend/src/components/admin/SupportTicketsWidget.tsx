@@ -78,7 +78,7 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
             avatarBg: "bg-[#0F172A]",
             priority,
             timeLog: st.time || "Logged recently",
-            agent: st.assignee_name || "Maya Lin",
+            agent: st.assignee_name || "Support Lead",
             pod: "Pod A",
             status,
           };
@@ -101,7 +101,7 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
             avatarBg: lt.avatarBg || "bg-[#0F172A]",
             priority,
             timeLog: lt.timeLog || "Logged just now",
-            agent: lt.agent || "Maya Lin",
+            agent: lt.agent || "Support Lead",
             pod: lt.pod || "Pod A",
             status,
           };

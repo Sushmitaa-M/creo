@@ -43,13 +43,13 @@ export function PodLeadDashboardPage() {
   const [assignForm, setAssignForm] = useState({
     title: "",
     format: "Reel",
-    assignee: "David Kim",
-    client: "Northwind Labs",
+    assignee: "",
+    client: "",
     deadline: "Today 5:00 PM",
     notes: "",
   });
   const [blockedModalOpen, setBlockedModalOpen] = useState(false);
-  const [blockedForm, setBlockedForm] = useState({ title: "", client: "Northwind Labs", severity: "Blocker (P0)", details: "" });
+  const [blockedForm, setBlockedForm] = useState({ title: "", client: "", severity: "Blocker (P0)", details: "" });
   const [reinforcementsModalOpen, setReinforcementsModalOpen] = useState(false);
   const [reinforceForm, setReinforceForm] = useState({ role: "3D Motion Designer", hours: "+20 hrs/week", urgency: "Immediate (Today)", notes: "" });
 
@@ -77,18 +77,7 @@ export function PodLeadDashboardPage() {
     },
   });
 
-  const [pendingLeaveRequests, setPendingLeaveRequests] = useState([
-    {
-      id: "leave-1",
-      name: "Elena Ortiz",
-      avatar: "EO",
-      role: "Visual Designer",
-      type: "Paid Time Off · 3 Days",
-      dates: "Nov 02 - Nov 04",
-      cover: "Marcus Vance",
-      note: "Sprint tasks already re-routed. Ready for pod lead check.",
-    },
-  ]);
+  const [pendingLeaveRequests, setPendingLeaveRequests] = useState<any[]>([]);
 
   const leaveApproveMutation = useMutation({
     mutationFn: approveLeaveRequest,
@@ -132,45 +121,8 @@ export function PodLeadDashboardPage() {
 
   const isSuperOrAdmin = user?.role === "admin" || user?.role === "super_admin";
 
-  // Deliverables Pending Lead Sign-off (strictly Reel, Story, Post formats)
-  const [deliverablesList, setDeliverablesList] = useState([
-    {
-      id: "del-1",
-      client: "NORTHWIND LABS",
-      clientBadgeColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      talent: "David Kim",
-      format: "Reel",
-      due: "Due in 2h",
-      dueUrgent: true,
-      title: "Fintech Reel · High Conversion",
-      tags: ["Reel", "MP4 • 4K 60fps", "9:16 Vertical", "3 Variations"],
-      notes: "Updated brand contrast guidelines & sound stems sync.",
-    },
-    {
-      id: "del-2",
-      client: "BLOOM STUDIO",
-      clientBadgeColor: "bg-purple-50 text-purple-700 border-purple-200",
-      talent: "Chloe Tan",
-      format: "Story",
-      due: "Due in 4h 30m",
-      dueUrgent: false,
-      title: "Q4 Story Concept · Kinetic Cut",
-      tags: ["Story", "0:15 Cut", "Dolby Atmos Audio", "LUT Pack applied"],
-      notes: "Subtitles hardcoded and rhythm cuts aligned to beat.",
-    },
-    {
-      id: "del-3",
-      client: "ATLAS COMMERCE",
-      clientBadgeColor: "bg-rose-50 text-rose-700 border-rose-200",
-      talent: "Elena R.",
-      format: "Post",
-      due: "Client SLA 1h Rem.",
-      dueUrgent: true,
-      title: "Conversion Post · High-Impact Carousel",
-      tags: ["Post", "10 Panels", "Figma Token V2", "Priority Client"],
-      notes: "Verified typography accessibility & top CTA clearance.",
-    },
-  ]);
+  // Deliverables Pending Lead Sign-off
+  const [deliverablesList, setDeliverablesList] = useState<any[]>([]);
 
   const handleApproveDeliverable = (del: { id: string; title: string; client: string }) => {
     setDeliverablesList((prev) => prev.filter((d) => d.id !== del.id));
@@ -197,16 +149,14 @@ export function PodLeadDashboardPage() {
   };
 
   const handleDispatchTask = () => {
-    const title = assignForm.title.trim() || `${assignForm.client} ${assignForm.format} Concept`;
+    const clientName = assignForm.client || data?.clients?.[0]?.name || "Client";
+    const assigneeName = assignForm.assignee || data?.members?.[0]?.name || "Specialist";
+    const title = assignForm.title.trim() || `${clientName} ${assignForm.format} Concept`;
     const newDeliverable = {
       id: `del-${Date.now()}`,
-      client: assignForm.client.toUpperCase(),
-      clientBadgeColor: assignForm.client.includes("Northwind")
-        ? "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30"
-        : assignForm.client.includes("Bloom")
-        ? "bg-purple-50 text-purple-700 border-purple-200"
-        : "bg-rose-50 text-rose-700 border-rose-200",
-      talent: assignForm.assignee,
+      client: clientName.toUpperCase(),
+      clientBadgeColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
+      talent: assigneeName,
       format: assignForm.format,
       due: "Due in 24h",
       dueUrgent: false,
@@ -215,86 +165,48 @@ export function PodLeadDashboardPage() {
       notes: assignForm.notes || "Assigned via Pod Quick Actions.",
     };
     setDeliverablesList((prev) => [newDeliverable, ...prev]);
-    showToast(`Assigned "${title}" to ${assignForm.assignee} (${assignForm.client})`, "success");
+    showToast(`Assigned "${title}" to ${assigneeName} (${clientName})`, "success");
     setAssignModalOpen(false);
     setAssignForm({
       title: "",
       format: "Reel",
-      assignee: "David Kim",
-      client: "Northwind Labs",
+      assignee: "",
+      client: "",
       deadline: "Today 5:00 PM",
       notes: "",
     });
   };
 
-  // Mock Team Roster (matching Reel, Story, Post craft assignments)
-  const teamRoster = [
-    {
-      name: "David Kim",
-      avatar: "DK",
-      avatarBg: "bg-[#0F172A]",
-      role: "Sr. Motion Designer",
-      assignment: "Reel Production · Northwind Labs Lead Animator",
-      tasksCount: "3 Tasks",
-      loadLabel: "Heavy - 90%",
-      loadColor: "bg-rose-500",
-      loadBadge: "bg-rose-50 text-rose-700 border-rose-200",
-      loadPercent: 90,
-    },
-    {
-      name: "Elena R.",
-      avatar: "ER",
-      avatarBg: "bg-blue-600",
-      role: "Visual Designer",
-      assignment: "Post & Story Assets · Atlas & Bloom Visual Guidelines",
-      tasksCount: "2 Tasks",
-      loadLabel: "Optimal - 60%",
-      loadColor: "bg-emerald-500",
-      loadBadge: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      loadPercent: 60,
-    },
-    {
-      name: "Marcus Vance",
-      avatar: "MV",
-      avatarBg: "bg-indigo-600",
-      role: "Lead Copy & Strat",
-      assignment: "Post Copy & Hook Frameworks · High-CTR Decks",
-      tasksCount: "4 Tasks",
-      loadLabel: "Capped - 100%",
-      loadColor: "bg-blue-600",
-      loadBadge: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      loadPercent: 100,
-    },
-    {
-      name: "Chloe Tan",
-      avatar: "CT",
-      avatarBg: "bg-teal-600",
-      role: "Editor & Cutter",
-      assignment: "Shortform Reel & Story Master Cuts · Audio Mix",
-      tasksCount: "2 Tasks",
-      loadLabel: "Available - 75%",
-      loadColor: "bg-cyan-500",
-      loadBadge: "bg-cyan-50 text-cyan-700 border-cyan-200",
-      loadPercent: 75,
-    },
-  ];
+  const leadName = data?.pod?.lead?.name || user?.full_name || "Pod Lead";
+  const podName = data?.pod?.name || "Pod Operations";
 
-  const leadName = data?.pod?.lead?.name || user?.full_name || "Maya Lin";
-  const podName = data?.pod?.name || "Pod A";
+  // Dynamic Team Roster mapped from backend data
+  const teamRoster = (data?.members || []).map((member) => {
+    const tasksCount = member.tasks_count || 0;
+    const capacity = member.capacity || 5;
+    const pct = Math.min(100, Math.round((tasksCount / (capacity > 0 ? capacity : 5)) * 100));
+    return {
+      name: member.name,
+      avatar: member.name.slice(0, 2).toUpperCase(),
+      avatarBg: "bg-[#2563EB]",
+      role: member.role || "Specialist",
+      assignment: `${member.role || "Specialist"} · ${podName} Active`,
+      tasksCount: `${tasksCount} Tasks`,
+      loadLabel: `${pct}% Load`,
+      loadColor: pct > 80 ? "bg-rose-500" : pct > 50 ? "bg-amber-500" : "bg-emerald-500",
+      loadBadge: "bg-blue-50 text-blue-700 border-blue-200",
+      loadPercent: pct,
+    };
+  });
 
   const handleExportWeeklyReport = () => {
     const headers = ["Category", "Metric", "Value", "Status"];
     const rows = [
-      ["Pod Capacity", "Active Core Roster", "4 / 4 Members Active", "100% Bandwidth"],
+      ["Pod Capacity", "Active Core Roster", `${teamRoster.length} Members Active`, "Optimal Bandwidth"],
       ["Review Queue", "Pending Lead Sign-off", `${deliverablesList.length} Deliverables`, "In QA Window"],
-      ["Attendance", "On Leave Today", "0 (1 Scheduled Tomorrow)", "Optimal Coverage"],
-      ["Team Roster", "David Kim (Motion)", "3 Tasks (90% Load)", "Active"],
-      ["Team Roster", "Elena R. (Brand)", "2 Tasks (60% Load)", "Active"],
-      ["Team Roster", "Marcus Vance (Copy)", "4 Tasks (100% Load)", "Active"],
-      ["Team Roster", "Chloe Tan (Video)", "2 Tasks (75% Load)", "Active"],
-      ["Velocity Track", "Northwind Labs", "12 / 12 Assets", "100% Sprint Complete"],
-      ["Velocity Track", "Atlas Commerce", "10 / 10 Assets", "100% Sprint Complete"],
-      ["Velocity Track", "Bloom Studio", "6 / 12 Assets", "50% Sprint Complete"],
+      ["Attendance", "Pending Leave Requests", `${pendingLeaveRequests.length} Pending`, "Optimal Coverage"],
+      ...teamRoster.map((m) => ["Team Roster", `${m.name} (${m.role})`, `${m.tasksCount} (${m.loadLabel})`, "Active"]),
+      ...(data?.clients || []).map((c) => ["Velocity Track", c.name, "Active Sprint", "On Track"]),
     ];
 
     const csvContent = [headers.join(","), ...rows.map(r => r.map(c => `"${c}"`).join(","))].join("\n");
@@ -535,6 +447,11 @@ export function PodLeadDashboardPage() {
                     </div>
                   </div>
                 ))}
+                {teamRoster.length === 0 && (
+                  <div className="py-6 text-center text-xs text-[#97A0B3]">
+                    No specialists currently assigned to this pod.
+                  </div>
+                )}
               </div>
             </div>
 
@@ -593,7 +510,7 @@ export function PodLeadDashboardPage() {
                       <div>
                         <h3 className="text-xs font-black text-white">{del.title}</h3>
                         <div className="flex flex-wrap gap-1.5 mt-1.5">
-                          {del.tags.map((tag) => (
+                          {del.tags.map((tag: string) => (
                             <span key={tag} className="px-2 py-0.5 rounded-md bg-[#161F2D] border border-[#2A3446]/80 text-[10px] font-bold text-[#F1F5F9]">
                               {tag}
                             </span>
@@ -630,35 +547,58 @@ export function PodLeadDashboardPage() {
 
           {/* RIGHT 1 COLUMN */}
           <div className="space-y-3.5 sm:space-y-4">
-            {/* 1. Client SLA Warning */}
-            <div className="bg-gradient-to-br from-rose-950/40 via-red-950/20 to-[#161F2D] rounded-2xl p-4 border border-rose-500/30 shadow-2xs space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-rose-400 font-bold text-xs uppercase tracking-wider">
-                  <ShieldAlert className="size-3.5 text-rose-400" />
-                  Client SLA Warning
+            {/* 1. Client SLA Warning / Status */}
+            {deliverablesList.some((d) => d.dueUrgent) ? (
+              <div className="bg-gradient-to-br from-rose-950/40 via-red-950/20 to-[#161F2D] rounded-2xl p-4 border border-rose-500/30 shadow-2xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-rose-400 font-bold text-xs uppercase tracking-wider">
+                    <ShieldAlert className="size-3.5 text-rose-400" />
+                    Client SLA Alert
+                  </div>
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-rose-600 text-white uppercase tracking-wider">
+                    Critical
+                  </span>
                 </div>
-                <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-rose-600 text-white uppercase tracking-wider">
-                  Crucial
-                </span>
-              </div>
 
-              <div>
-                <span className="text-[11px] font-bold text-[#F1F5F9] block">Atlas Commerce - Deliverable #03</span>
-                <div className="text-xl font-black text-rose-600 tracking-tight mt-0.5">
-                  01h 14m <span className="text-xs font-bold text-rose-500">remaining</span>
+                <div>
+                  <span className="text-[11px] font-bold text-[#F1F5F9] block">{deliverablesList[0]?.title}</span>
+                  <div className="text-xl font-black text-rose-500 tracking-tight mt-0.5">
+                    {deliverablesList[0]?.due}
+                  </div>
+                  <p className="text-[11px] text-[#F1F5F9] mt-1 leading-relaxed font-medium">
+                    Review required to ensure client delivery SLA is fulfilled.
+                  </p>
                 </div>
-                <p className="text-[11px] text-[#F1F5F9] mt-1 leading-relaxed font-medium">
-                  Escalation threshold triggers if lead review is not completed by 12:30 PM.
-                </p>
-              </div>
 
-              <Link
-                to="/lead/deliverables"
-                className="w-full py-2 rounded-xl bg-[#0B111C] border border-rose-500/30 text-rose-400 hover:bg-rose-950/30 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors shadow-2xs"
-              >
-                Jump to Deliverable <ArrowRight className="size-3" />
-              </Link>
-            </div>
+                <Link
+                  to="/lead/deliverables"
+                  className="w-full py-2 rounded-xl bg-[#0B111C] border border-rose-500/30 text-rose-400 hover:bg-rose-950/30 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors shadow-2xs"
+                >
+                  Jump to Deliverable <ArrowRight className="size-3" />
+                </Link>
+              </div>
+            ) : (
+              <div className="bg-[#161F2D] rounded-2xl p-4 border border-emerald-500/30 shadow-2xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                    <ShieldAlert className="size-3.5 text-emerald-400" />
+                    Pod SLA Status
+                  </div>
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-emerald-600/30 text-emerald-400 uppercase tracking-wider border border-emerald-500/30">
+                    Optimal
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-bold text-[#F1F5F9] block">{podName} Pipeline</span>
+                  <div className="text-xl font-black text-emerald-400 tracking-tight mt-0.5">
+                    100% On Track
+                  </div>
+                  <p className="text-[11px] text-[#97A0B3] mt-1 leading-relaxed font-medium">
+                    Zero critical escalations. All sprint deliverables are tracking within SLA bounds.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* 2. Leave & PTO Requests */}
             <div className="bg-[#161F2D] rounded-2xl p-4 border border-[#2A3446]/80 shadow-2xs space-y-3">
@@ -735,42 +675,27 @@ export function PodLeadDashboardPage() {
                   <TrendingUp className="size-3.5 text-[#7FA0D6]" />
                   Client Velocity Tracks
                 </div>
-                <span className="text-[10px] font-bold text-[#97A0B3]">Sprint #14</span>
+                <span className="text-[10px] font-bold text-[#97A0B3]">Sprint Pipeline</span>
               </div>
 
               <div className="space-y-2.5">
-                {/* Northwind Labs */}
-                <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] font-bold">
-                    <span className="text-[#F1F5F9]">Northwind Labs</span>
-                    <span className="text-emerald-600">12/12 (100%)</span>
+                {(!data?.clients || data.clients.length === 0) ? (
+                  <div className="py-4 text-center text-xs text-[#97A0B3]">
+                    No active clients assigned to pod
                   </div>
-                  <div className="h-1.5 w-full bg-[#1F2C3F] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
-                  </div>
-                </div>
-
-                {/* Bloom Studio */}
-                <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] font-bold">
-                    <span className="text-[#F1F5F9]">Bloom Studio</span>
-                    <span className="text-[#7FA0D6]">6/12 (50%)</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-[#1F2C3F] rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-600 rounded-full" style={{ width: "50%" }} />
-                  </div>
-                </div>
-
-                {/* Atlas Commerce */}
-                <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] font-bold">
-                    <span className="text-[#F1F5F9]">Atlas Commerce</span>
-                    <span className="text-emerald-600">10/10 (100%)</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-[#1F2C3F] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
-                  </div>
-                </div>
+                ) : (
+                  data.clients.map((c) => (
+                    <div key={c.id} className="space-y-1">
+                      <div className="flex justify-between text-[11px] font-bold">
+                        <span className="text-[#F1F5F9]">{c.name}</span>
+                        <span className="text-emerald-400">On Track</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-[#1F2C3F] rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               <div className="pt-2 border-t border-[#2A3446] flex items-center justify-between text-[11px]">
@@ -891,7 +816,7 @@ export function PodLeadDashboardPage() {
               rows={4}
               value={standupNote}
               onChange={(e) => setStandupNote(e.target.value)}
-              placeholder="All 4 members present. David Kim rendering 3D pass. Elena R. finalizing Atlas deck. No critical blockers."
+              placeholder="All pod members present. Active sprint tasks in production. No critical blockers."
               className="w-full text-xs p-3.5 rounded-2xl border border-[#2A3446] bg-[#0B111C] focus:bg-[#161F2D] focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
             />
             <div className="flex justify-end gap-3 pt-2">
@@ -955,11 +880,15 @@ export function PodLeadDashboardPage() {
                   <select
                     value={assignForm.client}
                     onChange={(e) => setAssignForm({ ...assignForm, client: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium"
+                    className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white"
                   >
-                    <option value="Northwind Labs">Northwind Labs</option>
-                    <option value="Bloom Studio">Bloom Studio</option>
-                    <option value="Atlas Commerce">Atlas Commerce</option>
+                    {(!data?.clients || data.clients.length === 0) ? (
+                      <option value="">No clients assigned</option>
+                    ) : (
+                      data.clients.map((c) => (
+                        <option key={c.id} value={c.name}>{c.name}</option>
+                      ))
+                    )}
                   </select>
                 </div>
                 <div>
@@ -967,12 +896,15 @@ export function PodLeadDashboardPage() {
                   <select
                     value={assignForm.assignee}
                     onChange={(e) => setAssignForm({ ...assignForm, assignee: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium"
+                    className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white"
                   >
-                    <option value="David Kim">David Kim (Motion)</option>
-                    <option value="Elena R.">Elena R. (Brand)</option>
-                    <option value="Marcus Vance">Marcus Vance (Copy)</option>
-                    <option value="Chloe Tan">Chloe Tan (Video)</option>
+                    {(!data?.members || data.members.length === 0) ? (
+                      <option value="">No specialists registered</option>
+                    ) : (
+                      data.members.map((m) => (
+                        <option key={m.id} value={m.name}>{m.name} ({m.role})</option>
+                      ))
+                    )}
                   </select>
                 </div>
               </div>
@@ -1041,9 +973,13 @@ export function PodLeadDashboardPage() {
                     onChange={(e) => setBlockedForm({ ...blockedForm, client: e.target.value })}
                     className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white focus:bg-[#161F2D]"
                   >
-                    <option value="Northwind Labs">Northwind Labs</option>
-                    <option value="Bloom Studio">Bloom Studio</option>
-                    <option value="Atlas Commerce">Atlas Commerce</option>
+                    {(!data?.clients || data.clients.length === 0) ? (
+                      <option value="">No clients assigned</option>
+                    ) : (
+                      data.clients.map((c) => (
+                        <option key={c.id} value={c.name}>{c.name}</option>
+                      ))
+                    )}
                   </select>
                 </div>
                 <div>
@@ -1085,7 +1021,7 @@ export function PodLeadDashboardPage() {
                 onClick={() => {
                   showToast(`Blocked issue "${blockedForm.title || "Production Blocker"}" escalated to Studio Director`, "success");
                   setBlockedModalOpen(false);
-                  setBlockedForm({ title: "", client: "Northwind Labs", severity: "Blocker (P0)", details: "" });
+                  setBlockedForm({ title: "", client: "", severity: "Blocker (P0)", details: "" });
                 }}
                 className="px-5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-rose-600/20"
               >
@@ -1170,7 +1106,7 @@ export function PodLeadDashboardPage() {
                   rows={3}
                   value={reinforceForm.notes}
                   onChange={(e) => setReinforceForm({ ...reinforceForm, notes: e.target.value })}
-                  placeholder="Explain reason for extra capacity (e.g. Northwind Labs Black Friday 8x Reels batch)..."
+                  placeholder="Explain reason for extra capacity (e.g. End-of-month deliverable batch surge)..."
                   className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white focus:bg-[#161F2D] focus:ring-2 focus:ring-purple-500 focus:outline-none"
                 />
               </div>

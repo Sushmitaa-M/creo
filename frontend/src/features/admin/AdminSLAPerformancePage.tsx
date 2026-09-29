@@ -346,7 +346,7 @@ export function AdminSLAPerformancePage() {
                     </span>
                   </div>
                   <p className="text-[11px] text-rose-300/80">
-                    Ticket <strong className="font-mono text-rose-200">#1042</strong> • Northwind Labs • Pod A (Maya Lin)
+                    Ticket <strong className="font-mono text-rose-200">#1042</strong> • Client Retainer • Pod A (On-Call Lead)
                   </p>
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-xs font-bold text-rose-400 flex items-center gap-1">
@@ -374,7 +374,7 @@ export function AdminSLAPerformancePage() {
                     </span>
                   </div>
                   <p className="text-[11px] text-emerald-300/80">
-                    Ticket <strong className="font-mono text-emerald-200">#1035</strong> • Atlas Commerce • Pod C (Lena Ortiz)
+                    Ticket <strong className="font-mono text-emerald-200">#1035</strong> • Client Workspace • Pod C (Creative Lead)
                   </p>
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-xs font-semibold text-emerald-400">

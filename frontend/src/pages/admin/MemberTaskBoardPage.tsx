@@ -18,6 +18,9 @@ import {
   Sliders,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
 import { CustomSelect } from "../../components/ui/CustomSelect";
 
 interface TaskDeliverable {
@@ -62,313 +65,122 @@ interface TaskDeliverable {
   rating?: number;
 }
 
-const INITIAL_TASKS: TaskDeliverable[] = [
-  // COLUMN 1: Assigned & Queued
-  {
-    id: "task-1",
-    title: "TikTok Storyboard Asset Prep",
-    client: "Northwind Labs",
-    clientColor: "text-[#7FA0D6]",
-    clientBadgeBg: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
-    format: "9:16 Storyboard Layout",
-    estimatedHours: 3.0,
-    priority: "Normal",
-    status: "assigned",
-    deadline: "Tomorrow at 12:00 PM",
-    description: "Slice 9:16 layout vectors, isolate motion depth channels, and sync Figma variants for pod motion team.",
-    tags: ["Figma tokens", "3D Assets"],
-    reviewData: {
-      reviewer: "Maya Lin",
-      reviewerRole: "Pod Lead",
-      reviewerAvatar: "ML",
-      status: "Under Review",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: false,
-        transparency: true,
-        namingConvention: true,
-      },
-      masterAssetUrl: "https://figma.com/@northwind/storyboards-v1",
-      specialistNotes: "Figma vector tokens organized into 9:16 artboards.",
-    },
-  },
-  {
-    id: "task-2",
-    title: "Q4 Promo Bumper Lower Thirds",
-    client: "Atlas Commerce",
-    clientColor: "text-purple-600",
-    clientBadgeBg: "bg-purple-50 text-purple-700",
-    format: "MOGRT Pack",
-    estimatedHours: 4.0,
-    priority: "Normal",
-    status: "assigned",
-    deadline: "Friday at 04:00 PM",
-    description: "Prepare customizable dynamic MOGRT templates for retail clearance overlays and animated price tags.",
-    tags: ["MOGRT Pack", "Pod A Library"],
-    reviewData: {
-      reviewer: "Maya Lin",
-      reviewerRole: "Pod Lead",
-      reviewerAvatar: "ML",
-      status: "Under Review",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: true,
-        transparency: true,
-        namingConvention: true,
-      },
-      specialistNotes: "Dynamic text boxes and color controllers linked to Premiere Pro mogrt schema.",
-    },
-  },
-  {
-    id: "task-ryze-1",
-    title: "Mushroom Coffee Benefit Deck Carousel & Poster",
-    client: "Ryze Mushroom Coffee",
-    clientColor: "text-emerald-400",
-    clientBadgeBg: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
-    format: "1080x1350 Poster & 9:16 Story",
-    estimatedHours: 3.0,
-    priority: "Normal",
-    status: "assigned",
-    deadline: "Tomorrow at 02:00 PM",
-    description: "Design clean infographic carousel highlighting focus, sustained energy without jitters, and gut health.",
-    tags: ["Infographic", "Benefit Deck", "Figma"],
-  },
-
-  // COLUMN 2: In Active Production
-  {
-    id: "task-ryze-2",
-    title: "Morning Routine High-Energy Reel Cut v1",
-    client: "Ryze Mushroom Coffee",
-    clientColor: "text-emerald-400",
-    clientBadgeBg: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
-    format: "9:16 Vertical Reel (60fps)",
-    estimatedHours: 4.5,
-    timeSpentHours: 2.0,
-    priority: "High",
-    status: "production",
-    deadline: "Today at 06:00 PM",
-    progress: 65,
-    description: "Pacing cut with rapid hook, kinetic typography, mushroom blend macro b-roll, and brand color grade.",
-    tags: ["9:16 Reel", "Brand Grade", "Morning Hook"],
-    renderInfo: {
-      node: "CREO-GPU-04",
-      frame: "1420 / 1800",
-      pass: "Color Grading (Rec.709)",
-    },
-    reviewData: {
-      reviewer: "Lena Ortiz",
-      reviewerRole: "Team Lead & Account Director",
-      reviewerAvatar: "LO",
-      status: "Under Review",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: true,
-        transparency: true,
-        namingConvention: true,
-      },
-      specialistNotes: "Hook synced to upbeat tempo, sound stems normalized to -14 LUFS.",
-    },
-  },
-  {
-    id: "task-3",
-    title: "Render 3D Product Teaser (15s Reel)",
-    client: "Northwind Labs",
-    clientColor: "text-[#7FA0D6]",
-    clientBadgeBg: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
-    format: "15s Kinetic Reel 4K",
-    estimatedHours: 4.5,
-    timeSpentHours: 3.2,
-    priority: "High",
-    status: "production",
-    progress: 75,
-    deadline: "Today in 2h",
-    renderInfo: {
-      node: "Node #04 Rendering",
-      frame: "3840 / 5120",
-      pass: "Octane cinematic pass · ACEScg profile",
-    },
-    description: "Render 15s kinetic cut with high-contrast text overlays and audio normalize to -14 LUFS.",
-    tags: ["Cinema4D", "Octane Pass"],
-    reviewData: {
-      reviewer: "Maya Lin",
-      reviewerRole: "Pod Lead Reviewer",
-      reviewerAvatar: "ML",
-      status: "Under Review",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: true,
-        transparency: false,
-        namingConvention: true,
-      },
-      masterAssetUrl: "s3://creo-vault/northwind/3d-teaser-v1.4.mov",
-      specialistNotes: "Frame render at 75%. Clean ACEScg pass. Motion blur calibrated at 180 degrees.",
-    },
-  },
-  {
-    id: "task-4",
-    title: "Audio Stem Sync & Color Grade",
-    client: "Atlas Commerce",
-    clientColor: "text-purple-600",
-    clientBadgeBg: "bg-purple-50 text-purple-700",
-    format: "Multi-track VO & Master LUT",
-    estimatedHours: 2.5,
-    timeSpentHours: 1.5,
-    priority: "Normal",
-    status: "production",
-    progress: 40,
-    deadline: "Today by 06:00 PM",
-    description: "Conforming multi-track VO mix, spatial SFX risers, and rec.709 LUT passes in After Effects.",
-    tags: ["After Effects CC", "Rec.709"],
-    reviewData: {
-      reviewer: "Maya Lin",
-      reviewerRole: "Pod Lead Reviewer",
-      reviewerAvatar: "ML",
-      status: "Under Review",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: true,
-        transparency: true,
-        namingConvention: true,
-      },
-      specialistNotes: "Integrated Dolby Atmos downmix to stereo -14 LUFS with crisp dynamic range.",
-    },
-  },
-
-  // COLUMN 3: Submitted for Lead QA
-  {
-    id: "task-5",
-    title: "Fintech Ad Set - High Conversion",
-    client: "Northwind Labs",
-    clientColor: "text-[#7FA0D6]",
-    clientBadgeBg: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
-    format: "5x 6s Motion Ads",
-    estimatedHours: 3.0,
-    priority: "Normal",
-    status: "qa",
-    deadline: "Today by 05:30 PM",
-    description: "5 variations of 6s animated UI mockups showcasing instant ledger settle features.",
-    tags: ["Lottie", "Figma Web"],
-    reviewData: {
-      reviewer: "Maya Lin",
-      reviewerRole: "Pod Lead Reviewer",
-      reviewerAvatar: "ML",
-      slaRemaining: "in 45m left",
-      status: "Under Review",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: true,
-        transparency: true,
-        namingConvention: true,
-      },
-      masterAssetUrl: "https://creo.studio/vault/northwind/fintech-ad-set-v1.2.zip",
-      specialistNotes: "All 5 variations generated with clean JSON export & vector SVG layers.",
-    },
-  },
-  {
-    id: "task-6",
-    title: "Brand Identity Motion Logo Lottie Export",
-    client: "Northwind Labs",
-    clientColor: "text-[#7FA0D6]",
-    clientBadgeBg: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
-    format: "Lottie JSON + SVG",
-    estimatedHours: 2.0,
-    priority: "High",
-    status: "qa",
-    deadline: "Today by 04:30 PM",
-    description: "Vector clean-up of geometric icon reveal for production web header.",
-    tags: ["Lottie", "SVG Vector"],
-    reviewData: {
-      reviewer: "Maya Lin",
-      reviewerRole: "Pod Lead Reviewer",
-      reviewerAvatar: "ML",
-      slaRemaining: "Revision required",
-      status: "Revision Pending",
-      revisionNote: "Ease out on final logo anchor needs to settle 4 frames faster to sync with the primary CTA glow.",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: false,
-        transparency: true,
-        namingConvention: true,
-      },
-      masterAssetUrl: "https://creo.studio/vault/northwind/motion-logo-v1.1.json",
-      specialistNotes: "Adjusted spline tangents and exported bodymovin JSON with embedded raster assets.",
-    },
-  },
-
-  // COLUMN 4: Signed Off & Dispatched
-  {
-    id: "task-7",
-    title: "Hero 3D Visual Loop",
-    client: "Northwind Labs",
-    clientColor: "text-[#7FA0D6]",
-    clientBadgeBg: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
-    format: "4K ProRes 4444 Master",
-    estimatedHours: 5.0,
-    priority: "High",
-    status: "dispatched",
-    deadline: "Delivered",
-    dispatchedAt: "Today at 09:42 AM",
-    rating: 5.0,
-    description: "Looping 4K Pro-Res render package & optimized webm fallbacks delivered to client vault.",
-    tags: ["ProRes 4444", "4K HDR"],
-    reviewData: {
-      reviewer: "Maya Lin",
-      reviewerRole: "Pod Lead Reviewer",
-      reviewerAvatar: "ML",
-      status: "Approved",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: true,
-        transparency: true,
-        namingConvention: true,
-      },
-      masterAssetUrl: "https://creo.studio/vault/northwind/Northwind_Hero_3D_Visual_Loop_4K.mov",
-      specialistNotes: "Signed off with 5.0 client satisfaction rating.",
-    },
-  },
-  {
-    id: "task-8",
-    title: "Social Carousel Micro-animations",
-    client: "Atlas Commerce",
-    clientColor: "text-purple-600",
-    clientBadgeBg: "bg-purple-50 text-purple-700",
-    format: "6x Instagram Story Swipe Cues",
-    estimatedHours: 4.0,
-    priority: "Normal",
-    status: "dispatched",
-    deadline: "Delivered",
-    dispatchedAt: "Yesterday · 4.0h",
-    description: "Set of 6 swipe cue animations for mobile Instagram Stories and LinkedIn Feed ads.",
-    tags: ["Stories", "Feed Ads"],
-    reviewData: {
-      reviewer: "Maya Lin",
-      reviewerRole: "Pod Lead Reviewer",
-      reviewerAvatar: "ML",
-      status: "Approved",
-      rubricChecks: {
-        colorSpace: true,
-        resolution: true,
-        audioLoudness: true,
-        transparency: true,
-        namingConvention: true,
-      },
-      masterAssetUrl: "https://creo.studio/vault/atlas/social-carousel-pack.zip",
-      specialistNotes: "Optimized for mobile load times under 350KB per animation.",
-    },
-  },
-];
+const INITIAL_TASKS: TaskDeliverable[] = [];
 
 export function MemberTaskBoardPage() {
+  const { data } = useQuery<PodDashboardData>({
+    queryKey: ["pod_dashboard"],
+    queryFn: () => fetchPodDashboard(),
+  });
+  const podName = data?.pod?.name || "Pod A";
+  const members = data?.members || [];
+  const leadMember = members.find((m) => m.role?.toLowerCase().includes("lead"));
+  const leadName = leadMember?.full_name || "Pod Lead";
+  const clients = data?.clients || [];
+
   // Tasks state
   const [tasks, setTasks] = useState<TaskDeliverable[]>(INITIAL_TASKS);
+
+  useEffect(() => {
+    if (data?.tasks) {
+      const mapped: TaskDeliverable[] = [
+        ...(data.tasks.backlog || []).map((t) => ({
+          id: t.id,
+          title: t.blueprint?.concept_name || t.deliverable_type || "Sprint Task",
+          client: t.client_name || "Client",
+          clientColor: "text-[#7FA0D6]",
+          clientBadgeBg: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
+          format: t.deliverable_type || "Format",
+          estimatedHours: 4.0,
+          priority: "Normal" as const,
+          status: "assigned" as const,
+          deadline: "Active Sprint",
+          description: `Sprint task assigned to ${t.assignee_name || "specialist"}.`,
+          tags: [t.deliverable_type || "Deliverable"],
+          reviewData: {
+            reviewer: leadName,
+            reviewerRole: "Pod Lead",
+            reviewerAvatar: leadName.slice(0, 2).toUpperCase(),
+            status: "Under Review" as const,
+            rubricChecks: { colorSpace: true, resolution: true, audioLoudness: true, transparency: true, namingConvention: true },
+            specialistNotes: "Assigned for sprint cadence.",
+          },
+        })),
+        ...(data.tasks.in_production || []).map((t) => ({
+          id: t.id,
+          title: t.blueprint?.concept_name || t.deliverable_type || "Production Task",
+          client: t.client_name || "Client",
+          clientColor: "text-blue-500",
+          clientBadgeBg: "bg-blue-500/15 text-blue-400",
+          format: t.deliverable_type || "Format",
+          estimatedHours: 4.0,
+          priority: "High" as const,
+          status: "production" as const,
+          deadline: "In Progress",
+          description: `In active production with ${t.assignee_name || "specialist"}.`,
+          tags: [t.deliverable_type || "Deliverable"],
+          progress: 50,
+          reviewData: {
+            reviewer: leadName,
+            reviewerRole: "Pod Lead",
+            reviewerAvatar: leadName.slice(0, 2).toUpperCase(),
+            status: "Under Review" as const,
+            rubricChecks: { colorSpace: true, resolution: true, audioLoudness: true, transparency: true, namingConvention: true },
+            specialistNotes: "Rendering and active editing.",
+          },
+        })),
+        ...(data.tasks.internal_qa || []).map((t) => ({
+          id: t.id,
+          title: t.blueprint?.concept_name || t.deliverable_type || "QA Review Task",
+          client: t.client_name || "Client",
+          clientColor: "text-amber-500",
+          clientBadgeBg: "bg-amber-500/15 text-amber-400",
+          format: t.deliverable_type || "Format",
+          estimatedHours: 4.0,
+          priority: "High" as const,
+          status: "qa" as const,
+          deadline: "Under QA Review",
+          description: `Pending lead sign-off by ${leadName}.`,
+          tags: [t.deliverable_type || "Deliverable"],
+          progress: 90,
+          reviewData: {
+            reviewer: leadName,
+            reviewerRole: "Pod Lead",
+            reviewerAvatar: leadName.slice(0, 2).toUpperCase(),
+            status: "Under Review" as const,
+            rubricChecks: { colorSpace: true, resolution: true, audioLoudness: true, transparency: true, namingConvention: true },
+            specialistNotes: "Ready for quality rubric check.",
+          },
+        })),
+        ...(data.tasks.ready_to_publish || []).map((t) => ({
+          id: t.id,
+          title: t.blueprint?.concept_name || t.deliverable_type || "Delivered Asset",
+          client: t.client_name || "Client",
+          clientColor: "text-emerald-500",
+          clientBadgeBg: "bg-emerald-500/15 text-emerald-400",
+          format: t.deliverable_type || "Format",
+          estimatedHours: 4.0,
+          priority: "Normal" as const,
+          status: "dispatched" as const,
+          deadline: "Completed",
+          description: "Approved and ready for client handoff.",
+          tags: [t.deliverable_type || "Deliverable"],
+          progress: 100,
+          reviewData: {
+            reviewer: leadName,
+            reviewerRole: "Pod Lead",
+            reviewerAvatar: leadName.slice(0, 2).toUpperCase(),
+            status: "Approved" as const,
+            rubricChecks: { colorSpace: true, resolution: true, audioLoudness: true, transparency: true, namingConvention: true },
+            specialistNotes: "Sign-off complete.",
+          },
+        })),
+      ];
+      if (mapped.length > 0) {
+        setTasks(mapped);
+      }
+    }
+  }, [data, leadName]);
 
   // Search and Filter States
   const [searchQuery, setSearchQuery] = useState("");
@@ -393,7 +205,7 @@ export function MemberTaskBoardPage() {
   // 1. ADD DELIVERABLE MODAL STATE
   const [addDeliverableModalOpen, setAddDeliverableModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-  const [newClient, setNewClient] = useState("Northwind Labs");
+  const [newClient, setNewClient] = useState("Pod Client Workspace");
   const [newFormat, setNewFormat] = useState("9:16 Vertical Video (Reels/TikTok)");
   const [newEstimatedHours, setNewEstimatedHours] = useState("3.0");
   const [newPriority, setNewPriority] = useState<"High" | "Normal" | "Low">("Normal");
@@ -462,14 +274,7 @@ export function MemberTaskBoardPage() {
     e.preventDefault();
     if (!newTitle.trim()) return;
 
-    const clientColors: Record<string, { color: string; bg: string }> = {
-      "Northwind Labs": { color: "text-[#7FA0D6]", bg: "bg-[#7FA0D6]/15 text-[#7FA0D6]" },
-      "Atlas Commerce": { color: "text-purple-600", bg: "bg-purple-50 text-purple-700" },
-      "Bloom Studio": { color: "text-pink-600", bg: "bg-pink-50 text-pink-700" },
-      "Apex Digital": { color: "text-emerald-600", bg: "bg-emerald-50 text-emerald-700" },
-    };
-
-    const clientStyling = clientColors[newClient] || {
+    const clientStyling = {
       color: "text-[#7FA0D6]",
       bg: "bg-[#7FA0D6]/15 text-[#7FA0D6]",
     };
@@ -494,9 +299,9 @@ export function MemberTaskBoardPage() {
       tags: parsedTags.length > 0 ? parsedTags : ["Motion", "Deliverable"],
       progress: newStatus === "production" ? 10 : 0,
       reviewData: {
-        reviewer: "Maya Lin",
+        reviewer: leadName,
         reviewerRole: "Pod Lead Reviewer",
-        reviewerAvatar: "ML",
+        reviewerAvatar: leadName.slice(0, 2).toUpperCase(),
         status: "Under Review",
         rubricChecks: {
           colorSpace: true,
@@ -550,9 +355,9 @@ export function MemberTaskBoardPage() {
               reviewData: {
                 ...t.reviewData,
                 status: "Under Review",
-                reviewer: "Maya Lin",
+                reviewer: leadName,
                 reviewerRole: "Pod Lead Reviewer",
-                reviewerAvatar: "ML",
+                reviewerAvatar: leadName.slice(0, 2).toUpperCase(),
                 slaRemaining: "in 1h 15m",
                 specialistNotes: specialistNotesInput,
                 masterAssetUrl: masterUrlInput,
@@ -563,7 +368,7 @@ export function MemberTaskBoardPage() {
           : t
       )
     );
-    showToast(`🚀 "${reviewModalCard?.title}" submitted to Pod Lead Maya Lin for QA!`);
+    showToast(`🚀 "${reviewModalCard?.title}" submitted to Pod Lead ${leadName} for QA!`);
     setReviewModalCard(null);
   };
 
@@ -676,30 +481,18 @@ export function MemberTaskBoardPage() {
             {/* Client Filter Pills */}
             <div className="flex items-center gap-1 bg-[#161F2D] p-0.5 rounded-xl border border-[#2A3446]/80 shadow-2xs text-xs font-bold overflow-x-auto no-scrollbar py-0.5">
               {[
-                { label: "All Clients", count: tasks.length },
-                { label: "Northwind", count: tasks.filter((t) => t.client.includes("Northwind")).length },
-                { label: "Atlas", count: tasks.filter((t) => t.client.includes("Atlas")).length },
-                { label: "Ryze", count: tasks.filter((t) => t.client.includes("Ryze")).length },
-                { label: "Bloom", count: tasks.filter((t) => t.client.includes("Bloom")).length },
+                { label: "All Clients", value: "All Clients", count: tasks.length },
+                ...clients.map((c) => ({
+                  label: c.name,
+                  value: c.name,
+                  count: tasks.filter((t) => t.client.toLowerCase() === c.name.toLowerCase()).length,
+                })),
               ].map((c) => (
                 <button
                   key={c.label}
-                  onClick={() =>
-                    setSelectedClient(
-                      c.label === "Northwind"
-                        ? "Northwind Labs"
-                        : c.label === "Atlas"
-                        ? "Atlas Commerce"
-                        : c.label === "Ryze"
-                        ? "Ryze Mushroom Coffee"
-                        : c.label === "Bloom"
-                        ? "Bloom Studio"
-                        : "All Clients"
-                    )
-                  }
+                  onClick={() => setSelectedClient(c.value)}
                   className={`px-2.5 py-1 rounded-lg transition-all shrink-0 text-xs ${
-                    (selectedClient === "All Clients" && c.label === "All Clients") ||
-                    selectedClient.includes(c.label)
+                    selectedClient === c.value
                       ? "bg-blue-600 text-white shadow-2xs font-bold"
                       : "text-[#F1F5F9] hover:text-white"
                   }`}
@@ -1034,7 +827,7 @@ export function MemberTaskBoardPage() {
                       {task.reviewData?.reviewerAvatar || "ML"}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-[11px]">{task.reviewData?.reviewer || "Maya Lin"}</div>
+                      <div className="truncate text-[11px]">{task.reviewData?.reviewer || leadName}</div>
                       <span className="text-[9px] text-[#97A0B3] block font-normal">
                         {task.reviewData?.reviewerRole || "Lead Reviewer"}
                       </span>
@@ -1301,10 +1094,15 @@ export function MemberTaskBoardPage() {
                     onChange={(e) => setNewClient(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-bold bg-[#161F2D]"
                   >
-                    <option value="Northwind Labs">Northwind Labs</option>
-                    <option value="Atlas Commerce">Atlas Commerce</option>
-                    <option value="Bloom Studio">Bloom Studio</option>
-                    <option value="Apex Digital">Apex Digital</option>
+                    {clients.length > 0 ? (
+                      clients.map((c) => (
+                        <option key={c.id} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="Pod Client Workspace">Pod Client Workspace</option>
+                    )}
                   </select>
                 </div>
 
@@ -1602,7 +1400,7 @@ export function MemberTaskBoardPage() {
                   type="text"
                   value={masterUrlInput}
                   onChange={(e) => setMasterUrlInput(e.target.value)}
-                  placeholder="https://creo.studio/vault/northwind/master-render.mov"
+                  placeholder="https://creo.studio/vault/renders/master-render.mov"
                   className="flex-1 px-3.5 py-2 rounded-xl border border-[#2A3446] font-mono text-[11px] text-[#7FA0D6]"
                 />
                 <button
@@ -1617,7 +1415,7 @@ export function MemberTaskBoardPage() {
 
             {/* Specialist Delivery Remarks */}
             <div className="space-y-1.5 text-xs">
-              <label className="block font-bold text-[#F1F5F9]">Specialist Notes for Pod Lead (Maya Lin)</label>
+              <label className="block font-bold text-[#F1F5F9]">Specialist Notes for Pod Lead ({leadName})</label>
               <textarea
                 rows={2}
                 value={specialistNotesInput}
@@ -1632,7 +1430,7 @@ export function MemberTaskBoardPage() {
               <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 space-y-1 text-xs">
                 <div className="flex justify-between font-bold text-amber-900 text-[11px]">
                   <span>Prior Lead Review Feedback</span>
-                  <span className="text-amber-700">Maya Lin</span>
+                  <span className="text-amber-700">{leadName}</span>
                 </div>
                 <p className="text-amber-800 leading-relaxed font-medium italic">
                   "{reviewModalCard.reviewData.revisionNote}"
@@ -1823,7 +1621,7 @@ export function MemberTaskBoardPage() {
                 </div>
                 <div>
                   <h3 className="text-base font-black text-white">Lead QA Revision Request</h3>
-                  <p className="text-xs text-[#97A0B3]">Maya Lin · Pod A Motion Lead</p>
+                  <p className="text-xs text-[#97A0B3]">{leadName} · {podName} Lead</p>
                 </div>
               </div>
               <button

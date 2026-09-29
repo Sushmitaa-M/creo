@@ -347,6 +347,8 @@ export function App() {
               />
               <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
               <Route path="/auth/callback/google" element={<GoogleCallbackPage />} />
+              <Route path="/verifying" element={<CreoLoader />} />
+              <Route path="/loader-preview" element={<CreoLoader />} />
 
               {/* 3. Onboarding Multi-stage Flow (Client + Admin) */}
               <Route

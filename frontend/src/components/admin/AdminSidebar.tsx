@@ -295,10 +295,10 @@ export function AdminSidebar() {
           </div>
           <div className="min-w-0 flex-1">
             <h4 className="text-xs font-bold text-white truncate">
-              {user?.full_name || (isClientRole ? (user?.company_name || "Client Account") : isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
+              {user?.full_name || (isClientRole ? (user?.company_name || "Client Account") : isMemberRole ? "Team Specialist" : user?.role === "team_lead" ? "Pod Lead" : "Creo Admin")}
             </h4>
             <p className="text-[10px] text-[#97A0B3] font-medium truncate">
-              {user?.email || (isClientRole ? "client@brand.com" : isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
+              {user?.email || (isClientRole ? "client@portal.creo" : isMemberRole ? "specialist@creo.agency" : "admin@creo.agency")}
             </p>
           </div>
           <button

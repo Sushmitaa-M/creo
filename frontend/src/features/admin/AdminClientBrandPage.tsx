@@ -111,185 +111,63 @@ function ColorSwatch({ color }: { color: string }) {
   );
 }
 
-const MOCK_CLIENT_PROFILES: Record<string, ClientBrandProfile> = {
-  "client-northwind": {
-    client_id: "client-northwind",
-    full_name: "Sarah Lin",
-    company_name: "Northwind Labs",
-    email: "sarah@northwindlabs.io",
+function buildDefaultClientProfile(id: string): ClientBrandProfile {
+  const cleanName = id ? id.replace(/^client-/, "").replace(/[-_]/g, " ") : "Client";
+  const capitalized = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+  return {
+    client_id: id || "client-default",
+    full_name: `${capitalized} Team`,
+    company_name: capitalized,
+    email: `contact@${id ? id.toLowerCase().replace(/[^a-z0-9]/g, "") : "client"}.com`,
     account_status: "active",
     onboarding_stage: 5,
-    onboarding_completed_at: "2025-01-15T10:00:00Z",
-    instagram_username: "northwindlabs",
-    timezone: "America/New_York",
-    brand_summary: "Next-generation B2B fintech infrastructure powering instantaneous global payments for high-growth tech platforms.",
-    brand_dna_source: "onboarding",
+    onboarding_completed_at: new Date().toISOString(),
+    instagram_username: id ? id.toLowerCase().replace(/[^a-z0-9]/g, "") : "client",
+    timezone: "UTC",
+    brand_summary: "Brand profile and creative design direction.",
+    brand_dna_source: "portal",
     brand_dna_version: 1,
-    created_at: "2025-01-15T10:00:00Z",
-    subscription: {
-      plan_name: "Enterprise Tier",
-      plan_display_name: "Enterprise Retainer",
-      status: "active",
-      monthly_price: 12500,
-      started_at: "2025-01-15T10:00:00Z",
-    },
-    assigned_team: [
-      { id: "dk-1", name: "David Kim", email: "david@creo.network", role_key: "motion", role_label: "Sr. Motion Designer", is_primary: true },
-      { id: "er-1", name: "Elena R.", email: "elena@creo.network", role_key: "brand", role_label: "Brand Visual Designer", is_primary: false },
-    ],
-    task_stats: { total: 24, pending: 4, completed: 18, in_review: 2 },
-    quota_usage: [
-      { kind: "Reels", quota: 4, used: 4 },
-      { kind: "Stories", quota: 8, used: 8 },
-      { kind: "Posts", quota: 12, used: 12 },
-    ],
-    brand_dna: {
-      positioning: "The high-velocity payments engine for modern digital platforms.",
-      tone: {
-        voice_words: ["Engineered", "Decisive", "Frictionless", "Institutional"],
-        anti_voice_words: ["Fluffy", "Ambiguous", "Bureaucratic", "Casual"],
-        writing_rules: [
-          "State technical capabilities and speed benefits first.",
-          "Use high contrast typography and punchy data points.",
-          "Maintain strict security and compliance terminology."
-        ],
-      },
-      visual_direction: {
-        primary_colors: ["#0F172A", "#2563EB", "#38BDF8", "#F8FAFC"],
-        styles: ["Dark Mode Fintech", "3D Kinetic Isometric", "Ultra-Clean Data Visualizations"],
-      },
-      content_pillars: [
-        { name: "Core Product Speed & SLA", stage: "conversion", angle: "4K animated feature breakdown illustrating sub-second settlement." },
-        { name: "Enterprise Customer Case Studies", stage: "authority", angle: "High-growth unicorn platform scale metrics & CTO spotlights." },
-        { name: "Fintech Regulatory Insights", stage: "reach", angle: "Fast-paced market trends & multi-currency liquidity breakdowns." },
-      ],
-      audience_segments: [
-        { name: "Fintech CTOs & VP Eng", description: "Technical decision-makers focused on API latency, uptime, and developer DX." },
-        { name: "Chief Financial Officers", description: "Finance executives evaluating transaction costs, fraud mitigation, and settlement velocity." },
-      ],
-      production: {
-        feasible_formats: ["Reel", "Story", "Post"],
-        default_reel_style: "3D Kinetic Motion & Particle Simulation",
-      },
-    },
-  },
-  "client-atlas": {
-    client_id: "client-atlas",
-    full_name: "Marcus Groot",
-    company_name: "Atlas Commerce",
-    email: "marcus@atlascommerce.com",
-    account_status: "active",
-    onboarding_stage: 5,
-    onboarding_completed_at: "2025-02-01T10:00:00Z",
-    instagram_username: "atlascommerce",
-    timezone: "America/Chicago",
-    brand_summary: "Omnichannel luxury retail enablement and direct-to-consumer digital commerce experiences.",
-    brand_dna_source: "onboarding",
-    brand_dna_version: 1,
-    created_at: "2025-02-01T10:00:00Z",
-    subscription: {
-      plan_name: "Enterprise Tier",
-      plan_display_name: "Enterprise Growth Suite",
-      status: "active",
-      monthly_price: 15000,
-      started_at: "2025-02-01T10:00:00Z",
-    },
-    assigned_team: [
-      { id: "er-1", name: "Elena R.", email: "elena@creo.network", role_key: "brand", role_label: "Brand Visual Designer", is_primary: true },
-      { id: "dk-1", name: "David Kim", email: "david@creo.network", role_key: "motion", role_label: "Sr. Motion Designer", is_primary: false },
-    ],
-    task_stats: { total: 27, pending: 3, completed: 21, in_review: 3 },
-    quota_usage: [
-      { kind: "Reels", quota: 6, used: 6 },
-      { kind: "Stories", quota: 3, used: 1 },
-      { kind: "Posts", quota: 18, used: 18 },
-    ],
-    brand_dna: {
-      positioning: "Elevating retail checkout and digital luxury merchandising.",
-      tone: {
-        voice_words: ["Sophisticated", "Refined", "Direct", "Impactful"],
-        anti_voice_words: ["Cheap", "Aggressive", "Cluttered", "Generic"],
-        writing_rules: [
-          "Focus on aesthetic craftsmanship and seamless buyer journey.",
-          "Lead with elevated photography and typography.",
-          "Clear CTA clearance on all 9:16 mobile surfaces."
-        ],
-      },
-      visual_direction: {
-        primary_colors: ["#18181B", "#E11D48", "#F43F5E", "#FFFFFF"],
-        styles: ["Luxury Editorial", "High-Contrast Typography", "Smooth Parallax Stems"],
-      },
-      content_pillars: [
-        { name: "Black Friday High-Impact Drops", stage: "conversion", angle: "Bold seasonal promotional stories with dynamic discount reveal." },
-        { name: "Luxury Brand Showcase", stage: "authority", angle: "Curated brand highlights with premium video transitions." },
-      ],
-      audience_segments: [
-        { name: "D2C Brand Directors", description: "Marketing leads seeking high conversion creative with luxury polish." },
-      ],
-      production: {
-        feasible_formats: ["Reel", "Story", "Post"],
-        default_reel_style: "Cinematic Editorial & Colorist Polish",
-      },
-    },
-  },
-  "client-bloom": {
-    client_id: "client-bloom",
-    full_name: "Helena Vance",
-    company_name: "Bloom Studio",
-    email: "helena@bloomstudio.design",
-    account_status: "active",
-    onboarding_stage: 5,
-    onboarding_completed_at: "2025-02-15T10:00:00Z",
-    instagram_username: "bloomstudio",
-    timezone: "America/Los_Angeles",
-    brand_summary: "Organic lifestyle, wellness design, and sustainable consumer product ecosystems.",
-    brand_dna_source: "onboarding",
-    brand_dna_version: 1,
-    created_at: "2025-02-15T10:00:00Z",
+    created_at: new Date().toISOString(),
     subscription: {
       plan_name: "Growth Tier",
-      plan_display_name: "Growth Pod Retainer",
+      plan_display_name: "Creative Retainer",
       status: "active",
-      monthly_price: 8500,
-      started_at: "2025-02-15T10:00:00Z",
+      monthly_price: 25000,
+      started_at: new Date().toISOString(),
     },
     assigned_team: [
-      { id: "ct-1", name: "Chloe Tan", email: "chloe@creo.network", role_key: "video", role_label: "Editor & Cutter", is_primary: true },
-      { id: "mv-1", name: "Marcus Vance", email: "marcus@creo.network", role_key: "copy", role_label: "Lead Copy & Strat", is_primary: false },
+      { id: "lead-1", name: "Creative Lead", email: "lead@creo.agency", role_key: "lead", role_label: "Pod Lead", is_primary: true },
     ],
-    task_stats: { total: 18, pending: 2, completed: 15, in_review: 1 },
+    task_stats: { total: 0, pending: 0, completed: 0, in_review: 0 },
     quota_usage: [
-      { kind: "Reels", quota: 2, used: 2 },
-      { kind: "Stories", quota: 4, used: 4 },
-      { kind: "Posts", quota: 12, used: 8 },
+      { kind: "Reels", quota: 4, used: 0 },
+      { kind: "Stories", quota: 8, used: 0 },
+      { kind: "Posts", quota: 8, used: 0 },
     ],
     brand_dna: {
-      positioning: "Harmonious wellness design tailored for the modern conscious consumer.",
+      positioning: "Design-led visual storytelling and digital content system.",
       tone: {
-        voice_words: ["Serene", "Authentic", "Mindful", "Contemporary"],
-        anti_voice_words: ["Noisy", "Artificial", "Clinical", "Rushed"],
+        voice_words: ["Modern", "Authentic", "Engaging"],
+        anti_voice_words: ["Generic", "Cluttered"],
         writing_rules: [
-          "Use warm, mindful, and empowering phrasing.",
-          "Emphasize sustainable materials and clean living routines.",
+          "Maintain consistent brand typography and tone across all content.",
         ],
       },
       visual_direction: {
-        primary_colors: ["#064E3B", "#10B981", "#ECFDF5", "#0F172A"],
-        styles: ["Organic Editorial", "Warm Earthy Tones", "Rhythm Cuts with Beat Sync"],
+        primary_colors: ["#0F172A", "#2563EB", "#F8FAFC"],
+        styles: ["Clean Editorial", "High-Resolution Render"],
       },
-      content_pillars: [
-        { name: "Conscious Living Daily Rituals", stage: "reach", angle: "Step-by-step wellness reels with soothing audio stem sync." },
-        { name: "Sustainable Ingredient Spotlights", stage: "authority", angle: "Clean ingredient transparency and eco-packaging highlights." },
-      ],
-      audience_segments: [
-        { name: "Eco-Conscious Consumers", description: "Design-led shoppers prioritizing wellness and sustainability." },
-      ],
+      content_pillars: [],
+      audience_segments: [],
       production: {
         feasible_formats: ["Reel", "Story", "Post"],
-        default_reel_style: "Rhythm Cut Shortform & Beat-Synced Story",
+        default_reel_style: "Dynamic Shortform",
       },
     },
-  },
+  };
+}
+
+const MOCK_CLIENT_PROFILES: Record<string, ClientBrandProfile> = {
   "client-ryze": {
     client_id: "client-ryze",
     full_name: "Ryze Brand Team",
@@ -434,33 +312,11 @@ export function AdminClientBrandPage() {
   const cleanId = normalizedId.replace(/^client-/, "");
 
   const fallbackKey = (() => {
-    if (!clientId) return "client-northwind";
-    // 1. Direct key match
-    if (MOCK_CLIENT_PROFILES[clientId]) return clientId;
-    if (MOCK_CLIENT_PROFILES[normalizedId]) return normalizedId;
-    if (MOCK_CLIENT_PROFILES[`client-${cleanId}`]) return `client-${cleanId}`;
-
-    // 2. Specific key matching for known clients
     if (normalizedId.includes("ryze") || cleanId.includes("ryze") || normalizedId.includes("sushmitaa")) {
       return "client-ryze";
     }
-    if (normalizedId.includes("northwind") || cleanId.includes("northwind") || normalizedId.includes("sarah")) {
-      return "client-northwind";
-    }
-    if (normalizedId.includes("atlas") || cleanId.includes("atlas") || normalizedId.includes("marcus")) {
-      return "client-atlas";
-    }
-    if (normalizedId.includes("bloom") || cleanId.includes("bloom") || normalizedId.includes("helena")) {
-      return "client-bloom";
-    }
-
-    // 3. Fallback search
-    const found = Object.keys(MOCK_CLIENT_PROFILES).find((k) => {
-      const kClean = k.toLowerCase().replace(/^client-/, "");
-      return k.includes(normalizedId) || normalizedId.includes(kClean) || kClean.includes(cleanId) || cleanId.includes(kClean);
-    });
-
-    return found || "client-northwind";
+    if (MOCK_CLIENT_PROFILES[clientId || ""]) return clientId!;
+    return "default";
   })();
 
   const hasValidServerDna =
@@ -472,7 +328,7 @@ export function AdminClientBrandPage() {
   const client: ClientBrandProfile =
     hasValidServerDna
       ? serverClient!
-      : (MOCK_CLIENT_PROFILES[fallbackKey] || MOCK_CLIENT_PROFILES["client-ryze"] || MOCK_CLIENT_PROFILES["client-northwind"]!);
+      : (MOCK_CLIENT_PROFILES[fallbackKey] || buildDefaultClientProfile(clientId || "client"));
 
   if (isLoading && !serverClient && !client) {
     return (

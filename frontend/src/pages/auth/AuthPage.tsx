@@ -313,7 +313,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                         type="text" 
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Sarah Jenkins" 
+                        placeholder="Your full name" 
                         className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
                         required={mode === "signup"}
                       />

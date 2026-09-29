@@ -508,19 +508,19 @@ export function AdminTopHeader({
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="text-xs font-bold text-white truncate">
-                      {user?.full_name || (isClientRole ? (user?.company_name || "Client Account") : isMemberRole ? "David Kim" : user?.role === "team_lead" ? "Maya Lin" : "Admin User")}
+                      {user?.full_name || (isClientRole ? (user?.company_name || "Client Account") : isMemberRole ? "Team Specialist" : user?.role === "team_lead" ? "Pod Lead" : "Creo Admin")}
                     </h4>
                     <p className="text-[11px] text-[#97A0B3] font-medium truncate">
-                      {user?.email || (isClientRole ? "client@brand.com" : isMemberRole ? "david.kim@creo.agency" : "admin@creo.agency")}
+                      {user?.email || (isClientRole ? "client@portal.creo" : isMemberRole ? "specialist@creo.agency" : "admin@creo.agency")}
                     </p>
                     <div className="mt-1">
                       <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 capitalize">
                         {isClientRole
                           ? "Client Account"
                           : isMemberRole
-                          ? "Pod A · Sr. Motion"
+                          ? "Pod Specialist"
                           : user?.role === "team_lead"
-                          ? "Pod A Lead"
+                          ? "Pod Lead"
                           : user?.role?.replace("_", " ") || "Administrator"}
                       </span>
                     </div>

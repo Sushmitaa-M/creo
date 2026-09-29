@@ -113,36 +113,20 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
               </div>
             ))
           ) : (
-            <>
-              <div className="flex items-center justify-between p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C]">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <AlertTriangle className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </div>
-                  <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="text-xs font-black text-white truncate tracking-tight">
-                      Response time approaching breach on #1...
-                    </span>
-                    <span className="text-[10px] text-[#97A0B3] font-medium">Pod A · Maya Lin · 18m remaining</span>
-                  </div>
+            <div className="flex items-center justify-between p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C]">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
                 </div>
-                <span className="text-[9px] font-black text-rose-500 ml-2 tracking-wide shrink-0">Warning</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C]">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-[#7FA0D6] text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </div>
-                  <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="text-xs font-black text-white truncate tracking-tight">
-                      Escalation cleared for Atlas pod
-                    </span>
-                    <span className="text-[10px] text-[#97A0B3] font-medium">Pod C · Lena Ortiz · SLA intact</span>
-                  </div>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <span className="text-xs font-black text-white truncate tracking-tight">
+                    All SLA commitments on schedule
+                  </span>
+                  <span className="text-[10px] text-[#97A0B3] font-medium">All active pods meeting first-pass response targets</span>
                 </div>
-                <span className="text-[9px] font-black text-[#7FA0D6] ml-2 tracking-wide shrink-0">Cleared</span>
               </div>
-            </>
+              <span className="text-[9px] font-black text-emerald-400 ml-2 tracking-wide shrink-0">Optimal</span>
+            </div>
           )}
         </div>
       </div>

@@ -281,11 +281,14 @@ export async function fetchClientBrandProfile(
 export interface PodMember {
   id: string;
   full_name: string;
+  name: string;
   email: string;
   role: string;
   craft_title: string;
   department: string;
   daily_capacity: number;
+  capacity?: number;
+  tasks_count?: number;
   skills: string[];
   is_accepting_work: boolean;
   account_status: string;

@@ -9,7 +9,6 @@ import {
   FolderKanban,
   AlertTriangle,
   Plus,
-  Clock,
   CheckCircle2,
   Sparkles,
   RefreshCw,
@@ -26,11 +25,11 @@ export function PodTaskBoardPage() {
   const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState("");
-  const [newCardClient, setNewCardClient] = useState("Northwind Labs");
+  const [newCardClient, setNewCardClient] = useState("");
 
   const [workloadModalOpen, setWorkloadModalOpen] = useState(false);
   const [rerouteModalOpen, setRerouteModalOpen] = useState(false);
-  const [rerouteTarget, setRerouteTarget] = useState("Marcus Vance");
+  const [rerouteTarget, setRerouteTarget] = useState("");
 
   // Mobile column switcher for sleek phone experience
   const [activeMobileCol, setActiveMobileCol] = useState<"all" | "backlog" | "in_progress" | "review" | "dispatched">("all");
@@ -40,8 +39,8 @@ export function PodTaskBoardPage() {
     queryFn: () => fetchPodDashboard(),
   });
 
-  const podName = data?.pod?.name || "Pod A";
-  const leadName = data?.pod?.lead?.name || user?.full_name || "Maya Lin";
+  const podName = data?.pod?.name || "Pod Operations";
+  const leadName = data?.pod?.lead?.name || user?.full_name || "Pod Lead";
 
   const showToast = (text: string, type: "success" | "error" = "success") => {
     setToastMessage({ type, text });
@@ -61,27 +60,22 @@ export function PodTaskBoardPage() {
 
   const handleExportSprintCSV = () => {
     const headers = ["Task ID", "Column / Stage", "Task Title", "Format", "Client", "Assignee", "Status Info"];
-    const rows = [
-      ["TASK-B1", "Backlog", "Motion Identity Guidelines Reel", "Reel", "Northwind Labs", "Elena R.", "Ready for Sprint"],
-      ["TASK-B2", "Backlog", "TikTok Story Sequence (3 Panels)", "Story", "Bloom Studio", "David Kim", "High Priority"],
-      ["TASK-B3", "Backlog", "Holiday Promotion Post Deck", "Post", "Atlas Commerce", "Chloe Tan", "Scheduled"],
-      ["TASK-P1", "In Progress", "Render 3D Product Teaser Reel", "Reel", "Northwind Labs", "David Kim", "75% Render Complete"],
-      ["TASK-P2", "In Progress", "Brand Messaging Architecture Post", "Post", "Atlas Commerce", "Marcus Vance", "55% Drafting Complete"],
-      ["TASK-P3", "In Progress", "Social Carousels Deck Post", "Post", "Bloom Studio", "Elena R.", "90% Polish Phase"],
-      ["TASK-QA1", "Pending Lead QA", "Fintech Reel Ad Set", "Reel", "Northwind Labs", "David Kim", "Requires Lead Sign-off"],
-      ["TASK-QA2", "Pending Lead QA", "Q4 Reel Concept Kinetic Cut", "Reel", "Bloom Studio", "Chloe Tan", "Preview Ready"],
-      ["TASK-QA3", "Pending Lead QA", "High-Impact Case Study Post", "Post", "Atlas Commerce", "Elena R.", "Review Draft"],
-      ["TASK-D1", "Approved & Dispatched", "Fintech Hero Animation Reel", "Reel", "Northwind Labs", "David Kim", "Delivered 2h ago"],
-      ["TASK-D2", "Approved & Dispatched", "Motion Reel Deliverable Set", "Reel", "Bloom Studio", "Chloe Tan", "Delivered 4h ago"],
-      ["TASK-D3", "Approved & Dispatched", "Viral Hook Reel Variants", "Reel", "Atlas Commerce", "Elena R.", "Delivered Yesterday"],
+    const allTasks: any[] = [
+      ...(data?.tasks?.backlog || []).map(t => [t.id, "Backlog", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "Ready for Sprint"]),
+      ...(data?.tasks?.in_production || []).map(t => [t.id, "In Progress", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "In Production"]),
+      ...(data?.tasks?.internal_qa || []).map(t => [t.id, "Pending Lead QA", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "Requires Lead Sign-off"]),
+      ...(data?.tasks?.ready_to_publish || []).map(t => [t.id, "Ready to Publish", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "Approved"]),
+      ...(data?.tasks?.completed || []).map(t => [t.id, "Dispatched", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "Delivered"]),
     ];
 
-    const csvContent = [headers.join(","), ...rows.map(r => r.map(c => `"${c}"`).join(","))].join("\n");
+    const rows = allTasks.length > 0 ? allTasks : [["N/A", "N/A", "No active tasks in sprint", "-", "-", "-", "-"]];
+
+    const csvContent = [headers.join(","), ...rows.map(r => r.map((c: string) => `"${c || ""}"`).join(","))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `Pod_A_Sprint_Task_Board_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `${(podName).replace(/\s+/g, "_")}_Sprint_Task_Board_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -234,71 +228,37 @@ export function PodTaskBoardPage() {
                 <h3 className="text-xs font-black uppercase tracking-wider text-[#F1F5F9]">Backlog</h3>
               </div>
               <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-[#0B111C] text-[#7FA0D6] border border-[#2A3446]">
-                8
+                {data?.tasks?.backlog?.length || 0}
               </span>
             </div>
 
             {/* Cards */}
             <div className="space-y-2.5">
-              {/* Card 1: Reel */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-[#7FA0D6]">Northwind Labs</span>
-                  <span className="text-[#97A0B3]">3h</span>
+              {(!data?.tasks?.backlog || data.tasks.backlog.length === 0) ? (
+                <div className="bg-[#0B111C]/60 border border-dashed border-[#2A3446] rounded-xl p-4 text-center">
+                  <p className="text-xs font-medium text-[#97A0B3]">No backlog tasks</p>
                 </div>
-                <h4 className="text-xs font-black text-white leading-snug">Motion Reel · Brand Showcase (9:16)</h4>
-                <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[10.5px]">
-                  <span className="px-1.5 py-0.2 rounded bg-[#7FA0D6]/15 text-[#7FA0D6] font-bold text-[9px] border border-[#7FA0D6]/30">
-                    Reel
-                  </span>
-                  <div className="flex items-center gap-1 text-[#F1F5F9] font-bold text-[9.5px]">
-                    <span>Elena R.</span>
-                    <div className="size-4.5 rounded bg-blue-600 text-white flex items-center justify-center font-black text-[8px]">
-                      ER
+              ) : (
+                data.tasks.backlog.map((task) => (
+                  <div key={task.id} className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover:border-[#7FA0D6]/30 transition-all space-y-2">
+                    <div className="flex items-center justify-between text-[10.5px] font-bold">
+                      <span className="text-[#7FA0D6] truncate max-w-[130px]">{task.client_name || "Client"}</span>
+                      <span className="text-[#97A0B3]">{task.hours_remaining ? `${task.hours_remaining}h` : (task.due_date || "")}</span>
+                    </div>
+                    <h4 className="text-xs font-black text-white leading-snug">
+                      {task.blueprint?.concept_name || `${task.client_name || "Sprint"} ${task.deliverable_type?.toUpperCase() || "Asset"}`}
+                    </h4>
+                    <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[10.5px]">
+                      <span className="px-1.5 py-0.2 rounded bg-[#7FA0D6]/15 text-[#7FA0D6] font-bold text-[9px] border border-[#7FA0D6]/30">
+                        {task.deliverable_type?.toUpperCase() || "ASSET"}
+                      </span>
+                      <div className="flex items-center gap-1 text-[#F1F5F9] font-bold text-[9.5px]">
+                        <span>{task.assignee_name || "Unassigned"}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Card 2: Story */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-purple-400">Bloom Studio</span>
-                  <span className="px-1.5 py-0.2 rounded bg-rose-500/15 text-rose-400 border border-rose-500/30 text-[8.5px] font-extrabold">High Priority</span>
-                </div>
-                <h4 className="text-xs font-black text-white leading-snug">TikTok Story Sequence (3 Panels)</h4>
-                <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[10.5px]">
-                  <span className="px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-400 font-bold text-[9px] border border-purple-500/30">
-                    Story
-                  </span>
-                  <div className="flex items-center gap-1 text-[#F1F5F9] font-bold text-[9.5px]">
-                    <span>David Kim</span>
-                    <div className="size-4.5 rounded bg-slate-800 text-white flex items-center justify-center font-black text-[8px]">
-                      DK
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 3: Post */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-[#F1F5F9]">Atlas Commerce</span>
-                  <span className="text-[#97A0B3]">2h</span>
-                </div>
-                <h4 className="text-xs font-black text-white leading-snug">Holiday Promotion Post Deck</h4>
-                <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[10.5px]">
-                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 font-bold text-[9px] border border-emerald-500/30">
-                    Post
-                  </span>
-                  <div className="flex items-center gap-1 text-[#F1F5F9] font-bold text-[9.5px]">
-                    <span>Chloe Tan</span>
-                    <div className="size-4.5 rounded bg-teal-600 text-white flex items-center justify-center font-black text-[8px]">
-                      CT
-                    </div>
-                  </div>
-                </div>
-              </div>
+                ))
+              )}
 
               <button
                 onClick={() => setAssignModalOpen(true)}
@@ -321,94 +281,40 @@ export function PodTaskBoardPage() {
                 <h3 className="text-xs font-black uppercase tracking-wider text-[#7FA0D6]">In Progress</h3>
               </div>
               <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
-                4
+                {data?.tasks?.in_production?.length || 0}
               </span>
             </div>
 
             {/* Cards */}
             <div className="space-y-2.5">
-              {/* Card 1: Reel */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-[#7FA0D6]">Northwind Labs</span>
-                  <span className="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[8.5px] font-extrabold">Reel · Urgent</span>
+              {(!data?.tasks?.in_production || data.tasks.in_production.length === 0) ? (
+                <div className="bg-[#0B111C]/60 border border-dashed border-[#2A3446] rounded-xl p-4 text-center">
+                  <p className="text-xs font-medium text-[#97A0B3]">No tasks currently in progress</p>
                 </div>
-                <div>
-                  <h4 className="text-xs font-black text-white leading-snug">Product Launch Reel (15s)</h4>
-                  <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">Octane cinematic pass · 9:16 Vertical</p>
-                </div>
-                <div className="space-y-0.5">
-                  <div className="flex justify-between text-[9.5px] font-bold text-[#97A0B3]">
-                    <span>Rendering</span>
-                    <span className="text-[#7FA0D6] font-black">75%</span>
+              ) : (
+                data.tasks.in_production.map((task) => (
+                  <div key={task.id} className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover:border-[#7FA0D6]/30 transition-all space-y-2">
+                    <div className="flex items-center justify-between text-[10.5px] font-bold">
+                      <span className="text-[#7FA0D6] truncate max-w-[130px]">{task.client_name || "Client"}</span>
+                      {task.is_near_sla && (
+                        <span className="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[8.5px] font-extrabold">Urgent SLA</span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white leading-snug">
+                        {task.blueprint?.concept_name || `${task.client_name || "Sprint"} ${task.deliverable_type?.toUpperCase() || "Asset"}`}
+                      </h4>
+                      <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">{task.assignee_role || "Creative Execution"}</p>
+                    </div>
+                    <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
+                      <span>{task.assignee_name || "Specialist"}</span>
+                      <span className="px-1.5 py-0.2 rounded bg-[#7FA0D6]/15 text-[#7FA0D6] font-bold text-[9px] border border-[#7FA0D6]/30">
+                        {task.deliverable_type?.toUpperCase() || "ASSET"}
+                      </span>
+                    </div>
                   </div>
-                  <div className="w-full h-1 bg-[#161F2D] rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-600 rounded-full smooth-progress-fill" style={{ width: "75%" }} />
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
-                  <div className="size-4.5 rounded bg-slate-800 text-white flex items-center justify-center font-black text-[8px]">
-                    DK
-                  </div>
-                  <span>David Kim · Motion</span>
-                </div>
-              </div>
-
-              {/* Card 2: Story */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-[#F1F5F9]">Atlas Commerce</span>
-                  <span className="px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-400 border border-purple-500/30 text-[8.5px] font-extrabold">Story</span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-black text-white leading-snug">Campaign Story Suite</h4>
-                  <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">Value propositions & hook sequences</p>
-                </div>
-                <div className="space-y-0.5">
-                  <div className="flex justify-between text-[9.5px] font-bold text-[#97A0B3]">
-                    <span>Progress</span>
-                    <span className="text-emerald-400 font-black">55%</span>
-                  </div>
-                  <div className="w-full h-1 bg-[#161F2D] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full smooth-progress-fill" style={{ width: "55%" }} />
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
-                  <div className="size-4.5 rounded bg-indigo-600 text-white flex items-center justify-center font-black text-[8px]">
-                    MV
-                  </div>
-                  <span>Marcus Vance · Copy</span>
-                </div>
-              </div>
-
-              {/* Card 3: Post */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-[#F1F5F9]">Atlas Commerce</span>
-                  <span className="text-rose-400 font-bold text-[9.5px] flex items-center gap-0.5">
-                    <Clock className="size-2.5" /> Due in 1h
-                  </span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-black text-white leading-snug">Post Carousel · 10 Panels</h4>
-                  <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">10 static panels for feed</p>
-                </div>
-                <div className="space-y-0.5">
-                  <div className="flex justify-between text-[9.5px] font-bold text-[#97A0B3]">
-                    <span>Exporting</span>
-                    <span className="text-emerald-400 font-black">90%</span>
-                  </div>
-                  <div className="w-full h-1 bg-[#161F2D] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full smooth-progress-fill" style={{ width: "90%" }} />
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
-                  <div className="size-4.5 rounded bg-blue-600 text-white flex items-center justify-center font-black text-[8px]">
-                    ER
-                  </div>
-                  <span>Elena R. · Brand</span>
-                </div>
-              </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -424,77 +330,48 @@ export function PodTaskBoardPage() {
                 <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">Lead QA Review</h3>
               </div>
               <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-amber-500/15 text-amber-400 border border-amber-500/30">
-                6
+                {data?.tasks?.internal_qa?.length || 0}
               </span>
             </div>
 
             {/* Cards */}
             <div className="space-y-2.5">
-              {/* Card 1: Reel */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-[#7FA0D6]">Northwind Labs</span>
-                  <span className="text-amber-400 font-bold text-[9.5px]">Due in 2h</span>
+              {(!data?.tasks?.internal_qa || data.tasks.internal_qa.length === 0) ? (
+                <div className="bg-[#0B111C]/60 border border-dashed border-[#2A3446] rounded-xl p-4 text-center">
+                  <p className="text-xs font-medium text-[#97A0B3]">No deliverables awaiting sign-off</p>
                 </div>
-                <div>
-                  <h4 className="text-xs font-black text-white leading-snug">Fintech Reel · Conversion (9:16)</h4>
-                  <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">David Kim · 3 variations</p>
-                </div>
-                <div className="flex items-center gap-1.5 pt-1.5">
-                  <Link
-                    to="/lead/deliverables"
-                    className="flex-1 py-1 rounded-lg bg-[#161F2D] border border-[#2A3446] hover:bg-[#1E2D42] text-[#F1F5F9] hover:text-[#7FA0D6] text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"
-                  >
-                    <Eye className="size-3" /> Inspect
-                  </Link>
-                  <button
-                    onClick={() => {
-                      qaMutation.mutate({ taskId: "t-1", decision: "approve", comment: "Direct QA sign-off from Task Board." });
-                    }}
-                    className="flex-1 py-1 rounded-lg bg-[#2563EB] hover:bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center gap-1 shadow-xs cursor-pointer transition-colors"
-                  >
-                    <Check className="size-3" /> Sign-off
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 2: Story */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-purple-400">Bloom Studio</span>
-                  <span className="text-[#97A0B3] text-[9.5px]">Due in 4h</span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-black text-white leading-snug">Q4 Story · Kinetic Cut</h4>
-                  <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">Chloe Tan · Audio calibrated</p>
-                </div>
-                <Link
-                  to="/lead/deliverables"
-                  className="w-full py-1 rounded-lg bg-[#161F2D] border border-[#2A3446] hover:bg-[#1E2D42] text-[#F1F5F9] hover:text-[#7FA0D6] text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"
-                >
-                  <Eye className="size-3" /> Preview Story
-                </Link>
-              </div>
-
-              {/* Card 3: Post */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-purple-400">Bloom Studio</span>
-                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[8.5px] font-extrabold">Ready</span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-black text-white leading-snug">E-commerce Post Showcase</h4>
-                  <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">Elena R. · Feed format</p>
-                </div>
-                <button
-                  onClick={() => {
-                    qaMutation.mutate({ taskId: "t-3", decision: "approve", comment: "Post showcase approved." });
-                  }}
-                  className="w-full py-1 rounded-lg bg-[#161F2D] border border-[#2A3446] hover:bg-[#1E2D42] text-[#F1F5F9] hover:text-[#7FA0D6] text-[10px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors"
-                >
-                  <FileCheck className="size-3" /> Review Draft
-                </button>
-              </div>
+              ) : (
+                data.tasks.internal_qa.map((task) => (
+                  <div key={task.id} className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover:border-amber-500/30 transition-all space-y-2">
+                    <div className="flex items-center justify-between text-[10.5px] font-bold">
+                      <span className="text-[#7FA0D6] truncate max-w-[130px]">{task.client_name || "Client"}</span>
+                      <span className="text-amber-400 font-bold text-[9.5px]">Awaiting QA</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white leading-snug">
+                        {task.blueprint?.concept_name || `${task.client_name || "Sprint"} ${task.deliverable_type?.toUpperCase() || "Asset"}`}
+                      </h4>
+                      <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">{task.assignee_name}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446]">
+                      <Link
+                        to="/lead/deliverables"
+                        className="flex-1 py-1 rounded-lg bg-[#161F2D] border border-[#2A3446] hover:bg-[#1E2D42] text-[#F1F5F9] hover:text-[#7FA0D6] text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"
+                      >
+                        <Eye className="size-3" /> Inspect
+                      </Link>
+                      <button
+                        onClick={() => {
+                          qaMutation.mutate({ taskId: task.id, decision: "approve", comment: "Direct QA sign-off from Task Board." });
+                        }}
+                        className="flex-1 py-1 rounded-lg bg-[#2563EB] hover:bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center gap-1 shadow-xs cursor-pointer transition-colors"
+                      >
+                        <Check className="size-3" /> Sign-off
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -510,67 +387,39 @@ export function PodTaskBoardPage() {
                 <h3 className="text-xs font-black uppercase tracking-wider text-emerald-400">Dispatched</h3>
               </div>
               <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                <Check className="size-3" /> 3
+                <Check className="size-3" /> {(data?.tasks?.completed?.length || 0) + (data?.tasks?.ready_to_publish?.length || 0)}
               </span>
             </div>
 
             {/* Cards */}
             <div className="space-y-2.5">
-              {/* Card 1: Reel */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-emerald-400 font-bold text-[9.5px] flex items-center gap-1">
-                    <CheckCircle2 className="size-3 text-emerald-400" /> Dispatched
-                  </span>
-                  <span className="text-[#97A0B3] text-[9.5px]">Reel</span>
+              {(!data?.tasks?.completed && !data?.tasks?.ready_to_publish) ||
+              ((data?.tasks?.completed?.length || 0) === 0 && (data?.tasks?.ready_to_publish?.length || 0) === 0) ? (
+                <div className="bg-[#0B111C]/60 border border-dashed border-[#2A3446] rounded-xl p-4 text-center">
+                  <p className="text-xs font-medium text-[#97A0B3]">No dispatched tasks yet</p>
                 </div>
-                <div>
-                  <h4 className="text-xs font-black text-white leading-snug">Fintech Reel Animation (9:16)</h4>
-                  <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">Delivered to Northwind Labs</p>
-                </div>
-                <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
-                  <div className="flex items-center gap-1">
-                    <div className="size-4.5 rounded bg-slate-800 text-white flex items-center justify-center font-black text-[8px]">
-                      DK
+              ) : (
+                [...(data?.tasks?.ready_to_publish || []), ...(data?.tasks?.completed || [])].slice(0, 5).map((task) => (
+                  <div key={task.id} className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
+                    <div className="flex items-center justify-between text-[10.5px] font-bold">
+                      <span className="text-emerald-400 font-bold text-[9.5px] flex items-center gap-1">
+                        <CheckCircle2 className="size-3 text-emerald-400" /> Dispatched
+                      </span>
+                      <span className="text-[#97A0B3] text-[9.5px]">{task.deliverable_type?.toUpperCase()}</span>
                     </div>
-                    <span>David Kim</span>
-                  </div>
-                  <span className="text-emerald-400">● Accepted</span>
-                </div>
-              </div>
-
-              {/* Card 2: Story */}
-              <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
-                <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-emerald-400 font-bold text-[9.5px] flex items-center gap-1">
-                    <CheckCircle2 className="size-3 text-emerald-400" /> Verified
-                  </span>
-                  <span className="text-[#97A0B3] text-[9.5px]">Story</span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-black text-white leading-snug">Brand Story Suite Master</h4>
-                  <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">Synced to shared Figma Library</p>
-                </div>
-                <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
-                  <div className="flex items-center gap-1">
-                    <div className="size-4.5 rounded bg-teal-600 text-white flex items-center justify-center font-black text-[8px]">
-                      CT
+                    <div>
+                      <h4 className="text-xs font-black text-white leading-snug">
+                        {task.blueprint?.concept_name || `${task.client_name || "Client"} Asset`}
+                      </h4>
+                      <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">Delivered to client vault</p>
                     </div>
-                    <span>Chloe Tan</span>
+                    <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
+                      <span>{task.assignee_name || "Specialist"}</span>
+                      <span className="text-emerald-400">● Accepted</span>
+                    </div>
                   </div>
-                  <span className="text-[#97A0B3]">Bloom</span>
-                </div>
-              </div>
-
-              {/* Card 3: Summary link */}
-              <div className="p-2.5 bg-[#0B111C] rounded-xl border border-dashed border-[#2A3446] text-center hover-card-innovative">
-                <span className="text-[10px] text-[#97A0B3] font-medium block">
-                  2 older completed tasks
-                </span>
-                <Link to="/lead/deliverables" className="text-[11px] font-bold text-[#7FA0D6] hover:underline mt-0.5 inline-block">
-                  View History →
-                </Link>
-              </div>
+                ))
+              )}
             </div>
           </div>
         </motion.div>
@@ -649,9 +498,13 @@ export function PodTaskBoardPage() {
                     onChange={(e) => setNewCardClient(e.target.value)}
                     className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white"
                   >
-                    <option value="Northwind Labs">Northwind Labs</option>
-                    <option value="Bloom Studio">Bloom Studio</option>
-                    <option value="Atlas Commerce">Atlas Commerce</option>
+                    {(!data?.clients || data.clients.length === 0) ? (
+                      <option value="">No clients assigned to pod</option>
+                    ) : (
+                      data.clients.map((c) => (
+                        <option key={c.id} value={c.name}>{c.name}</option>
+                      ))
+                    )}
                   </select>
                 </div>
               </div>
@@ -692,25 +545,26 @@ export function PodTaskBoardPage() {
               </button>
             </div>
             <p className="text-xs text-[#97A0B3] font-medium">
-              Analyze capacity across Pod A specialists and balance sprint backlog allocation evenly.
+              Analyze capacity across {podName} specialists and balance sprint backlog allocation evenly.
             </p>
             <div className="space-y-2 text-xs">
-              {[
-                { name: "Elena R. (Brand Specialist)", tasks: 5, status: "Optimal", color: "text-emerald-400" },
-                { name: "David Kim (Sr. Motion Designer)", tasks: 7, status: "High Load -> Rebalancing -1", color: "text-amber-400" },
-                { name: "Chloe Tan (Video Specialist)", tasks: 4, status: "Available -> Rebalancing +1", color: "text-blue-400" },
-                { name: "Marcus Vance (Copy Lead)", tasks: 5, status: "Optimal", color: "text-emerald-400" },
-              ].map((m) => (
-                <div key={m.name} className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-white block">{m.name}</span>
-                    <span className={`text-[10px] font-extrabold ${m.color}`}>{m.status}</span>
-                  </div>
-                  <span className="text-xs font-black text-white bg-[#161F2D] px-3 py-1 rounded-lg border border-[#2A3446]">
-                    {m.tasks} Tasks
-                  </span>
+              {(!data?.members || data.members.length === 0) ? (
+                <div className="p-4 rounded-xl bg-[#0B111C] border border-dashed border-[#2A3446] text-center text-[#97A0B3]">
+                  No specialists registered in this pod.
                 </div>
-              ))}
+              ) : (
+                data.members.map((m) => (
+                  <div key={m.id} className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-white block">{m.full_name} ({m.role})</span>
+                      <span className="text-[10px] font-extrabold text-emerald-400">Available</span>
+                    </div>
+                    <span className="text-xs font-black text-white bg-[#161F2D] px-3 py-1 rounded-lg border border-[#2A3446]">
+                      Active
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
             <div className="flex justify-end gap-3 pt-3 border-t border-[#2A3446]">
               <button
@@ -721,7 +575,7 @@ export function PodTaskBoardPage() {
               </button>
               <button
                 onClick={() => {
-                  showToast("Workload balanced! Reallocated 1 task to Chloe Tan (6 tasks each).", "success");
+                  showToast("Workload distribution verified across specialists.", "success");
                   setWorkloadModalOpen(false);
                 }}
                 className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-600 text-white text-xs font-bold transition shadow-md shadow-blue-500/20"
@@ -746,9 +600,9 @@ export function PodTaskBoardPage() {
                 <X className="size-5" />
               </button>
             </div>
-            <div className="p-3.5 rounded-xl bg-rose-950/40 border border-rose-800/50 space-y-1 text-xs">
-              <span className="font-extrabold text-rose-300 block">Blocked Task #1: Atlas copy sign-off required</span>
-              <p className="text-[11px] text-rose-300/80">Pending client feedback for 4h. Re-assign task specialist to unblock workflow.</p>
+            <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-800/50 space-y-1 text-xs">
+              <span className="font-extrabold text-amber-300 block">Blocked Task Re-allocation</span>
+              <p className="text-[11px] text-amber-300/80">Pending client feedback or technical blocker. Re-assign task specialist to unblock workflow.</p>
             </div>
             <div className="space-y-2 text-xs">
               <label className="font-bold text-[#F1F5F9] block">Select Target Specialist for Re-routing</label>
@@ -757,9 +611,13 @@ export function PodTaskBoardPage() {
                 onChange={(e) => setRerouteTarget(e.target.value)}
                 className="w-full p-3 rounded-xl border border-[#2A3446] bg-[#0B111C] text-white font-bold"
               >
-                <option value="Marcus Vance">Marcus Vance (Copy Specialist · 5 active)</option>
-                <option value="Chloe Tan">Chloe Tan (Video Specialist · 4 active)</option>
-                <option value="Elena R.">Elena R. (Brand Specialist · 5 active)</option>
+                {(!data?.members || data.members.length === 0) ? (
+                  <option value="">No specialists registered</option>
+                ) : (
+                  data.members.map((m) => (
+                    <option key={m.id} value={m.full_name}>{m.full_name} ({m.role})</option>
+                  ))
+                )}
               </select>
             </div>
             <div className="flex justify-end gap-3 pt-3 border-t border-[#2A3446]">
@@ -771,7 +629,7 @@ export function PodTaskBoardPage() {
               </button>
               <button
                 onClick={() => {
-                  showToast(`Re-routed blocked task to ${rerouteTarget}. Slack alert sent!`, "success");
+                  showToast(`Re-routed blocked task to ${rerouteTarget || "assigned specialist"}. Slack alert sent!`, "success");
                   setRerouteModalOpen(false);
                 }}
                 className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-600 text-white text-xs font-bold transition shadow-md shadow-blue-500/20"

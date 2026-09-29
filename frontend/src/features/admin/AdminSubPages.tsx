@@ -235,7 +235,7 @@ export function AdminClientsPage() {
         leadTitle: "Lead Video Producer",
         leadAvatar: "SC",
         squad: [
-          { name: "David Kim", role: "Video Editor", hoursPerWeek: 16, avatar: "DK" },
+          { name: "Karthik Raja", role: "Video Editor", hoursPerWeek: 16, avatar: "KR" },
           { name: "Elena Rostova", role: "Graphic Designer", hoursPerWeek: 16, avatar: "ER" },
         ],
         capacityAllocatedHrs: 32,
@@ -556,7 +556,7 @@ export function AdminClientsPage() {
       sprintNumber: 44,
       daysRemainingInSprint: 14,
       contact: {
-        name: "Sarah Jenkins",
+        name: "Priya Sharma",
         title: "Director of Brand Communications",
         email: "comms@novadynamics.org",
         phone: "+91 98406 77855",
@@ -664,7 +664,7 @@ export function AdminClientsPage() {
         leadTitle: "Pod B Lead Producer",
         leadAvatar: "SC",
         squad: [
-          { name: "David Kim", role: "Video Editor", hoursPerWeek: 16, avatar: "DK" },
+          { name: "Karthik Raja", role: "Video Editor", hoursPerWeek: 16, avatar: "KR" },
           { name: "Elena Rostova", role: "Graphic Designer", hoursPerWeek: 16, avatar: "ER" },
         ],
         capacityAllocatedHrs: 28,
@@ -709,7 +709,7 @@ export function AdminClientsPage() {
         leadTitle: "Pod B Lead Producer",
         leadAvatar: "SC",
         squad: [
-          { name: "David Kim", role: "Video Editor", hoursPerWeek: 16, avatar: "DK" },
+          { name: "Karthik Raja", role: "Video Editor", hoursPerWeek: 16, avatar: "KR" },
           { name: "Elena Rostova", role: "Graphic Designer", hoursPerWeek: 16, avatar: "ER" },
         ],
       },
@@ -2111,10 +2111,10 @@ export function AdminDeliverablesPage() {
               ariaLabel="Filter Deliverable Client"
               options={[
                 { value: "all", label: "All Clients" },
-                { value: "Northwind", label: "Northwind Labs" },
-                { value: "Bloom", label: "Bloom Studio" },
-                { value: "Atlas", label: "Atlas Commerce" },
-                { value: "Vanguard", label: "Vanguard Mobility" },
+                { value: "Ryze", label: "Ryze" },
+                { value: "Aravindan", label: "Aravindan" },
+                { value: "Shanmugaraj", label: "Shanmugaraj" },
+                { value: "Luma", label: "Luma Global" },
               ]}
             />
 
@@ -2463,13 +2463,13 @@ export function AdminTasksPage() {
     setIsCreateModalOpen(false);
     setNewTaskForm({
       title: "",
-      client: "Northwind Labs",
+      client: "Ryze",
       pod: "Pod A",
       category: "3D Render / Blender",
       sp: 4,
       dueDate: "Tomorrow",
       priority: "High",
-      assignee: "Maya Lin",
+      assignee: "Lead Producer",
       column: "todo",
     });
   };
@@ -2910,7 +2910,7 @@ export function AdminCalendarPage() {
 
   const [scheduleForm, setScheduleForm] = useState({
     title: "",
-    client: "Northwind Labs",
+    client: "Ryze",
     pod: "Pod A",
     type: "Reel",
     dateDay: 14,
@@ -2924,10 +2924,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-8-1",
         pod: "Pod A",
-        client: "Atlas Commerce",
+        client: "Shanmugaraj",
         title: "Customer Success Story Cutdown Reel",
         type: "Reel",
-        assignee: "David Kim",
+        assignee: "Karthik Raja",
         avatar: "DK",
         avatarBg: "bg-[#0F172A]",
         tag: "Approved",
@@ -2939,10 +2939,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-10-1",
         pod: "Pod A",
-        client: "Bloom Studio",
+        client: "Aravindan",
         title: "Brand Story Sequence · 3 Panels",
         type: "Story",
-        assignee: "Chloe Tan",
+        assignee: "Ananya Deshmukh",
         avatar: "CT",
         avatarBg: "bg-teal-600",
         tag: "Approved",
@@ -2954,10 +2954,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-14-1",
         pod: "Pod A",
-        client: "Northwind Labs",
+        client: "Ryze",
         title: "Q4 Product Unboxing Teaser Reel",
         type: "Reel",
-        assignee: "David Kim",
+        assignee: "Karthik Raja",
         avatar: "DK",
         avatarBg: "bg-[#0F172A]",
         tag: "Final Polish",
@@ -2967,10 +2967,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-14-2",
         pod: "Pod A",
-        client: "Bloom Studio",
+        client: "Aravindan",
         title: "Behind-The-Scenes Studio Setup (3-Slide Story)",
         type: "Story",
-        assignee: "Chloe Tan",
+        assignee: "Ananya Deshmukh",
         avatar: "CT",
         avatarBg: "bg-teal-600",
         tag: "Color Grading",
@@ -2980,7 +2980,7 @@ export function AdminCalendarPage() {
       {
         id: "cal-14-3",
         pod: "Pod A",
-        client: "Atlas Commerce",
+        client: "Shanmugaraj",
         title: "TikTok Viral Hook Reel Cut #1 & #2",
         type: "Reel",
         assignee: "Elena R.",
@@ -2993,10 +2993,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-14-4",
         pod: "Pod A",
-        client: "Northwind Labs",
+        client: "Ryze",
         title: "Conversion Post Carousel (10 Panels)",
         type: "Post",
-        assignee: "Marcus Vance",
+        assignee: "Dev Sharma",
         avatar: "MV",
         avatarBg: "bg-indigo-600",
         tag: "Final Polish",
@@ -3008,10 +3008,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-15-1",
         pod: "Pod A",
-        client: "Northwind Labs",
+        client: "Ryze",
         title: "15-Sec Flash Sale Promo Story Set",
         type: "Story",
-        assignee: "David Kim",
+        assignee: "Karthik Raja",
         avatar: "DK",
         avatarBg: "bg-[#0F172A]",
         tag: "Approved",
@@ -3021,7 +3021,7 @@ export function AdminCalendarPage() {
       {
         id: "cal-15-2",
         pod: "Pod A",
-        client: "Bloom Studio",
+        client: "Aravindan",
         title: "Founder Q&A Vertical Micro-Reel #4",
         type: "Reel",
         assignee: "Elena R.",
@@ -3034,10 +3034,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-15-3",
         pod: "Pod A",
-        client: "Atlas Commerce",
+        client: "Shanmugaraj",
         title: "Top 5 Growth Hacks Infographic Post",
         type: "Post",
-        assignee: "Marcus Vance",
+        assignee: "Dev Sharma",
         avatar: "MV",
         avatarBg: "bg-indigo-600",
         tag: "Scheduled",
@@ -3049,7 +3049,7 @@ export function AdminCalendarPage() {
       {
         id: "cal-18-1",
         pod: "Pod A",
-        client: "Northwind Labs",
+        client: "Ryze",
         title: "Q4 Keynote Executive Post Showcase",
         type: "Post",
         assignee: "Elena R.",
@@ -3062,10 +3062,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-18-2",
         pod: "Pod A",
-        client: "Atlas Commerce",
+        client: "Shanmugaraj",
         title: "High-Energy Product Feature Cutdown Reel",
         type: "Reel",
-        assignee: "David Kim",
+        assignee: "Karthik Raja",
         avatar: "DK",
         avatarBg: "bg-[#0F172A]",
         tag: "Color Grading",
@@ -3077,10 +3077,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-20-1",
         pod: "Pod A",
-        client: "Northwind Labs",
+        client: "Ryze",
         title: "60-Sec High-Velocity Tech Growth Reel",
         type: "Reel",
-        assignee: "Chloe Tan",
+        assignee: "Ananya Deshmukh",
         avatar: "CT",
         avatarBg: "bg-teal-600",
         tag: "Approved",
@@ -3090,10 +3090,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-20-2",
         pod: "Pod A",
-        client: "Bloom Studio",
+        client: "Aravindan",
         title: "Interactive Audience Q&A Story Sequence",
         type: "Story",
-        assignee: "Chloe Tan",
+        assignee: "Ananya Deshmukh",
         avatar: "CT",
         avatarBg: "bg-teal-600",
         tag: "Drafting",
@@ -3105,10 +3105,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-22-1",
         pod: "Pod A",
-        client: "Bloom Studio",
+        client: "Aravindan",
         title: "Black Friday Sneak Peek Teaser Reel",
         type: "Reel",
-        assignee: "David Kim",
+        assignee: "Karthik Raja",
         avatar: "DK",
         avatarBg: "bg-[#0F172A]",
         tag: "Final Polish",
@@ -3118,10 +3118,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-22-2",
         pod: "Pod A",
-        client: "Atlas Commerce",
+        client: "Shanmugaraj",
         title: "Cyber Monday Display Post Carousel",
         type: "Post",
-        assignee: "Marcus Vance",
+        assignee: "Dev Sharma",
         avatar: "MV",
         avatarBg: "bg-indigo-600",
         tag: "Approved",
@@ -3133,10 +3133,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-25-1",
         pod: "Pod A",
-        client: "Northwind Labs",
+        client: "Ryze",
         title: "Mobile App Onboarding Story Series",
         type: "Story",
-        assignee: "Chloe Tan",
+        assignee: "Ananya Deshmukh",
         avatar: "CT",
         avatarBg: "bg-teal-600",
         tag: "Sound Sync",
@@ -3148,10 +3148,10 @@ export function AdminCalendarPage() {
       {
         id: "cal-28-1",
         pod: "Pod A",
-        client: "Northwind Labs",
+        client: "Ryze",
         title: "End-of-Month Retrospective Reel Showcase",
         type: "Reel",
-        assignee: "David Kim",
+        assignee: "Karthik Raja",
         avatar: "DK",
         avatarBg: "bg-[#0F172A]",
         tag: "Final Polish",
@@ -3212,7 +3212,7 @@ export function AdminCalendarPage() {
     setIsScheduleModalOpen(false);
     setScheduleForm({
       title: "",
-      client: "Northwind Labs",
+      client: "Ryze",
       pod: "Pod A",
       type: "Reel",
       dateDay: selectedDayNumber,
@@ -3310,9 +3310,10 @@ export function AdminCalendarPage() {
               ariaLabel="Filter Calendar Client"
               options={[
                 { value: "all", label: "All Assigned Clients" },
-                { value: "Northwind", label: "Northwind Labs" },
-                { value: "Bloom", label: "Bloom Studio" },
-                { value: "Atlas", label: "Atlas Commerce" },
+                { value: "Ryze", label: "Ryze" },
+                { value: "Aravindan", label: "Aravindan" },
+                { value: "Shanmugaraj", label: "Shanmugaraj" },
+                { value: "Luma", label: "Luma Global" },
               ]}
             />
 
@@ -3608,9 +3609,10 @@ export function AdminCalendarPage() {
                       onChange={(e) => setScheduleForm({ ...scheduleForm, client: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl border border-[#2A3446] text-xs font-medium"
                     >
-                      <option value="Northwind Labs">Northwind Labs</option>
-                      <option value="Bloom Studio">Bloom Studio</option>
-                      <option value="Atlas Commerce">Atlas Commerce</option>
+                      <option value="Ryze">Ryze</option>
+                      <option value="Aravindan">Aravindan</option>
+                      <option value="Shanmugaraj">Shanmugaraj</option>
+                      <option value="Luma">Luma Global</option>
                       <option value="Lumina Health">Lumina Health</option>
                       <option value="Acme Corp">Acme Corp</option>
                     </select>
@@ -3911,7 +3913,7 @@ export function AdminTeamManagementPage() {
     {
       id: "m-202",
       podId: "pod-b",
-      name: "David Kim",
+      name: "Dev Sharma",
       role: "Video Editor & Reel Specialist",
       category: "editor",
       email: "editor.beta@creo.agency",
@@ -4022,7 +4024,7 @@ export function AdminTeamManagementPage() {
   const [scheduleModalMember, setScheduleModalMember] = useState<TeamMember | null>(null);
   const [assignForm, setAssignForm] = useState({
     taskTitle: "Brand Repositioning Sprint Deliverable",
-    client: "Northwind Labs",
+    client: "Ryze",
     priority: "High",
     allocationIncrease: 15,
     deadline: "Friday (Sprint 08)",
@@ -4115,7 +4117,7 @@ export function AdminTeamManagementPage() {
     setAssignModalMember(member);
     setAssignForm({
       taskTitle: `Sprint Deliverables for ${member.name.split(" ")[0]}`,
-      client: "Northwind Labs",
+      client: "Ryze",
       priority: "High",
       allocationIncrease: member.allocatedPct >= 80 ? 10 : 15,
       deadline: "Friday (Sprint 08)",
@@ -4755,11 +4757,10 @@ export function AdminTeamManagementPage() {
                       onChange={(e) => setAssignForm({ ...assignForm, client: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl border border-[#2A3446] text-xs font-medium text-white bg-[#161F2D]"
                     >
-                      <option value="Northwind Labs">Northwind Labs (Enterprise)</option>
-                      <option value="Atlas Commerce">Atlas Commerce (Growth)</option>
-                      <option value="Lumina Health">Lumina Health (Enterprise)</option>
-                      <option value="Bloom Studio">Bloom Studio (Standard)</option>
-                      <option value="Vanguard Mobility">Vanguard Mobility (Growth)</option>
+                      <option value="Ryze">Ryze (Starter Growth)</option>
+                      <option value="Shanmugaraj">Shanmugaraj (Brand Accelerator)</option>
+                      <option value="Aravindan">Aravindan (Custom Retainer)</option>
+                      <option value="Luma">Luma Global (Enterprise)</option>
                     </select>
                   </div>
 
@@ -4909,10 +4910,10 @@ export function AdminTeamManagementPage() {
                 </div>
                 <div className="grid grid-cols-5 gap-2">
                   {[
-                    { day: "Mon", hours: "8.0h", task: "Northwind 3D Renders", bg: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30" },
-                    { day: "Tue", hours: "7.5h", task: "Vanguard 4K Motion", bg: "bg-purple-50 text-purple-700 border-purple-200" },
-                    { day: "Wed", hours: "8.0h", task: "Bloom Studio Intro", bg: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-                    { day: "Thu", hours: "8.0h", task: "Atlas Product Teaser", bg: "bg-amber-50 text-amber-700 border-amber-200" },
+                    { day: "Mon", hours: "8.0h", task: "Ryze 3D Renders", bg: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30" },
+                    { day: "Tue", hours: "7.5h", task: "Aravindan Motion", bg: "bg-purple-50 text-purple-700 border-purple-200" },
+                    { day: "Wed", hours: "8.0h", task: "Shanmugaraj Intro", bg: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                    { day: "Thu", hours: "8.0h", task: "Luma Teaser", bg: "bg-amber-50 text-amber-700 border-amber-200" },
                     { day: "Fri", hours: "6.5h", task: "Sprint Quality QA", bg: "bg-sky-50 text-sky-700 border-sky-200" },
                   ].map((item) => (
                     <div key={item.day} className="p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] flex flex-col justify-between text-center gap-1.5">
@@ -4931,10 +4932,10 @@ export function AdminTeamManagementPage() {
                 <h4 className="text-xs font-bold text-white">Active Deliverables & Status</h4>
                 <div className="space-y-2">
                   {[
-                    { client: "Northwind Labs", name: "3D Asset Render Batch #12", due: "Due in 2 days", progress: 90, color: "bg-blue-600" },
+                    { client: "Ryze", name: "3D Asset Render Batch #12", due: "Due in 2 days", progress: 90, color: "bg-blue-600" },
                     { client: "Vanguard Mobility", name: "4K Motion Sequence & Audio Sync", due: "Due Friday", progress: 65, color: "bg-purple-600" },
-                    { client: "Bloom Studio", name: "Brand Intro Animation Loop", due: "Due Next Tue", progress: 35, color: "bg-emerald-600" },
-                    { client: "Atlas Commerce", name: "Product Showcase 9:16 Cut", due: "Due Next Fri", progress: 15, color: "bg-amber-600" },
+                    { client: "Aravindan", name: "Brand Intro Animation Loop", due: "Due Next Tue", progress: 35, color: "bg-emerald-600" },
+                    { client: "Shanmugaraj", name: "Product Showcase 9:16 Cut", due: "Due Next Fri", progress: 15, color: "bg-amber-600" },
                   ].map((proj) => (
                     <div key={proj.name} className="p-3 rounded-xl border border-[#2A3446] bg-[#161F2D] hover:border-[#2A3446] transition-colors flex items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">

@@ -75,7 +75,7 @@ export function ClientDetailsWidget({ clients }: ClientDetailsWidgetProps) {
     const podLetters = ["A", "B", "C", "D", "E"];
     const podIdx = Math.abs(name.charCodeAt(0) || 0) % podLetters.length;
     const podLetter = podLetters[podIdx];
-    const podLeads = ["Maya Lin", "Elena Rostova", "Lena Ortiz", "Theo Clark", "Sarah Jenkins"];
+    const podLeads = ["Lead Producer A", "Lead Producer B", "Lead Producer C", "Lead Producer D", "Lead Producer E"];
     const podAvatars = ["bg-[#7FA0D6]", "bg-indigo-600", "bg-emerald-600", "bg-sky-600", "bg-blue-600"];
     return {
       letter: podLetter,

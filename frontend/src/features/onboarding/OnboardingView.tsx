@@ -434,39 +434,6 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
         onSelectStep={(step) => handleSelectStep(step)}
       />
 
-      {/* Resume Onboarding Banner (shown whenever client returns with in-progress onboarding) */}
-      {status && backendStage > 0 && backendStage < 8 && (
-        <div className="w-full mb-6 p-4 sm:p-5 rounded-2xl bg-[#161F2D] border border-[#2A3446] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="size-10 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-center text-[#7FA0D6] shrink-0 font-bold">
-              ⚡
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#7FA0D6]/15 text-[#93C5FD] border border-[#7FA0D6]/30">
-                  Resume Onboarding
-                </span>
-                {status.last_completed_stage_name && (
-                  <span className="text-xs text-emerald-400 font-semibold hidden sm:inline flex items-center gap-1">
-                    <CheckCircle2 className="size-3.5 inline text-emerald-400" />
-                    Last completed: {status.last_completed_stage_name}
-                  </span>
-                )}
-              </div>
-              <p className="text-sm font-bold text-white mt-1">
-                {currentStep === 4
-                  ? `Resuming at Section ${(status.resume_section || "a").toUpperCase()}: Brand Discovery`
-                  : `Continuing with Step ${currentStep}: ${STAGES.find((s) => s.step === currentStep)?.label || "Next Stage"}`}
-              </p>
-            </div>
-          </div>
-          <div className="text-xs text-[#94A3B8] shrink-0 flex items-center gap-2">
-            <span>Progress automatically saved</span>
-            <span className="inline-block size-2 rounded-full bg-emerald-400 animate-pulse" />
-          </div>
-        </div>
-      )}
-
       {/* Dynamic Stage Views */}
       <div className="w-full">
         <AnimatePresence mode="popLayout">

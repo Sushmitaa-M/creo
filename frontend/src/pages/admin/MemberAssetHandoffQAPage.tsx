@@ -60,9 +60,9 @@ export function MemberAssetHandoffQAPage() {
   const handleExportManifestCSV = () => {
     const csvContent =
       "Deliverable,Client Pod,Lead Reviewer,Status,Client Dispatch\n" +
-      "Fintech Hero Animation (Full 60s Cut),Northwind Labs,Maya Lin,Signed Off by Maya Lin,Dispatched (AWS S302)\n" +
-      "Atlas Holiday Teaser v1,Atlas Global Systems,Maya Lin,Revision Requested,Held for v2\n" +
-      "Brand Audio Identity Stems,Zenith Autonomous,Maya Lin,Approved & Archived,Dispatched (APN S411)\n";
+      "Fintech Hero Animation (Full 60s Cut),Client Workspace,Pod Lead,Signed Off by Pod Lead,Dispatched (AWS S302)\n" +
+      "Atlas Holiday Teaser v1,Client Retainer,Pod Lead,Revision Requested,Held for v2\n" +
+      "Brand Audio Identity Stems,Zenith Autonomous,Pod Lead,Approved & Archived,Dispatched (APN S411)\n";
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -78,7 +78,7 @@ export function MemberAssetHandoffQAPage() {
 
   const handleSendToLeadForSignOff = () => {
     setHandoffConfirmModalOpen(false);
-    showToast("Master handoff package dispatched to Maya Lin for synchronous sign-off!");
+    showToast("Master handoff package dispatched to Pod Lead for synchronous sign-off!");
   };
 
   return (
@@ -151,7 +151,7 @@ export function MemberAssetHandoffQAPage() {
             <div className="bg-[#161F2D] rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover-card-innovative space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#2A3446]">
                 <div>
-                  <span className="text-[10px] sm:text-[11px] font-bold text-[#7FA0D6] uppercase">NORTHWIND LABS · CAMPAIGN 04</span>
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#7FA0D6] uppercase">CLIENT WORKSPACE · CAMPAIGN 04</span>
                   <h2 className="text-sm sm:text-base font-black text-white">Fintech Ad Set (9:16 Vertical Reel – 4K)</h2>
                 </div>
 
@@ -227,10 +227,10 @@ export function MemberAssetHandoffQAPage() {
                   </div>
                   <div className="text-white/80 text-xs font-mono font-medium">
                     {activeVersionTab === "verA"
-                      ? "Northwind_Fintech_Reel_VerA_4K_ProRes4444.mov"
+                      ? "Client_Fintech_Reel_VerA_4K_ProRes4444.mov"
                       : activeVersionTab === "verB"
-                      ? "Northwind_Fintech_Minimalist_VerB_4K_ProRes4444.mov"
-                      : "Northwind_Fintech_BoardOff_VerC_4K_ProRes4444.mov"}
+                      ? "Client_Fintech_Minimalist_VerB_4K_ProRes4444.mov"
+                      : "Client_Fintech_BoardOff_VerC_4K_ProRes4444.mov"}
                   </div>
                 </div>
 
@@ -303,7 +303,7 @@ export function MemberAssetHandoffQAPage() {
                 <div className="p-3.5 rounded-2xl bg-[#0B111C]/90 border border-[#2A3446]/80 space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-[10px] font-bold text-[#7FA0D6] uppercase">Northwind Labs</span>
+                      <span className="text-[10px] font-bold text-[#7FA0D6] uppercase">Client Workspace</span>
                       <h4 className="text-xs font-black text-white leading-snug">Fintech Hero Animation (Full 60s Cut)</h4>
                       <div className="text-[10px] text-[#97A0B3] font-mono">PK2-NL-004D · 4K ProRes Master</div>
                     </div>
@@ -312,13 +312,13 @@ export function MemberAssetHandoffQAPage() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between pt-2 border-t border-[#2A3446]/60 text-xs">
-                    <span className="text-[11px] text-[#97A0B3] font-medium">Reviewer: Maya Lin</span>
+                    <span className="text-[11px] text-[#97A0B3] font-medium">Reviewer: Pod Lead</span>
                     <button
                       onClick={() =>
                         setSelectedAssetToView({
                           title: "Fintech Hero Animation (Full 60s Cut)",
-                          client: "Northwind Labs",
-                          status: "Signed Off by Maya Lin",
+                          client: "Client Workspace",
+                          status: "Signed Off by Pod Lead",
                           dispatch: "AWS S302",
                         })
                       }
@@ -332,7 +332,7 @@ export function MemberAssetHandoffQAPage() {
                 <div className="p-3.5 rounded-2xl bg-[#0B111C]/90 border border-amber-200/80 space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-[10px] font-bold text-purple-600 uppercase">Atlas Global Systems</span>
+                      <span className="text-[10px] font-bold text-purple-600 uppercase">Client Retainer</span>
                       <h4 className="text-xs font-black text-white leading-snug">Atlas Holiday Teaser v1</h4>
                       <div className="text-[10px] text-amber-700 font-semibold mt-0.5">
                         Lead Note: "Adjust opening hook pacing by 0.5s"
@@ -395,18 +395,18 @@ export function MemberAssetHandoffQAPage() {
                         <div className="font-bold text-white">Fintech Hero Animation (Full 60s Cut)</div>
                         <div className="text-[11px] text-[#97A0B3]">PK2-NL-004D · 4K ProRes Master</div>
                       </td>
-                      <td className="py-3 px-3 font-semibold text-white">Northwind Labs</td>
+                      <td className="py-3 px-3 font-semibold text-white">Client Workspace</td>
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-1.5">
                           <div className="size-5 rounded bg-blue-600 text-white font-black text-[9px] flex items-center justify-center">
                             ML
                           </div>
-                          <span>Maya Lin</span>
+                          <span>Pod Lead</span>
                         </div>
                       </td>
                       <td className="py-3 px-3">
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          ✓ Signed Off by Maya Lin
+                          ✓ Signed Off by Pod Lead
                         </span>
                       </td>
                       <td className="py-3 px-3 font-mono text-[11px] text-[#97A0B3]">Dispatched (AWS S302)</td>
@@ -415,8 +415,8 @@ export function MemberAssetHandoffQAPage() {
                           onClick={() =>
                             setSelectedAssetToView({
                               title: "Fintech Hero Animation (Full 60s Cut)",
-                              client: "Northwind Labs",
-                              status: "Signed Off by Maya Lin",
+                              client: "Client Workspace",
+                              status: "Signed Off by Pod Lead",
                               dispatch: "AWS S302",
                             })
                           }
@@ -434,13 +434,13 @@ export function MemberAssetHandoffQAPage() {
                           Lead Note: "Adjust opening hook pacing by 0.5s"
                         </div>
                       </td>
-                      <td className="py-3 px-3 font-semibold text-white">Atlas Global Systems</td>
+                      <td className="py-3 px-3 font-semibold text-white">Client Retainer</td>
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-1.5">
                           <div className="size-5 rounded bg-blue-600 text-white font-black text-[9px] flex items-center justify-center">
                             ML
                           </div>
-                          <span>Maya Lin</span>
+                          <span>Pod Lead</span>
                         </div>
                       </td>
                       <td className="py-3 px-3">
@@ -470,7 +470,7 @@ export function MemberAssetHandoffQAPage() {
                           <div className="size-5 rounded bg-blue-600 text-white font-black text-[9px] flex items-center justify-center">
                             ML
                           </div>
-                          <span>Maya Lin</span>
+                          <span>Pod Lead</span>
                         </div>
                       </td>
                       <td className="py-3 px-3">
@@ -561,7 +561,7 @@ export function MemberAssetHandoffQAPage() {
                     className="size-4 rounded text-[#7FA0D6] focus:ring-blue-500 mt-0.5 cursor-pointer"
                   />
                   <div>
-                    <div className="text-xs font-black text-white">Brand vectors validated (Northwind v4.2)</div>
+                    <div className="text-xs font-black text-white">Brand vectors validated (Client v4.2)</div>
                     <div className="text-[11px] text-[#97A0B3] mt-0.5">
                       Verified WCG04 All-Net party on dark-mode kinetic typography blocks.
                     </div>
@@ -601,7 +601,7 @@ export function MemberAssetHandoffQAPage() {
                     ML
                   </div>
                   <div>
-                    <div className="text-xs font-black text-white">Maya Lin</div>
+                    <div className="text-xs font-black text-white">Pod Lead</div>
                     <div className="text-[10px] text-[#97A0B3]">Lead Art Director • Pod A Operations</div>
                   </div>
                 </div>
@@ -640,7 +640,7 @@ export function MemberAssetHandoffQAPage() {
                   className="flex-1 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 cursor-pointer text-center flex items-center justify-center gap-1.5"
                 >
                   <Send className="size-3.5" />
-                  Send to Maya Lin for Sign-Off
+                  Send to Pod Lead for Sign-Off
                 </button>
               </div>
             </div>
@@ -655,7 +655,7 @@ export function MemberAssetHandoffQAPage() {
           CENTERED MODALS WITH BLURRED BACKGROUND (z-[99999])
       ───────────────────────────────────────────────────────────── */}
 
-      {/* MODAL: SEND TO MAYA LIN CONFIRMATION */}
+      {/* MODAL: SEND TO POD LEAD CONFIRMATION */}
       {handoffConfirmModalOpen && (
         <div
           className="fixed inset-0 w-screen h-screen z-[99999] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
@@ -669,9 +669,9 @@ export function MemberAssetHandoffQAPage() {
               <Send className="size-6" />
             </div>
             <div>
-              <h3 className="text-base font-black text-white">Dispatch Package to Maya Lin?</h3>
+              <h3 className="text-base font-black text-white">Dispatch Package to Pod Lead?</h3>
               <p className="text-xs text-[#97A0B3] mt-1 leading-relaxed">
-                Maya Lin will receive an immediate high-priority review alert on her Pod Lead dashboard with attached 4K ProRes files.
+                Pod Lead will receive an immediate high-priority review alert on her Pod Lead dashboard with attached 4K ProRes files.
               </p>
             </div>
 
@@ -708,7 +708,7 @@ export function MemberAssetHandoffQAPage() {
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <div>
                 <h3 className="text-base font-black text-white">Resubmit Revision v2</h3>
-                <p className="text-xs text-[#97A0B3]">Atlas Holiday Teaser v1 (Atlas Global Systems)</p>
+                <p className="text-xs text-[#97A0B3]">Atlas Holiday Teaser v1 (Client Retainer)</p>
               </div>
               <button
                 type="button"
@@ -723,7 +723,7 @@ export function MemberAssetHandoffQAPage() {
               onSubmit={(e) => {
                 e.preventDefault();
                 setResubmitModalOpen(false);
-                showToast("Revision v2 resubmitted to Maya Lin!");
+                showToast("Revision v2 resubmitted to Pod Lead!");
               }}
               className="space-y-3.5 text-xs"
             >
@@ -781,7 +781,7 @@ export function MemberAssetHandoffQAPage() {
               <div className="p-3 bg-[#0B111C] rounded-xl border border-[#2A3446] flex justify-between">
                 <div>
                   <div className="font-bold text-white">Full 60s Cut Dispatched to AWS S302</div>
-                  <div className="text-[11px] text-[#97A0B3]">Signed off by Maya Lin • 09:42 AM</div>
+                  <div className="text-[11px] text-[#97A0B3]">Signed off by Pod Lead • 09:42 AM</div>
                 </div>
                 <span className="text-emerald-600 font-bold">✓ Success</span>
               </div>
@@ -841,7 +841,7 @@ export function MemberAssetHandoffQAPage() {
                 <input
                   type="text"
                   required
-                  defaultValue="Northwind Fintech Ad Set 9:16 (Package 04)"
+                  defaultValue="Client Fintech Ad Set 9:16 (Package 04)"
                   className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-bold"
                 />
               </div>
@@ -849,9 +849,9 @@ export function MemberAssetHandoffQAPage() {
               <div>
                 <label className="block font-bold text-[#F1F5F9] mb-1">Client Pod</label>
                 <select className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#161F2D]">
-                  <option value="Northwind Labs">Northwind Labs</option>
-                  <option value="Atlas Commerce">Atlas Commerce</option>
-                  <option value="Bloom Studio">Bloom Studio</option>
+                  <option value="Client Workspace">Client Workspace</option>
+                  <option value="Client Retainer">Client Retainer</option>
+                  <option value="Active Client">Active Client</option>
                 </select>
               </div>
 

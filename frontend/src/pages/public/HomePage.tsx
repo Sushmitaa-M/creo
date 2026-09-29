@@ -45,8 +45,8 @@ export function HomePage() {
   const navigate = useNavigate();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [assets, setAssets] = useState([
-    { id: 1, name: "Autumn drop teaser", type: "Reel 9:16", status: "awaiting" },
-    { id: 2, name: "The 36-hour dough", type: "Carousel 4 slides", status: "awaiting" },
+    { id: 1, name: "Brand Launch Teaser", type: "Reel 9:16", status: "awaiting" },
+    { id: 2, name: "Product Feature Breakdown", type: "Carousel 4 slides", status: "awaiting" },
     { id: 3, name: "Serum launch countdown", type: "Story 3 frames", status: "approved" },
   ]);
 

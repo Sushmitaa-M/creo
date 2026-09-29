@@ -24,6 +24,7 @@ import { RequireOnboardingComplete } from "../components/auth/RequireOnboardingC
 import { RequireOnboardingStage } from "../components/auth/RequireOnboardingStage";
 import { MandatoryPasswordResetModal } from "../components/auth/MandatoryPasswordResetModal";
 import { CreoLoadingScreen } from "../components/ui/CreoLoadingScreen";
+import { CreoLoader } from "../components/ui/CreoLoader";
 
 // Portal Layout & Pages
 import { PortalLayout } from "../components/portal/PortalLayout";

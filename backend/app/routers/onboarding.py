@@ -82,6 +82,27 @@ async def queue_brand_dna_generation(
 ) -> dict[str, Any]:
     """Queue Brand DNA synthesis from questionnaire answers (HTTP 202)."""
     client_id = actor.client_id or actor.user_id
+
+    # Prerequisite: active subscription
+    from app.services.subscription_guard import check_client_subscription
+    sub_check = await check_client_subscription(db, client_id)
+    if not sub_check["is_active"]:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Active subscription required before Brand DNA can be generated.",
+        )
+
+    # Prerequisite: questionnaire Sections A-E completed
+    q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
+    quest = (await db.execute(q_stmt)).scalar_one_or_none()
+    if not quest or not quest.core_completed_at:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Questionnaire Sections A-E must be submitted before Brand DNA can be generated.",
+        )
+
     dna = await brand_dna.run_brand_dna_pipeline(db, client_id)
     return {
         "status": "generating",

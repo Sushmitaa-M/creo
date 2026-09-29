@@ -17,36 +17,6 @@ interface CalendarEntry {
   time?: string;
 }
 
-const MOCK_ENTRIES: CalendarEntry[] = [
-  { id: "1", date: "2026-10-01", format: "Reel", title: "The 36-hour dough", hasThumbnail: true, thumbnail_url: "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&q=80", status: "Needs your review", time: "12:30" },
-  { id: "2", date: "2026-10-02", format: "Carousel", hasThumbnail: true, thumbnail_url: "https://images.unsplash.com/photo-1556910110-a5a63dfd393c?auto=format&fit=crop&q=80" },
-  { id: "3", date: "2026-10-03", format: "Post" },
-  { id: "5", date: "2026-10-05", format: "Story" },
-  { id: "6", date: "2026-10-06", format: "Reel" },
-  { id: "7", date: "2026-10-07", format: "Story" },
-  { id: "8", date: "2026-10-08", format: "Post" },
-  { id: "9", date: "2026-10-09", format: "Carousel", hasThumbnail: true, thumbnail_url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80" },
-  { id: "10", date: "2026-10-10", format: "Story" },
-  { id: "12", date: "2026-10-12", format: "Reel" },
-  { id: "13", date: "2026-10-13", format: "Story" },
-  { id: "14", date: "2026-10-14", format: "Post" },
-  { id: "15", date: "2026-10-15", format: "Reel", hasThumbnail: true, thumbnail_url: "https://images.unsplash.com/photo-1509376602029-79878262243f?auto=format&fit=crop&q=80" },
-  { id: "16", date: "2026-10-16", format: "Carousel" },
-  { id: "17", date: "2026-10-17", format: "Story" },
-  { id: "19", date: "2026-10-19", format: "Post" },
-  { id: "20", date: "2026-10-20", format: "Reel" },
-  { id: "21", date: "2026-10-21", format: "Story" },
-  { id: "22", date: "2026-10-22", format: "Carousel", hasThumbnail: true, thumbnail_url: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&q=80" },
-  { id: "23", date: "2026-10-23", format: "Post" },
-  { id: "24", date: "2026-10-24", format: "Story" },
-  { id: "26", date: "2026-10-26", format: "Reel" },
-  { id: "27", date: "2026-10-27", format: "Story" },
-  { id: "28", date: "2026-10-28", format: "Post" },
-  { id: "29", date: "2026-10-29", format: "Carousel", hasThumbnail: true, thumbnail_url: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80" },
-  { id: "30", date: "2026-10-30", format: "Reel" },
-  { id: "31", date: "2026-10-31", format: "Story" },
-];
-
 const FORMAT_COLORS = {
   Reel: "bg-[#3B82F6]",
   Carousel: "bg-[#F97316]",
@@ -103,19 +73,19 @@ export function PortalCalendarPage() {
   const emptyPrefix = firstDay === 0 ? 6 : firstDay - 1; 
   const totalCells = Math.ceil((emptyPrefix + daysInMonth) / 7) * 7;
 
-  // Mix backend data with mock data (to preserve demo feel if backend is empty for the month)
-  const allEntries = [...MOCK_ENTRIES, ...rawEntries.map(e => ({
+  // Real backend content calendar entries only
+  const allEntries: CalendarEntry[] = rawEntries.map((e: any) => ({
     id: e.id,
     date: e.date?.split("T")[0] || e.date,
-    format: e.type === "reel" || e.file_type?.includes("video") ? "Reel" 
-          : e.type === "carousel" ? "Carousel" 
-          : e.type === "story" ? "Story" : "Post",
+    format: e.type === "reel" || e.file_type?.includes("video") || e.format === "Reel" ? "Reel" 
+          : e.type === "carousel" || e.format === "Carousel" ? "Carousel" 
+          : e.type === "story" || e.format === "Story" ? "Story" : "Post",
     title: e.title,
     hasThumbnail: !!(e.thumbnail_url || e.file_url),
     thumbnail_url: e.thumbnail_url || e.file_url,
     status: e.status === "pending_approval" ? "Needs your review" : e.status,
     time: e.scheduled_time || "12:00"
-  }))];
+  }));
 
   const monthStr = (month + 1).toString().padStart(2, '0');
   const monthEntries = allEntries.filter(e => e.date.startsWith(`${year}-${monthStr}`));
@@ -341,7 +311,7 @@ export function PortalCalendarPage() {
                   .filter(e => e.date.startsWith(`${year}-${monthStr}`))
                   .sort((a,b) => a.date.localeCompare(b.date))
                   .map(entry => (
-                  <div key={entry.id} className="bg-white/[0.02] hover:bg-white/[0.05] transition-colors border border-white/[0.05] rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setSelectedDate(parseInt(entry.date.split('-')[2]))}>
+                  <div key={entry.id} className="bg-white/[0.02] hover:bg-white/[0.05] transition-colors border border-white/[0.05] rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setSelectedDate(parseInt(entry.date.split('-')[2] || "1", 10))}>
                      <div className="flex items-center gap-4">
                         {entry.hasThumbnail ? (
                           <img src={entry.thumbnail_url} className="w-12 h-12 rounded object-cover" />

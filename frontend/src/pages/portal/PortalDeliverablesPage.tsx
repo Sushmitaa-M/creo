@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../lib/auth-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchPortalDeliverables, approveDeliverable, requestChanges } from "../../lib/deliverables-api";
-import { Check, Play, Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { request } from "../../lib/http";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
 
@@ -91,28 +91,17 @@ export function PortalDeliverablesPage() {
     showToast(`Approving ${pendingIds.length} items...`);
   };
 
-  // Mock comments based on the design
-  const comments = [
-    {
-      id: 1,
-      author: "You",
-      timestamp: "at 0:04",
-      text: "Love this shot. Can the steam be a touch longer?",
-      marker: 1,
-      top: "40%",
-      left: "60%"
-    },
-    {
-      id: 2,
-      author: "You - v1",
-      timestamp: "at 0:17",
-      text: "Frame 2 has too much text. Keep just the first line.",
-      fixed: true,
-      marker: 2,
-      top: "70%",
-      left: "80%"
-    }
-  ];
+  const itemComments = selectedItem?.rejection_comment
+    ? [
+        {
+          id: "rev-note",
+          author: "You",
+          timestamp: selectedItem.created_at ? new Date(selectedItem.created_at).toLocaleDateString() : "Latest review",
+          text: selectedItem.rejection_comment,
+          fixed: (selectedItem.revision_round || 1) > 1,
+        },
+      ]
+    : [];
 
   if (isLoading && deliverables.length === 0) {
     return (
@@ -128,7 +117,7 @@ export function PortalDeliverablesPage() {
       <div className="flex items-center justify-between mb-8 shrink-0">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6B7280] mb-2">
-            BATCH 05 · {countAwaiting} WAITING FOR YOU
+            {deliverables.length > 0 ? `CYCLE DELIVERABLES · ${countAwaiting} WAITING FOR YOU` : "NO DELIVERABLES PENDING"}
           </p>
           <h1 className="text-3xl font-bold text-white">Review</h1>
         </div>
@@ -228,27 +217,29 @@ export function PortalDeliverablesPage() {
 
           <div className="flex-1 flex items-center justify-center p-8 bg-[#0E1420]/30 relative">
             {selectedItem ? (
-              <div className="relative w-full max-w-[280px] aspect-[9/16] bg-black rounded-[32px] overflow-hidden shadow-2xl border-4 border-[#1E2536]">
-                <img 
-                  src={selectedItem.file_url || "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&q=80"} 
-                  alt="" 
-                  className="w-full h-full object-cover" 
-                />
-                
-                {/* Simulated Comment Markers on Video */}
-                {comments.map(c => (
-                  <div 
-                    key={c.id} 
-                    className="absolute size-6 rounded-full bg-[#E2E8F0] border-2 border-black flex items-center justify-center text-[10px] font-bold text-black shadow-lg cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
-                    style={{ top: c.top, left: c.left }}
-                  >
-                    {c.marker}
+              <div className="relative w-full max-w-[280px] aspect-[9/16] bg-black rounded-[32px] overflow-hidden shadow-2xl border-4 border-[#1E2536] flex items-center justify-center">
+                {selectedItem.file_url && (selectedItem.file_type?.includes("video") || selectedItem.file_url.endsWith(".mp4") || selectedItem.file_url.endsWith(".webm") || selectedItem.file_url.endsWith(".mov")) ? (
+                  <video
+                    src={selectedItem.file_url}
+                    controls
+                    className="w-full h-full object-cover"
+                  />
+                ) : selectedItem.file_url ? (
+                  <img 
+                    src={selectedItem.file_url} 
+                    alt={selectedItem.title || "Deliverable"} 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <div className="text-center p-4">
+                    <p className="text-white text-xs font-semibold mb-1">Asset in production</p>
+                    <p className="text-[11px] text-[#6B7280]">Preview will appear once uploaded by your pod</p>
                   </div>
-                ))}
+                )}
                 
-                <div className="absolute bottom-6 inset-x-0 text-center">
-                  <p className="text-white text-[13px] font-bold drop-shadow-md">
-                    {selectedItem.title || "36 hours before you order."}
+                <div className="absolute bottom-6 inset-x-0 text-center pointer-events-none">
+                  <p className="text-white text-[13px] font-bold drop-shadow-md px-2 truncate">
+                    {selectedItem.title || "Deliverable preview"}
                   </p>
                 </div>
               </div>
@@ -257,16 +248,13 @@ export function PortalDeliverablesPage() {
             )}
           </div>
           
-          {/* Player Controls Mock */}
-          <div className="h-[72px] shrink-0 border-t border-white/[0.05] px-6 flex items-center gap-4 bg-[#0E1420]/30">
-            <button className="size-8 rounded-full bg-[#E2E8F0] flex items-center justify-center shrink-0">
-              <Play className="w-3.5 h-3.5 text-[#0E1420] fill-current ml-0.5" />
-            </button>
-            <div className="flex-1 h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
-              <div className="w-[35%] h-full bg-[#3B82F6] rounded-full" />
-            </div>
-            <span className="text-[11px] font-bold text-[#6B7280] tabular-nums shrink-0">
-              0:09 / 0:24
+          {/* Asset Meta Bar */}
+          <div className="h-[72px] shrink-0 border-t border-white/[0.05] px-6 flex items-center justify-between bg-[#0E1420]/30">
+            <span className="text-[12px] text-[#9CA3AF]">
+              {selectedItem ? `Format: ${(selectedItem.file_type || selectedItem.asset_type || "Media").toUpperCase()}` : "No asset selected"}
+            </span>
+            <span className="text-[11px] font-medium text-[#6B7280] tabular-nums shrink-0">
+              {selectedItem?.created_at ? `Created ${new Date(selectedItem.created_at).toLocaleDateString()}` : ""}
             </span>
           </div>
         </div>
@@ -278,9 +266,9 @@ export function PortalDeliverablesPage() {
               {/* Header Info */}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-2">
-                  {selectedItem.asset_type || "REEL"} · 9:16 · PUBLISHES THU 1 OCT, 12:30
+                  {(selectedItem.asset_type || selectedItem.file_type || "REEL").toUpperCase()} · {selectedItem.scheduled_at ? `PUBLISHES ${new Date(selectedItem.scheduled_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase()}` : "SCHEDULED IN CALENDAR"}
                 </p>
-                <h2 className="text-2xl font-normal text-white">{selectedItem.title || selectedItem.file_url?.split("/").pop()?.replace(/[-_.]/g, " ") || "The 36-hour dough"}</h2>
+                <h2 className="text-2xl font-normal text-white">{selectedItem.title || selectedItem.file_url?.split("/").pop()?.replace(/[-_.]/g, " ") || "Deliverable"}</h2>
               </div>
 
               {/* What changed */}
@@ -288,7 +276,7 @@ export function PortalDeliverablesPage() {
                 <div className="bg-[#1E2536] rounded-xl p-4 border border-white/[0.03]">
                   <h4 className="text-[12px] font-bold text-white mb-1.5">What changed in v{selectedItem.revision_round}</h4>
                   <p className="text-[13px] text-[#9CA3AF] leading-relaxed">
-                    Frame 2 cut to one line · steam shot extended by 1.2s · end card now links to pre-orders.
+                    {selectedItem.rejection_comment || "Updated revision based on client feedback."}
                   </p>
                 </div>
               )}
@@ -309,29 +297,30 @@ export function PortalDeliverablesPage() {
               <div>
                 <h4 className="text-[12px] font-bold text-white mb-4">Comments</h4>
                 <div className="space-y-4">
-                  {comments.map(c => (
-                    <div key={c.id} className="flex gap-3">
-                      <div className="size-6 rounded-full bg-[#E2E8F0] shrink-0 flex items-center justify-center text-[10px] font-bold text-black border border-white/[0.1]">
-                        {c.marker}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[11px] text-[#9CA3AF] mb-1">
-                          <span className="font-bold text-white">{c.author}</span> - {c.timestamp}
-                        </p>
-                        <p className="text-[13px] text-[#9CA3AF] leading-relaxed mb-1">
-                          {c.text}
-                        </p>
-                        {c.fixed && (
-                          <p className="text-[11px] font-bold text-[#9CA3AF] flex items-center gap-1">
-                            <Check className="w-3 h-3" /> Fixed in v2
+                  {itemComments.length === 0 ? (
+                    <p className="text-[13px] text-[#6B7280] italic">No revision comments yet for this deliverable.</p>
+                  ) : (
+                    itemComments.map((c) => (
+                      <div key={c.id} className="flex gap-3">
+                        <div className="size-6 rounded-full bg-[#E2E8F0] shrink-0 flex items-center justify-center text-[10px] font-bold text-black border border-white/[0.1]">
+                          1
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[11px] text-[#9CA3AF] mb-1">
+                            <span className="font-bold text-white">{c.author}</span> - {c.timestamp}
                           </p>
-                        )}
+                          <p className="text-[13px] text-[#9CA3AF] leading-relaxed mb-1">
+                            {c.text}
+                          </p>
+                          {c.fixed && (
+                            <p className="text-[11px] font-bold text-[#9CA3AF] flex items-center gap-1">
+                              <Check className="w-3 h-3" /> Addressed in v{selectedItem.revision_round}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  <p className="text-[11px] text-[#6B7280] pt-2 border-t border-white/[0.05]">
-                    Click anywhere on the video to pin a comment to that moment.
-                  </p>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -352,7 +341,7 @@ export function PortalDeliverablesPage() {
                 <textarea
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Tell Arjun what to change..."
+                  placeholder="Tell your creative pod what to change..."
                   className="w-full bg-[#0E1420]/50 border border-white/[0.08] rounded-xl p-4 text-[13px] text-white placeholder:text-[#6B7280] resize-none focus:outline-none focus:border-white/[0.2] transition-colors h-24 mb-4"
                 />
                 

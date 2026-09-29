@@ -6,14 +6,6 @@ import { request } from "../../lib/http";
 import { fetchPortalDeliverables } from "../../lib/deliverables-api";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
 
-// Fallback for demo when backend is empty
-const DEMO_ASSETS = [
-  { id: "demo-1", status: "Published", type: "REEL", title: "The 36-hour dough", image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=600&fit=crop" },
-  { id: "demo-2", status: "Needs you", type: "CAROUSEL", title: "Diwali pre-order guide", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=600&fit=crop" },
-  { id: "demo-3", status: "Approved", type: "STORY", title: "Pre-order reminder", image: "https://images.unsplash.com/photo-1549395156-e0c1fe6fc7a5?w=600&h=600&fit=crop" },
-  { id: "demo-4", status: "Published", type: "POST", title: "Weekend bake list", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=600&fit=crop" }
-];
-
 export function PortalLibraryPage() {
   const { user } = useAuth();
   const [filter, setFilter] = useState("All");
@@ -45,7 +37,7 @@ export function PortalLibraryPage() {
     fileUrl: item.file_url
   }));
 
-  const assets = realAssets.length > 0 ? realAssets : DEMO_ASSETS;
+  const assets = realAssets;
 
   const counts = {
     total: assets.length,
@@ -178,7 +170,8 @@ export function PortalLibraryPage() {
         {filteredAssets.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center text-[#6B7280] py-20 border border-dashed border-white/[0.1] rounded-2xl">
             <Search className="w-8 h-8 mb-4 opacity-50" />
-            <p className="text-sm">No assets found matching your criteria</p>
+            <p className="text-sm font-medium text-white/80">{search ? "No assets match your search" : "No deliverables in your library yet"}</p>
+            <p className="text-xs text-[#6B7280] mt-1">{search ? "Try searching for a different keyword" : "Completed content produced by your pod will appear here."}</p>
           </div>
         ) : (
           filteredAssets.map((asset, i) => {

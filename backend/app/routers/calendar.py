@@ -29,8 +29,24 @@ async def get_calendar_entries(
         actual_client_id = client_id if isinstance(client_id, uuid.UUID) else None
         target_client_id = actual_client_id or actor.client_id or actor.user_id
 
-    # If client role, require active, unexpired subscription
+    # If client role, require active, unexpired subscription and completed onboarding
     if actor.role == "client":
+        from app.services.onboarding_service import get_onboarding_status
+        ob_status = await get_onboarding_status(db, target_client_id)
+        if not ob_status.is_complete:
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "code": "ONBOARDING_INCOMPLETE",
+                    "message": "Onboarding must be completed before accessing the content calendar.",
+                    "stage": ob_status.stage,
+                    "next_required_stage": ob_status.next_required_stage,
+                    "next_route": ob_status.next_route,
+                    "resume_section": ob_status.resume_section,
+                },
+            )
+
         from app.services.subscription_guard import check_client_subscription
         sub_check = await check_client_subscription(db, target_client_id)
         if not sub_check["is_active"]:

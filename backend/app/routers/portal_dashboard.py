@@ -31,6 +31,20 @@ async def get_portal_dashboard(
     """Fetch aggregated real-time dashboard data for a client."""
     if actor.role == "client":
         target_client_id = actor.client_id or actor.user_id
+        from app.services.onboarding_service import get_onboarding_status
+        ob_status = await get_onboarding_status(db, target_client_id)
+        if not ob_status.is_complete:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "code": "ONBOARDING_INCOMPLETE",
+                    "message": "Onboarding must be completed before accessing the client portal.",
+                    "stage": ob_status.stage,
+                    "next_required_stage": ob_status.next_required_stage,
+                    "next_route": ob_status.next_route,
+                    "resume_section": ob_status.resume_section,
+                },
+            )
     else:
         target_client_id = client_id or actor.client_id or actor.user_id
 

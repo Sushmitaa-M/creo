@@ -20,6 +20,8 @@ import { AuthPage } from "../pages/auth/AuthPage";
 import { GoogleCallbackPage } from "../pages/auth/GoogleCallbackPage";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { PublicOnlyRoute } from "../components/auth/PublicOnlyRoute";
+import { RequireOnboardingComplete } from "../components/auth/RequireOnboardingComplete";
+import { RequireOnboardingStage } from "../components/auth/RequireOnboardingStage";
 import { MandatoryPasswordResetModal } from "../components/auth/MandatoryPasswordResetModal";
 import { CreoLoadingScreen } from "../components/ui/CreoLoadingScreen";
 
@@ -351,7 +353,9 @@ export function App() {
                 path="/onboarding"
                 element={
                   <ProtectedRoute allowedRoles={["client", "admin", "super_admin"]}>
-                    <OnboardingPageWrapper />
+                    <RequireOnboardingStage>
+                      <OnboardingPageWrapper />
+                    </RequireOnboardingStage>
                   </ProtectedRoute>
                 }
               />
@@ -359,7 +363,9 @@ export function App() {
                 path="/onboarding/:stage"
                 element={
                   <ProtectedRoute allowedRoles={["client", "admin", "super_admin"]}>
-                    <OnboardingPageWrapper />
+                    <RequireOnboardingStage>
+                      <OnboardingPageWrapper />
+                    </RequireOnboardingStage>
                   </ProtectedRoute>
                 }
               />
@@ -369,7 +375,9 @@ export function App() {
                 path="/portal"
                 element={
                   <ProtectedRoute allowedRoles={["client", "admin", "super_admin"]}>
-                    <PortalLayout />
+                    <RequireOnboardingComplete>
+                      <PortalLayout />
+                    </RequireOnboardingComplete>
                   </ProtectedRoute>
                 }
               >

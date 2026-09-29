@@ -38,32 +38,33 @@ export function PortalCreativePodPage() {
   const [chatMessage, setChatMessage] = useState("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   
-  const [messages, setMessages] = useState([
-    {
-      id: "1",
-      sender: "pod",
-      name: "NI",
-      text: "Hey! The reels batch for this week is in final QA. Should hit your review queue by tonight. 🎬",
-      time: "2:30 PM",
-      isUser: false
-    },
-    {
-      id: "2",
-      sender: "user",
-      name: "U",
-      text: "Perfect, thanks Nisha! Also can we try a different hook for the sourdough reel?",
-      time: "2:45 PM",
-      isUser: true
-    },
-    {
-      id: "3",
-      sender: "pod",
-      name: "NI",
-      text: "Absolutely! Arjun is already testing a new hook variation. I'll have it in your V2 by tomorrow.",
-      time: "2:52 PM",
-      isUser: false
+  const [messages, setMessages] = useState<Array<{
+    id: string;
+    sender: string;
+    name: string;
+    text: string;
+    time: string;
+    isUser: boolean;
+  }>>([]);
+
+  const upcomingSlots = (() => {
+    const slots = [];
+    const times = ["10:30 AM", "2:00 PM", "11:00 AM", "3:30 PM", "10:00 AM"];
+    let d = new Date();
+    while (slots.length < 5) {
+      d = new Date(d.getTime() + 86400000);
+      const day = d.getDay();
+      if (day !== 0 && day !== 6) {
+        const dateStr = d.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" });
+        slots.push({
+          id: `slot-${d.toISOString().slice(0, 10)}`,
+          date: dateStr,
+          time: times[slots.length % times.length],
+        });
+      }
     }
-  ]);
+    return slots;
+  })();
 
   const handleSendMessage = () => {
     if (!chatMessage.trim()) return;
@@ -74,27 +75,12 @@ export function PortalCreativePodPage() {
         id: Date.now().toString(),
         sender: "user",
         name: user?.full_name?.charAt(0)?.toUpperCase() || "U",
-        text: chatMessage,
+        text: chatMessage.trim(),
         time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
         isUser: true
       }
     ]);
     setChatMessage("");
-    
-    // Simulate pod reply
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          sender: "pod",
-          name: "NI",
-          text: "Got it! Our team is on it. We'll update you soon.",
-          time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
-          isUser: false
-        }
-      ]);
-    }, 2000);
   };
 
   const handleBookSlot = (slotId: string) => {
@@ -219,22 +205,30 @@ export function PortalCreativePodPage() {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 px-6 py-4 space-y-4 overflow-y-auto scrollbar-hide">
-            {messages.map(msg => (
-              <div key={msg.id} className={`flex gap-3 max-w-[80%] ${msg.isUser ? "ml-auto flex-row-reverse" : ""}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${msg.isUser ? "bg-[#93C5FD] text-[#0E1420]" : "bg-gradient-to-br from-pink-500 to-orange-400 text-white"}`}>
-                  {msg.name}
-                </div>
-                <div className={msg.isUser ? "text-right" : ""}>
-                  <div className={`p-3 rounded-2xl text-sm inline-block text-left ${msg.isUser ? "bg-white text-[#0E1420] rounded-tr-sm" : "bg-[#1E2536] text-white rounded-tl-sm"}`}>
-                    {msg.text}
-                  </div>
-                  <span className={`text-[10px] text-[#6B7280] mt-1 block ${msg.isUser ? "text-right" : ""}`}>
-                    {msg.time}
-                  </span>
-                </div>
+          <div className="flex-1 px-6 py-4 space-y-4 overflow-y-auto scrollbar-hide flex flex-col justify-center">
+            {messages.length === 0 ? (
+              <div className="py-12 text-center text-[#6B7280]">
+                <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-30 text-white" />
+                <p className="text-sm font-medium text-white/80">No messages yet</p>
+                <p className="text-xs text-[#6B7280] mt-1">Send a message to start communicating directly with your pod.</p>
               </div>
-            ))}
+            ) : (
+              messages.map(msg => (
+                <div key={msg.id} className={`flex gap-3 max-w-[80%] ${msg.isUser ? "ml-auto flex-row-reverse" : ""}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${msg.isUser ? "bg-[#93C5FD] text-[#0E1420]" : "bg-gradient-to-br from-pink-500 to-orange-400 text-white"}`}>
+                    {msg.name}
+                  </div>
+                  <div className={msg.isUser ? "text-right" : ""}>
+                    <div className={`p-3 rounded-2xl text-sm inline-block text-left ${msg.isUser ? "bg-white text-[#0E1420] rounded-tr-sm" : "bg-[#1E2536] text-white rounded-tl-sm"}`}>
+                      {msg.text}
+                    </div>
+                    <span className={`text-[10px] text-[#6B7280] mt-1 block ${msg.isUser ? "text-right" : ""}`}>
+                      {msg.time}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Chat Input */}
@@ -261,13 +255,7 @@ export function PortalCreativePodPage() {
           <p className="text-[12px] text-[#6B7280] mb-5">15-minute slots with your pod lead</p>
 
           <div className="space-y-0 divide-y divide-white/[0.05]">
-            {[
-              { id: "slot-1", date: "Mon, 30 Sep", time: "10:30 AM" },
-              { id: "slot-2", date: "Tue, 1 Oct", time: "2:00 PM" },
-              { id: "slot-3", date: "Wed, 2 Oct", time: "11:00 AM" },
-              { id: "slot-4", date: "Thu, 3 Oct", time: "3:30 PM" },
-              { id: "slot-5", date: "Fri, 4 Oct", time: "10:00 AM" },
-            ].map((slot) => {
+            {upcomingSlots.map((slot) => {
               const isBooked = bookedSlots.includes(slot.id);
               return (
                 <div key={slot.id} className="flex items-center justify-between py-4">

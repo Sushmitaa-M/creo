@@ -22,7 +22,7 @@ export function PortalAccountPage() {
   });
   
   const stage = dashboard?.onboarding_stage ?? user?.onboarding_stage ?? 1;
-  const isSetupIncomplete = stage < 4;
+  const isSetupIncomplete = stage < 8;
 
   const updateProfileMutation = useMutation({
     mutationFn: async (payload: Record<string, any>) => {
@@ -115,7 +115,7 @@ export function PortalAccountPage() {
             You need to finish the onboarding process before you can fully access and manage your profile, brand DNA, and settings.
           </p>
           <a
-            href={`/onboarding?step=${stage}`}
+            href="/onboarding"
             className="inline-flex items-center justify-center w-full px-5 py-3 rounded-xl bg-white text-[#0E1420] text-[13px] font-bold hover:bg-white/90 transition-colors"
           >
             Resume Onboarding

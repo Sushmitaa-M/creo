@@ -30,6 +30,7 @@ import type { AssignedTeamMember } from "../../types/api";
 
 interface StageQuestionnaireProps {
   userId: string;
+  initialSection?: SectionKey;
   onComplete: (assignedTeam?: AssignedTeamMember[]) => void;
 }
 
@@ -189,13 +190,14 @@ function generateTonePreview(humour: number, formality: number, respectfulness: 
   return `"${opener} ${middle} ${closer}"`;
 }
 
-export function StageQuestionnaire({ userId, onComplete }: StageQuestionnaireProps) {
-  const [activeSection, setActiveSection] = useState<SectionKey>("a");
+export function StageQuestionnaire({ userId, initialSection, onComplete }: StageQuestionnaireProps) {
+  const [activeSection, setActiveSection] = useState<SectionKey>(initialSection || "a");
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [coreUnlocked, setCoreUnlocked] = useState(false);
   const [, setBrandDNAResult] = useState<any>(null);
+  const [dataInitialized, setDataInitialized] = useState(false);
 
   // Section form state
   const [secA, setSecA] = useState<any>({
@@ -288,8 +290,26 @@ export function StageQuestionnaire({ userId, onComplete }: StageQuestionnairePro
       if (qState.core_completed) {
         setCoreUnlocked(true);
       }
+
+      // If initialSection was passed from status, use it; otherwise detect first incomplete section among A..E
+      if (initialSection) {
+        setActiveSection(initialSection);
+      } else {
+        const a = qState.section_a;
+        const b = qState.section_b;
+        const c = qState.section_c;
+        const d = qState.section_d;
+        const e = qState.section_e;
+        if (!a || !(a.brand_name || a.one_liner)) setActiveSection("a");
+        else if (!b || !b.ideal_customer) setActiveSection("b");
+        else if (!c || !("humour" in c || c.voice_words?.length)) setActiveSection("c");
+        else if (!d || !(d.visual_direction?.length || d.colours?.length)) setActiveSection("d");
+        else if (!e || !(e.on_camera?.length || e.shoot_locations?.length)) setActiveSection("e");
+        else setActiveSection("a");
+      }
+      setDataInitialized(true);
     }
-  }, [qState]);
+  }, [qState, initialSection]);
 
   // Autosave current section helper
   const handleSaveCurrentSection = async (secKey: SectionKey, secData: any) => {
@@ -307,6 +327,52 @@ export function StageQuestionnaire({ userId, onComplete }: StageQuestionnairePro
       setIsSaving(false);
     }
   };
+
+  // Continuous debounced autosave for active section so browser closure never loses progress
+  useEffect(() => {
+    if (!dataInitialized) return;
+
+    let currentData = secA;
+    if (activeSection === "b") currentData = secB;
+    else if (activeSection === "c") currentData = secC;
+    else if (activeSection === "d") currentData = secD;
+    else if (activeSection === "e") currentData = secE;
+    else if (activeSection === "f") currentData = secF;
+    else if (activeSection === "g") currentData = secG;
+
+    setIsSaving(true);
+    const timer = setTimeout(() => {
+      saveQuestionnaireSection(userId, activeSection, currentData)
+        .then((res) => {
+          if (res.core_completed) setCoreUnlocked(true);
+          setSaveSuccess(true);
+          setTimeout(() => setSaveSuccess(false), 2000);
+        })
+        .catch((err) => console.warn("Autosave notice:", err))
+        .finally(() => setIsSaving(false));
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, [activeSection, secA, secB, secC, secD, secE, secF, secG, dataInitialized, userId]);
+
+  // Flush on page unload so closing the tab never loses progress
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      let currentData = secA;
+      if (activeSection === "b") currentData = secB;
+      else if (activeSection === "c") currentData = secC;
+      else if (activeSection === "d") currentData = secD;
+      else if (activeSection === "e") currentData = secE;
+      else if (activeSection === "f") currentData = secF;
+      else if (activeSection === "g") currentData = secG;
+
+      const payload = JSON.stringify({ section: activeSection, data: currentData });
+      navigator.sendBeacon?.(`/api/v1/onboarding/questionnaire/section`, new Blob([payload], { type: "application/json" }));
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [activeSection, secA, secB, secC, secD, secE, secF, secG]);
 
   // Live sentence preview
   const liveSentencePreview = useMemo(() => {

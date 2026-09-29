@@ -10,7 +10,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -20,7 +20,7 @@ from app.models.enums import UserRole
 from app.models.ops import Notification
 from app.models.questionnaire import Questionnaire
 from app.models.user import ClientProfile, User
-from app.models.work import ClientAssignment
+from app.models.work import ClientAssignment, ContentCalendar
 from app.schemas.onboarding import (
     OnboardingCompleteResponse,
     OnboardingStatusResponse,
@@ -36,12 +36,37 @@ STAGE_NAMES = {
     2: "Terms Accepted",
     3: "Subscription Active",
     4: "Questionnaire Submitted",
-    5: "Onboarding Complete",
+    5: "Brand DNA Generated",
+    6: "Creative Pod Allocated",
+    7: "Content Calendar Generated",
+    8: "Onboarding Complete",
 }
 
 
+def get_first_incomplete_section(quest: Questionnaire | None) -> str:
+    """Identify the first incomplete section among mandatory core sections A to E."""
+    if not quest:
+        return "a"
+    sec_a = quest.section_a or {}
+    if not (sec_a.get("brand_name") or sec_a.get("one_liner")):
+        return "a"
+    sec_b = quest.section_b or {}
+    if not sec_b.get("ideal_customer"):
+        return "b"
+    sec_c = quest.section_c or {}
+    if not ("humour" in sec_c or sec_c.get("voice_words")):
+        return "c"
+    sec_d = quest.section_d or {}
+    if not (sec_d.get("visual_direction") or sec_d.get("colours")):
+        return "d"
+    sec_e = quest.section_e or {}
+    if not (sec_e.get("on_camera") or sec_e.get("shoot_locations")):
+        return "e"
+    return "e"
+
+
 async def get_current_stage(db: AsyncSession, client_id: uuid.UUID) -> int:
-    """Derive client onboarding stage (0..5) directly from v_client_onboarding."""
+    """Derive client onboarding stage (0..8) directly from v_client_onboarding."""
     stmt = text("SELECT stage FROM v_client_onboarding WHERE client_id = :uid")
     result = await db.execute(stmt, {"uid": client_id})
     row = result.fetchone()
@@ -62,16 +87,64 @@ async def get_onboarding_status(db: AsyncSession, client_id: uuid.UUID) -> Onboa
     profile_res = await db.execute(profile_stmt)
     profile = profile_res.scalar_one_or_none()
 
+    q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
+    quest = (await db.execute(q_stmt)).scalar_one_or_none()
+
+    is_complete = stage >= 8
+
+    # Derive resume section and next required stage & route
+    resume_section = None
+    if stage == 0:
+        next_required = "verify"
+        next_route = "/onboarding?step=1"
+        last_stage_name = None
+    elif stage == 1:
+        next_required = "terms"
+        next_route = "/onboarding?step=2"
+        last_stage_name = STAGE_NAMES[1]
+    elif stage == 2:
+        next_required = "payment"
+        next_route = "/onboarding?step=3"
+        last_stage_name = STAGE_NAMES[2]
+    elif stage == 3:
+        next_required = "questionnaire"
+        resume_section = get_first_incomplete_section(quest)
+        next_route = "/onboarding/questionnaire"
+        last_stage_name = STAGE_NAMES[3]
+    elif stage == 4:
+        next_required = "brand_dna"
+        next_route = "/onboarding/questionnaire?step=brand_dna"
+        last_stage_name = STAGE_NAMES[4]
+    elif stage == 5:
+        next_required = "pod"
+        next_route = "/onboarding/questionnaire?step=pod"
+        last_stage_name = STAGE_NAMES[5]
+    elif stage == 6:
+        next_required = "calendar"
+        next_route = "/onboarding/questionnaire?step=calendar"
+        last_stage_name = STAGE_NAMES[6]
+    elif stage == 7:
+        next_required = "complete"
+        next_route = "/onboarding?step=5"
+        last_stage_name = STAGE_NAMES[7]
+    else:
+        next_required = "portal"
+        next_route = "/portal"
+        last_stage_name = STAGE_NAMES[8]
+
     checklist = {
         "email_verified": stage >= 1,
         "terms_accepted": stage >= 2,
         "subscription_active": stage >= 3,
         "questionnaire_submitted": stage >= 4,
-        "onboarding_completed": stage >= 5,
+        "brand_dna_generated": stage >= 5,
+        "pod_assigned": stage >= 6,
+        "calendar_generated": stage >= 7,
+        "onboarding_completed": is_complete,
     }
 
     assigned_team: list[dict[str, Any]] = []
-    if stage >= 4:
+    if stage >= 6:
         ca_stmt = (
             select(ClientAssignment, User)
             .join(User, User.id == ClientAssignment.user_id)
@@ -97,6 +170,11 @@ async def get_onboarding_status(db: AsyncSession, client_id: uuid.UUID) -> Onboa
         stage=stage,
         stage_name=STAGE_NAMES.get(stage, "Unknown Stage"),
         checklist=checklist,
+        is_complete=is_complete,
+        next_required_stage=next_required,
+        next_route=next_route,
+        resume_section=resume_section,
+        last_completed_stage_name=last_stage_name,
         deadline=profile.onboarding_deadline if profile else None,
         company_name=profile.company_name if profile else None,
         instagram_username=profile.instagram_username if profile else None,
@@ -418,11 +496,16 @@ async def submit_questionnaire(
 
 
 async def complete_onboarding(db: AsyncSession, client_id: uuid.UUID) -> OnboardingCompleteResponse:
-    """Finalize client onboarding, assign account manager pod, and set initial SLA window."""
+    """Finalize client onboarding with strict prerequisite validation.
+    
+    Order: Terms -> Active Sub -> Sections A-E -> Brand DNA -> Pod Assignment -> Calendar Generation -> Complete.
+    """
     now = datetime.now(UTC)
     profile_stmt = select(ClientProfile).where(ClientProfile.user_id == client_id)
     profile_res = await db.execute(profile_stmt)
-    profile = profile_res.scalar_one()
+    profile = profile_res.scalar_one_or_none()
+    if not profile:
+        raise NotFound("Client profile not found", code="CLIENT_NOT_FOUND")
 
     # Idempotent check: if already completed, return existing assignment
     if profile.onboarding_completed_at is not None:
@@ -454,13 +537,49 @@ async def complete_onboarding(db: AsyncSession, client_id: uuid.UUID) -> Onboard
                 assigned_team=assigned_team,
             )
 
-    profile.onboarding_completed_at = now
-    profile.onboarding_deadline = now + timedelta(days=7)
-    await db.flush()
+    # Prerequisite 1: Terms accepted
+    if not profile.terms_accepted_at:
+        raise Conflict("Terms must be accepted before completing onboarding", code="TERMS_REQUIRED")
 
-    # Impartial Pod Assignment & Feasible Calendar Generation
+    # Prerequisite 2: Active subscription exists
+    from app.services.subscription_guard import check_client_subscription
+    sub_check = await check_client_subscription(db, client_id)
+    if not sub_check["is_active"]:
+        raise PaymentRequired("Active subscription required before completing onboarding", code="PAYMENT_REQUIRED")
+
+    # Prerequisite 3: Questionnaire Sections A-E completed
+    q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
+    quest = (await db.execute(q_stmt)).scalar_one_or_none()
+    if not quest or not quest.core_completed_at:
+        raise Conflict("Mandatory Brand Questionnaire Sections A-E must be submitted before completing onboarding", code="QUESTIONNAIRE_REQUIRED")
+
+    # Prerequisite 4: Brand DNA generated
+    if not profile.brand_dna:
+        from app.services.brand_dna import run_brand_dna_pipeline
+        await run_brand_dna_pipeline(db, client_id)
+        await db.refresh(profile)
+        if not profile.brand_dna:
+            raise Conflict("Brand DNA generation must complete before assigning creative pod", code="BRAND_DNA_REQUIRED")
+
+    # Prerequisite 5 & 6: Impartial Pod Assignment & Feasible Calendar Generation
     from app.services.fair_dispatch_service import assign_client_and_generate_schedule
     dispatch_result = await assign_client_and_generate_schedule(db, client_id)
+
+    # Verify both pod and calendar exist
+    ca_count = (await db.execute(select(func.count(ClientAssignment.id)).where(ClientAssignment.client_id == client_id))).scalar() or 0
+    cc_count = (await db.execute(select(func.count(ContentCalendar.id)).where(ContentCalendar.client_id == client_id))).scalar() or 0
+    if ca_count == 0:
+        raise Conflict("Pod allocation failed. Assignment could not be confirmed.", code="POD_ALLOCATION_FAILED")
+    if cc_count == 0:
+        raise Conflict("Content calendar generation failed. Schedule could not be confirmed.", code="CALENDAR_GENERATION_FAILED")
+
+    # Only after all prerequisites succeed:
+    profile.onboarding_completed_at = now
+    if not profile.onboarding_deadline:
+        profile.onboarding_deadline = now + timedelta(days=7)
+
+    await db.commit()
+    await db.refresh(profile)
 
     assigned_team = []
     if dispatch_result.get("team_lead"):
@@ -481,8 +600,6 @@ async def complete_onboarding(db: AsyncSession, client_id: uuid.UUID) -> Onboard
             "name": dispatch_result["graphic_designer"]["name"],
             "role": "Lead Graphic Designer (Posters & Carousels)",
         })
-
-    await db.commit()
 
     # Automatically notify and email the assigned team lead & specialists with the client's Brand DNA summary
     try:

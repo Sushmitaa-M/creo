@@ -29,7 +29,7 @@ export function PortalPaymentsPage() {
   });
   
   const stage = dashboard?.onboarding_stage ?? user?.onboarding_stage ?? 1;
-  const isSetupIncomplete = stage < 4;
+  const isSetupIncomplete = stage < 8;
 
   const planName = (subData as any)?.plan?.display_name || subData?.subscription?.name || "Growth";
   const planPrice = (subData?.subscription as any)?.amount 
@@ -37,7 +37,7 @@ export function PortalPaymentsPage() {
     : (subData as any)?.plan?.price_minor ? (subData as any).plan.price_minor / 100 : 50000;
   const renewalDate = subData?.subscription?.current_period_end 
     ? new Date(subData.subscription.current_period_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase()
-    : "12 OCT";
+    : "NEXT BILLING CYCLE";
 
   const addons = [
     { id: "extra_reel", name: "Extra reel", desc: "Delivered within this batch", price: 4500 },
@@ -47,41 +47,37 @@ export function PortalPaymentsPage() {
   ];
 
   const backendInvoices = (subData as any)?.invoices || [];
-  const invoices = backendInvoices.length > 0 
-    ? backendInvoices.map((inv: any) => ({
-        id: inv.id,
-        period: inv.date,
-        amount: typeof inv.amount === 'string' ? parseFloat(inv.amount.replace(/[^0-9.]/g, '')) : inv.amount,
-        status: inv.status
-      }))
-    : [
-        { id: "CR-2609", period: "12 Sep – 11 Oct", amount: planPrice, status: "Paid" },
-      ];
+  const invoices = backendInvoices.map((inv: any) => ({
+    id: inv.id,
+    period: inv.date,
+    amount: typeof inv.amount === 'string' ? parseFloat(inv.amount.replace(/[^0-9.]/g, '')) : inv.amount,
+    status: inv.status
+  }));
 
-  const usage = (subData as any)?.usage || {};
+  const usage = (subData as any)?.quotas || (subData as any)?.usage || {};
   const usageBars = [
-    { label: "Reels", current: usage.reel?.used || 0, max: usage.reel?.quota || 10, color: "bg-[#3B82F6]" },
-    { label: "Posts", current: usage.static_post?.used || 0, max: usage.static_post?.quota || 16, color: "bg-[#3B82F6]" },
-    { label: "Stories", current: usage.story?.used || 0, max: usage.story?.quota || 22, color: "bg-[#3B82F6]" }
+    { label: "Reels", current: usage.reel?.used || 0, max: usage.reel?.quota || (subData as any)?.plan?.reel_quota || 8, color: "bg-[#3B82F6]" },
+    { label: "Posts", current: (usage.static_post?.used ?? usage.poster?.used) || 0, max: (usage.static_post?.quota ?? usage.poster?.quota) || (subData as any)?.plan?.poster_quota || 4, color: "bg-[#3B82F6]" },
+    { label: "Stories", current: usage.story?.used || 0, max: usage.story?.quota || (subData as any)?.plan?.story_quota || 8, color: "bg-[#3B82F6]" }
   ];
 
   const totalMax = usageBars.reduce((sum, item) => sum + item.max, 0);
-  const costPerAsset = totalMax > 0 ? Math.round(planPrice / totalMax) : 1042;
+  const costPerAsset = totalMax > 0 ? Math.round(planPrice / totalMax) : 0;
 
+  const rzpKey = (import.meta.env.VITE_RAZORPAY_KEY_ID as string) || "rzp_test_TO2r0YMjDZSpuC";
 
   const handleAddon = (addon: typeof addons[0]) => {
     setProcessingAddon(addon.id);
-    // Simulate backend init then Razorpay
     setTimeout(() => {
       setProcessingAddon(null);
       openRazorpayCheckout(
         {
-          key: "mock",
+          key: rzpKey,
           amount: addon.price * 100,
           currency: "INR",
           name: "Creo Studio",
           description: addon.name,
-          order_id: "mock_" + addon.id,
+          order_id: "addon_" + addon.id + "_" + Date.now(),
           prefill: { name: user?.full_name || "", email: user?.email || "" }
         },
         () => alert(`Successfully added ${addon.name} to this cycle!`),
@@ -108,7 +104,7 @@ export function PortalPaymentsPage() {
             You need to finish the onboarding process before you can fully access and manage your plans and billing.
           </p>
           <a
-            href={`/onboarding?step=${stage}`}
+            href="/onboarding"
             className="inline-flex items-center justify-center w-full px-5 py-3 rounded-xl bg-white text-[#0E1420] text-[13px] font-bold hover:bg-white/90 transition-colors"
           >
             Resume Onboarding
@@ -219,27 +215,35 @@ export function PortalPaymentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.05]">
-                {invoices.map((inv: any) => (
-                  <tr key={inv.id}>
-                    <td className="py-4 text-[13px] font-medium text-[#9CA3AF] font-mono">{inv.id}</td>
-                    <td className="py-4 text-[13px] text-white">{inv.period}</td>
-                    <td className="py-4 text-[13px] font-bold text-white">₹{inv.amount.toLocaleString('en-IN')}</td>
-                    <td className="py-4">
-                      <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-[#1E3A8A]/90 text-[#93C5FD] text-[11px] font-bold">
-                        {inv.status}
-                      </span>
-                    </td>
-                    <td className="py-4 text-right">
-                      <button 
-                        onClick={() => handleDownload(inv.id)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.12] text-[12px] font-bold text-white hover:bg-white/[0.05] transition-colors"
-                      >
-                        {downloadingInv === inv.id ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5" />}
-                        GST invoice
-                      </button>
+                {invoices.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-sm text-[#6B7280]">
+                      No invoices generated yet.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  invoices.map((inv: any) => (
+                    <tr key={inv.id}>
+                      <td className="py-4 text-[13px] font-medium text-[#9CA3AF] font-mono">{inv.id}</td>
+                      <td className="py-4 text-[13px] text-white">{inv.period}</td>
+                      <td className="py-4 text-[13px] font-bold text-white">₹{inv.amount.toLocaleString('en-IN')}</td>
+                      <td className="py-4">
+                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-[#1E3A8A]/90 text-[#93C5FD] text-[11px] font-bold">
+                          {inv.status}
+                        </span>
+                      </td>
+                      <td className="py-4 text-right">
+                        <button 
+                          onClick={() => handleDownload(inv.id)}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.12] text-[12px] font-bold text-white hover:bg-white/[0.05] transition-colors"
+                        >
+                          {downloadingInv === inv.id ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5" />}
+                          GST invoice
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -270,12 +274,12 @@ export function PortalPaymentsPage() {
             onClick={() => {
               openRazorpayCheckout(
                 {
-                  key: "mock",
+                  key: rzpKey,
                   amount: 0,
                   currency: "INR",
                   name: "Creo Studio",
                   description: "Update payment method",
-                  order_id: "mock_auth",
+                  order_id: "auth_" + Date.now(),
                 },
                 () => alert("Payment method updated successfully!"),
                 () => {}

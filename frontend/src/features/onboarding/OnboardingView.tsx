@@ -329,74 +329,56 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
     queryKey: ["onboarding-status", userId],
     queryFn: () => fetchOnboardingStatus(userId),
     refetchInterval: 5000,
+    staleTime: 0,
   });
 
-  // Calculate user's current unlocked step (1 to 5)
-  // Backend view maps:
+  // Calculate user's current unlocked step (1 to 5) strictly from database stage:
   // stage 0 -> step 1 (Email verification pending)
   // stage 1 -> step 2 (Email verified, terms pending)
   // stage 2 -> step 3 (Terms accepted, payment pending)
-  // stage 3 -> step 4 (Payment done, questionnaire pending)
-  // stage 4 -> step 5 (Questionnaire submitted, ready to complete)
-  // stage 5 -> step 5 (Active)
-  const backendStage = status?.stage ?? 1;
-  const maxUnlockedStep = Math.min(5, Math.max(1, backendStage + 1));
+  // stage 3..7 -> step 4 (Payment done, questionnaire & brand DNA & pod & calendar pending)
+  // stage 8 -> step 5 (All complete -> Launch to portal)
+  const backendStage = status?.stage ?? 0;
+  const isQuestionnairePath = typeof window !== "undefined" && window.location.pathname.includes("questionnaire");
+
+  const computedStep = (() => {
+    if (isQuestionnairePath) return 4;
+    if (backendStage === 0) return 1;
+    if (backendStage === 1) return 2;
+    if (backendStage === 2) return 3;
+    if (backendStage >= 3 && backendStage < 8) return 4;
+    return 5;
+  })();
+
+  const maxUnlockedStep = (() => {
+    if (backendStage === 0) return 1;
+    if (backendStage === 1) return 2;
+    if (backendStage === 2) return 3;
+    if (backendStage >= 3 && backendStage < 8) return 4;
+    return 5;
+  })();
 
   const handleSelectStep = (step: number) => {
     setActiveStep(step);
-    try {
-      localStorage.setItem(`creo_onboard_step_${userId}`, String(step));
-    } catch {
-      // ignore
-    }
     setSearchParams({ step: String(step) }, { replace: true });
   };
 
   useEffect(() => {
     if (status) {
-      const bStage = status.stage ?? 1;
-      const maxUnlocked = Math.min(5, Math.max(1, bStage + 1));
-
-      setActiveStep((prev) => {
-        // If URL requested a valid unlocked step:
-        if (requestedStep && requestedStep >= 1 && requestedStep <= maxUnlocked) {
-          try {
-            localStorage.setItem(`creo_onboard_step_${userId}`, String(requestedStep));
-          } catch {
-            // ignore
-          }
-          return requestedStep;
-        }
-
-        // On initial mount, resume from localStorage if valid
-        if (prev === null) {
-          try {
-            const savedStr = localStorage.getItem(`creo_onboard_step_${userId}`);
-            const saved = savedStr ? parseInt(savedStr, 10) : null;
-            if (saved && saved >= 1 && saved <= maxUnlocked) {
-              return saved;
-            }
-          } catch {
-            // ignore
-          }
-          // Default to the furthest unlocked step (never resets to step 1)
-          return maxUnlocked;
-        }
-
-        // Advance only if user is strictly behind unlocked steps and not actively working on step 4
-        if (prev < maxUnlocked && prev !== 4) {
-          return maxUnlocked;
-        }
-        return prev;
-      });
+      if (requestedStep && requestedStep >= 1 && requestedStep <= maxUnlockedStep) {
+        setActiveStep(requestedStep);
+      } else {
+        // Enforce exact authoritative step from database state
+        setActiveStep(computedStep);
+      }
 
       if (status.assigned_team && status.assigned_team.length > 0) {
         setAssignedTeam(status.assigned_team);
       }
     }
-  }, [status, requestedStep, userId]);
+  }, [status, requestedStep, maxUnlockedStep, computedStep]);
 
-  const currentStep = activeStep ?? maxUnlockedStep;
+  const currentStep = activeStep ?? computedStep;
 
   const handleTermsAccepted = async () => {
     setTermsSubmitting(true);
@@ -450,6 +432,39 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
         onSelectStep={(step) => handleSelectStep(step)}
       />
 
+      {/* Resume Onboarding Banner (shown whenever client returns with in-progress onboarding) */}
+      {status && backendStage > 0 && backendStage < 8 && (
+        <div className="w-full max-w-4xl lg:max-w-5xl mx-auto mb-6 p-4 sm:p-5 rounded-2xl bg-[#161F2D] border border-[#2A3446] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="size-10 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-center text-[#7FA0D6] shrink-0 font-bold">
+              ⚡
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#7FA0D6]/15 text-[#93C5FD] border border-[#7FA0D6]/30">
+                  Resume Onboarding
+                </span>
+                {status.last_completed_stage_name && (
+                  <span className="text-xs text-emerald-400 font-semibold hidden sm:inline flex items-center gap-1">
+                    <CheckCircle2 className="size-3.5 inline text-emerald-400" />
+                    Last completed: {status.last_completed_stage_name}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm font-bold text-white mt-1">
+                {currentStep === 4
+                  ? `Resuming at Section ${(status.resume_section || "a").toUpperCase()}: Brand Discovery`
+                  : `Continuing with Step ${currentStep}: ${STAGES.find((s) => s.step === currentStep)?.label || "Next Stage"}`}
+              </p>
+            </div>
+          </div>
+          <div className="text-xs text-[#97A0B3] shrink-0 flex items-center gap-2">
+            <span>Progress automatically saved</span>
+            <span className="inline-block size-2 rounded-full bg-emerald-400 animate-pulse" />
+          </div>
+        </div>
+      )}
+
       {/* Dynamic Stage Views */}
       <div className="w-full">
         <AnimatePresence mode="popLayout">
@@ -489,6 +504,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
             <StageQuestionnaire
               key="questionnaire"
               userId={userId}
+              initialSection={(status.resume_section as any) || undefined}
               onComplete={(team) => {
                 if (team && team.length > 0) {
                   setAssignedTeam(team);

@@ -77,6 +77,42 @@ export function PortalDashboardPage() {
     refetchInterval: 15000,
   });
 
+  const { data: upcomingEntries = [] } = useQuery<any[]>({
+    queryKey: ["portal-dashboard-calendar-upcoming", user?.id],
+    queryFn: async () => {
+      try {
+        const res = await request<any[]>("/api/v1/calendar/entries");
+        if (!Array.isArray(res)) return [];
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const in7Days = new Date(now.getTime() + 7 * 86400000);
+        return res
+          .filter((e) => {
+            const d = new Date(e.date);
+            return d >= now && d <= in7Days;
+          })
+          .slice(0, 6);
+      } catch {
+        return [];
+      }
+    },
+    enabled: subscriptionActive,
+    refetchInterval: 15000,
+  });
+
+  const { data: subData } = useQuery<any>({
+    queryKey: ["portal-sub-usage", user?.id],
+    queryFn: async () => {
+      try {
+        return await request<any>("/api/v1/payments/subscription");
+      } catch {
+        return null;
+      }
+    },
+    enabled: subscriptionActive,
+    refetchInterval: 30000,
+  });
+
   if (!subscriptionActive && dashboard) {
     return (
       <div className="flex items-center justify-center min-h-[70vh]">
@@ -127,8 +163,12 @@ export function PortalDashboardPage() {
 
   const companyName = dashboard?.company?.name || user?.company_name || user?.full_name || "Brand";
   const pendingCount = pendingDeliverables.length;
-  const dayName = "MON";
-  const dateStr = "28 SEP";
+  
+  const today = new Date();
+  const dayName = today.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
+  const dateStr = today.toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase();
+  const daysRemaining = (dashboard?.active_plan as any)?.days_remaining ?? subData?.days_remaining ?? 30;
+  const cycleDay = Math.max(1, Math.min(30, 30 - daysRemaining + 1));
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -137,7 +177,7 @@ export function PortalDashboardPage() {
         <div>
           {/* Context date */}
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6B7280] mb-3">
-            {dayName} {dateStr} · CYCLE DAY 16 OF 30
+            {dayName} {dateStr} · CYCLE DAY {cycleDay} OF 30
           </p>
           {/* Hero Title */}
           <h1 className="text-3xl sm:text-4xl font-normal text-white leading-tight">
@@ -288,26 +328,40 @@ export function PortalDashboardPage() {
               <span className="text-right">Status</span>
             </div>
 
-            {/* Table Rows - Using mock data from screenshot instead of rawEntries to match design exactly */}
+            {/* Table Rows */}
             <div className="divide-y divide-white/[0.04]">
-              {[
-                { day: "Tue 29 · 19:00", format: "Story", post: "Pre-order reminder", status: "Scheduled", badgeColor: "bg-[#1E3A8A]/90 text-[#93C5FD]" },
-                { day: "Thu 1 · 12:30", format: "Reel", post: "The 36-hour dough", status: "Needs you", badgeColor: "bg-[#B45309]/90 text-white" },
-                { day: "Fri 2 · 18:00", format: "Carousel", post: "Diwali pre-order guide", status: "Needs you", badgeColor: "bg-[#B45309]/90 text-white" },
-                { day: "Sat 3 · 10:00", format: "Post", post: "Weekend bake list", status: "In production", badgeColor: "bg-white/[0.05] text-[#9CA3AF]" },
-                { day: "Mon 5 · 19:00", format: "Story", post: "Behind the oven", status: "In production", badgeColor: "bg-white/[0.05] text-[#9CA3AF]" },
-              ].map((entry, idx) => (
-                <div key={idx} className="grid grid-cols-4 gap-4 py-3 text-sm items-center hover:bg-white/[0.02] transition-colors -mx-2 px-2 rounded-lg cursor-pointer">
-                  <span className="text-[#9CA3AF] text-[13px]">{entry.day}</span>
-                  <span className="text-white text-[13px] capitalize">{entry.format}</span>
-                  <span className="text-[#9CA3AF] text-[13px] truncate">{entry.post}</span>
-                  <span className="text-right">
-                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-medium ${entry.badgeColor}`}>
-                      {entry.status}
-                    </span>
-                  </span>
+              {upcomingEntries.length === 0 ? (
+                <div className="py-8 text-center text-[#6B7280] text-sm">
+                  No upcoming posts scheduled in the next 7 days.
                 </div>
-              ))}
+              ) : (
+                upcomingEntries.map((entry: any, idx: number) => {
+                  const d = new Date(entry.date);
+                  const dayStr = d.toLocaleDateString("en-US", { weekday: "short", day: "numeric" });
+                  const timeStr = entry.scheduled_time ? ` · ${entry.scheduled_time}` : "";
+                  const statusLabel =
+                    entry.status === "approved" ? "Approved" :
+                    entry.status === "pending_approval" ? "Needs you" :
+                    entry.status === "changes_requested" ? "In revision" :
+                    "Scheduled";
+                  const badgeColor =
+                    statusLabel === "Needs you" ? "bg-[#B45309]/90 text-white" :
+                    statusLabel === "Approved" ? "bg-[#10B981]/20 text-[#6EE7B7]" :
+                    "bg-[#1E3A8A]/90 text-[#93C5FD]";
+                  return (
+                    <div key={entry.id || idx} className="grid grid-cols-4 gap-4 py-3 text-sm items-center hover:bg-white/[0.02] transition-colors -mx-2 px-2 rounded-lg cursor-pointer">
+                      <span className="text-[#9CA3AF] text-[13px]">{dayStr}{timeStr}</span>
+                      <span className="text-white text-[13px] capitalize">{entry.format_label || entry.type}</span>
+                      <span className="text-[#9CA3AF] text-[13px] truncate">{entry.topic || entry.title || "Scheduled post"}</span>
+                      <span className="text-right">
+                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-medium ${badgeColor}`}>
+                          {statusLabel}
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
@@ -317,33 +371,65 @@ export function PortalDashboardPage() {
           {/* Your plan this cycle */}
           <div className="bg-[#161C2D] rounded-2xl p-6 border border-white/[0.05]">
             <h3 className="text-base font-semibold text-white mb-5">Your plan this cycle</h3>
-            <div className="space-y-4">
-              {[
-                { label: "Reels", used: 3, total: dashboard?.active_plan?.reel_quota || 8 },
-                { label: "Posts", used: 2, total: dashboard?.active_plan?.poster_quota || 4 },
-                { label: "Stories", used: 4, total: dashboard?.active_plan?.story_quota || 8 },
-              ].map((item) => (
-                <div key={item.label}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm text-[#9CA3AF]">{item.label}</span>
-                    <span className="text-sm text-white font-medium">
-                      {item.used} <span className="text-[#6B7280]">/ {item.total}</span>
-                    </span>
+            {(() => {
+              const quotas = subData?.quotas || subData?.usage || {};
+              const plan = dashboard?.active_plan;
+              const renewalDateStr = subData?.subscription?.current_period_end
+                ? new Date(subData.subscription.current_period_end).toLocaleDateString("en-US", { day: "numeric", month: "short" })
+                : plan?.current_period_end
+                ? new Date(plan.current_period_end).toLocaleDateString("en-US", { day: "numeric", month: "short" })
+                : "Next cycle";
+
+              const usageItems = [
+                {
+                  label: "Reels",
+                  used: quotas.reel?.used ?? 0,
+                  total: quotas.reel?.quota ?? plan?.reel_quota ?? 8,
+                },
+                {
+                  label: "Posts",
+                  used: (quotas.static_post?.used ?? quotas.poster?.used) ?? 0,
+                  total: quotas.static_post?.quota ?? quotas.poster?.quota ?? plan?.poster_quota ?? 4,
+                },
+                {
+                  label: "Stories",
+                  used: quotas.story?.used ?? 0,
+                  total: quotas.story?.quota ?? plan?.story_quota ?? 8,
+                },
+              ];
+
+              return (
+                <>
+                  <div className="space-y-4">
+                    {usageItems.map((item) => {
+                      const totalSafe = item.total > 0 ? item.total : 1;
+                      const pct = Math.min(100, Math.round((item.used / totalSafe) * 100));
+                      return (
+                        <div key={item.label}>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-sm text-[#9CA3AF]">{item.label}</span>
+                            <span className="text-sm text-white font-medium">
+                              {item.used} <span className="text-[#6B7280]">/ {item.total}</span>
+                            </span>
+                          </div>
+                          <div className="h-2 bg-white/[0.04] rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-[#3B82F6] rounded-full transition-all duration-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="h-2 bg-white/[0.04] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#3B82F6] rounded-full transition-all duration-500"
-                      style={{ width: `${(item.used / item.total) * 100}%` }}
-                    />
+                  <div className="mt-6 pt-4 border-t border-white/[0.05]">
+                    <p className="text-[11px] text-[#6B7280]">
+                      Renews {renewalDateStr} · <Link to="/portal/payments" className="text-white hover:underline">Add-ons available</Link>
+                    </p>
                   </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 pt-4 border-t border-white/[0.05]">
-              <p className="text-[11px] text-[#6B7280]">
-                Renews 12 Oct · <span className="text-white">+4 reels</span> available as an add-on
-              </p>
-            </div>
+                </>
+              );
+            })()}
           </div>
 
           {/* Results */}
@@ -361,6 +447,7 @@ export function PortalDashboardPage() {
               @ Connect Instagram
             </Link>
           </div>
+
           {/* From your pod */}
           <div className="bg-[#161C2D] rounded-2xl p-6 border border-white/[0.05]">
             <div className="flex items-center justify-between mb-5">
@@ -373,53 +460,35 @@ export function PortalDashboardPage() {
               </Link>
             </div>
 
-            {/* Messages */}
-            <div className="space-y-4">
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#93C5FD] flex items-center justify-center text-[#0E1420] text-[10px] font-bold shrink-0">
-                  NI
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-sm font-bold text-white">Nisha</span>
-                    <span className="text-[11px] text-[#6B7280]">2h</span>
-                  </div>
-                  <p className="text-[13px] text-[#9CA3AF] leading-relaxed">
-                    v2 of the dough reel is up. We cut frame 2 down to one line like you asked.
-                  </p>
-                </div>
+            {/* Real Pod Team or Empty State */}
+            {(!dashboard?.assigned_team || dashboard.assigned_team.length === 0) ? (
+              <div className="py-6 text-center text-sm text-[#6B7280]">
+                Your dedicated creative pod is being allocated.
               </div>
-              
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-white/[0.08] flex items-center justify-center text-white text-[10px] font-bold shrink-0">
-                  AR
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-sm font-bold text-white">Arjun</span>
-                    <span className="text-[11px] text-[#6B7280]">Yesterday</span>
-                  </div>
-                  <p className="text-[13px] text-[#9CA3AF] leading-relaxed">
-                    Shooting the Diwali boxes on Thursday. Anything you want in the frame?
-                  </p>
-                </div>
+            ) : (
+              <div className="space-y-4">
+                {dashboard.assigned_team.slice(0, 3).map((member: any, i: number) => {
+                  const initials = member.name.split(" ").filter((w: string) => w.length > 0).map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+                  const avatarBgs = ["bg-[#93C5FD] text-[#0E1420]", "bg-white/[0.08] text-white", "bg-[#10B981] text-white"];
+                  return (
+                    <div key={member.id || i} className="flex gap-3 items-center">
+                      <div className={`w-8 h-8 rounded-full ${avatarBgs[i % avatarBgs.length]} flex items-center justify-center text-[10px] font-bold shrink-0`}>
+                        {initials}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className="text-sm font-bold text-white truncate">{member.name}</span>
+                          <span className="text-[11px] text-[#6B7280]">{member.is_primary ? "Lead" : "Pod"}</span>
+                        </div>
+                        <p className="text-[12px] text-[#9CA3AF] truncate">
+                          {member.role || "Creative execution"}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-bold shrink-0">
-                  SN
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-sm font-bold text-white">Sneha</span>
-                    <span className="text-[11px] text-[#6B7280]">Fri</span>
-                  </div>
-                  <p className="text-[13px] text-[#9CA3AF] leading-relaxed">
-                    November plan draft is ready for your review in <Link to="/portal/calendar" className="text-[#93C5FD] hover:underline">Calendar</Link>.
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

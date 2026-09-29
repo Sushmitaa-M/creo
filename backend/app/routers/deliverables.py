@@ -470,6 +470,22 @@ async def portal_list_deliverables(
         if not scope.client_id:
             return {"items": [], "has_more": False, "waiting_on_you": 0, "subscription_active": False}
 
+        from app.services.onboarding_service import get_onboarding_status
+        ob_status = await get_onboarding_status(db, scope.client_id)
+        if not ob_status.is_complete:
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "code": "ONBOARDING_INCOMPLETE",
+                    "message": "Onboarding must be completed before accessing deliverables.",
+                    "stage": ob_status.stage,
+                    "next_required_stage": ob_status.next_required_stage,
+                    "next_route": ob_status.next_route,
+                    "resume_section": ob_status.resume_section,
+                },
+            )
+
         sub_check = await check_client_subscription(db, scope.client_id)
         if not sub_check["is_active"]:
             return {

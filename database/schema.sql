@@ -532,20 +532,56 @@ CREATE OR REPLACE VIEW v_client_onboarding AS
 SELECT
     u.id AS client_id,
     CASE
-        WHEN cp.onboarding_completed_at IS NOT NULL THEN 5
-        WHEN q.id IS NOT NULL                      THEN 4
-        WHEN s.id IS NOT NULL                      THEN 3
-        WHEN cp.terms_accepted_at IS NOT NULL      THEN 2
-        WHEN (
-            u.email_verified_at IS NOT NULL
-            OR u.account_status != 'pending_verification'
-        ) THEN 1
+        WHEN cp.onboarding_completed_at IS NOT NULL
+             AND EXISTS (SELECT 1 FROM content_calendar cc WHERE cc.client_id = u.id)
+             AND EXISTS (SELECT 1 FROM client_assignments ca WHERE ca.client_id = u.id)
+             AND cp.brand_dna IS NOT NULL
+             AND q.core_completed_at IS NOT NULL
+             AND s.id IS NOT NULL AND s.status IN ('trialing', 'active')
+             AND cp.terms_accepted_at IS NOT NULL
+             AND (u.email_verified_at IS NOT NULL OR u.account_status != 'pending_verification')
+             THEN 8
+        WHEN EXISTS (SELECT 1 FROM content_calendar cc WHERE cc.client_id = u.id)
+             AND EXISTS (SELECT 1 FROM client_assignments ca WHERE ca.client_id = u.id)
+             AND cp.brand_dna IS NOT NULL
+             AND q.core_completed_at IS NOT NULL
+             AND s.id IS NOT NULL AND s.status IN ('trialing', 'active')
+             AND cp.terms_accepted_at IS NOT NULL
+             AND (u.email_verified_at IS NOT NULL OR u.account_status != 'pending_verification')
+             THEN 7
+        WHEN EXISTS (SELECT 1 FROM client_assignments ca WHERE ca.client_id = u.id)
+             AND cp.brand_dna IS NOT NULL
+             AND q.core_completed_at IS NOT NULL
+             AND s.id IS NOT NULL AND s.status IN ('trialing', 'active')
+             AND cp.terms_accepted_at IS NOT NULL
+             AND (u.email_verified_at IS NOT NULL OR u.account_status != 'pending_verification')
+             THEN 6
+        WHEN cp.brand_dna IS NOT NULL
+             AND q.core_completed_at IS NOT NULL
+             AND s.id IS NOT NULL AND s.status IN ('trialing', 'active')
+             AND cp.terms_accepted_at IS NOT NULL
+             AND (u.email_verified_at IS NOT NULL OR u.account_status != 'pending_verification')
+             THEN 5
+        WHEN q.core_completed_at IS NOT NULL
+             AND s.id IS NOT NULL AND s.status IN ('trialing', 'active')
+             AND cp.terms_accepted_at IS NOT NULL
+             AND (u.email_verified_at IS NOT NULL OR u.account_status != 'pending_verification')
+             THEN 4
+        WHEN s.id IS NOT NULL AND s.status IN ('trialing', 'active')
+             AND cp.terms_accepted_at IS NOT NULL
+             AND (u.email_verified_at IS NOT NULL OR u.account_status != 'pending_verification')
+             THEN 3
+        WHEN cp.terms_accepted_at IS NOT NULL
+             AND (u.email_verified_at IS NOT NULL OR u.account_status != 'pending_verification')
+             THEN 2
+        WHEN (u.email_verified_at IS NOT NULL OR u.account_status != 'pending_verification')
+             THEN 1
         ELSE 0
     END AS stage
 FROM users u
 LEFT JOIN client_profiles cp ON cp.user_id = u.id
-LEFT JOIN subscriptions s ON s.client_id = u.id AND s.status IN ('trialing', 'active')
 LEFT JOIN questionnaires q ON q.user_id = u.id
+LEFT JOIN subscriptions s ON s.client_id = u.id AND s.status IN ('trialing', 'active')
 WHERE u.role = 'client';
 
 -- 5.2 EXECUTIVE KPI MATERIALIZED VIEW

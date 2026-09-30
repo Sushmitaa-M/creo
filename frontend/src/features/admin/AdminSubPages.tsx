@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useSearchParams, Navigate } from "react-router";
-import { fetchClientRoster } from "../../lib/ops-api";
+import { fetchClientRoster, fetchPlanNegotiations, updatePlanNegotiation, createPlanNegotiation } from "../../lib/ops-api";
+import type { PlanNegotiationApiItem } from "../../lib/ops-api";
 import type { ClientRosterItem } from "../../types/ops";
 import {
   BarChart,
@@ -5474,16 +5475,17 @@ export interface PlanNegotiationItem {
   id: string;
   clientName: string;
   clientLogo: string;
-  currentPlan: string;
-  proposedPlan: string;
-  originalPrice: number;
-  proposedPrice: number;
-  discountPct: number;
-  notes: string;
-  requestedAt: string;
+  clientEmail?: string;
+  targetTopic: string;
+  proposedOffer: string | null;
+  phoneNumber: string;
+  preferredTime: string;
+  notes: string | null;
+  requestedAt: string | null;
   status: "Pending Review" | "Accepted" | "Declined" | "Counter Offered";
-  counterPrice?: number;
-  declineReason?: string;
+  counterPrice?: number | null;
+  counterNote?: string | null;
+  declineReason?: string | null;
 }
 
 export function AdminRevenuePage() {
@@ -6260,8 +6262,38 @@ export function AdminPlansPage() {
   const [newPropProposedRate, setNewPropProposedRate] = useState("85000");
   const [newPropNotes, setNewPropNotes] = useState("");
 
-  // Client Plan Negotiations List (0 Mock Data - Real client contract proposals appear here)
+  // Client Plan Negotiations List — fetched from backend API
   const [negotiations, setNegotiations] = useState<PlanNegotiationItem[]>([]);
+
+  // Fetch negotiations from backend on mount
+  useEffect(() => {
+    let cancelled = false;
+    fetchPlanNegotiations()
+      .then((data: PlanNegotiationApiItem[]) => {
+        if (cancelled) return;
+        const mapped: PlanNegotiationItem[] = data.map((n) => ({
+          id: n.id,
+          clientName: n.clientName,
+          clientLogo: n.clientLogo,
+          clientEmail: n.clientEmail,
+          targetTopic: n.targetTopic,
+          proposedOffer: n.proposedOffer,
+          phoneNumber: n.phoneNumber,
+          preferredTime: n.preferredTime,
+          notes: n.notes,
+          requestedAt: n.requestedAt,
+          status: n.status,
+          counterPrice: n.counterPrice,
+          counterNote: n.counterNote,
+          declineReason: n.declineReason,
+        }));
+        setNegotiations(mapped);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch negotiations:", err);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   // Active Deals Pipeline (0 Mock Data - Real commercial pipeline deals appear here)
   const [deals, setDeals] = useState<
@@ -6280,46 +6312,66 @@ export function AdminPlansPage() {
   >([]);
 
   // Actions: ACCEPT Client Plan Negotiation
-  const handleAcceptNegotiation = (item: PlanNegotiationItem) => {
-    setNegotiations((prev) =>
-      prev.map((n) => (n.id === item.id ? { ...n, status: "Accepted" } : n))
-    );
-    setToast(`Plan Negotiation ACCEPTED for ${item.clientName}! Retainer activated at ₹${item.proposedPrice.toLocaleString('en-IN')}/mo.`);
+  const handleAcceptNegotiation = async (item: PlanNegotiationItem) => {
+    try {
+      await updatePlanNegotiation(item.id, "accept");
+      setNegotiations((prev) =>
+        prev.map((n) => (n.id === item.id ? { ...n, status: "Accepted" } : n))
+      );
+      setToast(`Plan Negotiation ACCEPTED for ${item.clientName}!`);
+    } catch (err) {
+      setToast(`Failed to accept negotiation: ${err instanceof Error ? err.message : "Unknown error"}`);
+    }
     setTimeout(() => setToast(null), 4000);
   };
 
   // Actions: DECLINE Client Plan Negotiation
-  const handleConfirmDecline = (e: React.FormEvent) => {
+  const handleConfirmDecline = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!declineModalItem) return;
 
-    setNegotiations((prev) =>
-      prev.map((n) =>
-        n.id === declineModalItem.id
-          ? { ...n, status: "Declined", declineReason: declineReasonInput || "Price outside allowable margin." }
-          : n
-      )
-    );
-    setToast(`Plan Negotiation DECLINED for ${declineModalItem.clientName}. Notification sent.`);
+    try {
+      await updatePlanNegotiation(declineModalItem.id, "decline", {
+        decline_reason: declineReasonInput || "Price outside allowable margin.",
+      });
+      setNegotiations((prev) =>
+        prev.map((n) =>
+          n.id === declineModalItem.id
+            ? { ...n, status: "Declined", declineReason: declineReasonInput || "Price outside allowable margin." }
+            : n
+        )
+      );
+      setToast(`Plan Negotiation DECLINED for ${declineModalItem.clientName}. Notification sent.`);
+    } catch (err) {
+      setToast(`Failed to decline: ${err instanceof Error ? err.message : "Unknown error"}`);
+    }
     setDeclineModalItem(null);
     setDeclineReasonInput("");
     setTimeout(() => setToast(null), 4000);
   };
 
   // Actions: COUNTER-OFFER Client Plan Negotiation
-  const handleConfirmCounter = (e: React.FormEvent) => {
+  const handleConfirmCounter = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!counterModalItem || !counterPriceInput) return;
 
     const price = parseFloat(counterPriceInput);
-    setNegotiations((prev) =>
-      prev.map((n) =>
-        n.id === counterModalItem.id
-          ? { ...n, status: "Counter Offered", counterPrice: price }
-          : n
-      )
-    );
-    setToast(`Counter offer of ₹${price.toLocaleString('en-IN')}/mo submitted to ${counterModalItem.clientName}.`);
+    try {
+      await updatePlanNegotiation(counterModalItem.id, "counter", {
+        counter_price: price,
+        counter_note: counterNoteInput || undefined,
+      });
+      setNegotiations((prev) =>
+        prev.map((n) =>
+          n.id === counterModalItem.id
+            ? { ...n, status: "Counter Offered", counterPrice: price, counterNote: counterNoteInput }
+            : n
+        )
+      );
+      setToast(`Counter offer of ₹${price.toLocaleString('en-IN')}/mo submitted to ${counterModalItem.clientName}.`);
+    } catch (err) {
+      setToast(`Failed to submit counter: ${err instanceof Error ? err.message : "Unknown error"}`);
+    }
     setCounterModalItem(null);
     setCounterPriceInput("");
     setCounterNoteInput("");
@@ -6327,30 +6379,39 @@ export function AdminPlansPage() {
   };
 
   // Actions: Create New Proposal Submit
-  const handleCreateProposalSubmit = (e: React.FormEvent) => {
+  const handleCreateProposalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPropClient || !newPropProposedRate) return;
 
-    const orig = parseFloat(newPropStandardRate) || 95000;
     const prop = parseFloat(newPropProposedRate) || 85000;
-    const disc = Math.max(0, Math.round(((orig - prop) / orig) * 100 * 10) / 10);
 
-    const newNeg: PlanNegotiationItem = {
-      id: `neg-${Math.floor(100 + Math.random() * 900)}`,
-      clientName: newPropClient,
-      clientLogo: newPropClient.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
-      currentPlan: newPropCurrentPlan,
-      proposedPlan: newPropTargetPlan,
-      originalPrice: orig,
-      proposedPrice: prop,
-      discountPct: disc,
-      notes: newPropNotes || "Custom enterprise proposal initiated by sales lead.",
-      requestedAt: "Just now",
-      status: "Pending Review",
-    };
+    try {
+      const res = await createPlanNegotiation({
+        client_name: newPropClient,
+        target_topic: `${newPropCurrentPlan} → ${newPropTargetPlan}`,
+        proposed_offer: `₹${prop.toLocaleString('en-IN')}/mo`,
+        notes: newPropNotes || "Custom enterprise proposal initiated by sales lead.",
+      });
 
-    setNegotiations((prev) => [newNeg, ...prev]);
-    setToast(`Custom retainer proposal initiated for ${newPropClient} (₹${prop.toLocaleString('en-IN')}/mo)!`);
+      const newNeg: PlanNegotiationItem = {
+        id: res.id || `neg-${Math.floor(100 + Math.random() * 900)}`,
+        clientName: newPropClient,
+        clientLogo: newPropClient.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
+        targetTopic: `${newPropCurrentPlan} → ${newPropTargetPlan}`,
+        proposedOffer: `₹${prop.toLocaleString('en-IN')}/mo`,
+        phoneNumber: "—",
+        preferredTime: "—",
+        notes: newPropNotes || "Custom enterprise proposal initiated by sales lead.",
+        requestedAt: new Date().toISOString(),
+        status: "Pending Review",
+      };
+
+      setNegotiations((prev) => [newNeg, ...prev]);
+      setToast(`Custom retainer proposal initiated for ${newPropClient} (₹${prop.toLocaleString('en-IN')}/mo)!`);
+    } catch (err) {
+      setToast(`Failed to create proposal: ${err instanceof Error ? err.message : "Unknown error"}`);
+    }
+
     setIsNewProposalOpen(false);
     setNewPropClient("");
     setNewPropNotes("");
@@ -6459,8 +6520,8 @@ export function AdminPlansPage() {
     const matchesSearch =
       !search.trim() ||
       item.clientName.toLowerCase().includes(search.toLowerCase()) ||
-      item.proposedPlan.toLowerCase().includes(search.toLowerCase()) ||
-      item.notes.toLowerCase().includes(search.toLowerCase());
+      item.targetTopic.toLowerCase().includes(search.toLowerCase()) ||
+      (item.notes || "").toLowerCase().includes(search.toLowerCase());
 
     const matchesTab =
       filterTab === "all"
@@ -6690,24 +6751,27 @@ export function AdminPlansPage() {
                           <h4 className="font-bold text-sm text-white">{item.clientName}</h4>
                           <span className="text-[10px] text-[#97A0B3] font-semibold">{item.requestedAt}</span>
                         </div>
-                        <p className="text-xs text-[#F1F5F9] font-medium">{item.currentPlan}</p>
+                        <p className="text-xs text-[#F1F5F9] font-medium">{item.targetTopic}</p>
+                        {item.clientEmail && <p className="text-[10px] text-[#97A0B3]">{item.clientEmail}</p>}
                       </div>
                     </div>
 
-                    {/* Pricing Comparison */}
-                    <div className="flex items-center gap-4 bg-[#161F2D] p-3 rounded-xl border border-[#2A3446]">
-                      <div className="text-right">
-                        <span className="text-[10px] text-[#97A0B3] uppercase block font-bold">Standard Rate</span>
-                        <span className="text-xs line-through text-[#97A0B3] font-bold">₹{item.originalPrice.toLocaleString("en-IN")}/mo</span>
-                      </div>
-                      <span className="text-gray-300 font-light">&rarr;</span>
+                    {/* Negotiation Details */}
+                    <div className="flex items-center gap-4 bg-[#161F2D] p-3 rounded-xl border border-[#2A3446] flex-wrap">
+                      {item.proposedOffer && (
+                        <div>
+                          <span className="text-[10px] text-[#7FA0D6] uppercase block font-bold">Proposed Offer</span>
+                          <span className="text-sm font-black text-emerald-400">{item.proposedOffer}</span>
+                        </div>
+                      )}
                       <div>
-                        <span className="text-[10px] text-[#7FA0D6] uppercase block font-bold">Proposed Rate</span>
-                        <span className="text-sm font-black text-emerald-600">₹{item.proposedPrice.toLocaleString("en-IN")}/mo</span>
+                        <span className="text-[10px] text-[#97A0B3] uppercase block font-bold">Contact</span>
+                        <span className="text-xs font-bold text-white">{item.phoneNumber}</span>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        {item.discountPct}% Off
-                      </span>
+                      <div>
+                        <span className="text-[10px] text-[#97A0B3] uppercase block font-bold">Preferred Time</span>
+                        <span className="text-xs font-bold text-white">{item.preferredTime}</span>
+                      </div>
                     </div>
 
                     {/* Status & Actions */}
@@ -6747,7 +6811,7 @@ export function AdminPlansPage() {
                             type="button"
                             onClick={() => {
                               setCounterModalItem(item);
-                              setCounterPriceInput(String(item.proposedPrice + 4000));
+                              setCounterPriceInput("");
                             }}
                             className="px-3 py-2 rounded-xl bg-[#1F2C3F] hover:bg-gray-200 text-white font-bold text-xs cursor-pointer"
                           >
@@ -6759,9 +6823,11 @@ export function AdminPlansPage() {
                   </div>
 
                   {/* Scope Notes */}
-                  <div className="p-3 bg-[#161F2D] rounded-xl text-xs text-[#F1F5F9] border border-[#2A3446] font-medium">
-                    <strong className="text-white font-bold">Client Requested Terms:</strong> "{item.notes}"
-                  </div>
+                  {item.notes && (
+                    <div className="p-3 bg-[#161F2D] rounded-xl text-xs text-[#F1F5F9] border border-[#2A3446] font-medium">
+                      <strong className="text-white font-bold">Client Notes:</strong> "{item.notes}"
+                    </div>
+                  )}
                 </div>
               ))
             )}

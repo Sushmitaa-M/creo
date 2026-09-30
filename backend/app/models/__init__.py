@@ -4,6 +4,7 @@ from app.models.auth import IdempotencyKey, RefreshToken
 from app.models.billing import (
     PaymentEvent,
     Plan,
+    PlanNegotiation,
     PlatformPaymentEvent,
     PlatformSubscription,
     Subscription,
@@ -51,6 +52,7 @@ __all__ = [
     "ClientRoleRequirement",
     # Billing
     "Plan",
+    "PlanNegotiation",
     "Subscription",
     "PaymentEvent",
     "UsageCounter",

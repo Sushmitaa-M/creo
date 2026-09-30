@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Download, Loader2, PauseCircle, CheckCircle2, AlertCircle } from "lucide-react";
+import { Download, Loader2, PauseCircle, CheckCircle2, AlertCircle, PhoneCall } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../lib/auth-context";
 import { request } from "../../lib/http";
+import { fetchClientNegotiations } from "../../lib/ops-api";
+import type { PlanNegotiationApiItem } from "../../lib/ops-api";
 import { openRazorpayCheckout } from "../../lib/razorpay";
 import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { ResumeOnboardingBanner } from "../../components/portal/ResumeOnboardingBanner";
@@ -35,6 +37,14 @@ export function PortalPaymentsPage() {
     queryFn: () => request<any>("/api/v1/payments/subscription"),
     enabled: !!user?.id,
   });
+
+  const { data: clientNegotiations } = useQuery<PlanNegotiationApiItem[]>({
+    queryKey: ["client-negotiations", user?.id],
+    queryFn: () => fetchClientNegotiations(),
+    enabled: !!user?.id,
+  });
+
+  const latestNeg = clientNegotiations && clientNegotiations.length > 0 ? clientNegotiations[0] : null;
 
   const gate = useOnboardingGate();
 
@@ -231,6 +241,65 @@ export function PortalPaymentsPage() {
       {/* Paid but onboarding unfinished */}
       <ResumeOnboardingBanner variant="hero" title="Your plan is active — finish setup to start production" />
 
+      {/* Active Negotiation Status Banner */}
+      {latestNeg && (
+        <div
+          className={`rounded-2xl border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-[fadeIn_0.2s_ease-out] ${
+            latestNeg.status === "Accepted"
+              ? "border-emerald-500/40 bg-emerald-950/25 text-emerald-200"
+              : latestNeg.status === "Counter Offered"
+              ? "border-blue-500/40 bg-blue-950/25 text-blue-200"
+              : latestNeg.status === "Declined"
+              ? "border-rose-500/30 bg-rose-950/20 text-rose-200"
+              : "border-[#7FA0D6]/40 bg-[#0B111C] text-[#BCCCE6]"
+          }`}
+        >
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="size-9 rounded-xl bg-[#161F2D] border border-[#2A3446] flex items-center justify-center shrink-0 text-[#7FA0D6]">
+              <PhoneCall className="size-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#97A0B3]">Plan Negotiation</span>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                    latestNeg.status === "Accepted"
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                      : latestNeg.status === "Counter Offered"
+                      ? "bg-blue-500/20 text-blue-400 border border-blue-500/40"
+                      : latestNeg.status === "Declined"
+                      ? "bg-rose-500/20 text-rose-400 border border-rose-500/40"
+                      : "bg-[#7FA0D6]/20 text-[#7FA0D6] border border-[#7FA0D6]/40"
+                  }`}
+                >
+                  {latestNeg.status}
+                </span>
+              </div>
+              <p className="text-sm font-bold text-white mt-0.5">
+                {latestNeg.targetTopic}
+                {latestNeg.proposedOffer ? ` (${latestNeg.proposedOffer})` : ""}
+              </p>
+              {latestNeg.status === "Counter Offered" && (
+                <p className="text-xs text-blue-300 font-semibold mt-1">
+                  Executive Counter-Offer: ₹{latestNeg.counterPrice?.toLocaleString("en-IN")}/mo
+                  {latestNeg.counterNote ? ` • "${latestNeg.counterNote}"` : ""}
+                </p>
+              )}
+              {latestNeg.status === "Declined" && latestNeg.declineReason && (
+                <p className="text-xs text-rose-300 mt-1">
+                  Reason: {latestNeg.declineReason}
+                </p>
+              )}
+              {latestNeg.status === "Pending Review" && (
+                <p className="text-xs text-[#97A0B3] mt-0.5">
+                  Our Agency Director will call you at {latestNeg.phoneNumber} ({latestNeg.preferredTime}).
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Top Left: Current Plan */}
@@ -417,6 +486,7 @@ export function PortalPaymentsPage() {
         onClose={() => setNegotiateModalOpen(false)}
         initialTopic={negotiateTopic}
         onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["client-negotiations", user?.id] });
           setActionNotice("Plan consultation call request submitted!");
           setTimeout(() => setActionNotice(null), 4000);
         }}

@@ -149,7 +149,7 @@ export function PodLeadDashboardPage() {
     {
       id: "del-2",
       client: "BLOOM STUDIO",
-      clientBadgeColor: "bg-purple-50 text-purple-700 border-purple-200",
+      clientBadgeColor: "bg-[#1D4ED8]/20 text-[#93C5FD] border-[#1D4ED8]/40",
       talent: "Chloe Tan",
       format: "Story",
       due: "Due in 4h 30m",
@@ -161,7 +161,7 @@ export function PodLeadDashboardPage() {
     {
       id: "del-3",
       client: "ATLAS COMMERCE",
-      clientBadgeColor: "bg-rose-50 text-rose-700 border-rose-200",
+      clientBadgeColor: "bg-[#1E40AF]/20 text-[#7FA0D6] border-[#1E40AF]/40",
       talent: "Elena R.",
       format: "Post",
       due: "Client SLA 1h Rem.",
@@ -201,11 +201,7 @@ export function PodLeadDashboardPage() {
     const newDeliverable = {
       id: `del-${Date.now()}`,
       client: assignForm.client.toUpperCase(),
-      clientBadgeColor: assignForm.client.includes("Northwind")
-        ? "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30"
-        : assignForm.client.includes("Bloom")
-        ? "bg-purple-50 text-purple-700 border-purple-200"
-        : "bg-rose-50 text-rose-700 border-rose-200",
+      clientBadgeColor: "bg-[#2563EB]/20 text-[#60A5FA] border-[#3B82F6]/30",
       talent: assignForm.assignee,
       format: assignForm.format,
       due: "Due in 24h",
@@ -237,8 +233,8 @@ export function PodLeadDashboardPage() {
       assignment: "Reel Production · Northwind Labs Lead Animator",
       tasksCount: "3 Tasks",
       loadLabel: "Heavy - 90%",
-      loadColor: "bg-rose-500",
-      loadBadge: "bg-rose-50 text-rose-700 border-rose-200",
+      loadColor: "bg-blue-600",
+      loadBadge: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
       loadPercent: 90,
     },
     {
@@ -249,14 +245,14 @@ export function PodLeadDashboardPage() {
       assignment: "Post & Story Assets · Atlas & Bloom Visual Guidelines",
       tasksCount: "2 Tasks",
       loadLabel: "Optimal - 60%",
-      loadColor: "bg-emerald-500",
-      loadBadge: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      loadColor: "bg-[#60A5FA]",
+      loadBadge: "bg-blue-500/15 text-[#93C5FD] border-blue-500/30",
       loadPercent: 60,
     },
     {
       name: "Marcus Vance",
       avatar: "MV",
-      avatarBg: "bg-indigo-600",
+      avatarBg: "bg-blue-700",
       role: "Lead Copy & Strat",
       assignment: "Post Copy & Hook Frameworks · High-CTR Decks",
       tasksCount: "4 Tasks",
@@ -268,13 +264,13 @@ export function PodLeadDashboardPage() {
     {
       name: "Chloe Tan",
       avatar: "CT",
-      avatarBg: "bg-teal-600",
+      avatarBg: "bg-sky-600",
       role: "Editor & Cutter",
       assignment: "Shortform Reel & Story Master Cuts · Audio Mix",
       tasksCount: "2 Tasks",
       loadLabel: "Available - 75%",
-      loadColor: "bg-cyan-500",
-      loadBadge: "bg-cyan-50 text-cyan-700 border-cyan-200",
+      loadColor: "bg-[#7FA0D6]",
+      loadBadge: "bg-blue-500/15 text-[#7FA0D6] border-blue-500/30",
       loadPercent: 75,
     },
   ];
@@ -322,8 +318,8 @@ export function PodLeadDashboardPage() {
           <div
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-2xs animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-rose-50 border-rose-200 text-rose-700"
-                : "bg-emerald-50 border-emerald-200 text-emerald-700"
+                ? "bg-blue-950/90 border-blue-700 text-[#93C5FD]"
+                : "bg-blue-900/90 border-blue-600 text-[#60A5FA]"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -336,7 +332,7 @@ export function PodLeadDashboardPage() {
         {/* 1. Header Welcome Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
           <div className="flex items-center gap-2">
-            <span className="size-2 sm:size-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100 animate-pulse shrink-0" />
+            <span className="size-2 sm:size-2.5 rounded-full bg-blue-500 ring-4 ring-blue-500/30 animate-pulse shrink-0" />
             <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight">
               Hi, Welcome back, {leadName}
             </h1>
@@ -401,7 +397,7 @@ export function PodLeadDashboardPage() {
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="font-bold text-[#F1F5F9]">100% Bandwidth</span>
-                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-500/30">
+                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30">
                   ● Optimal Flow
                 </span>
               </div>
@@ -417,7 +413,7 @@ export function PodLeadDashboardPage() {
           >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Today's Review Queue</span>
-              <div className="size-6 sm:size-7 rounded-lg bg-rose-950/40 text-rose-400 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-blue-500/15 text-[#60A5FA] flex items-center justify-center">
                 <MessageSquare className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -427,7 +423,7 @@ export function PodLeadDashboardPage() {
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Pending Review</span>
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
-                <span className="font-bold text-rose-600 flex items-center gap-1">
+                <span className="font-bold text-[#60A5FA] flex items-center gap-1">
                   ▲ 2 Urgent
                 </span>
                 <span className="font-bold text-[#97A0B3]">Avg: 38m</span>
@@ -444,7 +440,7 @@ export function PodLeadDashboardPage() {
           >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Pod Leave & Attendance</span>
-              <div className="size-6 sm:size-7 rounded-lg bg-purple-950/40 text-purple-400 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-blue-500/15 text-[#93C5FD] flex items-center justify-center">
                 <Calendar className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -550,8 +546,8 @@ export function PodLeadDashboardPage() {
                       <h2 className="text-sm font-black text-white">Deliverables Pending Lead Sign-off</h2>
                       <span className={`px-2 py-0.2 rounded-full text-[9px] font-bold border ${
                         deliverablesList.length > 0
-                          ? "bg-rose-50 text-rose-700 border-rose-200"
-                          : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          ? "bg-blue-500/15 text-[#60A5FA] border-blue-500/30"
+                          : "bg-blue-500/15 text-[#93C5FD] border-blue-500/30"
                       }`}>
                         {deliverablesList.length > 0 ? `${deliverablesList.length} Critical` : "0 Pending"}
                       </span>
@@ -567,7 +563,7 @@ export function PodLeadDashboardPage() {
               <div className="space-y-2.5">
                 {deliverablesList.length === 0 ? (
                   <div className="bg-[#0B111C] border border-dashed border-[#2A3446] rounded-2xl p-6 text-center space-y-1.5">
-                    <CheckCircle2 className="size-6 text-emerald-500 mx-auto" />
+                    <CheckCircle2 className="size-6 text-[#60A5FA] mx-auto" />
                     <p className="text-xs font-bold text-white">All deliverables signed off!</p>
                     <p className="text-[10px] text-[#97A0B3]">Zero pending review items in today's QA queue.</p>
                   </div>
@@ -584,7 +580,7 @@ export function PodLeadDashboardPage() {
                           </span>
                           <span className="text-[11px] font-bold text-[#F1F5F9]">· {del.talent}</span>
                         </div>
-                        <span className={`text-[11px] font-bold flex items-center gap-1 ${del.dueUrgent ? "text-amber-600" : "text-[#97A0B3]"}`}>
+                        <span className={`text-[11px] font-bold flex items-center gap-1 ${del.dueUrgent ? "text-[#60A5FA]" : "text-[#97A0B3]"}`}>
                           <Clock className="size-3" />
                           {del.due}
                         </span>
@@ -631,21 +627,21 @@ export function PodLeadDashboardPage() {
           {/* RIGHT 1 COLUMN */}
           <div className="space-y-3.5 sm:space-y-4">
             {/* 1. Client SLA Warning */}
-            <div className="bg-gradient-to-br from-rose-950/40 via-red-950/20 to-[#161F2D] rounded-2xl p-4 border border-rose-500/30 shadow-2xs space-y-2.5">
+            <div className="bg-gradient-to-br from-blue-950/40 via-blue-900/20 to-[#161F2D] rounded-2xl p-4 border border-blue-500/30 shadow-2xs space-y-2.5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-rose-400 font-bold text-xs uppercase tracking-wider">
-                  <ShieldAlert className="size-3.5 text-rose-400" />
+                <div className="flex items-center gap-1.5 text-[#93C5FD] font-bold text-xs uppercase tracking-wider">
+                  <ShieldAlert className="size-3.5 text-[#93C5FD]" />
                   Client SLA Warning
                 </div>
-                <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-rose-600 text-white uppercase tracking-wider">
+                <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-blue-600 text-white uppercase tracking-wider">
                   Crucial
                 </span>
               </div>
 
               <div>
                 <span className="text-[11px] font-bold text-[#F1F5F9] block">Atlas Commerce - Deliverable #03</span>
-                <div className="text-xl font-black text-rose-600 tracking-tight mt-0.5">
-                  01h 14m <span className="text-xs font-bold text-rose-500">remaining</span>
+                <div className="text-xl font-black text-[#60A5FA] tracking-tight mt-0.5">
+                  01h 14m <span className="text-xs font-bold text-[#93C5FD]">remaining</span>
                 </div>
                 <p className="text-[11px] text-[#F1F5F9] mt-1 leading-relaxed font-medium">
                   Escalation threshold triggers if lead review is not completed by 12:30 PM.
@@ -654,7 +650,7 @@ export function PodLeadDashboardPage() {
 
               <Link
                 to="/lead/deliverables"
-                className="w-full py-2 rounded-xl bg-[#0B111C] border border-rose-500/30 text-rose-400 hover:bg-rose-950/30 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors shadow-2xs"
+                className="w-full py-2 rounded-xl bg-[#0B111C] border border-blue-500/30 text-[#93C5FD] hover:bg-blue-950/30 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors shadow-2xs"
               >
                 Jump to Deliverable <ArrowRight className="size-3" />
               </Link>
@@ -668,19 +664,19 @@ export function PodLeadDashboardPage() {
                   Leave & PTO Requests
                 </div>
                 {pendingLeaveRequests.length > 0 ? (
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-amber-950/40 text-amber-400 border border-amber-500/30">
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30">
                     {pendingLeaveRequests.length} Pending
                   </span>
                 ) : (
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-500/30">
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                     0 Pending
                   </span>
                 )}
               </div>
 
               {pendingLeaveRequests.length === 0 ? (
-                <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/20 text-center space-y-1">
-                  <div className="size-6 rounded-full bg-emerald-950/50 text-emerald-400 mx-auto flex items-center justify-center">
+                <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-500/20 text-center space-y-1">
+                  <div className="size-6 rounded-full bg-blue-950/50 text-[#60A5FA] mx-auto flex items-center justify-center">
                     <Check className="size-3" />
                   </div>
                   <p className="text-xs font-black text-white">All Leave Reviewed</p>
@@ -691,7 +687,7 @@ export function PodLeadDashboardPage() {
                   <div key={leave.id} className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446] space-y-2">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="size-7 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
+                        <div className="size-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
                           {leave.avatar}
                         </div>
                         <div>
@@ -743,10 +739,10 @@ export function PodLeadDashboardPage() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-bold">
                     <span className="text-[#F1F5F9]">Northwind Labs</span>
-                    <span className="text-emerald-600">12/12 (100%)</span>
+                    <span className="text-[#60A5FA]">12/12 (100%)</span>
                   </div>
                   <div className="h-1.5 w-full bg-[#1F2C3F] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
+                    <div className="h-full bg-blue-600 rounded-full" style={{ width: "100%" }} />
                   </div>
                 </div>
 
@@ -765,10 +761,10 @@ export function PodLeadDashboardPage() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-bold">
                     <span className="text-[#F1F5F9]">Atlas Commerce</span>
-                    <span className="text-emerald-600">10/10 (100%)</span>
+                    <span className="text-[#60A5FA]">10/10 (100%)</span>
                   </div>
                   <div className="h-1.5 w-full bg-[#1F2C3F] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
+                    <div className="h-full bg-blue-600 rounded-full" style={{ width: "100%" }} />
                   </div>
                 </div>
               </div>
@@ -800,9 +796,9 @@ export function PodLeadDashboardPage() {
 
                 <button
                   onClick={() => setBlockedModalOpen(true)}
-                  className="p-2.5 rounded-xl bg-[#0B111C] hover:bg-rose-50/70 border border-[#2A3446] hover:border-rose-200 text-left transition-all cursor-pointer group"
+                  className="p-2.5 rounded-xl bg-[#0B111C] hover:bg-blue-500/10 border border-[#2A3446] hover:border-blue-500/30 text-left transition-all cursor-pointer group"
                 >
-                  <div className="size-6 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+                  <div className="size-6 rounded-lg bg-blue-500/20 text-[#60A5FA] flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
                     <AlertTriangle className="size-3" />
                   </div>
                   <span className="text-[11px] font-black text-white block">Log Issue</span>
@@ -811,9 +807,9 @@ export function PodLeadDashboardPage() {
 
                 <button
                   onClick={() => setReinforcementsModalOpen(true)}
-                  className="p-2.5 rounded-xl bg-[#0B111C] hover:bg-purple-50/70 border border-[#2A3446] hover:border-purple-200 text-left transition-all cursor-pointer group"
+                  className="p-2.5 rounded-xl bg-[#0B111C] hover:bg-blue-500/10 border border-[#2A3446] hover:border-blue-500/30 text-left transition-all cursor-pointer group"
                 >
-                  <div className="size-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+                  <div className="size-6 rounded-lg bg-blue-500/20 text-[#93C5FD] flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
                     <Users className="size-3" />
                   </div>
                   <span className="text-[11px] font-black text-white block">Reinforce</span>
@@ -822,9 +818,9 @@ export function PodLeadDashboardPage() {
 
                 <button
                   onClick={handleExportWeeklyReport}
-                  className="p-2.5 rounded-xl bg-[#0B111C] hover:bg-emerald-50/70 border border-[#2A3446] hover:border-emerald-200 text-left transition-all cursor-pointer group"
+                  className="p-2.5 rounded-xl bg-[#0B111C] hover:bg-blue-500/10 border border-[#2A3446] hover:border-blue-500/30 text-left transition-all cursor-pointer group"
                 >
-                  <div className="size-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+                  <div className="size-6 rounded-lg bg-blue-500/20 text-[#7FA0D6] flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
                     <FileText className="size-3" />
                   </div>
                   <span className="text-[11px] font-black text-white block">Export CSV</span>
@@ -865,7 +861,7 @@ export function PodLeadDashboardPage() {
               </button>
               <button
                 onClick={handleConfirmRevision}
-                className="px-5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition"
+                className="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition"
               >
                 Send Revision to Specialist
               </button>
@@ -1008,7 +1004,7 @@ export function PodLeadDashboardPage() {
           <div className="w-full max-w-lg bg-[#161F2D] rounded-3xl p-6 sm:p-7 shadow-2xl border border-[#2A3446] space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="size-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                <div className="size-9 rounded-2xl bg-blue-500/20 text-[#60A5FA] flex items-center justify-center">
                   <AlertTriangle className="size-4.5" />
                 </div>
                 <div>
@@ -1029,7 +1025,7 @@ export function PodLeadDashboardPage() {
                   value={blockedForm.title}
                   onChange={(e) => setBlockedForm({ ...blockedForm, title: e.target.value })}
                   placeholder="e.g. Missing 3D CAD assets from client for Holiday Drop"
-                  className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white focus:bg-[#161F2D] focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                  className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white focus:bg-[#161F2D] focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -1067,7 +1063,7 @@ export function PodLeadDashboardPage() {
                   value={blockedForm.details}
                   onChange={(e) => setBlockedForm({ ...blockedForm, details: e.target.value })}
                   placeholder="Explain what is blocking the deliverable and what Ops Director intervention is needed..."
-                  className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white focus:bg-[#161F2D] focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                  className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white focus:bg-[#161F2D] focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -1087,7 +1083,7 @@ export function PodLeadDashboardPage() {
                   setBlockedModalOpen(false);
                   setBlockedForm({ title: "", client: "Northwind Labs", severity: "Blocker (P0)", details: "" });
                 }}
-                className="px-5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-rose-600/20"
+                className="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-blue-600/20"
               >
                 <AlertTriangle className="size-3.5" />
                 Dispatch Blocker Escalation
@@ -1109,7 +1105,7 @@ export function PodLeadDashboardPage() {
           <div className="w-full max-w-lg bg-[#161F2D] rounded-3xl p-6 sm:p-7 shadow-2xl border border-[#2A3446] space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="size-9 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <div className="size-9 rounded-2xl bg-blue-500/20 text-[#93C5FD] flex items-center justify-center">
                   <Users className="size-4.5" />
                 </div>
                 <div>
@@ -1171,7 +1167,7 @@ export function PodLeadDashboardPage() {
                   value={reinforceForm.notes}
                   onChange={(e) => setReinforceForm({ ...reinforceForm, notes: e.target.value })}
                   placeholder="Explain reason for extra capacity (e.g. Northwind Labs Black Friday 8x Reels batch)..."
-                  className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white focus:bg-[#161F2D] focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white focus:bg-[#161F2D] focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -1191,7 +1187,7 @@ export function PodLeadDashboardPage() {
                   setReinforcementsModalOpen(false);
                   setReinforceForm({ role: "3D Motion Designer", hours: "+20 hrs/week", urgency: "Immediate (Today)", notes: "" });
                 }}
-                className="px-5 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-700 transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-purple-600/20"
+                className="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-blue-600/20"
               >
                 <Users className="size-3.5" />
                 Dispatch Surge Request

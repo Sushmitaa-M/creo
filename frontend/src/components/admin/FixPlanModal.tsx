@@ -196,7 +196,7 @@ export function FixPlanModal({ isOpen, client, onClose, onSuccess }: FixPlanModa
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-950/40 border border-rose-800/50 text-rose-300 text-xs font-medium">
+          <div className="mb-4 p-3 rounded-xl bg-blue-950/50 border border-blue-800/60 text-blue-200 text-xs font-medium">
             {error}
           </div>
         )}
@@ -264,7 +264,7 @@ export function FixPlanModal({ isOpen, client, onClose, onSuccess }: FixPlanModa
                       <div className="flex items-center justify-between gap-1 mb-1">
                         <h4 className="font-bold text-xs text-white">{preset.name}</h4>
                         {isCurrent && (
-                          <span className="text-[9px] font-bold text-emerald-400 bg-emerald-950/50 border border-emerald-800 px-1.5 py-0.2 rounded-md">
+                          <span className="text-[9px] font-bold text-[#60A5FA] bg-blue-950/60 border border-blue-800 px-1.5 py-0.2 rounded-md">
                             Current
                           </span>
                         )}

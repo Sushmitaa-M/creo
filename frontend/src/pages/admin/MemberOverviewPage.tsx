@@ -86,10 +86,10 @@ export function MemberOverviewPage() {
       author: "Automated QA Bot",
       role: "Render Pass Sentinel • 2h ago",
       badge: "Passed",
-      badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      badgeColor: "bg-blue-600/15 text-[#60A5FA] border-blue-500/30",
       content:
         "Pre-flight check passed for 9:16 export specs: Color gamut verified, 709 standard, peak nitrates within client target window.",
-      avatarBg: "bg-purple-600",
+      avatarBg: "bg-blue-600",
       avatar: "QA",
     },
   ]);
@@ -148,11 +148,11 @@ export function MemberOverviewPage() {
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-2xs animate-fade-in ${
               toastMessage.type === "info"
                 ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-blue-800"
-                : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-blue-500/15 border-blue-500/30 text-[#93C5FD]"
             }`}
           >
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="size-3.5 text-[#60A5FA] shrink-0" />
               <span>{toastMessage.text}</span>
             </div>
             <button onClick={() => setToastMessage(null)} className="text-current opacity-70 hover:opacity-100">
@@ -164,7 +164,7 @@ export function MemberOverviewPage() {
         {/* 1. Quick Action & Shift Status Strip */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#161F2D] p-2.5 sm:px-4 sm:py-2.5 rounded-xl border border-[#2A3446]/80 shadow-2xs">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="size-2 rounded-full bg-blue-400 animate-pulse" />
             <span className="text-xs font-black text-white tracking-tight">POD A ACTIVE SHIFT</span>
             <span className="text-[11px] text-[#97A0B3] font-medium hidden sm:inline">• Sr. Motion Specialist (David Kim)</span>
           </div>
@@ -232,7 +232,7 @@ export function MemberOverviewPage() {
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 WEEKLY HOURS LOGGED
               </span>
-              <div className="size-6 sm:size-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-blue-500/15 text-[#60A5FA] flex items-center justify-center">
                 <Clock className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -246,7 +246,7 @@ export function MemberOverviewPage() {
                 <div className="h-full bg-blue-600 rounded-full w-[81%] transition-all duration-700" />
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1 border-t border-[#2A3446]">
-                <span className="font-bold text-emerald-600">81% target</span>
+                <span className="font-bold text-[#93C5FD]">81% target</span>
                 <span className="font-bold text-[#97A0B3]">7.5h left</span>
               </div>
             </div>
@@ -263,7 +263,7 @@ export function MemberOverviewPage() {
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 REMAINING PTO
               </span>
-              <div className="size-6 sm:size-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-blue-500/15 text-[#7FA0D6] flex items-center justify-center">
                 <Calendar className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -307,8 +307,8 @@ export function MemberOverviewPage() {
                   <div className="flex items-start gap-2.5">
                     {/* Thumbnail */}
                     <div className="size-10 rounded-lg bg-slate-900 overflow-hidden shrink-0 relative flex items-center justify-center border border-slate-700">
-                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-600/30" />
-                      <span className="text-[8px] font-mono text-cyan-400 font-bold z-10">4K HDR</span>
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-blue-800/30" />
+                      <span className="text-[8px] font-mono text-blue-300 font-bold z-10">4K HDR</span>
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
@@ -337,7 +337,7 @@ export function MemberOverviewPage() {
                   </div>
                   <div className="w-full h-1.5 bg-[#1F2C3F] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-blue-500 to-blue-700 rounded-full transition-all duration-500"
                       style={{ width: `${renderProgress}%` }}
                     />
                   </div>
@@ -357,7 +357,7 @@ export function MemberOverviewPage() {
                     }}
                     className="px-3 py-1.5 rounded-lg bg-[#161F2D] border border-[#2A3446] hover:bg-[#1F2C3F] text-[11px] font-bold text-[#F1F5F9] flex items-center gap-1 transition-colors cursor-pointer"
                   >
-                    {renderPaused ? <Play className="size-3 text-emerald-600" /> : <Pause className="size-3 text-amber-600" />}
+                    {renderPaused ? <Play className="size-3 text-blue-400" /> : <Pause className="size-3 text-blue-400" />}
                     {renderPaused ? "Resume" : "Pause"}
                   </button>
                   <button
@@ -378,15 +378,15 @@ export function MemberOverviewPage() {
               </div>
 
               {/* Priority Item 2: Holiday Promotion 3D Bumpers */}
-              <div className="p-3.5 rounded-xl bg-[#0B111C]/80 border border-[#2A3446]/70 space-y-2.5 hover:border-purple-200 transition-all">
+              <div className="p-3.5 rounded-xl bg-[#0B111C]/80 border border-[#2A3446]/70 space-y-2.5 hover:border-blue-500/40 transition-all">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                   <div className="flex items-start gap-2.5">
-                    <div className="size-10 rounded-lg bg-gradient-to-br from-amber-700 to-amber-900 overflow-hidden shrink-0 relative flex items-center justify-center text-white font-mono text-[8px] font-bold">
+                    <div className="size-10 rounded-lg bg-gradient-to-br from-blue-800 to-slate-900 overflow-hidden shrink-0 relative flex items-center justify-center text-white font-mono text-[8px] font-bold">
                       1080p
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-purple-600">Atlas Commerce</span>
+                        <span className="text-xs font-bold text-[#7FA0D6]">Atlas Commerce</span>
                         <span className="text-[#97A0B3] text-[10px]">· ATL-119-KB</span>
                       </div>
                       <h3 className="text-xs font-black text-white">Holiday Promotion 3D Bumpers</h3>
@@ -395,12 +395,12 @@ export function MemberOverviewPage() {
                         <span>•</span>
                         <span>3 Variations</span>
                         <span>•</span>
-                        <span className="text-emerald-600 font-bold">Figma Sync</span>
+                        <span className="text-[#93C5FD] font-bold">Figma Sync</span>
                       </div>
                     </div>
                   </div>
 
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 self-start">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 self-start">
                     Keyframing · Due in 6h
                   </span>
                 </div>
@@ -475,7 +475,7 @@ export function MemberOverviewPage() {
                       <h4 className="text-xs font-black text-white leading-snug">Fintech Ad Set - Teaser</h4>
                       <div className="text-[10px] text-[#97A0B3] font-medium">Octane 3D Scene (.c4d + .exr)</div>
                     </div>
-                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-rose-50 text-rose-700 border border-rose-200 shrink-0">
+                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 shrink-0">
                       P1 HIGH
                     </span>
                   </div>
@@ -501,11 +501,11 @@ export function MemberOverviewPage() {
                 <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-[#2A3446]/80 space-y-2">
                   <div className="flex items-start justify-between gap-1.5">
                     <div>
-                      <span className="text-[9px] font-bold text-purple-600 uppercase">Atlas Commerce</span>
+                      <span className="text-[9px] font-bold text-[#7FA0D6] uppercase">Atlas Commerce</span>
                       <h4 className="text-xs font-black text-white leading-snug">Holiday 3D Bumpers</h4>
                       <div className="text-[10px] text-[#97A0B3] font-medium">AfterEffects Motion Stems (.aep)</div>
                     </div>
-                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-purple-50 text-purple-700 border border-purple-200 shrink-0">
+                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/15 text-[#7FA0D6] border border-blue-500/30 shrink-0">
                       P2 MED
                     </span>
                   </div>
@@ -528,19 +528,19 @@ export function MemberOverviewPage() {
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-emerald-500/30 space-y-2">
+                <div className="p-3 rounded-xl bg-[#0B111C]/90 border border-blue-500/30 space-y-2">
                   <div className="flex items-start justify-between gap-1.5">
                     <div>
-                      <span className="text-[9px] font-bold text-emerald-400 uppercase">Ryze Mushroom Coffee</span>
+                      <span className="text-[9px] font-bold text-[#60A5FA] uppercase">Ryze Mushroom Coffee</span>
                       <h4 className="text-xs font-black text-white leading-snug">Morning Routine High-Energy Reel</h4>
                       <div className="text-[10px] text-[#97A0B3] font-medium">9:16 Vertical Reel (60fps)</div>
                     </div>
-                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                    <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 shrink-0">
                       P1 HIGH
                     </span>
                   </div>
                   <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]/60 text-xs">
-                    <span className="font-bold text-emerald-400 text-[10px]">Today 6:00 PM (4h left)</span>
+                    <span className="font-bold text-[#60A5FA] text-[10px]">Today 6:00 PM (4h left)</span>
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => {
@@ -613,7 +613,7 @@ export function MemberOverviewPage() {
                       </td>
                       <td className="py-2.5 px-2.5 font-semibold text-white text-xs">Northwind Labs</td>
                       <td className="py-2.5 px-2.5">
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-50 text-rose-700 border border-rose-200">
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-blue-500/15 text-[#60A5FA] border border-blue-500/30">
                           P1 HIGH
                         </span>
                       </td>
@@ -639,13 +639,13 @@ export function MemberOverviewPage() {
                         <div className="font-bold text-white text-xs">Morning Routine High-Energy Reel</div>
                         <div className="text-[10px] text-[#97A0B3]">9:16 Vertical Reel (60fps · Brand Grade)</div>
                       </td>
-                      <td className="py-2.5 px-2.5 font-semibold text-emerald-400 text-xs">Ryze Mushroom Coffee</td>
+                      <td className="py-2.5 px-2.5 font-semibold text-[#93C5FD] text-xs">Ryze Mushroom Coffee</td>
                       <td className="py-2.5 px-2.5">
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                           P1 HIGH
                         </span>
                       </td>
-                      <td className="py-2.5 px-2.5 font-black text-emerald-400 text-xs">4h 15m left</td>
+                      <td className="py-2.5 px-2.5 font-black text-[#93C5FD] text-xs">4h 15m left</td>
                       <td className="py-2.5 px-2.5 text-right space-x-1.5">
                         <button
                           onClick={() => {
@@ -673,7 +673,7 @@ export function MemberOverviewPage() {
                       </td>
                       <td className="py-2.5 px-2.5 font-semibold text-white text-xs">Atlas Commerce</td>
                       <td className="py-2.5 px-2.5">
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-purple-50 text-purple-700 border border-purple-200">
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-blue-500/15 text-[#7FA0D6] border border-blue-500/30">
                           P2 MED
                         </span>
                       </td>
@@ -771,7 +771,7 @@ export function MemberOverviewPage() {
                       </button>
                     )}
                     {note.tag && (
-                      <span className="inline-block text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded">
+                      <span className="inline-block text-[9px] font-bold text-[#60A5FA] bg-blue-500/15 px-1.5 py-0.2 rounded">
                         ✓ {note.tag}
                       </span>
                     )}
@@ -804,7 +804,7 @@ export function MemberOverviewPage() {
                   <Users className="size-3.5 text-[#7FA0D6]" />
                   <h3 className="text-xs font-black text-white">Pod A Team Sync</h3>
                 </div>
-                <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                   ● 5 Active
                 </span>
               </div>
@@ -842,7 +842,7 @@ export function MemberOverviewPage() {
 
                 <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#0B111C] transition-colors">
                   <div className="flex items-center gap-2">
-                    <div className="size-6 rounded-md bg-purple-600 text-white font-black text-[9px] flex items-center justify-center">
+                    <div className="size-6 rounded-md bg-blue-700 text-white font-black text-[9px] flex items-center justify-center">
                       EO
                     </div>
                     <div>
@@ -850,7 +850,7 @@ export function MemberOverviewPage() {
                       <span className="text-[9px] text-[#97A0B3]">Brand Designer • Working</span>
                     </div>
                   </div>
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span className="size-1.5 rounded-full bg-blue-400" />
                 </div>
 
                 <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#0B111C] transition-colors">
@@ -863,12 +863,12 @@ export function MemberOverviewPage() {
                       <span className="text-[9px] text-[#97A0B3]">Copy • In sync</span>
                     </div>
                   </div>
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span className="size-1.5 rounded-full bg-blue-400" />
                 </div>
 
                 <div className="flex items-center justify-between p-2 rounded-xl hover:bg-[#0B111C] transition-colors">
                   <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-teal-600 text-white font-black text-[10px] flex items-center justify-center">
+                    <div className="size-7 rounded-lg bg-blue-600 text-white font-black text-[10px] flex items-center justify-center">
                       CT
                     </div>
                     <div>
@@ -876,7 +876,7 @@ export function MemberOverviewPage() {
                       <span className="text-[10px] text-[#97A0B3]">Backup Motion • Render spillover</span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-bold text-[#93C5FD] bg-blue-500/15 px-2 py-0.5 rounded">
                     Available
                   </span>
                 </div>
@@ -1114,7 +1114,7 @@ export function MemberOverviewPage() {
               </div>
               <div className="p-3 bg-[#0B111C] rounded-xl border border-[#2A3446] flex justify-between">
                 <span className="text-[#97A0B3] font-bold">Pass Integrity:</span>
-                <span className="font-bold text-emerald-600">3,840 / 3,840 Validated (0 dropouts)</span>
+                <span className="font-bold text-[#93C5FD]">3,840 / 3,840 Validated (0 dropouts)</span>
               </div>
             </div>
 
@@ -1181,7 +1181,7 @@ export function MemberOverviewPage() {
             className="w-full max-w-md bg-[#161F2D] rounded-3xl p-6 sm:p-7 shadow-2xl border border-[#2A3446] space-y-4 animate-scale-up text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="size-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto font-black">
+            <div className="size-12 rounded-2xl bg-blue-500/15 text-[#60A5FA] flex items-center justify-center mx-auto font-black">
               <Video className="size-6" />
             </div>
             <div>
@@ -1209,7 +1209,7 @@ export function MemberOverviewPage() {
                   setZoomModalOpen(false);
                   showToast("Connecting to Pod A Standup video room...");
                 }}
-                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 cursor-pointer"
               >
                 Open Video Room
               </button>

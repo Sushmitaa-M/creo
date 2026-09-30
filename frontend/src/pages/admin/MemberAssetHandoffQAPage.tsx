@@ -94,11 +94,11 @@ export function MemberAssetHandoffQAPage() {
             className={`p-3.5 sm:p-4 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-xl animate-fade-in ${
               toastMessage.type === "info"
                 ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-blue-800"
-                : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-blue-500/15 border-blue-500/30 text-[#93C5FD]"
             }`}
           >
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="size-4 text-[#60A5FA] shrink-0" />
               <span>{toastMessage.text}</span>
             </div>
             <button onClick={() => setToastMessage(null)} className="text-current opacity-70 hover:opacity-100">
@@ -199,13 +199,13 @@ export function MemberAssetHandoffQAPage() {
                 {/* Top overlay badges */}
                 <div className="flex items-center justify-between text-xs font-mono">
                   <div className="flex items-center gap-2">
-                    <span className="bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded text-cyan-300 font-bold border border-slate-700">
+                    <span className="bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded text-blue-300 font-bold border border-slate-700">
                       TIMECODE: {currentTime} / 00:15:21:00
                     </span>
                     <span className="bg-slate-900/80 px-2 py-1 rounded text-slate-300">Frame 542</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold">
+                    <span className="bg-blue-500/20 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded text-[10px] font-bold">
                       4K UHD
                     </span>
                     <span className="bg-[#7FA0D6]/150/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded text-[10px] font-bold">
@@ -237,12 +237,12 @@ export function MemberAssetHandoffQAPage() {
                 {/* Bottom Scrub Bar & Waveform */}
                 <div className="space-y-2 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-slate-800">
                   <div className="flex items-center justify-between text-[11px] font-mono text-[#97A0B3]">
-                    <span className="text-emerald-400 font-bold">-14.1 LUFS Peak Integrated</span>
+                    <span className="text-[#93C5FD] font-bold">-14.1 LUFS Peak Integrated</span>
                     <span>ProRes 4444 Master</span>
                   </div>
                   {/* Waveform graphic bar */}
                   <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex items-center px-1">
-                    <div className="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 rounded-full smooth-progress-fill w-[60%]" />
+                    <div className="h-1.5 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-700 rounded-full smooth-progress-fill w-[60%]" />
                   </div>
                 </div>
               </div>
@@ -307,7 +307,7 @@ export function MemberAssetHandoffQAPage() {
                       <h4 className="text-xs font-black text-white leading-snug">Fintech Hero Animation (Full 60s Cut)</h4>
                       <div className="text-[10px] text-[#97A0B3] font-mono">PK2-NL-004D · 4K ProRes Master</div>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 shrink-0">
                       ✓ Signed Off
                     </span>
                   </div>
@@ -329,16 +329,16 @@ export function MemberAssetHandoffQAPage() {
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#0B111C]/90 border border-amber-200/80 space-y-2.5">
+                <div className="p-3.5 rounded-2xl bg-[#0B111C]/90 border border-blue-500/30 space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-[10px] font-bold text-purple-600 uppercase">Atlas Global Systems</span>
+                      <span className="text-[10px] font-bold text-[#7FA0D6] uppercase">Atlas Global Systems</span>
                       <h4 className="text-xs font-black text-white leading-snug">Atlas Holiday Teaser v1</h4>
-                      <div className="text-[10px] text-amber-700 font-semibold mt-0.5">
+                      <div className="text-[10px] text-[#60A5FA] font-semibold mt-0.5">
                         Lead Note: "Adjust opening hook pacing by 0.5s"
                       </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 shrink-0">
                       ⚠ Revision
                     </span>
                   </div>
@@ -360,7 +360,7 @@ export function MemberAssetHandoffQAPage() {
                       <h4 className="text-xs font-black text-white leading-snug">Brand Audio Identity Stems</h4>
                       <div className="text-[10px] text-[#97A0B3] font-mono">48k 24bit / 16 stem lossless ZIP</div>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 shrink-0">
                       ✓ Approved
                     </span>
                   </div>
@@ -405,7 +405,7 @@ export function MemberAssetHandoffQAPage() {
                         </div>
                       </td>
                       <td className="py-3 px-3">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                           ✓ Signed Off by Maya Lin
                         </span>
                       </td>
@@ -430,7 +430,7 @@ export function MemberAssetHandoffQAPage() {
                     <tr className="hover:bg-[#0B111C]/60 transition-colors">
                       <td className="py-3 px-3">
                         <div className="font-bold text-white">Atlas Holiday Teaser v1</div>
-                        <div className="text-[11px] text-amber-700 font-semibold">
+                        <div className="text-[11px] text-[#60A5FA] font-semibold">
                           Lead Note: "Adjust opening hook pacing by 0.5s"
                         </div>
                       </td>
@@ -444,7 +444,7 @@ export function MemberAssetHandoffQAPage() {
                         </div>
                       </td>
                       <td className="py-3 px-3">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30">
                           ⚠ Revision Requested
                         </span>
                       </td>
@@ -474,7 +474,7 @@ export function MemberAssetHandoffQAPage() {
                         </div>
                       </td>
                       <td className="py-3 px-3">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                           ✓ Approved & Archived
                         </span>
                       </td>
@@ -503,7 +503,7 @@ export function MemberAssetHandoffQAPage() {
                   <Sparkles className="size-4 text-[#7FA0D6]" />
                   <h3 className="text-sm font-black text-white">Self-QA Verification</h3>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                   {Object.values(checklist).filter(Boolean).length}/4 Verified
                 </span>
               </div>
@@ -783,7 +783,7 @@ export function MemberAssetHandoffQAPage() {
                   <div className="font-bold text-white">Full 60s Cut Dispatched to AWS S302</div>
                   <div className="text-[11px] text-[#97A0B3]">Signed off by Maya Lin • 09:42 AM</div>
                 </div>
-                <span className="text-emerald-600 font-bold">✓ Success</span>
+                <span className="text-[#93C5FD] font-bold">✓ Success</span>
               </div>
               <div className="p-3 bg-[#0B111C] rounded-xl border border-[#2A3446] flex justify-between">
                 <div>
@@ -903,7 +903,7 @@ export function MemberAssetHandoffQAPage() {
               </div>
               <div className="flex justify-between p-2.5 bg-[#0B111C] rounded-xl">
                 <span className="font-bold text-[#97A0B3]">Status:</span>
-                <span className="font-bold text-emerald-600">{selectedAssetToView.status}</span>
+                <span className="font-bold text-[#93C5FD]">{selectedAssetToView.status}</span>
               </div>
               <div className="flex justify-between p-2.5 bg-[#0B111C] rounded-xl">
                 <span className="font-bold text-[#97A0B3]">Vault Dispatch:</span>

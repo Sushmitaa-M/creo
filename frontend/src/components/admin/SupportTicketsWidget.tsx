@@ -199,11 +199,11 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
   const getPriorityBadge = (priority: TicketRecord["priority"]) => {
     switch (priority) {
       case "Urgent":
-        return "bg-rose-950/300 text-white border-rose-500 shadow-2xs";
+        return "bg-blue-950/80 text-[#93C5FD] border border-blue-500/60 shadow-2xs";
       case "High":
-        return "bg-amber-100 text-amber-800 border-amber-200";
+        return "bg-blue-900/50 text-[#60A5FA] border border-blue-600/50";
       case "Medium":
-        return "bg-sky-100 text-sky-700 border-sky-200";
+        return "bg-blue-800/40 text-[#7FA0D6] border border-blue-700/40";
       case "Normal":
       default:
         return "bg-[#1F2C3F] text-[#F1F5F9] border-[#2A3446]";
@@ -226,7 +226,7 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
               {openCount} Open
             </span>
           </div>
-          <span className="px-2 py-0.5 rounded-full text-[9px] font-black text-rose-700 bg-rose-950/30 border border-rose-900/40 shadow-2xs">
+          <span className="px-2 py-0.5 rounded-full text-[9px] font-black text-[#93C5FD] bg-blue-950/80 border border-blue-500/60 shadow-2xs">
             {urgentCount} Urgent
           </span>
         </div>
@@ -408,8 +408,8 @@ export function SupportTicketsWidget({ slas }: SupportTicketsWidgetProps) {
             <div
               className={`size-16 rounded-3xl flex items-center justify-center mb-4 ring-8 shadow-inner ${
                 alertModal.type === "success"
-                  ? "bg-emerald-950/30 text-[#34D399] ring-emerald-50/60"
-                  : "bg-[#7FA0D6]/15 text-[#7FA0D6] ring-blue-50/60"
+                  ? "bg-blue-950/30 text-[#60A5FA] ring-blue-500/30"
+                  : "bg-[#7FA0D6]/15 text-[#7FA0D6] ring-blue-500/30"
               }`}
             >
               {alertModal.type === "success" ? (

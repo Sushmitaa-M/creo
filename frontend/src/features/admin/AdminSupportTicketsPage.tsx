@@ -320,8 +320,8 @@ export function AdminSupportTicketsPage() {
               <span className="text-xs font-bold text-[#7FA0D6]">active items</span>
             </div>
             <div className="pt-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/15 text-rose-400 text-[11px] font-bold border border-rose-500/30">
-                <span className="size-1.5 rounded-full bg-rose-500 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/15 text-[#60A5FA] text-[11px] font-bold border border-blue-500/30">
+                <span className="size-1.5 rounded-full bg-[#60A5FA] animate-pulse" />
                 Live SLA Monitoring
               </span>
             </div>
@@ -333,7 +333,7 @@ export function AdminSupportTicketsPage() {
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 RESOLVED TODAY
               </span>
-              <div className="size-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <div className="size-8 rounded-xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-[#60A5FA]">
                 <CheckCircle2 className="size-4" />
               </div>
             </div>
@@ -343,7 +343,7 @@ export function AdminSupportTicketsPage() {
             </div>
             <div className="pt-1">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7FA0D6]/15 text-[#7FA0D6] text-[11px] font-bold border border-[#7FA0D6]/30">
-                <span className="size-1.5 rounded-full bg-[#7FA0D6]/150" />
+                <span className="size-1.5 rounded-full bg-[#7FA0D6]" />
                 100% SLA Compliance Rate
               </span>
             </div>
@@ -370,11 +370,11 @@ export function AdminSupportTicketsPage() {
                     <span
                       className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${
                         t.priority === "Urgent"
-                          ? "bg-rose-500 text-white"
+                          ? "bg-blue-900/40 text-[#93C5FD] border border-blue-500/30"
                           : t.priority === "High"
-                          ? "bg-amber-100 text-amber-800"
+                          ? "bg-blue-500/20 text-[#60A5FA] border border-blue-500/30"
                           : t.priority === "Medium"
-                          ? "bg-[#7FA0D6]/20 text-blue-800"
+                          ? "bg-[#7FA0D6]/20 text-[#7FA0D6]"
                           : "bg-[#1F2C3F] text-[#F1F5F9]"
                       }`}
                     >
@@ -384,12 +384,12 @@ export function AdminSupportTicketsPage() {
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                       t.status === "Open"
-                        ? "bg-rose-50 text-rose-700 border-rose-200"
+                        ? "bg-blue-500/15 text-[#93C5FD] border-blue-500/30"
                         : t.status === "In Progress"
                         ? "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30"
                         : t.status === "Pending Client"
-                        ? "bg-amber-50 text-amber-700 border-amber-200"
-                        : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        ? "bg-blue-500/20 text-[#60A5FA] border-blue-500/30"
+                        : "bg-blue-600/15 text-[#60A5FA] border-blue-500/30"
                     }`}
                   >
                     {t.status}
@@ -406,7 +406,7 @@ export function AdminSupportTicketsPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="font-bold text-xs text-white truncate">{t.client}</span>
-                      <span className="px-1.5 py-0.2 rounded text-[8px] font-extrabold bg-[#7FA0D6]/20 text-blue-800 uppercase">
+                      <span className="px-1.5 py-0.2 rounded text-[8px] font-extrabold bg-[#7FA0D6]/20 text-[#7FA0D6] uppercase">
                         {t.tier}
                       </span>
                     </div>
@@ -534,9 +534,9 @@ export function AdminSupportTicketsPage() {
                             <span
                               className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
                                 t.priority === "Urgent"
-                                  ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                                  ? "bg-blue-900/40 text-[#93C5FD] border border-blue-500/30"
                                   : t.priority === "High"
-                                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                  ? "bg-blue-500/20 text-[#60A5FA] border border-blue-500/30"
                                   : t.priority === "Medium"
                                   ? "bg-[#7FA0D6]/20 text-[#7FA0D6] border border-[#7FA0D6]/30"
                                   : "bg-[#1F2C3F] text-[#F1F5F9] border border-[#2A3446]"
@@ -544,7 +544,7 @@ export function AdminSupportTicketsPage() {
                             >
                               {t.priority}
                             </span>
-                            <span className="text-[11px] font-semibold text-rose-400">
+                            <span className="text-[11px] font-semibold text-[#93C5FD]">
                               {t.timeLog}
                             </span>
                           </div>
@@ -575,12 +575,12 @@ export function AdminSupportTicketsPage() {
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
                             t.status === "Open"
-                              ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                              ? "bg-blue-500/15 text-[#93C5FD] border border-blue-500/30"
                               : t.status === "In Progress"
                               ? "bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30"
                               : t.status === "Pending Client"
-                              ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                              : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                              ? "bg-blue-500/20 text-[#60A5FA] border border-blue-500/30"
+                              : "bg-blue-600/15 text-[#60A5FA] border border-blue-500/30"
                           }`}
                         >
                           {t.status}

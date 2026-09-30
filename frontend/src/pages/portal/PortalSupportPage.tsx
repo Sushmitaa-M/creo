@@ -431,8 +431,8 @@ export function PortalSupportPage() {
                 <p className="text-xs text-[#97A0B3] mt-0.5 truncate">
                   Creative Director • Available for fast triage
                 </p>
-                <p className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1.5 mt-1">
-                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <p className="text-[11px] font-semibold text-[#60A5FA] flex items-center gap-1.5 mt-1">
+                  <span className="size-1.5 rounded-full bg-blue-500 animate-pulse" />
                   <span>Active in Slack</span>
                 </p>
               </div>
@@ -465,8 +465,8 @@ export function PortalSupportPage() {
           <div>
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-start gap-2.5">
-                <div className="size-8 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0 mt-0.5 border border-rose-500/20">
-                  <Phone className="size-4 text-rose-400" />
+                <div className="size-8 rounded-full bg-blue-500/10 text-[#93C5FD] flex items-center justify-center shrink-0 mt-0.5 border border-blue-500/20">
+                  <Phone className="size-4 text-[#93C5FD]" />
                 </div>
                 <div>
                   <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
@@ -477,8 +477,8 @@ export function PortalSupportPage() {
                   </p>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full shrink-0">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#60A5FA] bg-blue-500/10 border border-blue-500/30 px-2.5 py-0.5 rounded-full shrink-0">
+                <span className="size-1.5 rounded-full bg-blue-500 animate-pulse" />
                 Staffed & Live (24/7)
               </span>
             </div>
@@ -492,7 +492,7 @@ export function PortalSupportPage() {
                 <span className="text-lg sm:text-xl font-mono font-bold text-white tracking-tight">
                   +1 (800) 555-0199
                 </span>
-                <span className="bg-rose-500/15 border border-rose-500/30 text-rose-400 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                <span className="bg-blue-500/15 border border-blue-500/30 text-[#93C5FD] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
                   24/7 PRIORITY
                 </span>
               </div>
@@ -544,8 +544,8 @@ export function PortalSupportPage() {
                 <div className="text-2xl sm:text-[26px] font-black text-[#7FA0D6] mt-1 tracking-tight">
                   1.8 hrs
                 </div>
-                <p className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1 mt-1 truncate">
-                  <Check className="size-3 text-emerald-400 shrink-0" />
+                <p className="text-[11px] font-semibold text-[#60A5FA] flex items-center gap-1 mt-1 truncate">
+                  <Check className="size-3 text-[#60A5FA] shrink-0" />
                   <span>Faster than 2.0h SLA</span>
                 </p>
               </div>
@@ -565,8 +565,8 @@ export function PortalSupportPage() {
           {/* Bottom On-Track Bar */}
           <div className="flex items-center justify-between pt-4 border-t border-[#2A3446] text-xs font-semibold mt-5">
             <span className="text-[#97A0B3] font-medium">Target SLA: &lt; 2.0 hours</span>
-            <span className="text-emerald-400 font-bold flex items-center gap-1.5">
-              <span className="size-1.5 rounded-full bg-emerald-500" />
+            <span className="text-[#60A5FA] font-bold flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-blue-500" />
               100% On-Track
             </span>
           </div>
@@ -801,13 +801,13 @@ export function PortalSupportPage() {
                         </span>
 
                         {t.status === "in_progress" ? (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
-                            <span className="size-1.5 rounded-full bg-amber-400 animate-pulse" />
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#7FA0D6] bg-blue-500/10 border border-blue-500/30 px-2.5 py-0.5 rounded-full">
+                            <span className="size-1.5 rounded-full bg-blue-400 animate-pulse" />
                             In Progress
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
-                            <Check className="size-3 text-emerald-400" />
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#60A5FA] bg-blue-500/10 border border-blue-500/30 px-2.5 py-0.5 rounded-full">
+                            <Check className="size-3 text-[#60A5FA]" />
                             Resolved
                           </span>
                         )}
@@ -815,9 +815,9 @@ export function PortalSupportPage() {
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
                             t.priority === "urgent"
-                              ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
+                              ? "bg-blue-900/40 text-[#93C5FD] border-blue-500/30"
                               : t.priority === "high"
-                              ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                              ? "bg-blue-800/40 text-[#7FA0D6] border-blue-700/30"
                               : "bg-[#7FA0D6]/10 text-[#7FA0D6] border-[#7FA0D6]/30"
                           }`}
                         >
@@ -877,7 +877,7 @@ export function PortalSupportPage() {
 
       {/* ── Modal: Discussion Thread ── */}
       {activeDiscussionTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-[#161F2D] border border-[#2A3446] rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl p-6 flex flex-col max-h-[85vh] animate-scale-in text-[#F8FAFC]">
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-[#2A3446] pb-4">
@@ -946,7 +946,7 @@ export function PortalSupportPage() {
 
       {/* ── Modal: Schedule Quick Triage Call ── */}
       {showCallModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-[#161F2D] border border-[#2A3446] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 animate-scale-in space-y-4 text-[#F8FAFC]">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <div className="flex items-center gap-2.5">
@@ -988,8 +988,8 @@ export function PortalSupportPage() {
               </div>
             </div>
 
-            <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 text-xs text-emerald-400 flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+            <div className="rounded-xl bg-blue-500/10 border border-blue-500/30 p-3 text-xs text-[#60A5FA] flex items-center gap-2">
+              <CheckCircle2 className="size-4 text-[#60A5FA] shrink-0" />
               <span>Direct calendar integration with your assigned creative director.</span>
             </div>
           </div>
@@ -998,10 +998,10 @@ export function PortalSupportPage() {
 
       {/* ── Modal: Emergency Hotline ── */}
       {showHotlineModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-[#161F2D] border border-[#2A3446] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 animate-scale-in text-center space-y-4 text-[#F8FAFC]">
-            <div className="size-12 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center mx-auto">
-              <PhoneCall className="size-6 text-rose-400" />
+            <div className="size-12 rounded-2xl bg-blue-500/10 text-[#93C5FD] border border-blue-500/20 flex items-center justify-center mx-auto">
+              <PhoneCall className="size-6 text-[#93C5FD]" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white">Emergency Escalation Dial-in</h3>
@@ -1027,7 +1027,7 @@ export function PortalSupportPage() {
               </button>
               <a
                 href="tel:+18005550199"
-                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
               >
                 <Phone className="size-3.5" />
                 <span>Dial Now</span>
@@ -1047,7 +1047,7 @@ export function PortalSupportPage() {
 
       {/* ── Modal: SLA Guidelines ── */}
       {showSlaGuidelinesModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-[#161F2D] border border-[#2A3446] rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 sm:p-7 animate-scale-in space-y-4 text-[#F8FAFC]">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <div className="flex items-center gap-2">

@@ -63,7 +63,7 @@ export function MemberSchedulePTOPage() {
       id: `req-${Date.now()}`,
       title: `${leaveType.split(" - ")[0]} (${deductionDays}d)`,
       status: "Pending Lead Approval (Maya Lin)",
-      statusColor: "bg-amber-50 text-amber-800 border-amber-200",
+      statusColor: "bg-blue-500/15 text-[#93C5FD] border-blue-500/30",
       tag: "Submitted · Maya Lin Notified",
       dateRange: `${startDate} to ${endDate} (${deductionDays} Working Days)`,
       backup: designatedBackup,
@@ -99,11 +99,11 @@ export function MemberSchedulePTOPage() {
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-lg animate-fade-in ${
               toastMessage.type === "info"
                 ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-blue-800"
-                : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-blue-500/15 border-blue-500/30 text-[#93C5FD]"
             }`}
           >
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="size-4 text-[#60A5FA] shrink-0" />
               <span>{toastMessage.text}</span>
             </div>
             <button onClick={() => setToastMessage(null)} className="text-current opacity-70 hover:opacity-100">
@@ -167,7 +167,7 @@ export function MemberSchedulePTOPage() {
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 SICK & MEDICAL
               </span>
-              <div className="size-7 sm:size-8 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
+              <div className="size-7 sm:size-8 rounded-lg bg-blue-500/15 text-[#60A5FA] flex items-center justify-center border border-blue-500/30">
                 <Shield className="size-4" />
               </div>
             </div>
@@ -188,7 +188,7 @@ export function MemberSchedulePTOPage() {
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 FLOATING & COMP
               </span>
-              <div className="size-7 sm:size-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+              <div className="size-7 sm:size-8 rounded-lg bg-blue-500/15 text-[#93C5FD] flex items-center justify-center border border-blue-500/30">
                 <Calendar className="size-4" />
               </div>
             </div>
@@ -247,7 +247,7 @@ export function MemberSchedulePTOPage() {
                           <p className="text-xs text-[#97A0B3] mt-0.5 font-medium">{req.dateRange}</p>
                         </div>
                       </div>
-                      <span className="text-xs font-bold text-emerald-400 bg-emerald-500/15 px-2.5 py-1 rounded-md border border-emerald-500/30 self-start">
+                      <span className="text-xs font-bold text-[#93C5FD] bg-blue-500/15 px-2.5 py-1 rounded-md border border-blue-500/30 self-start">
                         {req.tag}
                       </span>
                     </div>
@@ -266,7 +266,7 @@ export function MemberSchedulePTOPage() {
                         </button>
                         <button
                           onClick={() => setCancelModalOpen(true)}
-                          className="px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-bold cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 text-xs font-bold cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -298,7 +298,7 @@ export function MemberSchedulePTOPage() {
                       <div className="text-xs text-[#97A0B3]">Oct 12 – Oct 14, 2025 • Covered by Chloe Tan</div>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs">
+                  <span className="px-2.5 py-1 rounded-md bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 font-extrabold text-xs">
                     Approved & Completed
                   </span>
                 </div>
@@ -313,7 +313,7 @@ export function MemberSchedulePTOPage() {
                       <div className="text-xs text-[#97A0B3]">Sep 22, 2025 • Standup asynchronous catchup</div>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs">
+                  <span className="px-2.5 py-1 rounded-md bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 font-extrabold text-xs">
                     Approved & Completed
                   </span>
                 </div>
@@ -348,15 +348,15 @@ export function MemberSchedulePTOPage() {
                   Duty / On-Deck
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-amber-500" />
+                  <span className="size-2.5 rounded-full bg-blue-400" />
                   Leave / Pending Off
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-rose-500" />
+                  <span className="size-2.5 rounded-full bg-blue-700" />
                   Sprint Deadline Lock
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-emerald-500" />
+                  <span className="size-2.5 rounded-full bg-blue-300" />
                   Maya Lin (Pod Lead Active)
                 </span>
               </div>
@@ -413,11 +413,11 @@ export function MemberSchedulePTOPage() {
                       item.today
                         ? "bg-[#7FA0D6]/20 border-blue-400 font-black shadow-md ring-1 ring-blue-500/30 text-white"
                         : item.holiday
-                        ? "bg-purple-500/15 border-purple-500/30 text-purple-300"
+                        ? "bg-blue-500/15 border-blue-500/30 text-blue-300"
                         : item.warn
-                        ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
+                        ? "bg-blue-500/15 border-blue-500/30 text-[#93C5FD]"
                         : item.alert
-                        ? "bg-rose-500/15 border-rose-500/30 text-rose-300"
+                        ? "bg-blue-500/15 border-blue-500/30 text-[#60A5FA]"
                         : item.muted
                         ? "bg-[#0B111C]/40 border-[#2A3446] text-slate-400"
                         : "bg-[#161F2D] border-[#2A3446] hover:border-[#7FA0D6]/40 text-[#F1F5F9]"
@@ -430,11 +430,11 @@ export function MemberSchedulePTOPage() {
                           item.today
                             ? "bg-blue-600 text-white shadow-xs"
                             : item.warn
-                            ? "bg-amber-500/25 text-amber-300 border border-amber-500/40"
+                            ? "bg-blue-500/25 text-[#93C5FD] border border-blue-500/40"
                             : item.alert
-                            ? "bg-rose-500/25 text-rose-300 border border-rose-500/40"
+                            ? "bg-blue-500/25 text-[#60A5FA] border border-blue-500/40"
                             : item.holiday
-                            ? "bg-purple-500/25 text-purple-300 border border-purple-500/40"
+                            ? "bg-blue-500/25 text-blue-300 border border-blue-500/40"
                             : "bg-[#1F2C3F] text-[#F1F5F9]"
                         }`}
                       >
@@ -456,7 +456,7 @@ export function MemberSchedulePTOPage() {
                   <h3 className="text-sm font-black text-white">Today's Pod Schedule</h3>
                   <p className="text-xs text-[#97A0B3] font-medium">Monday, Nov 3 • Core Hours (09:00 - 18:00)</p>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                   ● Active Shift
                 </span>
               </div>
@@ -492,7 +492,7 @@ export function MemberSchedulePTOPage() {
                   <div className="text-xs text-[#97A0B3]">3D Renders presentation with Product Lead</div>
                   <div className="flex items-center justify-between pt-1 border-t border-[#2A3446] text-xs text-[#97A0B3]">
                     <span>Handoff Cut v.1.0</span>
-                    <span className="text-emerald-400 font-bold">Motion QA Ready</span>
+                    <span className="text-[#93C5FD] font-bold">Motion QA Ready</span>
                   </div>
                 </div>
 
@@ -517,13 +517,13 @@ export function MemberSchedulePTOPage() {
               </div>
 
               <div className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446]/70 flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-teal-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
+                <div className="size-10 rounded-xl bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
                   CT
                 </div>
                 <div>
                   <div className="font-black text-white text-xs sm:text-sm">Chloe Tan</div>
                   <div className="text-xs text-[#97A0B3] font-medium">Sr. Video Editor & 2D Motion</div>
-                  <span className="inline-block mt-0.5 text-xs font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-md">
+                  <span className="inline-block mt-0.5 text-xs font-bold text-[#93C5FD] bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 rounded-md">
                     ● Available for pairing
                   </span>
                 </div>
@@ -652,7 +652,7 @@ export function MemberSchedulePTOPage() {
             className="w-full max-w-md bg-[#161F2D] rounded-3xl p-6 sm:p-7 shadow-2xl border border-[#2A3446] space-y-4 animate-scale-up text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="size-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto font-black">
+            <div className="size-12 rounded-2xl bg-blue-500/15 text-[#60A5FA] flex items-center justify-center mx-auto font-black">
               <X className="size-6" />
             </div>
             <div>
@@ -673,7 +673,7 @@ export function MemberSchedulePTOPage() {
               <button
                 type="button"
                 onClick={handleConfirmCancelLeave}
-                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-600/20 cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 cursor-pointer"
               >
                 Confirm Cancellation
               </button>

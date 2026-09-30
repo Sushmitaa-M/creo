@@ -38,6 +38,7 @@ import {
   Download,
   Printer,
   SlidersHorizontal,
+  Bell,
   ArrowUpRight,
   Play,
   Camera,
@@ -1084,8 +1085,8 @@ export function AdminClientsPage() {
                       <span className="px-2.5 py-0.5 rounded-full bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30 text-[10px] font-black uppercase tracking-wider">
                         {activeClient?.tierBadge}
                       </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#60A5FA]" />
                         {activeClient?.status}
                       </span>
                     </div>
@@ -1188,8 +1189,8 @@ export function AdminClientsPage() {
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-[#97A0B3] pt-3 border-t border-[#2A3446] font-medium">
-                  <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="flex items-center gap-1 text-[#60A5FA] font-semibold">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#60A5FA]" />
                     Contract renewed: {activeClient?.contact.renewedDate}
                   </span>
                   <span>Term: {activeClient?.contact.termMonths} Mo</span>
@@ -1214,8 +1215,8 @@ export function AdminClientsPage() {
                       <span className="text-xs font-bold text-[#97A0B3]"> /mo</span>
                     </div>
                     {activeClient?.addon && (
-                      <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 flex items-center gap-1">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="px-2.5 py-1 rounded-lg bg-blue-500/15 text-[#60A5FA] text-xs font-bold border border-blue-500/30 flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#60A5FA]" />
                         {activeClient.addon}
                       </span>
                     )}
@@ -1694,7 +1695,7 @@ export function AdminClientsPage() {
 
         {/* 1. Edit Profile Modal */}
         {isEditProfileOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="bg-[#161F2D] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-[#2A3446]">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <h3 className="text-base font-black text-white">Edit Client Profile: {activeClient?.name}</h3>
@@ -1743,7 +1744,7 @@ export function AdminClientsPage() {
 
         {/* 2. Monthly Invoice Modal */}
         {isInvoiceModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="bg-[#161F2D] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-[#2A3446]">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <h3 className="text-base font-black text-white">Current Retainer Invoice</h3>
@@ -1791,7 +1792,7 @@ export function AdminClientsPage() {
 
         {/* 3. New Request Modal */}
         {isNewRequestOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="bg-[#161F2D] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-[#2A3446]">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <div>
@@ -1877,7 +1878,7 @@ export function AdminClientsPage() {
 
         {/* 4. Preview Canvas / Video Modal */}
         {previewDeliverable && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="bg-[#161F2D] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-[#2A3446]">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <div>
@@ -2040,7 +2041,7 @@ export function AdminDeliverablesPage() {
               </div>
             </div>
             <div className="text-3xl font-black text-white tracking-tight">42</div>
-            <div className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+            <div className="text-xs font-bold text-[#60A5FA] flex items-center gap-1">
               ↗ +12% this week
             </div>
           </div>
@@ -2050,12 +2051,12 @@ export function AdminDeliverablesPage() {
               <span className="text-[10px] font-black text-[#97A0B3] uppercase tracking-wider">
                 PENDING REVIEW
               </span>
-              <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center font-bold">
                 <Clock className="w-3.5 h-3.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-white tracking-tight">24</div>
-            <div className="text-xs font-bold text-amber-600 flex items-center gap-1">
+            <div className="text-xs font-bold text-[#7FA0D6] flex items-center gap-1">
               ⚡ 4 near SLA limit
             </div>
           </div>
@@ -2065,12 +2066,12 @@ export function AdminDeliverablesPage() {
               <span className="text-[10px] font-black text-[#97A0B3] uppercase tracking-wider">
                 APPROVED TODAY
               </span>
-              <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-xl bg-blue-600/15 text-[#60A5FA] flex items-center justify-center font-bold">
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-white tracking-tight">116</div>
-            <div className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+            <div className="text-xs font-bold text-[#60A5FA] flex items-center gap-1">
               ✓ 98.4% First-Pass
             </div>
           </div>
@@ -2080,12 +2081,12 @@ export function AdminDeliverablesPage() {
               <span className="text-[10px] font-black text-[#97A0B3] uppercase tracking-wider">
                 DECLINED / REVISE
               </span>
-              <div className="w-7 h-7 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-xl bg-blue-500/15 text-[#93C5FD] flex items-center justify-center font-bold">
                 <AlertTriangle className="w-3.5 h-3.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-white tracking-tight">8</div>
-            <div className="text-xs font-bold text-rose-600 flex items-center gap-1">
+            <div className="text-xs font-bold text-[#93C5FD] flex items-center gap-1">
               ↘ -2 vs yesterday
             </div>
           </div>
@@ -2278,7 +2279,7 @@ export function AdminDeliverablesPage() {
 
         {/* Media Preview Modal */}
         {previewItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="bg-[#161F2D] rounded-3xl max-w-3xl w-full p-6 shadow-2xl space-y-4 border border-[#2A3446] max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between border-b border-[#2A3446] pb-3">
                 <div>
@@ -2347,7 +2348,7 @@ export function AdminDeliverablesPage() {
 
         {/* Notes & Comments Modal */}
         {commentModalItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="bg-[#161F2D] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-[#2A3446]">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <div className="flex items-center gap-2">
@@ -2651,7 +2652,7 @@ export function AdminTasksPage() {
                       </div>
                       <span className="font-medium text-[#F1F5F9]">{task.assigneeName}</span>
                     </div>
-                    <span className="font-bold text-rose-600">{task.due}</span>
+                    <span className="font-bold text-[#93C5FD]">{task.due}</span>
                   </div>
                 </div>
               ))}
@@ -2662,12 +2663,12 @@ export function AdminTasksPage() {
           <div className="bg-[#161F2D]/40 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#60A5FA]" />
                 <h3 className="text-xs font-black text-white tracking-wider uppercase">
                   UNDER REVIEW
                 </h3>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-[#161F2D] text-amber-600 text-[11px] font-bold border border-[#2A3446] shadow-2xs">
+              <span className="px-2 py-0.5 rounded-full bg-[#161F2D] text-[#60A5FA] text-[11px] font-bold border border-[#2A3446] shadow-2xs">
                 {underReviewTasks.length}
               </span>
             </div>
@@ -2695,7 +2696,7 @@ export function AdminTasksPage() {
                       </div>
                       <span className="font-medium text-[#F1F5F9]">{task.assigneeName}</span>
                     </div>
-                    <span className="font-bold text-amber-600">{task.pod}</span>
+                    <span className="font-bold text-[#7FA0D6]">{task.pod}</span>
                   </div>
                 </div>
               ))}
@@ -2706,12 +2707,12 @@ export function AdminTasksPage() {
           <div className="bg-[#161F2D]/40 rounded-3xl p-4 flex flex-col space-y-3.5 border border-[#2A3446]/60">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
                 <h3 className="text-xs font-black text-white tracking-wider uppercase">
                   APPROVED
                 </h3>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-[#161F2D] text-emerald-600 text-[11px] font-bold border border-[#2A3446] shadow-2xs">
+              <span className="px-2 py-0.5 rounded-full bg-[#161F2D] text-[#93C5FD] text-[11px] font-bold border border-[#2A3446] shadow-2xs">
                 {approvedTasks.length}
               </span>
             </div>
@@ -2754,7 +2755,7 @@ export function AdminTasksPage() {
 
         {/* Create Task Modal */}
         {isCreateModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="bg-[#161F2D] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-[#2A3446]">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <h3 className="text-base font-black text-white">Create Production Task</h3>
@@ -2853,7 +2854,7 @@ export function AdminTasksPage() {
 
         {/* Task Preview Drawer */}
         {previewTask && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="bg-[#161F2D] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-[#2A3446]">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <div>
@@ -2902,9 +2903,6 @@ export function AdminCalendarPage() {
   const { user } = useAuth();
   const isTeamLead = user?.role === "team_lead";
   const [selectedDayNumber, setSelectedDayNumber] = useState<number>(14);
-  const [selectedPodFilter, setSelectedPodFilter] = useState(isTeamLead ? "Pod A" : "all");
-  const [selectedClientFilter, setSelectedClientFilter] = useState("all");
-  const [selectedTypeFilter, setSelectedTypeFilter] = useState("all");
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [selectedAssetModal, setSelectedAssetModal] = useState<any | null>(null);
 
@@ -3221,331 +3219,170 @@ export function AdminCalendarPage() {
     });
   };
 
-  // Get current day's tasks filtered by pod / client / type
-  const activePodFilter = isTeamLead ? "Pod A" : selectedPodFilter;
-  const rawDayTasks = tasksByDay[selectedDayNumber] || [];
-  const filteredDayTasks = rawDayTasks.filter((item) => {
-    if (activePodFilter !== "all" && item.pod !== activePodFilter) return false;
-    if (selectedClientFilter !== "all" && !item.client.toLowerCase().includes(selectedClientFilter.toLowerCase())) return false;
-    if (selectedTypeFilter !== "all" && item.type !== selectedTypeFilter) return false;
-    return true;
-  });
-
-  const isSelectedDateToday = selectedDayNumber === 14;
-
   return (
-    <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
-      <AdminTopHeader activeTab="Content Engine" />
-      <main className="flex-1 px-6 lg:px-8 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-6">
-        {/* Header and Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-[#161F2D] border border-[#2A3446] px-3 py-1.5 rounded-xl shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setSelectedDayNumber((prev) => Math.max(1, prev - 1))}
-                aria-label="Previous Day"
-                className="p-0.5 text-[#97A0B3] hover:text-[#F1F5F9] cursor-pointer rounded"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <Calendar className="w-4 h-4 text-[#7FA0D6]" />
-              <span className="text-xs font-bold text-white">
-                November {selectedDayNumber}, 2024 {isSelectedDateToday ? "(Today)" : ""}
-              </span>
-              <button
-                type="button"
-                onClick={() => setSelectedDayNumber((prev) => Math.min(30, prev + 1))}
-                aria-label="Next Day"
-                className="p-0.5 text-[#97A0B3] hover:text-[#F1F5F9] cursor-pointer rounded"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-            {selectedDayNumber !== 14 && (
-              <button
-                type="button"
-                onClick={() => setSelectedDayNumber(14)}
-                className="text-xs font-bold text-[#7FA0D6] hover:text-blue-800 bg-[#7FA0D6]/15 px-2.5 py-1 rounded-lg border border-[#7FA0D6]/30 cursor-pointer transition-colors"
-              >
-                Jump to Today (14th)
-              </button>
-            )}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            {isTeamLead ? (
-              <div className="px-3 py-2 rounded-xl border border-[#7FA0D6]/30 bg-[#7FA0D6]/15/70 text-xs font-bold text-[#7FA0D6] shadow-2xs">
-                Pod A Schedule
-              </div>
-            ) : (
-              <CustomSelect
-                value={selectedPodFilter}
-                onChange={setSelectedPodFilter}
-                ariaLabel="Filter Calendar Pod"
-                options={[
-                  { value: "all", label: "All Pods" },
-                  { value: "Pod A", label: "Pod A" },
-                  { value: "Pod B", label: "Pod B" },
-                  { value: "Pod C", label: "Pod C" },
-                ]}
-              />
-            )}
-
-            <CustomSelect
-              value={selectedTypeFilter}
-              onChange={setSelectedTypeFilter}
-              ariaLabel="Filter Deliverable Type"
-              options={[
-                { value: "all", label: "All Formats" },
-                { value: "Reel", label: "🎬 Reel" },
-                { value: "Story", label: "📲 Story" },
-                { value: "Post", label: "📄 Post" },
-              ]}
-            />
-
-            <CustomSelect
-              value={selectedClientFilter}
-              onChange={setSelectedClientFilter}
-              ariaLabel="Filter Calendar Client"
-              options={[
-                { value: "all", label: "All Assigned Clients" },
-                { value: "Northwind", label: "Northwind Labs" },
-                { value: "Bloom", label: "Bloom Studio" },
-                { value: "Atlas", label: "Atlas Commerce" },
-              ]}
-            />
-
-            <button
-              type="button"
-              onClick={() => handleOpenScheduleForDay(selectedDayNumber)}
-              className="px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-colors"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" /> Schedule Asset
-            </button>
+    <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col text-white">
+      {/* Top Header Bar */}
+      <header className="w-full bg-[#0B111C] border-b border-[#2A3446]/60 px-6 py-4 flex items-center justify-between sticky top-0 z-30 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
+          <h1 className="text-base sm:text-lg font-black tracking-tight text-white">Content Calendar</h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <button type="button" className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-[#161F2D] transition-colors cursor-pointer" aria-label="Notifications">
+            <Bell className="w-4 h-4" />
+          </button>
+          <div className="w-8 h-8 rounded-full bg-[#1E293B] border border-[#334155] flex items-center justify-center text-xs font-black text-white shadow-xs">
+            K
           </div>
         </div>
+      </header>
 
-
-
-        {/* Calendar Grid + Dynamic Selected Date Work Split */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main 7-Column Month Calendar View */}
-          <div className="lg:col-span-2 bg-[#161F2D] rounded-3xl border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-black text-white">November 2024</h2>
-                <span className="text-xs font-bold text-[#97A0B3]">Production Horizon</span>
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-[1500px] w-full mx-auto space-y-6">
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+          {/* Left Column: Calendar View (xl:col-span-2) */}
+          <div className="xl:col-span-2 bg-[#161F2D] border border-[#2A3446] rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 lg:p-8 flex flex-col">
+            {/* Calendar Header */}
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+              <div className="flex items-center gap-3">
+                <h2 className="text-[20px] font-black text-white tracking-tight">
+                  September 2026
+                </h2>
+                <span className="text-sm font-semibold text-[#97A0B3]">Production Horizon</span>
               </div>
+              
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-medium text-[#97A0B3] hidden sm:inline">
-                  Click any date to view scheduled work
-                </span>
-                <span className="text-xs font-bold text-[#7FA0D6] bg-[#7FA0D6]/15 px-3 py-1 rounded-full">
-                  14th Today
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedDayNumber(14)}
+                  className="px-4 py-1.5 text-xs font-bold text-slate-200 hover:text-white bg-[#0B111C]/80 hover:bg-[#0B111C] rounded-full border border-[#2A3446] shadow-2xs transition-all cursor-pointer"
+                >
+                  Today
+                </button>
+                <div className="flex items-center bg-[#0B111C]/80 border border-[#2A3446] rounded-full p-1 shadow-2xs">
+                  <button type="button" onClick={() => setSelectedDayNumber((prev) => Math.max(1, prev - 1))} className="p-1.5 text-slate-400 hover:text-white rounded-full transition-all cursor-pointer" aria-label="Previous Month">
+                    <ChevronLeft className="size-4" strokeWidth={2.5} />
+                  </button>
+                  <div className="w-[1px] h-4 bg-[#2A3446] mx-1" />
+                  <button type="button" onClick={() => setSelectedDayNumber((prev) => Math.min(30, prev + 1))} className="p-1.5 text-slate-400 hover:text-white rounded-full transition-all cursor-pointer" aria-label="Next Month">
+                    <ChevronRight className="size-4" strokeWidth={2.5} />
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-7 gap-2 text-center text-[11px] font-bold text-[#97A0B3] pb-2 border-b border-[#2A3446]">
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-                <div key={d}>{d}</div>
-              ))}
-            </div>
+            {/* Month Grid */}
+            <div className="flex-1 flex flex-col min-h-[500px]">
+              {/* Weekday Headers */}
+              <div className="grid grid-cols-7 mb-4">
+                {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day: string) => (
+                  <div key={day} className="py-2 text-center text-xs font-black text-[#97A0B3] uppercase tracking-wider">
+                    {day}
+                  </div>
+                ))}
+              </div>
 
-            <div className="grid grid-cols-7 gap-2">
-              {Array.from({ length: 30 }).map((_, i) => {
-                const dayNum = i + 1;
-                const isToday = dayNum === 14;
-                const isSelected = dayNum === selectedDayNumber;
-                const dayTasks = tasksByDay[dayNum] || [];
+              {/* Calendar Cells (September 2026: Sep 1 is Tuesday, so 2 empty offset slots for Sun & Mon) */}
+              <div className="grid grid-cols-7 gap-3 flex-1 auto-rows-fr">
+                {/* 2 Empty offset cells for Sep 1 (Tuesday) */}
+                <div className="rounded-[1.25rem] bg-transparent p-2" />
+                <div className="rounded-[1.25rem] bg-transparent p-2" />
 
-                // Tally work types for date pill summary
-                const reelsCount = dayTasks.filter((t) => t.type === "Reel").length;
-                const storiesCount = dayTasks.filter((t) => t.type === "Story").length;
-                const otherCount = dayTasks.length - reelsCount - storiesCount;
+                {Array.from({ length: 30 }).map((_, i) => {
+                  const dayNum = i + 1;
+                  const isSelected = selectedDayNumber === dayNum;
+                  const dayTasks = tasksByDay[dayNum] || [];
 
-                return (
-                  <button
-                    key={dayNum}
-                    type="button"
-                    onClick={() => setSelectedDayNumber(dayNum)}
-                    className={`min-h-[92px] p-2 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer group relative ${
-                      isSelected
-                        ? "bg-[#7FA0D6]/15/90 border-blue-500 ring-2 ring-blue-600/30 shadow-md scale-[1.02] z-10"
-                        : isToday
-                        ? "bg-[#7FA0D6]/15/40 border-[#7FA0D6]/30 hover:border-blue-300"
-                        : "bg-[#0B111C]/40 border-[#2A3446] hover:bg-[#161F2D] hover:border-[#7FA0D6]/30 hover:shadow-2xs"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span
-                        className={`text-xs font-black inline-block size-6 rounded-full flex items-center justify-center transition-colors ${
-                          isSelected
-                            ? "bg-blue-600 text-white shadow-xs"
-                            : isToday
-                            ? "bg-[#7FA0D6]/20 text-blue-800 font-bold"
-                            : "text-[#F1F5F9] group-hover:text-[#7FA0D6]"
-                        }`}
-                      >
+                  return (
+                    <div
+                      key={dayNum}
+                      onClick={() => setSelectedDayNumber(dayNum)}
+                      className={`relative rounded-[1.25rem] p-3.5 sm:p-4 transition-all cursor-pointer min-h-[110px] flex flex-col justify-between border-2 group ${
+                        isSelected
+                          ? "border-blue-500 bg-[#7FA0D6]/15 ring-2 ring-blue-500/20 shadow-lg scale-[1.01] z-10"
+                          : "border-[#2A3446] hover:border-[#7FA0D6]/40 bg-[#0B111C]/40 hover:bg-[#161F2D] shadow-xs"
+                      }`}
+                    >
+                      <span className={`text-base sm:text-lg font-black ${
+                        isSelected ? "text-white" : "text-slate-300 group-hover:text-white"
+                      }`}>
                         {dayNum}
                       </span>
-                      {dayTasks.length > 0 && (
-                        <span
-                          className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${
-                            isSelected ? "bg-blue-600 text-white" : "bg-gray-200 text-[#F1F5F9]"
-                          }`}
-                        >
-                          {dayTasks.length}
-                        </span>
-                      )}
+                      
+                      <div className="mt-auto flex flex-col gap-1.5 w-full">
+                        {dayNum === 15 && (
+                          <div className="w-full rounded-full bg-blue-600/30 text-[#93C5FD] px-2.5 py-0.5 text-[11px] font-black truncate text-left shadow-2xs">
+                            3 S...
+                          </div>
+                        )}
+                        {dayNum === 25 && (
+                          <div className="w-full rounded-full bg-blue-500/20 text-[#60A5FA] px-2.5 py-0.5 text-[11px] font-black truncate text-left shadow-2xs">
+                            SL...
+                          </div>
+                        )}
+                        {dayTasks.length > 0 && dayNum !== 15 && dayNum !== 25 && (
+                          <div className="w-full rounded-full bg-blue-900/40 border border-blue-500/30 text-[#93C5FD] px-2 py-0.5 text-[10px] font-extrabold truncate text-left shadow-xs">
+                            {dayTasks.length} {dayTasks.length === 1 ? "Item" : "Items"}
+                          </div>
+                        )}
+                      </div>
                     </div>
-
-                    {/* Day Deliverables Badges */}
-                    <div className="space-y-1 mt-1 w-full">
-                      {reelsCount > 0 && (
-                        <span className="block text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 truncate">
-                          🎬 {reelsCount} {reelsCount === 1 ? "Reel" : "Reels"}
-                        </span>
-                      )}
-                      {storiesCount > 0 && (
-                        <span className="block text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 truncate">
-                          📲 {storiesCount} {storiesCount === 1 ? "Story" : "Stories"}
-                        </span>
-                      )}
-                      {otherCount > 0 && (
-                        <span className="block text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 truncate">
-                          📌 {otherCount} Deliverable{otherCount > 1 ? "s" : ""}
-                        </span>
-                      )}
-                      {dayTasks.length === 0 && (
-                        <span className="block text-[9px] font-medium text-gray-300 group-hover:text-[#97A0B3] transition-colors pt-2">
-                          + Add item
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Right Column: Dynamic Work Container for Selected Date */}
-          <div className="bg-[#161F2D] rounded-3xl border border-[#2A3446] shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6 space-y-4 flex flex-col justify-between">
-            <div className="space-y-4">
-              {/* Dynamic Header */}
-              <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-base font-black text-white">
-                    {isSelectedDateToday
-                      ? "Today's Deliverables"
-                      : `Nov ${selectedDayNumber} Deliverables`}
-                  </h2>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-black text-[#7FA0D6] bg-[#7FA0D6]/15 px-2.5 py-1 rounded-full border border-[#7FA0D6]/30">
-                    {filteredDayTasks.length} {filteredDayTasks.length === 1 ? "Item" : "Items"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Sub-bar indicator showing selected date */}
-              <div className="flex items-center justify-between bg-[#0B111C]/80 px-3 py-2 rounded-xl border border-[#2A3446]">
-                <span className="text-xs font-semibold text-[#F1F5F9] flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-[#7FA0D6]" />
-                  Scheduled for <strong>Nov {selectedDayNumber}, 2024</strong>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleOpenScheduleForDay(selectedDayNumber)}
-                  className="text-[11px] font-bold text-[#7FA0D6] hover:text-blue-800 flex items-center gap-1 cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5 stroke-[3]" /> Add
-                </button>
-              </div>
-
-              {/* Deliverable Items List for Selected Date */}
-              {filteredDayTasks.length > 0 ? (
-                <div className="space-y-3 max-h-[580px] overflow-y-auto pr-1">
-                  {filteredDayTasks.map((item) => {
-                    const typeBadge = getTypeBadge(item.type);
-                    return (
-                      <div
-                        key={item.id}
-                        onClick={() => setSelectedAssetModal(item)}
-                        className="p-4 rounded-2xl border border-[#2A3446] hover:border-blue-300 bg-[#161F2D] hover:bg-[#7FA0D6]/15/20 shadow-2xs hover:shadow-sm transition-all cursor-pointer space-y-2.5 group"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-black text-[#7FA0D6] uppercase font-mono tracking-wider">
-                            {item.pod} • {item.client}
-                          </span>
-                          <span
-                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${typeBadge.bg}`}
-                          >
-                            {typeBadge.label}
-                          </span>
-                        </div>
-
-                        <h4 className="text-xs font-black text-white group-hover:text-[#7FA0D6] transition-colors leading-snug">
-                          {item.title}
-                        </h4>
-
-                        <div className="flex items-center justify-between text-[11px] text-[#97A0B3] pt-2 border-t border-[#2A3446]">
-                          <div className="flex items-center gap-1.5">
-                            <div
-                              className={`size-5.5 rounded-full ${item.avatarBg} text-white font-bold text-[9px] flex items-center justify-center shadow-2xs`}
-                            >
-                              {item.avatar}
-                            </div>
-                            <span className="font-semibold text-[#F1F5F9]">{item.assignee}</span>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${item.tagColor}`}
-                            >
-                              {item.tag}
-                            </span>
-                            <span className="font-bold text-white font-mono text-xs">
-                              {item.time}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                /* Empty State when no tasks exist on selected date */
-                <div className="py-12 px-4 text-center rounded-2xl border-2 border-dashed border-[#2A3446] bg-[#0B111C]/50 flex flex-col items-center justify-center space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center shadow-2xs">
-                    <Calendar className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-black text-white">
-                      No deliverables on Nov {selectedDayNumber}
-                    </h3>
-                    <p className="text-xs text-[#97A0B3] mt-1 max-w-[240px] mx-auto">
-                      No reels, stories, or slide decks are scheduled for this date yet.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleOpenScheduleForDay(selectedDayNumber)}
-                    className="mt-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-colors"
-                  >
-                    <Plus className="w-4 h-4 stroke-[3]" /> Schedule for Nov {selectedDayNumber}
-                  </button>
-                </div>
-              )}
+          {/* Right Column: Dispatch Queue (xl:col-span-1) */}
+          <div className="bg-[#161F2D] border border-[#2A3446] rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 lg:p-8 flex flex-col min-h-[500px]">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-[18px] font-black text-white tracking-tight">
+                {selectedDayNumber ? `Today's Dispatch Queue` : "Today's Dispatch Queue"}
+              </h3>
+              <span className="inline-flex items-center rounded-full bg-[#1F2C3F] border border-[#2A3446] px-3 py-1 text-[12px] font-bold text-[#7FA0D6]">
+                {(tasksByDay[selectedDayNumber] || []).length > 0 ? `${(tasksByDay[selectedDayNumber] || []).length} Active` : '0 Active'}
+              </span>
             </div>
 
-            {/* Bottom Quick Action */}
-            <div className="pt-3 border-t border-[#2A3446] flex items-center justify-between text-xs text-[#97A0B3]">
-              <span className="font-medium">Total Assets in Nov:</span>
-              <span className="font-black text-white">
-                {Object.values(tasksByDay).reduce((acc, curr) => acc + curr.length, 0)} Items
-              </span>
+            <div className="flex-1 flex flex-col justify-center">
+              {(tasksByDay[selectedDayNumber] || []).length === 0 ? (
+                /* The empty container in dark theme (replaced stark white container from pic with dark theme) */
+                <div className="flex flex-col items-center justify-center min-h-[220px] p-8 text-[#97A0B3] text-sm font-bold bg-[#0B111C]/60 rounded-[1.5rem] border-2 border-dashed border-[#2A3446] text-center shadow-inner space-y-2 group cursor-pointer hover:border-[#7FA0D6]/40 transition-colors" onClick={() => handleOpenScheduleForDay(selectedDayNumber)}>
+                  <span className="text-[#97A0B3] font-bold text-sm">No deliverables scheduled.</span>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-[580px] overflow-y-auto pr-1">
+                  {(tasksByDay[selectedDayNumber] || []).map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => setSelectedAssetModal(item)}
+                      className="p-5 rounded-[1.5rem] border border-[#2A3446] hover:border-[#7FA0D6]/50 bg-[#0B111C]/70 hover:bg-[#0B111C] transition-all cursor-pointer shadow-xs group space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-[#7FA0D6] uppercase tracking-wider">
+                          {item.pod} • {item.client}
+                        </span>
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border bg-blue-600/30 text-[#60A5FA] border-blue-500/30">
+                          {item.tag}
+                        </span>
+                      </div>
+                      
+                      <h4 className="text-[14px] font-bold text-white leading-snug group-hover:text-[#7FA0D6] transition-colors">
+                        {item.title}
+                      </h4>
+                      
+                      <div className="flex items-center justify-between pt-2 border-t border-[#2A3446]/60 mt-auto">
+                        <span className="text-[12px] font-bold text-slate-300">
+                          {item.assignee}
+                        </span>
+                        <span className="text-[11px] font-black text-[#7FA0D6]">
+                          {item.time}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -3836,9 +3673,9 @@ export function AdminTeamManagementPage() {
       pendingReview: 0,
       allocatedHours: 120,
       totalHours: 120,
-      color: "bg-emerald-600",
-      textColor: "text-emerald-600",
-      pillBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
+      color: "bg-blue-700",
+      textColor: "text-[#60A5FA]",
+      pillBg: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
       squadLoad: 40,
       activeEngagements: 1,
       readyReview: 0,
@@ -3872,7 +3709,7 @@ export function AdminTeamManagementPage() {
       email: "editor.alpha@creo.agency",
       handle: "@karthik",
       status: "Sprint Ready",
-      statusColor: "bg-sky-50 text-sky-700 border-sky-200",
+      statusColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
       allocatedPct: 50,
       projectsCount: 1,
       capabilities: ["Premiere Pro", "After Effects", "Reels Editing"],
@@ -3886,7 +3723,7 @@ export function AdminTeamManagementPage() {
       email: "designer.alpha@creo.agency",
       handle: "@ananya",
       status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      statusColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
       allocatedPct: 40,
       projectsCount: 1,
       capabilities: ["Figma", "Photoshop", "Brand Design", "Posters"],
@@ -3917,7 +3754,7 @@ export function AdminTeamManagementPage() {
       email: "editor.beta@creo.agency",
       handle: "@davidk",
       status: "Sprint Ready",
-      statusColor: "bg-sky-50 text-sky-700 border-sky-200",
+      statusColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
       allocatedPct: 50,
       projectsCount: 1,
       capabilities: ["DaVinci Resolve", "Sound Design", "Mobile 9:16 Reels"],
@@ -3931,7 +3768,7 @@ export function AdminTeamManagementPage() {
       email: "designer.beta@creo.agency",
       handle: "@elena",
       status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      statusColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
       allocatedPct: 40,
       projectsCount: 1,
       capabilities: ["Typography", "Social Banners", "Carousel Design"],
@@ -3962,7 +3799,7 @@ export function AdminTeamManagementPage() {
       email: "editor.gamma@creo.agency",
       handle: "@tanvi",
       status: "Sprint Ready",
-      statusColor: "bg-sky-50 text-sky-700 border-sky-200",
+      statusColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
       allocatedPct: 50,
       projectsCount: 1,
       capabilities: ["Motion Graphics", "Color Grading", "Short-Form Video"],
@@ -3976,7 +3813,7 @@ export function AdminTeamManagementPage() {
       email: "designer.gamma@creo.agency",
       handle: "@arjun",
       status: "Accepting Work",
-      statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      statusColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
       allocatedPct: 40,
       projectsCount: 1,
       capabilities: ["Illustrations", "Figma", "Social Banners"],
@@ -4006,13 +3843,13 @@ export function AdminTeamManagementPage() {
       case "lead":
         return <UserCog className="w-3.5 h-3.5 text-[#7FA0D6]" />;
       case "designer":
-        return <Palette className="w-3.5 h-3.5 text-purple-600" />;
+        return <Palette className="w-3.5 h-3.5 text-[#60A5FA]" />;
       case "editor":
-        return <Scissors className="w-3.5 h-3.5 text-amber-600" />;
+        return <Scissors className="w-3.5 h-3.5 text-[#7FA0D6]" />;
       case "videographer":
-        return <Video className="w-3.5 h-3.5 text-rose-600" />;
+        return <Video className="w-3.5 h-3.5 text-[#93C5FD]" />;
       case "photographer":
-        return <Camera className="w-3.5 h-3.5 text-emerald-600" />;
+        return <Camera className="w-3.5 h-3.5 text-[#60A5FA]" />;
       default:
         return <Users className="w-3.5 h-3.5 text-[#F1F5F9]" />;
     }
@@ -4174,7 +4011,7 @@ export function AdminTeamManagementPage() {
               allocatedPct: newPct,
               projectsCount: newCount,
               status: "Accepting Work",
-              statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+              statusColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
             }
           : m
       )
@@ -4187,7 +4024,7 @@ export function AdminTeamManagementPage() {
               allocatedPct: newPct,
               projectsCount: newCount,
               status: "Accepting Work",
-              statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+              statusColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
             }
           : null
       );
@@ -4209,12 +4046,12 @@ export function AdminTeamManagementPage() {
 
       <main className="flex-1 px-6 lg:px-10 pt-4 pb-16 max-w-[1500px] w-full mx-auto space-y-6">
         {toast && (
-          <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-2xl flex items-center justify-between shadow-sm animate-fade-in">
+          <div className="p-4 bg-blue-500/15 border border-blue-500/30 text-[#93C5FD] text-xs font-bold rounded-2xl flex items-center justify-between shadow-sm animate-fade-in">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <CheckCircle2 className="w-4 h-4 text-[#60A5FA]" />
               <span>{toast}</span>
             </div>
-            <button onClick={() => setToast(null)} className="text-emerald-600 hover:text-emerald-900 font-bold">
+            <button onClick={() => setToast(null)} className="text-[#60A5FA] hover:text-white font-bold">
               Dismiss
             </button>
           </div>
@@ -4267,7 +4104,7 @@ export function AdminTeamManagementPage() {
                   <span className="text-[10px] font-extrabold text-[#97A0B3] uppercase tracking-wider">
                     CAPACITY
                   </span>
-                  <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-2xl bg-blue-600/15 text-[#60A5FA] flex items-center justify-center">
                     <Zap className="w-5 h-5" />
                   </div>
                 </div>
@@ -4277,9 +4114,9 @@ export function AdminTeamManagementPage() {
                 </div>
                 <div className="mt-4 pt-3 border-t border-[#2A3446] flex items-center gap-2">
                   <div className="flex-1 bg-[#1F2C3F] rounded-full h-2 overflow-hidden">
-                    <div className="bg-emerald-600 h-full rounded-full w-[88%]" />
+                    <div className="bg-blue-600 h-full rounded-full w-[88%]" />
                   </div>
-                  <span className="text-xs font-bold text-emerald-600">Healthy</span>
+                  <span className="text-xs font-bold text-[#60A5FA]">Healthy</span>
                 </div>
               </div>
 
@@ -4309,8 +4146,8 @@ export function AdminTeamManagementPage() {
                 <h3 className="text-lg font-bold text-white tracking-tight">Team Pods</h3>
                 <p className="text-xs text-[#97A0B3]">Real-time capacity distribution, pod leads, and task completion velocity</p>
               </div>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Sprint Cycle 08 • 4 Days Remaining
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/15 text-[#7FA0D6] border border-blue-500/30 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-pulse" /> Sprint Cycle 08 • 4 Days Remaining
               </span>
             </div>
 
@@ -4337,8 +4174,8 @@ export function AdminTeamManagementPage() {
                         <p className="text-xs text-[#97A0B3]">{pod.description.slice(0, 48)}...</p>
                       </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Active
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#60A5FA]" /> Active
                     </span>
                   </div>
 
@@ -4358,7 +4195,7 @@ export function AdminTeamManagementPage() {
                       <div className="flex -space-x-2">
                         <div className="w-7 h-7 rounded-full bg-slate-700 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">ER</div>
                         <div className="w-7 h-7 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">MC</div>
-                        <div className="w-7 h-7 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">LZ</div>
+                        <div className="w-7 h-7 rounded-full bg-blue-700 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">LZ</div>
                       </div>
                       <span className="text-xs font-bold text-[#F1F5F9]">+{pod.membersCount - 3} Members</span>
                     </div>
@@ -4384,62 +4221,25 @@ export function AdminTeamManagementPage() {
                     <span className="text-[#97A0B3] font-medium text-[11px]">
                       Allocated: <strong className="text-white">{pod.allocatedHours}h / {pod.totalHours}h</strong>
                     </span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActivePodId(pod.id);
-                      }}
-                      className="text-[#7FA0D6] font-bold hover:underline inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
-                    >
-                      View Member Directory &rarr;
-                    </button>
+                    <span className="text-[#60A5FA] font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-1 text-[11px]">
+                      View Member Directory →
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          /* ─────────────────────────────────────────────────────────────────────────────
-              VIEW 2: DEDICATED POD MEMBER DIRECTORY SUB-PAGE (Matching Screenshot 2)
-          ───────────────────────────────────────────────────────────────────────────── */
+          /* VIEW 2: POD SPECIALIST ROSTER DIRECTORY */
           <div className="space-y-6">
-            {/* Top Breadcrumb & Action Controls */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#97A0B3]">
-                <button
-                  type="button"
-                  onClick={() => setActivePodId(null)}
-                  className="hover:text-[#7FA0D6] flex items-center gap-1 transition-colors cursor-pointer"
-                >
-                  <ArrowLeft className="w-4 h-4" /> Back to Track Overview
-                </button>
-                <span>/</span>
-                <button type="button" onClick={() => setActivePodId(null)} className="hover:text-[#7FA0D6] transition-colors cursor-pointer">
-                  Team Management
-                </button>
-                <span>/</span>
-                <span className="text-white font-black">{activePod?.name} Member Directory</span>
-              </div>
+            <button
+              type="button"
+              onClick={() => setActivePodId(null)}
+              className="text-[#97A0B3] hover:text-white text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              ← Back to All Pods
+            </button>
 
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30">
-                  ● Q2 Cycle Active
-                </span>
-                <span className="text-[11px] text-[#97A0B3] font-medium hidden sm:inline">
-                  Last synchronized: Just now
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setIsAddMemberOpen(true)}
-                  className="px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 cursor-pointer transition-all"
-                >
-                  + Add Team Member
-                </button>
-              </div>
-            </div>
-
-            {/* Pod Summary Banner Card matching Screenshot 2 */}
             <div className="bg-[#161F2D] rounded-3xl p-6 lg:p-8 border border-[#2A3446] shadow-[0_4px_30px_rgba(0,0,0,0.04)] space-y-6">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="space-y-3 max-w-3xl">
@@ -4447,7 +4247,7 @@ export function AdminTeamManagementPage() {
                     <span className="px-3 py-1 rounded-full bg-blue-600 text-white font-black text-xs uppercase tracking-wider">
                       {activePod?.name}
                     </span>
-                    <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs">
+                    <span className="px-3 py-1 rounded-full bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 font-bold text-xs">
                       High Velocity
                     </span>
                   </div>
@@ -4468,7 +4268,7 @@ export function AdminTeamManagementPage() {
                     <div className="h-6 w-px bg-gray-200" />
                     <div>
                       <span className="text-[10px] uppercase text-[#97A0B3] block font-extrabold tracking-wider">VELOCITY</span>
-                      <span className="text-emerald-600 font-black">{activePod?.velocityPct}% Sprint Delivery</span>
+                      <span className="text-[#60A5FA] font-black">{activePod?.velocityPct}% Sprint Delivery</span>
                     </div>
                   </div>
                 </div>
@@ -4478,7 +4278,7 @@ export function AdminTeamManagementPage() {
                   <div className="bg-[#0B111C] p-4 rounded-2xl border border-[#2A3446] min-w-[130px] space-y-1">
                     <span className="text-[10px] font-bold text-[#97A0B3] uppercase">AVG SQUAD LOAD</span>
                     <div className="text-2xl font-black text-white">{activePod?.squadLoad}%</div>
-                    <span className="text-[10px] text-emerald-600 font-bold">↓ Optimal</span>
+                    <span className="text-[10px] text-[#60A5FA] font-bold">↓ Optimal</span>
                   </div>
                   <div className="bg-[#0B111C] p-4 rounded-2xl border border-[#2A3446] min-w-[130px] space-y-1">
                     <span className="text-[10px] font-bold text-[#97A0B3] uppercase">ACTIVE ENGAGEMENTS</span>
@@ -4573,7 +4373,7 @@ export function AdminTeamManagementPage() {
                           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-black text-base flex items-center justify-center shadow-md">
                             {member.name[0]}
                           </div>
-                          <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                          <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#60A5FA] ring-2 ring-[#0B111C]" />
                         </div>
                         <div>
                           <h4 className="font-bold text-sm text-white flex items-center gap-1">
@@ -4587,7 +4387,7 @@ export function AdminTeamManagementPage() {
                         </div>
                       </div>
 
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${member.statusColor}`}>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${member.statusColor || "bg-blue-500/15 text-[#60A5FA] border-blue-500/30"}`}>
                         {member.status}
                       </span>
                     </div>
@@ -4623,22 +4423,20 @@ export function AdminTeamManagementPage() {
                         <span className="text-[#97A0B3] font-semibold">
                           Workload ({member.projectsCount} Projects)
                         </span>
-                        <span className={`font-bold ${member.allocatedPct >= 90 ? "text-rose-600" : "text-emerald-600"}`}>
+                        <span className={`font-bold ${member.allocatedPct >= 90 ? "text-[#93C5FD]" : "text-[#60A5FA]"}`}>
                           {member.allocatedPct}% {member.allocatedPct >= 90 ? "Booked" : "Allocated"}
                         </span>
                       </div>
                       <div className="w-full bg-[#1F2C3F] rounded-full h-2 overflow-hidden">
                         <div
-                          className={`h-full rounded-full ${
-                            member.allocatedPct >= 90 ? "bg-rose-500" : member.allocatedPct >= 70 ? "bg-blue-600" : "bg-emerald-500"
-                          }`}
+                          className="h-full rounded-full bg-[#60A5FA]"
                           style={{ width: `${member.allocatedPct}%` }}
                         />
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between text-xs font-bold pt-1">
-                      <span className="text-emerald-600 flex items-center gap-1 text-[11px]">
+                      <span className="text-[#60A5FA] flex items-center gap-1 text-[11px]">
                         ● {member.status === "Fully Booked" ? "At Max Capacity" : "Sprint Ready"}
                       </span>
                       <button
@@ -4650,7 +4448,7 @@ export function AdminTeamManagementPage() {
                             handleOpenAssignModal(member);
                           }
                         }}
-                        className="text-[#7FA0D6] hover:text-blue-800 hover:underline cursor-pointer text-[11px] font-bold"
+                        className="text-[#7FA0D6] hover:text-blue-400 hover:underline cursor-pointer text-[11px] font-bold"
                       >
                         {member.allocatedPct >= 90 ? "View Schedule" : "Assign Work"}
                       </button>
@@ -5402,7 +5200,7 @@ export function AdminLeaveApprovalsPage() {
 
         {/* Apply Modal */}
         {isApplyModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
             <div className="w-full max-w-md rounded-2xl bg-[#161F2D] p-6 shadow-2xl space-y-4 border border-[#2A3446]">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
                 <h3 className="text-base font-bold text-white">Apply for Time Off</h3>
@@ -5590,8 +5388,8 @@ export function AdminRevenuePage() {
         ───────────────────────────────────────────────────────────────────────────── */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black bg-blue-500/15 text-[#60A5FA] border border-blue-500/30">
+              <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-pulse" />
               Live Cash Flow & Retainers
             </span>
           </div>
@@ -5849,16 +5647,16 @@ export function AdminRevenuePage() {
                 <div className="space-y-2 p-3.5 bg-[#0B111C] rounded-2xl border border-[#2A3446]">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="flex items-center gap-2 text-white">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#D8BF9B]" /> Package 3 (Starter Growth)
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#60A5FA]" /> Package 3 (Starter Growth)
                     </span>
                     <span className="text-white font-black">₹25,000 <span className="text-[10px] font-normal text-[#97A0B3]">/ mo</span></span>
                   </div>
                   <div className="w-full bg-[#1F2C3F] rounded-full h-2 overflow-hidden">
-                    <div className="bg-[#D8BF9B] h-full rounded-full w-[16.5%]" />
+                    <div className="bg-[#60A5FA] h-full rounded-full w-[16.5%]" />
                   </div>
                   <div className="flex justify-between text-[11px] text-[#97A0B3] font-semibold">
                     <span>2 Retainer Accounts</span>
-                    <span className="text-[#D8BF9B] font-bold">16.5% of MRR</span>
+                    <span className="text-[#60A5FA] font-bold">16.5% of MRR</span>
                   </div>
                 </div>
               </div>
@@ -6017,7 +5815,7 @@ export function AdminRevenuePage() {
           MODAL: CREATE INVOICE
       ───────────────────────────────────────────────────────────────────────────── */}
       {isCreateInvoiceOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
           <div className="w-full max-w-md rounded-3xl bg-[#161F2D] p-6 shadow-2xl space-y-4 border border-[#2A3446]">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <h3 className="text-base font-bold text-white">Create New Invoice</h3>
@@ -6102,7 +5900,7 @@ export function AdminRevenuePage() {
           MODAL: RECEIPT VIEWER
       ───────────────────────────────────────────────────────────────────────────── */}
       {selectedReceipt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
           <div className="w-full max-w-lg rounded-3xl bg-[#161F2D] p-6 lg:p-8 shadow-2xl space-y-6 border border-[#2A3446]">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-4">
               <div className="flex items-center gap-2">
@@ -6514,34 +6312,34 @@ export function AdminPlansPage() {
           <div className="kpi-card p-6 bg-[#161F2D] rounded-3xl border-2 border-[#1E3A8A] hover:border-[#60A5FA] transition-all shadow-[0_2px_15px_rgba(0,0,0,0.03)] space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-[#97A0B3] uppercase tracking-wider">PENDING NEGOTIATIONS</span>
-              <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center font-bold">
                 <Zap className="w-3.5 h-3.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-white">{pendingCount} Actionable</div>
-            <p className="text-xs text-amber-600 font-bold">Requires executive review</p>
+            <p className="text-xs text-[#7FA0D6] font-bold">Requires executive review</p>
           </div>
 
           <div className="kpi-card p-6 bg-[#161F2D] rounded-3xl border-2 border-[#1E3A8A] hover:border-[#60A5FA] transition-all shadow-[0_2px_15px_rgba(0,0,0,0.03)] space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-[#97A0B3] uppercase tracking-wider">AVG RETAINER VALUE</span>
-              <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-sm">
+              <div className="w-7 h-7 rounded-xl bg-blue-600/15 text-[#60A5FA] flex items-center justify-center font-black text-sm">
                 ₹
               </div>
             </div>
             <div className="text-3xl font-black text-white">₹50,000/mo</div>
-            <p className="text-xs text-emerald-600 font-bold">High LTV retention</p>
+            <p className="text-xs text-[#60A5FA] font-bold">High LTV retention</p>
           </div>
 
           <div className="kpi-card p-6 bg-[#161F2D] rounded-3xl border-2 border-[#1E3A8A] hover:border-[#60A5FA] transition-all shadow-[0_2px_15px_rgba(0,0,0,0.03)] space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-[#97A0B3] uppercase tracking-wider">WIN / CLOSING RATE</span>
-              <div className="w-7 h-7 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-xl bg-blue-500/15 text-[#93C5FD] flex items-center justify-center font-bold">
                 <TrendingUp className="w-3.5 h-3.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-white">68%</div>
-            <p className="text-xs text-purple-600 font-bold">↗ Top quadrant velocity</p>
+            <p className="text-xs text-[#93C5FD] font-bold">↗ Top quadrant velocity</p>
           </div>
         </div>
 
@@ -6577,7 +6375,7 @@ export function AdminPlansPage() {
                   <ul className="space-y-2 text-xs text-[#F1F5F9] pt-2 border-t border-[#2A3446]/60">
                     {plan.features.map((f, i) => (
                       <li key={i} className="flex items-center gap-2">
-                        <Check className="size-3.5 text-emerald-600 shrink-0" />
+                        <Check className="size-3.5 text-[#60A5FA] shrink-0" />
                         <span>{f}</span>
                       </li>
                     ))}
@@ -6609,8 +6407,8 @@ export function AdminPlansPage() {
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-bold text-white tracking-tight">Client Plan Negotiations</h3>
                 {pendingCount > 0 && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-black uppercase flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="px-2.5 py-0.5 rounded-full bg-blue-900/40 text-[#93C5FD] border border-blue-500/30 text-[10px] font-black uppercase flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#60A5FA] animate-pulse" />
                     {pendingCount} Action Required
                   </span>
                 )}
@@ -6844,7 +6642,7 @@ export function AdminPlansPage() {
           MODAL: EDIT TIER TERMS
       ───────────────────────────────────────────────────────────────────────────── */}
       {editingPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
           <div className="w-full max-w-md rounded-3xl bg-[#161F2D] p-6 shadow-2xl space-y-4 border border-[#2A3446]">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <h3 className="text-base font-bold text-white">Edit Tier: {editingPlan.display_name}</h3>
@@ -6893,7 +6691,7 @@ export function AdminPlansPage() {
           MODAL: DECLINE PLAN NEGOTIATION
       ───────────────────────────────────────────────────────────────────────────── */}
       {declineModalItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
           <div className="w-full max-w-md rounded-3xl bg-[#161F2D] p-6 shadow-2xl space-y-4 border border-[#2A3446]">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <h3 className="text-base font-bold text-white">Decline Plan Negotiation</h3>
@@ -6936,7 +6734,7 @@ export function AdminPlansPage() {
           MODAL: COUNTER-OFFER PLAN NEGOTIATION
       ───────────────────────────────────────────────────────────────────────────── */}
       {counterModalItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
           <div className="w-full max-w-md rounded-3xl bg-[#161F2D] p-6 shadow-2xl space-y-4 border border-[#2A3446]">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <h3 className="text-base font-bold text-white">Submit Counter Offer</h3>
@@ -6985,7 +6783,7 @@ export function AdminPlansPage() {
           MODAL: INITIATE CUSTOM PROPOSAL
       ───────────────────────────────────────────────────────────────────────────── */}
       {isNewProposalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 animate-fade-in overflow-y-auto">
           <div className="w-full max-w-md rounded-3xl bg-[#161F2D] p-6 shadow-2xl space-y-4 border border-[#2A3446]">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <h3 className="text-base font-bold text-white">Initiate Custom Retainer Proposal</h3>

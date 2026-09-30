@@ -97,8 +97,8 @@ const INITIAL_TASKS: TaskDeliverable[] = [
     id: "task-2",
     title: "Q4 Promo Bumper Lower Thirds",
     client: "Atlas Commerce",
-    clientColor: "text-purple-600",
-    clientBadgeBg: "bg-purple-50 text-purple-700",
+    clientColor: "text-[#60A5FA]",
+    clientBadgeBg: "bg-blue-500/15 text-[#60A5FA] border border-blue-500/30",
     format: "MOGRT Pack",
     estimatedHours: 4.0,
     priority: "Normal",
@@ -125,8 +125,8 @@ const INITIAL_TASKS: TaskDeliverable[] = [
     id: "task-ryze-1",
     title: "Mushroom Coffee Benefit Deck Carousel & Poster",
     client: "Ryze Mushroom Coffee",
-    clientColor: "text-emerald-400",
-    clientBadgeBg: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+    clientColor: "text-[#60A5FA]",
+    clientBadgeBg: "bg-blue-500/15 text-[#60A5FA] border border-blue-500/30",
     format: "1080x1350 Poster & 9:16 Story",
     estimatedHours: 3.0,
     priority: "Normal",
@@ -141,8 +141,8 @@ const INITIAL_TASKS: TaskDeliverable[] = [
     id: "task-ryze-2",
     title: "Morning Routine High-Energy Reel Cut v1",
     client: "Ryze Mushroom Coffee",
-    clientColor: "text-emerald-400",
-    clientBadgeBg: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+    clientColor: "text-[#60A5FA]",
+    clientBadgeBg: "bg-blue-500/15 text-[#60A5FA] border border-blue-500/30",
     format: "9:16 Vertical Reel (60fps)",
     estimatedHours: 4.5,
     timeSpentHours: 2.0,
@@ -212,8 +212,8 @@ const INITIAL_TASKS: TaskDeliverable[] = [
     id: "task-4",
     title: "Audio Stem Sync & Color Grade",
     client: "Atlas Commerce",
-    clientColor: "text-purple-600",
-    clientBadgeBg: "bg-purple-50 text-purple-700",
+    clientColor: "text-[#60A5FA]",
+    clientBadgeBg: "bg-blue-500/15 text-[#60A5FA] border border-blue-500/30",
     format: "Multi-track VO & Master LUT",
     estimatedHours: 2.5,
     timeSpentHours: 1.5,
@@ -338,8 +338,8 @@ const INITIAL_TASKS: TaskDeliverable[] = [
     id: "task-8",
     title: "Social Carousel Micro-animations",
     client: "Atlas Commerce",
-    clientColor: "text-purple-600",
-    clientBadgeBg: "bg-purple-50 text-purple-700",
+    clientColor: "text-[#60A5FA]",
+    clientBadgeBg: "bg-blue-500/15 text-[#60A5FA] border border-blue-500/30",
     format: "6x Instagram Story Swipe Cues",
     estimatedHours: 4.0,
     priority: "Normal",
@@ -464,9 +464,9 @@ export function MemberTaskBoardPage() {
 
     const clientColors: Record<string, { color: string; bg: string }> = {
       "Northwind Labs": { color: "text-[#7FA0D6]", bg: "bg-[#7FA0D6]/15 text-[#7FA0D6]" },
-      "Atlas Commerce": { color: "text-purple-600", bg: "bg-purple-50 text-purple-700" },
-      "Bloom Studio": { color: "text-pink-600", bg: "bg-pink-50 text-pink-700" },
-      "Apex Digital": { color: "text-emerald-600", bg: "bg-emerald-50 text-emerald-700" },
+      "Atlas Commerce": { color: "text-[#60A5FA]", bg: "bg-blue-500/15 text-[#60A5FA]" },
+      "Bloom Studio": { color: "text-[#93C5FD]", bg: "bg-blue-500/15 text-[#93C5FD]" },
+      "Apex Digital": { color: "text-[#7FA0D6]", bg: "bg-blue-500/15 text-[#7FA0D6]" },
     };
 
     const clientStyling = clientColors[newClient] || {
@@ -644,11 +644,11 @@ export function MemberTaskBoardPage() {
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-2xs animate-fade-in ${
               toastMessage.type === "info"
                 ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-blue-800"
-                : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-blue-500/15 border-blue-500/30 text-[#60A5FA]"
             }`}
           >
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="size-3.5 text-[#60A5FA] shrink-0" />
               <span>{toastMessage.text}</span>
             </div>
             <button onClick={() => setToastMessage(null)} className="text-current opacity-70 hover:opacity-100">
@@ -731,8 +731,8 @@ export function MemberTaskBoardPage() {
                 }}
                 className={`flex-1 sm:flex-initial px-2.5 py-1.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer ${
                   highSlaActive
-                    ? "bg-rose-500 text-white border-rose-500 shadow-2xs"
-                    : "bg-[#161F2D] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 shadow-2xs"
+                    ? "bg-blue-600 text-white border-blue-600 shadow-2xs"
+                    : "bg-[#161F2D] border-blue-500/30 text-[#60A5FA] hover:bg-blue-500/10 shadow-2xs"
                 }`}
               >
                 <span>+ High SLA</span>
@@ -779,7 +779,7 @@ export function MemberTaskBoardPage() {
           <button
             onClick={() => setMobileKanbanTab("qa")}
             className={`px-2.5 py-1 rounded-lg transition-all shrink-0 ${
-              mobileKanbanTab === "qa" ? "bg-amber-500 text-white shadow-2xs font-bold" : "text-[#F1F5F9]"
+              mobileKanbanTab === "qa" ? "bg-blue-600 text-white shadow-2xs font-bold" : "text-[#F1F5F9]"
             }`}
           >
             Lead QA ({qaTasks.length})
@@ -787,7 +787,7 @@ export function MemberTaskBoardPage() {
           <button
             onClick={() => setMobileKanbanTab("dispatched")}
             className={`px-2.5 py-1 rounded-lg transition-all shrink-0 ${
-              mobileKanbanTab === "dispatched" ? "bg-emerald-600 text-white shadow-2xs font-bold" : "text-[#F1F5F9]"
+              mobileKanbanTab === "dispatched" ? "bg-blue-600 text-white shadow-2xs font-bold" : "text-[#F1F5F9]"
             }`}
           >
             Dispatched ({dispatchedTasks.length})
@@ -906,7 +906,7 @@ export function MemberTaskBoardPage() {
                   <div className="flex items-center justify-between text-[10px] font-bold">
                     <span className={task.clientColor}>{task.client.toUpperCase()}</span>
                     {task.priority === "High" ? (
-                      <span className="px-1.5 py-0.2 rounded bg-rose-50 text-rose-700 text-[8px] font-black">
+                      <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-[#60A5FA] text-[8px] font-black">
                         ⏱ {task.deadline}
                       </span>
                     ) : (
@@ -920,8 +920,8 @@ export function MemberTaskBoardPage() {
                   {/* Optional Render Graphic Preview */}
                   {task.renderInfo ? (
                     <div className="h-14 rounded-lg bg-slate-900 flex items-center justify-center relative overflow-hidden border border-slate-800">
-                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/30 via-blue-600/20 to-purple-600/30" />
-                      <div className="z-10 text-center text-cyan-300 text-[9px] font-mono">
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-700/30 via-blue-600/20 to-blue-500/30" />
+                      <div className="z-10 text-center text-[#93C5FD] text-[9px] font-mono">
                         <div className="font-bold">{task.renderInfo.node}</div>
                         <div className="text-[8px] opacity-80">{task.renderInfo.frame}</div>
                       </div>
@@ -967,7 +967,7 @@ export function MemberTaskBoardPage() {
                   <div className="pt-1.5 border-t border-[#2A3446]">
                     <button
                       onClick={() => handleOpenReviewModal(task)}
-                      className="w-full py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-2xs transition-all cursor-pointer active:scale-95"
+                      className="w-full py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:brightness-110 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-2xs transition-all cursor-pointer active:scale-95"
                     >
                       <Eye className="size-3" />
                       <span>In-Task Review & Submit</span>
@@ -992,7 +992,7 @@ export function MemberTaskBoardPage() {
           >
             <div className="flex items-center justify-between px-1 pt-0.5">
               <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-amber-500" />
+                <span className="size-2 rounded-full bg-blue-500" />
                 <h3 className="text-xs font-black uppercase tracking-wider text-[#F1F5F9]">
                   Submitted for QA
                 </h3>
@@ -1008,14 +1008,14 @@ export function MemberTaskBoardPage() {
                   key={task.id}
                   className={`bg-[#161F2D] rounded-xl p-3 border shadow-2xs hover-card-innovative space-y-2 ${
                     task.reviewData?.status === "Revision Pending"
-                      ? "border-amber-300 ring-1 ring-amber-200/50"
+                      ? "border-blue-500/50 ring-1 ring-blue-500/30"
                       : "border-[#2A3446]/80"
                   }`}
                 >
                   <div className="flex items-center justify-between text-[10px] font-bold">
                     <span className={task.clientColor}>{task.client.toUpperCase()}</span>
                     {task.reviewData?.status === "Revision Pending" ? (
-                      <span className="px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 text-[9px] font-bold">
+                      <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-[#60A5FA] text-[9px] font-bold">
                         Revision Pending
                       </span>
                     ) : (
@@ -1043,12 +1043,12 @@ export function MemberTaskBoardPage() {
 
                   {/* Revision Note Box if Active */}
                   {task.reviewData?.revisionNote && (
-                    <div className="p-2 rounded-lg bg-amber-50/80 border border-amber-200 text-xs space-y-0.5">
-                      <div className="flex justify-between font-bold text-amber-900 text-[10px]">
+                    <div className="p-2 rounded-lg bg-blue-950/40 border border-blue-800/50 text-xs space-y-0.5">
+                      <div className="flex justify-between font-bold text-white text-[10px]">
                         <span>1 Tweak Required</span>
-                        <span className="text-amber-700">Feedback</span>
+                        <span className="text-[#60A5FA]">Feedback</span>
                       </div>
-                      <p className="text-[10px] text-amber-800 leading-snug italic">
+                      <p className="text-[10px] text-[#93C5FD] leading-snug italic">
                         "{task.reviewData.revisionNote}"
                       </p>
                     </div>
@@ -1065,7 +1065,7 @@ export function MemberTaskBoardPage() {
                     </button>
                     <button
                       onClick={() => handleFastTrackDispatch(task.id)}
-                      className="p-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors cursor-pointer"
+                      className="p-1 rounded-lg bg-blue-500/15 hover:bg-blue-500/30 text-[#60A5FA] border border-blue-500/30 transition-colors cursor-pointer"
                       title="Fast-Track Sign-off"
                     >
                       <Check className="size-3.5" />
@@ -1090,12 +1090,12 @@ export function MemberTaskBoardPage() {
           >
             <div className="flex items-center justify-between px-1 pt-0.5">
               <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="size-2 rounded-full bg-blue-500" />
                 <h3 className="text-xs font-black uppercase tracking-wider text-[#F1F5F9]">
                   Signed Off
                 </h3>
               </div>
-              <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-blue-500/15 text-[#60A5FA] border border-blue-500/30">
                 {dispatchedTasks.length}
               </span>
             </div>
@@ -1108,7 +1108,7 @@ export function MemberTaskBoardPage() {
                 >
                   <div className="flex items-center justify-between text-[10px] font-bold">
                     <span className={task.clientColor}>{task.client.toUpperCase()}</span>
-                    <span className="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 text-[9px] font-bold flex items-center gap-0.5">
+                    <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-[#60A5FA] text-[9px] font-bold flex items-center gap-0.5">
                       <Check className="size-2.5" /> Approved
                     </span>
                   </div>
@@ -1150,7 +1150,7 @@ export function MemberTaskBoardPage() {
                   <h3 className="text-sm font-black text-white">
                     Personal Daily Time Tracker & Productivity Pulse
                   </h3>
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-black bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                     Pacing on Track
                   </span>
                 </div>
@@ -1182,7 +1182,7 @@ export function MemberTaskBoardPage() {
                 3D Rendering (3.5h)
               </span>
               <span className="flex items-center gap-1.5 text-[11px] sm:text-xs">
-                <span className="size-2 rounded-full bg-indigo-500" />
+                <span className="size-2 rounded-full bg-blue-400" />
                 AE Compositing (2.0h)
               </span>
               <span className="flex items-center gap-1.5 text-[11px] sm:text-xs">
@@ -1196,7 +1196,7 @@ export function MemberTaskBoardPage() {
 
             <div className="w-full h-2.5 sm:h-3 bg-[#1F2C3F] rounded-full overflow-hidden flex">
               <div className="h-full bg-blue-600" style={{ width: "43.75%" }} />
-              <div className="h-full bg-indigo-500" style={{ width: "25%" }} />
+              <div className="h-full bg-blue-400" style={{ width: "25%" }} />
               <div className="h-full bg-sky-400" style={{ width: "12.5%" }} />
             </div>
 
@@ -1222,7 +1222,7 @@ export function MemberTaskBoardPage() {
             </div>
 
             <div className="p-3.5 rounded-2xl bg-[#0B111C] border border-[#2A3446] flex items-center gap-3">
-              <div className="size-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+              <div className="size-9 rounded-xl bg-blue-500/15 text-[#60A5FA] flex items-center justify-center font-bold">
                 ✓
               </div>
               <div>
@@ -1232,7 +1232,7 @@ export function MemberTaskBoardPage() {
             </div>
 
             <div className="p-3.5 rounded-2xl bg-[#0B111C] border border-[#2A3446] flex items-center gap-3">
-              <div className="size-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+              <div className="size-9 rounded-xl bg-blue-500/15 text-[#7FA0D6] flex items-center justify-center font-bold">
                 ❄️
               </div>
               <div>
@@ -1281,7 +1281,7 @@ export function MemberTaskBoardPage() {
             <form onSubmit={handleCreateDeliverable} className="space-y-4 text-xs">
               <div>
                 <label className="block font-bold text-[#F1F5F9] mb-1">
-                  Deliverable Title <span className="text-rose-500">*</span>
+                  Deliverable Title <span className="text-blue-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1468,15 +1468,15 @@ export function MemberTaskBoardPage() {
             <div className="rounded-2xl bg-slate-950 p-4 border border-slate-800 text-white space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-mono text-[11px] text-cyan-300 font-bold">MASTER RENDER INSPECTION</span>
+                  <span className="size-2 rounded-full bg-blue-500 animate-pulse" />
+                  <span className="font-mono text-[11px] text-[#93C5FD] font-bold">MASTER RENDER INSPECTION</span>
                 </div>
                 <span className="text-[10px] font-mono text-[#97A0B3]">ACEScg • 4K 3840x2160 @ 60 FPS</span>
               </div>
 
               {/* Video Inspection Simulation Canvas */}
               <div className="h-32 sm:h-40 rounded-xl bg-slate-900 relative overflow-hidden flex items-center justify-center border border-slate-800/80">
-                <div className="absolute inset-0 bg-gradient-to-tr from-cyan-900/40 via-blue-900/30 to-purple-900/40 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-950/40 via-blue-900/30 to-blue-800/40 animate-pulse" />
                 <div className="z-10 text-center space-y-1.5 p-2">
                   <button
                     type="button"
@@ -1488,7 +1488,7 @@ export function MemberTaskBoardPage() {
                   <div className="text-[11px] font-mono text-slate-300 font-bold">
                     {isPlayingPreview ? "Live Playback Active" : "Click to Preview Master Motion Playback"}
                   </div>
-                  <div className="text-[9px] font-mono text-cyan-400">
+                  <div className="text-[9px] font-mono text-[#60A5FA]">
                     Frame {Math.round((previewScrub / 100) * 5120)} / 5120 • 00:0{Math.floor((previewScrub / 100) * 15)}:12
                   </div>
                 </div>
@@ -1499,7 +1499,7 @@ export function MemberTaskBoardPage() {
                     (h, i) => (
                       <div
                         key={i}
-                        className="flex-1 bg-cyan-400/80 rounded-full"
+                        className="flex-1 bg-blue-400/80 rounded-full"
                         style={{ height: `${(h * (previewScrub / 100) + 15) % 24}px` }}
                       />
                     )
@@ -1511,7 +1511,7 @@ export function MemberTaskBoardPage() {
               <div className="space-y-1">
                 <div className="flex justify-between text-[10px] font-mono text-[#97A0B3]">
                   <span>00:00:00</span>
-                  <span className="text-cyan-400 font-bold">Timeline Scrub: {previewScrub}%</span>
+                  <span className="text-[#60A5FA] font-bold">Timeline Scrub: {previewScrub}%</span>
                   <span>00:15:00</span>
                 </div>
                 <input
@@ -1629,12 +1629,12 @@ export function MemberTaskBoardPage() {
 
             {/* Revision feedback note if existing */}
             {reviewModalCard.reviewData?.revisionNote && (
-              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 space-y-1 text-xs">
-                <div className="flex justify-between font-bold text-amber-900 text-[11px]">
+              <div className="p-3 rounded-2xl bg-blue-950/40 border border-blue-800/50 space-y-1 text-xs">
+                <div className="flex justify-between font-bold text-white text-[11px]">
                   <span>Prior Lead Review Feedback</span>
-                  <span className="text-amber-700">Maya Lin</span>
+                  <span className="text-[#60A5FA]">Maya Lin</span>
                 </div>
-                <p className="text-amber-800 leading-relaxed font-medium italic">
+                <p className="text-[#93C5FD] leading-relaxed font-medium italic">
                   "{reviewModalCard.reviewData.revisionNote}"
                 </p>
               </div>
@@ -1654,7 +1654,7 @@ export function MemberTaskBoardPage() {
                 <button
                   type="button"
                   onClick={() => handleFastTrackDispatch(reviewModalCard.id)}
-                  className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Check className="size-3.5" />
                   <span>Direct Sign-Off</span>
@@ -1818,7 +1818,7 @@ export function MemberTaskBoardPage() {
           >
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="size-9 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
+                <div className="size-9 rounded-2xl bg-blue-500/15 text-[#60A5FA] flex items-center justify-center font-bold">
                   <AlertTriangle className="size-4.5" />
                 </div>
                 <div>
@@ -1835,9 +1835,9 @@ export function MemberTaskBoardPage() {
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-2 text-xs">
-              <div className="font-bold text-amber-900">{revisionModalCard.title}</div>
-              <p className="text-amber-800 leading-relaxed font-medium italic">
+            <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-800/50 space-y-2 text-xs">
+              <div className="font-bold text-white">{revisionModalCard.title}</div>
+              <p className="text-[#93C5FD] leading-relaxed font-medium italic">
                 "{revisionModalCard.reviewData?.revisionNote}"
               </p>
             </div>

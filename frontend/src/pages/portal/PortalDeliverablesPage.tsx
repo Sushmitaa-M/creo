@@ -742,7 +742,7 @@ export function PortalDeliverablesPage() {
 
       {/* 1. Preview Modal */}
       {previewItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-[#0F172A] border border-slate-700 text-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800">
               <div className="flex items-center gap-2">
@@ -810,7 +810,7 @@ export function PortalDeliverablesPage() {
 
       {/* 2. Revision Modal */}
       {revisionItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-white border border-slate-200 text-slate-900 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -870,7 +870,7 @@ export function PortalDeliverablesPage() {
 
       {/* 3. Concept & Brief Modal */}
       {briefItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-white border border-slate-200 text-slate-900 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -927,7 +927,7 @@ export function PortalDeliverablesPage() {
 
       {/* 4. Inspect Layers Modal */}
       {inspectLayersItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-[#0F172A] border border-slate-700 text-white rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl p-6">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">

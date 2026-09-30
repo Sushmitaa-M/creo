@@ -361,37 +361,35 @@ export function PortalCalendarPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-[1440px] mx-auto px-4 md:px-8 pb-10">
-
-
+    <div className="flex flex-col gap-6 w-full max-w-[1440px] mx-auto px-4 md:px-8 pb-10 font-sans text-white bg-[#0B111C]">
       {/* ── Bento Grid Layout ──────────────────────────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         
         {/* Left Column: Calendar View (xl:col-span-2) */}
-        <div className="hidden xl:flex xl:col-span-2 bg-white border border-slate-100 rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.02)] p-6 lg:p-8 flex-col">
+        <div className="flex xl:col-span-2 bg-[#161F2D] border border-[#2A3446] rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 lg:p-8 flex-col">
           {/* Calendar Header */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <h2 className="text-[20px] font-black text-slate-900 tracking-tight">
+              <h2 className="text-[20px] font-black text-white tracking-tight">
                 {MONTH_NAMES[currentMonth]} {currentYear}
               </h2>
-              <span className="text-sm font-semibold text-slate-400">Production Horizon</span>
+              <span className="text-sm font-semibold text-[#97A0B3]">Production Horizon</span>
             </div>
             
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => { setSelectedDate(null); goToToday(); }}
-                className="px-3 py-1 text-xs font-bold text-slate-600 hover:text-[#0052FF] hover:bg-slate-50 rounded-full border border-slate-200/80 shadow-xs transition-all cursor-pointer"
+                className="px-4 py-1.5 text-xs font-bold text-slate-200 hover:text-white bg-[#0B111C]/80 hover:bg-[#0B111C] rounded-full border border-[#2A3446] shadow-2xs transition-all cursor-pointer"
               >
                 Today
               </button>
-              <div className="flex items-center bg-white border border-slate-100/60 rounded-full p-1 shadow-sm">
-                <button onClick={() => { setSelectedDate(null); navigateMonth(-1); }} className="p-1.5 text-slate-500 hover:text-[#0052FF] hover:bg-slate-50 rounded-full transition-all cursor-pointer">
+              <div className="flex items-center bg-[#0B111C]/80 border border-[#2A3446] rounded-full p-1 shadow-2xs">
+                <button onClick={() => { setSelectedDate(null); navigateMonth(-1); }} className="p-1.5 text-slate-400 hover:text-white rounded-full transition-all cursor-pointer" aria-label="Previous Month">
                   <ChevronLeft className="size-4" strokeWidth={2.5} />
                 </button>
-                <div className="w-[1px] h-4 bg-slate-100 mx-1"></div>
-                <button onClick={() => { setSelectedDate(null); navigateMonth(1); }} className="p-1.5 text-slate-500 hover:text-[#0052FF] hover:bg-slate-50 rounded-full transition-all cursor-pointer">
+                <div className="w-[1px] h-4 bg-[#2A3446] mx-1"></div>
+                <button onClick={() => { setSelectedDate(null); navigateMonth(1); }} className="p-1.5 text-slate-400 hover:text-white rounded-full transition-all cursor-pointer" aria-label="Next Month">
                   <ChevronRight className="size-4" strokeWidth={2.5} />
                 </button>
               </div>
@@ -402,8 +400,8 @@ export function PortalCalendarPage() {
           <div className="flex-1 flex flex-col min-h-[500px]">
             {/* Weekday Headers */}
             <div className="grid grid-cols-7 mb-4">
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day: string) => (
-                <div key={day} className="py-2 text-center text-xs sm:text-sm font-black text-slate-500 uppercase tracking-wider">
+              {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day: string) => (
+                <div key={day} className="py-2 text-center text-xs font-black text-[#97A0B3] uppercase tracking-wider">
                   {day}
                 </div>
               ))}
@@ -425,47 +423,49 @@ export function PortalCalendarPage() {
 
                 const scheduled = dayEntries.length;
                 const approved = dayEntries.filter(e => e.status === "approved" || e.concept_status === "concept_approved").length;
-                const isSlaReview = day === 25; // Just mocking based on image for visual accuracy, in real logic we'd check entry types
+                const isSlaReview = day === 25;
 
                 return (
                   <div
                     key={cell.key}
                     onClick={() => setSelectedDate(day)}
-                    className={`relative rounded-[1.25rem] p-4 transition-all cursor-pointer min-h-[110px] flex flex-col gap-2 border-2 group ${
+                    className={`relative rounded-[1.25rem] p-3.5 sm:p-4 transition-all cursor-pointer min-h-[110px] flex flex-col justify-between border-2 group ${
                       isSelected 
-                        ? "border-[#0052FF]/30 bg-[#F4F8FF] shadow-[0_2px_12px_rgba(0,82,255,0.08)]"
-                        : "border-slate-50 hover:border-slate-200 bg-white shadow-xs hover:shadow-md"
+                        ? "border-blue-500 bg-[#7FA0D6]/15 ring-2 ring-blue-500/20 shadow-lg scale-[1.01] z-10"
+                        : isTodayCell
+                        ? "border-[#7FA0D6]/40 bg-[#131D2D] shadow-sm"
+                        : "border-[#2A3446] hover:border-[#7FA0D6]/40 bg-[#0B111C]/40 hover:bg-[#161F2D] shadow-xs"
                     }`}
                   >
                     <span className={`text-base sm:text-lg font-black ${
-                      isSelected ? "text-[#0052FF]" : isTodayCell ? "text-slate-900" : "text-slate-800 group-hover:text-slate-900"
+                      isSelected ? "text-white" : isTodayCell ? "text-[#7FA0D6]" : "text-slate-300 group-hover:text-white"
                     }`}>
                       {day}
                     </span>
                     
                     <div className="mt-auto flex flex-col gap-1.5 w-full">
                       {scheduled > 0 && scheduled !== approved && (
-                        <div className="w-full rounded-lg bg-[#0052FF] text-white px-2.5 py-1 text-xs font-extrabold truncate text-left shadow-sm">
+                        <div className="w-full rounded-full bg-blue-900/40 border border-blue-500/30 text-[#93C5FD] px-2.5 py-1 text-xs font-extrabold truncate text-left shadow-xs">
                           {scheduled} Deliverables
                         </div>
                       )}
                       {approved > 0 && (
-                        <div className="w-full rounded-lg bg-[#E6F8F3] text-[#059669] px-2.5 py-1 text-xs font-extrabold truncate text-left border border-[#A7F3D0]/50">
+                        <div className="w-full rounded-full bg-blue-600/30 border border-blue-500/30 text-[#60A5FA] px-2.5 py-1 text-xs font-extrabold truncate text-left shadow-xs">
                           {approved} Approved
                         </div>
                       )}
                       {scheduled > 0 && approved === 0 && (
-                         <div className="w-full rounded-lg bg-[#F3E8FF] text-[#7C3AED] px-2.5 py-1 text-xs font-extrabold truncate text-left">
+                         <div className="w-full rounded-full bg-blue-900/40 border border-blue-500/30 text-[#93C5FD] px-2.5 py-1 text-xs font-extrabold truncate text-left">
                           {scheduled} Scheduled
                         </div>
                       )}
                       {dayEntries.length === 0 && day === 15 && (
-                         <div className="w-full rounded-lg bg-[#F3E8FF] text-[#7C3AED] px-2.5 py-1 text-xs font-extrabold truncate text-left">
+                         <div className="w-full rounded-full bg-blue-600/30 text-[#93C5FD] px-2.5 py-0.5 text-[11px] font-black truncate text-left shadow-2xs">
                           3 Scheduled
                         </div>
                       )}
                       {dayEntries.length === 0 && isSlaReview && (
-                         <div className="w-full rounded-lg bg-[#FFFBEB] text-[#D97706] px-2.5 py-1 text-xs font-extrabold truncate text-left">
+                         <div className="w-full rounded-full bg-blue-500/20 text-[#60A5FA] px-2.5 py-0.5 text-[11px] font-black truncate text-left shadow-2xs">
                           SLA Review
                         </div>
                       )}
@@ -478,16 +478,16 @@ export function PortalCalendarPage() {
         </div>
 
         {/* Right Column: Dispatch Queue (xl:col-span-1) */}
-        <div className="bg-white border border-slate-100 rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.02)] p-6 lg:p-8 flex flex-col min-h-[500px]">
+        <div className="bg-[#161F2D] border border-[#2A3446] rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 lg:p-8 flex flex-col min-h-[500px]">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-[18px] font-black text-slate-900 tracking-tight">
+            <h3 className="text-[18px] font-black text-white tracking-tight">
               {selectedDate ? `Task Queue for ${selectedDate}th` : "Today's Dispatch Queue"}
             </h3>
             {(() => {
               const activeDay = selectedDate || (isCurrentMonth ? today.getDate() : 1);
               const tasks = getDayEntries(activeDay);
               return (
-                <span className="inline-flex items-center rounded-full bg-[#F4F8FF] px-3 py-1 text-[12px] font-bold text-[#0052FF]">
+                <span className="inline-flex items-center rounded-full bg-[#1F2C3F] border border-[#2A3446] px-3 py-1 text-[12px] font-bold text-[#7FA0D6]">
                   {tasks.length > 0 ? `${tasks.length} Active` : '0 Active'}
                 </span>
               );
@@ -501,13 +501,19 @@ export function PortalCalendarPage() {
               
               if (tasks.length === 0) {
                 return (
-                  <div className="flex flex-col items-center justify-center h-48 text-slate-400 text-sm font-bold bg-[#F8F9FC] rounded-[1.5rem] border border-slate-100 border-dashed">
-                    No deliverables scheduled.
+                  <div className="flex flex-col items-center justify-center min-h-[220px] p-8 text-[#97A0B3] text-sm font-bold bg-[#0B111C]/60 rounded-[1.5rem] border-2 border-dashed border-[#2A3446] text-center shadow-inner space-y-2">
+                    <div className="w-10 h-10 rounded-full bg-[#161F2D] border border-[#2A3446] flex items-center justify-center text-[#7FA0D6] mb-1">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <span className="text-slate-200 font-bold">No deliverables scheduled.</span>
+                    <span className="text-xs text-[#97A0B3] font-normal max-w-[220px]">
+                      All clear for this date. Select another day to view or schedule content.
+                    </span>
                   </div>
                 );
               }
 
-              return tasks.map((entry, idx) => {
+              return tasks.map((entry) => {
                 const podLabel = user?.company_name ? `POD • ${user.company_name.toUpperCase()}` : "DEDICATED CREATIVE POD";
                 const statusLabel = entry.concept_status === "concept_approved" ? "Concept Approved" : entry.status === "approved" ? "Ready to Publish" : "In Production";
                 const isApproved = entry.concept_status === "concept_approved" || entry.status === "approved";
@@ -516,33 +522,31 @@ export function PortalCalendarPage() {
                   <div 
                     key={entry.id} 
                     onClick={() => openEntryModal(entry)}
-                    className="p-5 rounded-[1.5rem] border border-slate-100 hover:border-slate-200 bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-xs group"
+                    className="p-5 rounded-[1.5rem] border border-[#2A3446] hover:border-[#7FA0D6]/50 bg-[#0B111C]/70 hover:bg-[#0B111C] transition-all cursor-pointer shadow-xs group space-y-3"
                   >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] font-black text-[#8A9BB5] uppercase tracking-wider">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-[#7FA0D6] uppercase tracking-wider">
                         {podLabel}
                       </span>
-                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${isApproved ? "bg-[#E6F8F3] text-[#059669]" : "bg-[#F4F8FF] text-[#0052FF]"}`}>
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${isApproved ? "bg-blue-600/30 text-[#60A5FA] border-blue-500/30" : "bg-blue-950/80 text-blue-300 border-blue-700/50"}`}>
                          {statusLabel}
                       </span>
                     </div>
                     
-                    <h4 className="text-[14px] font-bold text-slate-900 leading-snug mb-5 group-hover:text-[#0052FF] transition-colors">
+                    <h4 className="text-[14px] font-bold text-white leading-snug group-hover:text-[#7FA0D6] transition-colors">
                       {entry.topic}
                     </h4>
                     
-                    <div className="flex items-center justify-between mt-auto">
+                    <div className="flex items-center justify-between pt-2 border-t border-[#2A3446]/60 mt-auto">
                       <div className="flex items-center gap-2.5">
-                        <div className={`size-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white ${
-                           idx % 3 === 0 ? "bg-[#0052FF]" : idx % 3 === 1 ? "bg-[#7C3AED]" : "bg-[#059669]"
-                        }`}>
+                        <div className="size-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-[#2563EB]">
                           CP
                         </div>
-                        <span className="text-[12px] font-bold text-slate-600">
+                        <span className="text-[12px] font-bold text-slate-300">
                           Creative Pod
                         </span>
                       </div>
-                      <span className="text-[11px] font-black text-slate-800">
+                      <span className="text-[11px] font-black text-[#7FA0D6]">
                         {entry.scheduled_time || "Scheduled"}
                       </span>
                     </div>
@@ -556,15 +560,15 @@ export function PortalCalendarPage() {
       {/* ── Creative Intelligence Blueprint & Deliverable Review Modal ────── */}
       {previewEntry && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-3 sm:p-6 overflow-y-auto"
           onClick={() => setPreviewEntry(null)}
         >
           <div
-            className="w-full max-w-2xl max-h-[92vh] rounded-3xl bg-white border border-slate-200 shadow-2xl overflow-y-auto animate-page-in my-auto"
+            className="w-full max-w-2xl max-h-[92vh] rounded-3xl bg-[#161F2D] border border-[#2A3446] text-white shadow-2xl overflow-y-auto animate-page-in my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-10 flex items-center justify-between p-4 sm:p-5 border-b border-slate-100">
+            <div className="sticky top-0 bg-[#161F2D]/95 backdrop-blur-sm z-10 flex items-center justify-between p-4 sm:p-5 border-b border-[#2A3446]">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
                   getTypeConfig(previewEntry.type).pillBg

@@ -1406,7 +1406,7 @@ export function PortalPaymentsPage() {
       
       {/* ── Full Archive Modal ────────────────────────────────────────────── */}
       {showArchiveModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center bg-[#0B111C]/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className="bg-white border border-slate-200 text-slate-900 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl p-6 sm:p-7">
             <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">

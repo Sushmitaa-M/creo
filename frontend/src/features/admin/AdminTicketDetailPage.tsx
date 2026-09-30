@@ -447,11 +447,11 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                 Alarms Silenced (1h)
               </span>
             )}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-semibold text-[11px]">
-              <Shield className="size-3.5 text-amber-600" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 font-semibold text-[11px]">
+              <Shield className="size-3.5 text-[#60A5FA]" />
               <span>Enterprise Gold SLA Active</span>
-              <span className="text-amber-400">•</span>
-              <span className="font-mono text-amber-700">BATCH-DL-8821</span>
+              <span className="text-[#7FA0D6]">•</span>
+              <span className="font-mono text-[#93C5FD]">BATCH-DL-8821</span>
             </div>
           </div>
         </div>
@@ -468,10 +468,10 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
           <div
             className={`p-4 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-xl animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-rose-50 border-rose-200 text-rose-700"
+                ? "bg-blue-900/40 border-blue-500/30 text-[#93C5FD]"
                 : toastMessage.type === "info"
                 ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-[#7FA0D6]"
-                : "bg-emerald-50 border-emerald-200 text-emerald-700"
+                : "bg-blue-600/15 border-blue-500/30 text-[#60A5FA]"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -491,19 +491,19 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${
                   isResolved
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    : "bg-rose-100 text-rose-700 border-rose-200"
+                    ? "bg-blue-600/15 text-[#60A5FA] border-blue-500/30"
+                    : "bg-blue-500/15 text-[#93C5FD] border-blue-500/30"
                 }`}
               >
-                <span className={`size-1.5 rounded-full ${isResolved ? "bg-emerald-600" : "bg-rose-600 animate-pulse"}`} />
+                <span className={`size-1.5 rounded-full ${isResolved ? "bg-[#60A5FA]" : "bg-[#93C5FD] animate-pulse"}`} />
                 {isResolved ? "RESOLVED" : "OPEN"}
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-rose-500 text-white shadow-xs">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-600 text-white shadow-xs">
                 <Zap className="size-3" />
                 {isEscalated ? "P0 (CRITICAL BLOCKER)" : (ticketData?.priority || "URGENT")}
               </span>
               {isEscalated && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-indigo-600 text-white shadow-xs animate-pulse">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-blue-700 text-white shadow-xs animate-pulse">
                   <AlertTriangle className="size-3" />
                   CORE ESCALATED (#INC-9204)
                 </span>
@@ -543,11 +543,11 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               onClick={() => setEscalateModalOpen(true)}
               className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-2xs ${
                 isEscalated
-                  ? "bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100"
-                  : "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                  ? "bg-blue-900/40 border-blue-500/40 text-[#93C5FD] hover:bg-blue-900/60"
+                  : "border-blue-500/30 bg-blue-500/15 text-[#93C5FD] hover:bg-blue-500/25"
               }`}
             >
-              <AlertTriangle className={`size-3.5 ${isEscalated ? "text-indigo-600" : "text-rose-600"}`} />
+              <AlertTriangle className="size-3.5 text-[#93C5FD]" />
               {isEscalated ? "Escalation Active" : "Escalate to Core"}
             </button>
             <button
@@ -555,7 +555,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               onClick={handleToggleResolve}
               className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer ${
                 isResolved
-                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  ? "bg-blue-700 hover:bg-blue-800"
                   : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
@@ -704,7 +704,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                       <div className="rounded-xl bg-[#0F172A] border border-slate-800 overflow-hidden text-slate-200 font-mono text-xs mt-3">
                         <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 text-[11px] text-[#97A0B3] font-bold uppercase tracking-wider">
                           <span className="flex items-center gap-2">
-                            <FileText className="size-3.5 text-rose-400" />
+                            <FileText className="size-3.5 text-[#93C5FD]" />
                             Diagnostics Telemetry & Trace Log
                           </span>
                           <button
@@ -723,14 +723,14 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                         </div>
                         <div className="p-4 space-y-1.5 text-[11px] leading-relaxed overflow-x-auto text-slate-300">
                           <div className="text-[#97A0B3]"># Gateway trace capture ID: trc_98812_useast_prod</div>
-                          <div className="text-rose-400 font-semibold">
-                            <span className="bg-rose-500/20 px-1 py-0.5 rounded text-rose-300 font-bold mr-1">
+                          <div className="text-[#93C5FD] font-semibold">
+                            <span className="bg-blue-500/20 px-1 py-0.5 rounded text-[#93C5FD] font-bold mr-1">
                               [ERROR 504]
                             </span>
                             Webhook delivery failed: https://api.northwindlabs.co/v1/deliverables/sync
                           </div>
                           <div className="text-[#97A0B3]">Connection timed out after 30000ms. Retries exhausted (4/4).</div>
-                          <div className="text-emerald-400 pt-1">
+                          <div className="text-[#60A5FA] pt-1">
                             &gt; TLS Handshake: 14ms | Payload Size: 1.48 GB (4 assets) | Socket Hangup: Digest Verification
                           </div>
                         </div>
@@ -755,9 +755,9 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                           <button
                             type="button"
                             onClick={handleDownloadTraceLog}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#0B111C] border border-[#2A3446] text-xs font-semibold text-[#F1F5F9] hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-colors cursor-pointer"
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#0B111C] border border-[#2A3446] text-xs font-semibold text-[#F1F5F9] hover:bg-[#7FA0D6]/15 hover:border-[#7FA0D6]/30 hover:text-[#7FA0D6] transition-colors cursor-pointer"
                           >
-                            <FileText className="size-4 text-rose-600" />
+                            <FileText className="size-4 text-[#7FA0D6]" />
                             <span>sync_failure_trace.log</span>
                             <span className="text-[10px] text-[#97A0B3] font-mono">(110 KB)</span>
                             <Download className="size-3.5 text-[#97A0B3] ml-1" />
@@ -790,7 +790,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                   onClick={() => setActiveTab("internal")}
                   className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-t border-x cursor-pointer ${
                     activeTab === "internal"
-                      ? "bg-[#161F2D] text-amber-700 border-[#2A3446] shadow-2xs"
+                      ? "bg-[#161F2D] text-[#7FA0D6] border-[#2A3446] shadow-2xs"
                       : "text-[#97A0B3] border-transparent hover:text-white"
                   }`}
                 >
@@ -802,7 +802,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                 {/* Quick Macros */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[11px] font-bold text-[#97A0B3] uppercase tracking-wider flex items-center gap-1">
-                    <Sparkles className="size-3 text-amber-500" />
+                    <Sparkles className="size-3 text-[#60A5FA]" />
                     Quick Macros:
                   </span>
                   <button
@@ -823,7 +823,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                         "Patch deployed to edge ingress router. Asset checksums verified successfully across all 4 Reels. Ticket resolved."
                       )
                     }
-                    className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-semibold border border-emerald-200 transition-colors cursor-pointer"
+                    className="px-2.5 py-1 rounded-lg bg-blue-600/15 hover:bg-blue-600/25 text-[#60A5FA] text-[11px] font-semibold border border-blue-500/30 transition-colors cursor-pointer"
                   >
                     Resolved with Patch
                   </button>

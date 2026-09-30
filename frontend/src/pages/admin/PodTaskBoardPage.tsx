@@ -101,8 +101,8 @@ export function PodTaskBoardPage() {
           <div
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-lg animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-rose-950/80 border-rose-800 text-rose-300"
-                : "bg-emerald-950/80 border-emerald-800 text-emerald-300"
+                ? "bg-blue-950/80 border-blue-800 text-[#93C5FD]"
+                : "bg-blue-900/80 border-blue-700 text-[#60A5FA]"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -115,7 +115,7 @@ export function PodTaskBoardPage() {
         {/* 1. Quick Actions Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#161F2D] p-2.5 sm:px-4 sm:py-2.5 rounded-2xl border border-[#2A3446]/80 shadow-2xs">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="size-2 rounded-full bg-blue-500 animate-pulse" />
             <span className="text-xs font-bold text-[#F1F5F9]">{podName} Sprint Workflow · Lead {leadName}</span>
           </div>
 
@@ -166,8 +166,8 @@ export function PodTaskBoardPage() {
             <div className="space-y-0.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">Blockers / Escalations</span>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-lg sm:text-xl font-black text-rose-400">1</span>
-                <span className="text-[10.5px] sm:text-[11px] font-bold text-rose-400">Action Blocker</span>
+                <span className="text-lg sm:text-xl font-black text-[#60A5FA]">1</span>
+                <span className="text-[10.5px] sm:text-[11px] font-bold text-[#60A5FA]">Action Blocker</span>
               </div>
               <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-[10px] sm:text-[11px]">
                 <span className="text-[#F1F5F9] font-medium">Atlas copy sign-off required</span>
@@ -179,7 +179,7 @@ export function PodTaskBoardPage() {
                 </button>
               </div>
             </div>
-            <div className="size-7 sm:size-8 rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center justify-center shrink-0">
+            <div className="size-7 sm:size-8 rounded-xl bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 flex items-center justify-center shrink-0">
               <AlertTriangle className="size-3.5 sm:size-4" />
             </div>
           </div>
@@ -263,12 +263,12 @@ export function PodTaskBoardPage() {
               {/* Card 2: Story */}
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-purple-400">Bloom Studio</span>
-                  <span className="px-1.5 py-0.2 rounded bg-rose-500/15 text-rose-400 border border-rose-500/30 text-[8.5px] font-extrabold">High Priority</span>
+                  <span className="text-[#93C5FD]">Bloom Studio</span>
+                  <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 text-[8.5px] font-extrabold">High Priority</span>
                 </div>
                 <h4 className="text-xs font-black text-white leading-snug">TikTok Story Sequence (3 Panels)</h4>
                 <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[10.5px]">
-                  <span className="px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-400 font-bold text-[9px] border border-purple-500/30">
+                  <span className="px-1.5 py-0.2 rounded bg-blue-600/15 text-[#60A5FA] font-bold text-[9px] border border-blue-500/30">
                     Story
                   </span>
                   <div className="flex items-center gap-1 text-[#F1F5F9] font-bold text-[9.5px]">
@@ -288,12 +288,12 @@ export function PodTaskBoardPage() {
                 </div>
                 <h4 className="text-xs font-black text-white leading-snug">Holiday Promotion Post Deck</h4>
                 <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[10.5px]">
-                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 font-bold text-[9px] border border-emerald-500/30">
+                  <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-[#60A5FA] font-bold text-[9px] border border-blue-500/30">
                     Post
                   </span>
                   <div className="flex items-center gap-1 text-[#F1F5F9] font-bold text-[9.5px]">
                     <span>Chloe Tan</span>
-                    <div className="size-4.5 rounded bg-teal-600 text-white flex items-center justify-center font-black text-[8px]">
+                    <div className="size-4.5 rounded bg-blue-600 text-white flex items-center justify-center font-black text-[8px]">
                       CT
                     </div>
                   </div>
@@ -331,7 +331,7 @@ export function PodTaskBoardPage() {
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#7FA0D6]">Northwind Labs</span>
-                  <span className="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[8.5px] font-extrabold">Reel · Urgent</span>
+                  <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-[#7FA0D6] border border-blue-500/30 text-[8.5px] font-extrabold">Reel · Urgent</span>
                 </div>
                 <div>
                   <h4 className="text-xs font-black text-white leading-snug">Product Launch Reel (15s)</h4>
@@ -358,7 +358,7 @@ export function PodTaskBoardPage() {
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#F1F5F9]">Atlas Commerce</span>
-                  <span className="px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-400 border border-purple-500/30 text-[8.5px] font-extrabold">Story</span>
+                  <span className="px-1.5 py-0.2 rounded bg-blue-600/15 text-[#93C5FD] border border-blue-500/30 text-[8.5px] font-extrabold">Story</span>
                 </div>
                 <div>
                   <h4 className="text-xs font-black text-white leading-snug">Campaign Story Suite</h4>
@@ -367,14 +367,14 @@ export function PodTaskBoardPage() {
                 <div className="space-y-0.5">
                   <div className="flex justify-between text-[9.5px] font-bold text-[#97A0B3]">
                     <span>Progress</span>
-                    <span className="text-emerald-400 font-black">55%</span>
+                    <span className="text-[#60A5FA] font-black">55%</span>
                   </div>
                   <div className="w-full h-1 bg-[#161F2D] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full smooth-progress-fill" style={{ width: "55%" }} />
+                    <div className="h-full bg-blue-500 rounded-full smooth-progress-fill" style={{ width: "55%" }} />
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
-                  <div className="size-4.5 rounded bg-indigo-600 text-white flex items-center justify-center font-black text-[8px]">
+                  <div className="size-4.5 rounded bg-blue-600 text-white flex items-center justify-center font-black text-[8px]">
                     MV
                   </div>
                   <span>Marcus Vance · Copy</span>
@@ -385,7 +385,7 @@ export function PodTaskBoardPage() {
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#F1F5F9]">Atlas Commerce</span>
-                  <span className="text-rose-400 font-bold text-[9.5px] flex items-center gap-0.5">
+                  <span className="text-[#60A5FA] font-bold text-[9.5px] flex items-center gap-0.5">
                     <Clock className="size-2.5" /> Due in 1h
                   </span>
                 </div>
@@ -396,10 +396,10 @@ export function PodTaskBoardPage() {
                 <div className="space-y-0.5">
                   <div className="flex justify-between text-[9.5px] font-bold text-[#97A0B3]">
                     <span>Exporting</span>
-                    <span className="text-emerald-400 font-black">90%</span>
+                    <span className="text-[#60A5FA] font-black">90%</span>
                   </div>
                   <div className="w-full h-1 bg-[#161F2D] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full smooth-progress-fill" style={{ width: "90%" }} />
+                    <div className="h-full bg-blue-500 rounded-full smooth-progress-fill" style={{ width: "90%" }} />
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
@@ -416,14 +416,14 @@ export function PodTaskBoardPage() {
           <div
             className={`${
               activeMobileCol === "all" || activeMobileCol === "review" ? "block" : "hidden md:block"
-            } bg-[#161F2D] rounded-2xl p-3 border border-amber-500/40 space-y-2.5`}
+            } bg-[#161F2D] rounded-2xl p-3 border border-blue-500/40 space-y-2.5`}
           >
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-amber-400 animate-ping" />
-                <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">Lead QA Review</h3>
+                <span className="size-2 rounded-full bg-blue-400 animate-ping" />
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#60A5FA]">Lead QA Review</h3>
               </div>
-              <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-amber-500/15 text-amber-400 border border-amber-500/30">
+              <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-blue-500/15 text-[#60A5FA] border border-blue-500/30">
                 6
               </span>
             </div>
@@ -434,7 +434,7 @@ export function PodTaskBoardPage() {
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
                   <span className="text-[#7FA0D6]">Northwind Labs</span>
-                  <span className="text-amber-400 font-bold text-[9.5px]">Due in 2h</span>
+                  <span className="text-[#60A5FA] font-bold text-[9.5px]">Due in 2h</span>
                 </div>
                 <div>
                   <h4 className="text-xs font-black text-white leading-snug">Fintech Reel · Conversion (9:16)</h4>
@@ -461,7 +461,7 @@ export function PodTaskBoardPage() {
               {/* Card 2: Story */}
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-purple-400">Bloom Studio</span>
+                  <span className="text-[#93C5FD]">Bloom Studio</span>
                   <span className="text-[#97A0B3] text-[9.5px]">Due in 4h</span>
                 </div>
                 <div>
@@ -479,8 +479,8 @@ export function PodTaskBoardPage() {
               {/* Card 3: Post */}
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-purple-400">Bloom Studio</span>
-                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[8.5px] font-extrabold">Ready</span>
+                  <span className="text-[#93C5FD]">Bloom Studio</span>
+                  <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 text-[8.5px] font-extrabold">Ready</span>
                 </div>
                 <div>
                   <h4 className="text-xs font-black text-white leading-snug">E-commerce Post Showcase</h4>
@@ -502,14 +502,14 @@ export function PodTaskBoardPage() {
           <div
             className={`${
               activeMobileCol === "all" || activeMobileCol === "dispatched" ? "block" : "hidden md:block"
-            } bg-[#161F2D] rounded-2xl p-3 border border-emerald-500/40 space-y-2.5`}
+            } bg-[#161F2D] rounded-2xl p-3 border border-blue-500/40 space-y-2.5`}
           >
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-emerald-400" />
-                <h3 className="text-xs font-black uppercase tracking-wider text-emerald-400">Dispatched</h3>
+                <span className="size-2 rounded-full bg-blue-400" />
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#60A5FA]">Dispatched</h3>
               </div>
-              <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+              <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 flex items-center gap-1">
                 <Check className="size-3" /> 3
               </span>
             </div>
@@ -519,8 +519,8 @@ export function PodTaskBoardPage() {
               {/* Card 1: Reel */}
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-emerald-400 font-bold text-[9.5px] flex items-center gap-1">
-                    <CheckCircle2 className="size-3 text-emerald-400" /> Dispatched
+                  <span className="text-[#60A5FA] font-bold text-[9.5px] flex items-center gap-1">
+                    <CheckCircle2 className="size-3 text-[#60A5FA]" /> Dispatched
                   </span>
                   <span className="text-[#97A0B3] text-[9.5px]">Reel</span>
                 </div>
@@ -535,15 +535,15 @@ export function PodTaskBoardPage() {
                     </div>
                     <span>David Kim</span>
                   </div>
-                  <span className="text-emerald-400">● Accepted</span>
+                  <span className="text-[#60A5FA]">● Accepted</span>
                 </div>
               </div>
 
               {/* Card 2: Story */}
               <div className="bg-[#0B111C] rounded-xl p-3 border border-[#2A3446] shadow-2xs hover-card-innovative space-y-2">
                 <div className="flex items-center justify-between text-[10.5px] font-bold">
-                  <span className="text-emerald-400 font-bold text-[9.5px] flex items-center gap-1">
-                    <CheckCircle2 className="size-3 text-emerald-400" /> Verified
+                  <span className="text-[#60A5FA] font-bold text-[9.5px] flex items-center gap-1">
+                    <CheckCircle2 className="size-3 text-[#60A5FA]" /> Verified
                   </span>
                   <span className="text-[#97A0B3] text-[9.5px]">Story</span>
                 </div>
@@ -553,7 +553,7 @@ export function PodTaskBoardPage() {
                 </div>
                 <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
                   <div className="flex items-center gap-1">
-                    <div className="size-4.5 rounded bg-teal-600 text-white flex items-center justify-center font-black text-[8px]">
+                    <div className="size-4.5 rounded bg-blue-600 text-white flex items-center justify-center font-black text-[8px]">
                       CT
                     </div>
                     <span>Chloe Tan</span>
@@ -696,10 +696,10 @@ export function PodTaskBoardPage() {
             </p>
             <div className="space-y-2 text-xs">
               {[
-                { name: "Elena R. (Brand Specialist)", tasks: 5, status: "Optimal", color: "text-emerald-400" },
-                { name: "David Kim (Sr. Motion Designer)", tasks: 7, status: "High Load -> Rebalancing -1", color: "text-amber-400" },
-                { name: "Chloe Tan (Video Specialist)", tasks: 4, status: "Available -> Rebalancing +1", color: "text-blue-400" },
-                { name: "Marcus Vance (Copy Lead)", tasks: 5, status: "Optimal", color: "text-emerald-400" },
+                { name: "Elena R. (Brand Specialist)", tasks: 5, status: "Optimal", color: "text-[#60A5FA]" },
+                { name: "David Kim (Sr. Motion Designer)", tasks: 7, status: "High Load -> Rebalancing -1", color: "text-[#7FA0D6]" },
+                { name: "Chloe Tan (Video Specialist)", tasks: 4, status: "Available -> Rebalancing +1", color: "text-[#93C5FD]" },
+                { name: "Marcus Vance (Copy Lead)", tasks: 5, status: "Optimal", color: "text-[#60A5FA]" },
               ].map((m) => (
                 <div key={m.name} className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between">
                   <div>
@@ -735,20 +735,20 @@ export function PodTaskBoardPage() {
 
       {/* Interactive Re-route Blocked Modal */}
       {rerouteModalOpen && (
-        <div className="fixed inset-0 w-screen h-screen z-[9999] bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 w-screen h-screen z-[99999] bg-[#0B111C]/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <div className="w-full max-w-lg bg-[#161F2D] rounded-3xl p-6 shadow-2xl border border-[#2A3446] space-y-4">
             <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
               <div className="flex items-center gap-2">
-                <RefreshCw className="size-5 text-amber-400" />
+                <RefreshCw className="size-5 text-[#60A5FA]" />
                 <h3 className="text-base font-black text-white">Re-route Blocked Tasks</h3>
               </div>
               <button onClick={() => setRerouteModalOpen(false)} className="text-[#97A0B3] hover:text-white">
                 <X className="size-5" />
               </button>
             </div>
-            <div className="p-3.5 rounded-xl bg-rose-950/40 border border-rose-800/50 space-y-1 text-xs">
-              <span className="font-extrabold text-rose-300 block">Blocked Task #1: Atlas copy sign-off required</span>
-              <p className="text-[11px] text-rose-300/80">Pending client feedback for 4h. Re-assign task specialist to unblock workflow.</p>
+            <div className="p-3.5 rounded-xl bg-blue-950/40 border border-blue-800/50 space-y-1 text-xs">
+              <span className="font-extrabold text-blue-200 block">Blocked Task #1: Atlas copy sign-off required</span>
+              <p className="text-[11px] text-blue-200/80">Pending client feedback for 4h. Re-assign task specialist to unblock workflow.</p>
             </div>
             <div className="space-y-2 text-xs">
               <label className="font-bold text-[#F1F5F9] block">Select Target Specialist for Re-routing</label>

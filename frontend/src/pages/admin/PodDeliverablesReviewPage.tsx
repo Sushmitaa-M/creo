@@ -90,8 +90,8 @@ export function PodDeliverablesReviewPage() {
           <div
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-lg animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-rose-950/80 border-rose-800 text-rose-300"
-                : "bg-emerald-950/80 border-emerald-800 text-emerald-300"
+                ? "bg-blue-950/80 border-blue-800 text-[#93C5FD]"
+                : "bg-blue-900/80 border-blue-700 text-[#60A5FA]"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -147,7 +147,7 @@ export function PodDeliverablesReviewPage() {
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Deliverables</span>
               </div>
               <div className="flex items-center gap-2 text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
-                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1">
+                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 flex items-center gap-1">
                   ● 2 Urgent
                 </span>
                 <span className="text-[#97A0B3] font-medium">Within 2h SLA threshold</span>
@@ -175,7 +175,7 @@ export function PodDeliverablesReviewPage() {
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="text-[#97A0B3] font-medium">Benchmark: &lt; 2.0h</span>
-                <span className="font-bold text-emerald-400">↗ 68% Faster</span>
+                <span className="font-bold text-[#60A5FA]">↗ 68% Faster</span>
               </div>
             </div>
           </motion.div>
@@ -189,7 +189,7 @@ export function PodDeliverablesReviewPage() {
           >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">QA First-Pass Pass Rate</span>
-              <div className="size-6 sm:size-7 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 flex items-center justify-center">
                 <ShieldCheck className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -208,27 +208,27 @@ export function PodDeliverablesReviewPage() {
         </div>
 
         {/* 3. Urgent SLA Alert Banner */}
-        <div className="bg-rose-950/40 rounded-2xl p-3.5 sm:p-4 border border-rose-800/50 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs backdrop-blur-md">
+        <div className="bg-blue-950/40 rounded-2xl p-3.5 sm:p-4 border border-blue-800/50 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="size-8 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center shrink-0">
+            <div className="size-8 rounded-xl bg-blue-500/15 border border-blue-500/30 text-[#93C5FD] flex items-center justify-center shrink-0">
               <AlertTriangle className="size-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white">
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-blue-600 text-white">
                   Urgent SLA Alert
                 </span>
                 <span className="text-xs font-bold text-[#F1F5F9]">Atlas Commerce · Deliverable #03</span>
               </div>
               <p className="text-[11px] text-[#F1F5F9] font-medium mt-0.5">
-                Post Carousel SLA: <span className="font-bold text-rose-400">01h 14m remaining</span> until escalation.
+                Post Carousel SLA: <span className="font-bold text-[#60A5FA]">01h 14m remaining</span> until escalation.
               </p>
             </div>
           </div>
 
           <button
             onClick={() => showToast("Focused review active for Atlas Commerce Deliverable #03", "success")}
-            className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer shrink-0"
           >
             Review & Approve <ArrowRight className="size-3" />
           </button>
@@ -256,7 +256,7 @@ export function PodDeliverablesReviewPage() {
                 </p>
               </div>
 
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1 self-start sm:self-auto">
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 flex items-center gap-1 self-start sm:self-auto">
                 <Clock className="size-3" />
                 Due in 2 hours
               </span>
@@ -282,13 +282,13 @@ export function PodDeliverablesReviewPage() {
                     <div className="w-48 h-80 rounded-3xl border-2 border-slate-700/80 bg-slate-900/90 p-4 shadow-2xl flex flex-col justify-between transform group-hover:scale-102 transition-transform">
                       <div className="flex justify-between items-center text-[8px] text-[#97A0B3]">
                         <span>Reel #01</span>
-                        <span className="text-emerald-400">● Live</span>
+                        <span className="text-[#60A5FA]">● Live</span>
                       </div>
                       <div className="space-y-2 text-left">
                         <span className="text-[10px] text-[#97A0B3] font-bold block">PORTFOLIO</span>
                         <span className="text-sm font-black text-white block leading-none">₹45,230.75</span>
-                        <span className="text-[9px] font-bold text-emerald-400 block">+14.2%</span>
-                        <div className="h-10 w-full bg-gradient-to-t from-blue-600/30 to-emerald-400/20 rounded-lg flex items-end p-1">
+                        <span className="text-[9px] font-bold text-[#60A5FA] block">+14.2%</span>
+                        <div className="h-10 w-full bg-gradient-to-t from-blue-600/30 to-blue-400/20 rounded-lg flex items-end p-1">
                           <div className="h-6 w-full bg-[#7FA0D6]/40 rounded-sm" />
                         </div>
                       </div>
@@ -418,24 +418,24 @@ export function PodDeliverablesReviewPage() {
                 {/* Action Buttons (Image 3) */}
                 <div className="flex items-center justify-end gap-3 pt-2">
                   {reviewState === "approved" ? (
-                    <div className="w-full p-3 rounded-2xl bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-xs font-bold flex items-center justify-between">
+                    <div className="w-full p-3 rounded-2xl bg-blue-950/80 border border-blue-800 text-[#93C5FD] text-xs font-bold flex items-center justify-between">
                       <span className="flex items-center gap-2">
-                        <Check className="size-4 text-emerald-400 stroke-[3]" />
+                        <Check className="size-4 text-[#60A5FA] stroke-[3]" />
                         Approved & Dispatched to Client Frame.io Portal
                       </span>
                       <button
                         onClick={() => setReviewState("pending")}
-                        className="text-[11px] underline text-emerald-400 hover:text-emerald-200 cursor-pointer font-bold"
+                        className="text-[11px] underline text-[#60A5FA] hover:text-[#93C5FD] cursor-pointer font-bold"
                       >
                         Reset Review
                       </button>
                     </div>
                   ) : reviewState === "revision" ? (
-                    <div className="w-full p-3 rounded-2xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs font-bold flex items-center justify-between">
+                    <div className="w-full p-3 rounded-2xl bg-blue-950/80 border border-blue-800 text-[#93C5FD] text-xs font-bold flex items-center justify-between">
                       <span>Revision request active • Specialist notified</span>
                       <button
                         onClick={() => setReviewState("pending")}
-                        className="text-[11px] underline text-rose-400 hover:text-rose-200 cursor-pointer font-bold"
+                        className="text-[11px] underline text-[#60A5FA] hover:text-[#93C5FD] cursor-pointer font-bold"
                       >
                         Cancel Revision
                       </button>

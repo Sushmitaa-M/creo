@@ -128,8 +128,8 @@ export function PodScheduleLeavePage() {
           <div
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-lg animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-rose-50 border-rose-200 text-rose-700"
-                : "bg-emerald-50 border-emerald-200 text-emerald-700"
+                ? "bg-blue-500/15 border-blue-500/30 text-[#93C5FD]"
+                : "bg-blue-500/15 border-blue-500/30 text-[#60A5FA]"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -142,7 +142,7 @@ export function PodScheduleLeavePage() {
         {/* 1. Quick Actions Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#161F2D] p-2.5 sm:px-4 sm:py-2.5 rounded-2xl border border-[#2A3446]/80 shadow-2xs">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="size-2 rounded-full bg-blue-500 animate-pulse" />
             <span className="text-xs font-bold text-[#F1F5F9]">{podName} Schedule & PTO Coverage · Lead {leadName}</span>
           </div>
 
@@ -299,10 +299,10 @@ export function PodScheduleLeavePage() {
                       </div>
 
                       {/* Impact Assessment Alert */}
-                      <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-800/50 text-xs text-emerald-300 flex items-start gap-1.5">
-                        <ShieldCheck className="size-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                      <div className="p-2.5 rounded-xl bg-blue-950/30 border border-blue-800/50 text-xs text-[#93C5FD] flex items-start gap-1.5">
+                        <ShieldCheck className="size-3.5 text-[#60A5FA] shrink-0 mt-0.5" />
                         <p className="font-medium leading-relaxed text-[10.5px]">
-                          <span className="font-bold text-emerald-300">Impact: </span>
+                          <span className="font-bold text-[#93C5FD]">Impact: </span>
                           {leave.impact}
                         </p>
                       </div>
@@ -347,7 +347,7 @@ export function PodScheduleLeavePage() {
               <div className="divide-y divide-slate-100 text-xs">
                 <div className="py-2 flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-indigo-600 text-white font-black text-[9px] flex items-center justify-center">
+                    <div className="size-7 rounded-lg bg-blue-600 text-white font-black text-[9px] flex items-center justify-center">
                       MV
                     </div>
                     <div>
@@ -355,14 +355,14 @@ export function PodScheduleLeavePage() {
                       <span className="text-[#97A0B3] text-[10.5px] block">Personal Time Off · Oct 21 - Oct 23 (3 days)</span>
                     </div>
                   </div>
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
                     Completed
                   </span>
                 </div>
 
                 <div className="py-2 flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-teal-600 text-white font-black text-[9px] flex items-center justify-center">
+                    <div className="size-7 rounded-lg bg-sky-600 text-white font-black text-[9px] flex items-center justify-center">
                       CT
                     </div>
                     <div>
@@ -453,7 +453,7 @@ export function PodScheduleLeavePage() {
                   <span className="size-2 rounded-full bg-[#7FA0D6]" /> Pending / PTO
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2 rounded-full bg-emerald-500" /> Full Team
+                  <span className="size-2 rounded-full bg-blue-500" /> Full Team
                 </span>
               </div>
             </div>
@@ -465,7 +465,7 @@ export function PodScheduleLeavePage() {
                   <h3 className="text-xs font-black text-white">Today's Schedule & Meetings</h3>
                   <p className="text-[10px] text-[#97A0B3] font-medium">Synced with GCal & Slack {podName}</p>
                 </div>
-                <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30">
                   Live Now
                 </span>
               </div>
@@ -511,7 +511,7 @@ export function PodScheduleLeavePage() {
                   <span className="absolute -left-[18px] top-2 size-1.5 rounded-full bg-slate-300" />
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="font-bold text-[#97A0B3]">04:00 PM - 05:00 PM</span>
-                    <span className="text-rose-600 font-bold text-[9px]">Lock</span>
+                    <span className="text-[#60A5FA] font-bold text-[9px]">Lock</span>
                   </div>
                   <h4 className="text-xs font-black text-white">Lead Review & Quality Sign-off</h4>
                   <p className="text-[10.5px] text-[#97A0B3] font-medium leading-tight">
@@ -528,7 +528,7 @@ export function PodScheduleLeavePage() {
                   <ArrowLeftRight className="size-3.5 text-[#7FA0D6]" />
                   <h3 className="text-xs font-black text-white">Pod Redundancy Matrix</h3>
                 </div>
-                <span className="text-[9px] font-bold text-emerald-600">100% PAIRING</span>
+                <span className="text-[9px] font-bold text-[#60A5FA]">100% PAIRING</span>
               </div>
 
               <div className="space-y-2 text-xs">

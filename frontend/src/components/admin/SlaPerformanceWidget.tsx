@@ -71,10 +71,10 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
           <div className="flex flex-col gap-1">
             <div className="flex justify-between text-[11px] font-bold tracking-tight">
               <span className="text-[#97A0B3]">Resolution SLA</span>
-              <span className="text-cyan-500">{resolutionSla}%</span>
+              <span className="text-[#60A5FA]">{resolutionSla}%</span>
             </div>
             <div className="w-full h-[5px] bg-[#2A3446] rounded-full overflow-hidden">
-              <div className="h-full bg-cyan-500 rounded-full" style={{ width: `${resolutionSla}%` }} />
+              <div className="h-full bg-[#60A5FA] rounded-full" style={{ width: `${resolutionSla}%` }} />
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
       <div className="flex flex-col">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-600 shadow-[0_0_6px_rgba(244,63,94,0.6)]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.6)]" />
             <h3 className="text-xs font-black text-white tracking-tight">Alerts Raised</h3>
           </div>
           <span className="text-[9px] font-bold text-[#7FA0D6] bg-[#7FA0D6]/15 px-2 py-0.5 rounded-full shadow-2xs">
@@ -95,9 +95,9 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
         <div className="flex flex-col gap-2">
           {slas.length > 0 ? (
             slas.slice(0, 2).map((sla) => (
-              <div key={sla.id} className="flex items-center justify-between p-2.5 rounded-xl border border-rose-900/40 bg-rose-950/30">
+              <div key={sla.id} className="flex items-center justify-between p-2.5 rounded-xl border border-blue-800/40 bg-blue-950/40">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                  <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                     <AlertTriangle className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <div className="flex flex-col gap-0.5 min-w-0">
@@ -109,14 +109,14 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
                     </span>
                   </div>
                 </div>
-                <span className="text-[9px] font-black text-rose-500 ml-2 tracking-wide shrink-0">Warning</span>
+                <span className="text-[9px] font-black text-[#60A5FA] ml-2 tracking-wide shrink-0">Warning</span>
               </div>
             ))
           ) : (
             <>
               <div className="flex items-center justify-between p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C]">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                  <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                     <AlertTriangle className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                   <div className="flex flex-col gap-0.5 min-w-0">
@@ -126,7 +126,7 @@ export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
                     <span className="text-[10px] text-[#97A0B3] font-medium">Pod A · Maya Lin · 18m remaining</span>
                   </div>
                 </div>
-                <span className="text-[9px] font-black text-rose-500 ml-2 tracking-wide shrink-0">Warning</span>
+                <span className="text-[9px] font-black text-[#60A5FA] ml-2 tracking-wide shrink-0">Warning</span>
               </div>
               <div className="flex items-center justify-between p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C]">
                 <div className="flex items-center gap-2.5 min-w-0">

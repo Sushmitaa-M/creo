@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Hash,
   Send,
@@ -13,9 +13,205 @@ import {
   User,
   ArrowLeft,
   ChevronRight,
+  Smile,
+  Search,
+  Clock,
+  Heart,
+  Dog,
+  UtensilsCrossed,
+  Trophy,
+  Car,
+  Lightbulb,
+  Flag,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useAuth } from "../../lib/auth-context";
+
+// ─── WhatsApp-style Emoji Categories ───────────────────────────────────────
+const EMOJI_CATEGORIES = [
+  {
+    id: "recent",
+    label: "Recently Used",
+    icon: Clock,
+    emojis: [] as string[], // populated dynamically
+  },
+  {
+    id: "smileys",
+    label: "Smileys & Emotion",
+    icon: Smile,
+    emojis: [
+      "😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "🙃",
+      "😉", "😊", "😇", "🥰", "😍", "🤩", "😘", "😗", "😚", "😙",
+      "🥲", "😋", "😛", "😜", "🤪", "😝", "🤑", "🤗", "🤭", "🫢",
+      "🫣", "🤫", "🤔", "🫡", "🤐", "🤨", "😐", "😑", "😶", "🫥",
+      "😏", "😒", "🙄", "😬", "🤥", "😌", "😔", "😪", "🤤", "😴",
+      "😷", "🤒", "🤕", "🤢", "🤮", "🥵", "🥶", "🥴", "😵", "🤯",
+      "🤠", "🥳", "🥸", "😎", "🤓", "🧐", "😕", "🫤", "😟", "🙁",
+      "😮", "😯", "😲", "😳", "🥺", "🥹", "😦", "😧", "😨", "😰",
+      "😥", "😢", "😭", "😱", "😖", "😣", "😞", "😓", "😩", "😫",
+      "🥱", "😤", "😡", "😠", "🤬", "😈", "👿", "💀", "☠️", "💩",
+      "🤡", "👹", "👺", "👻", "👽", "👾", "🤖", "😺", "😸", "😹",
+      "😻", "😼", "😽", "🙀", "😿", "😾",
+    ],
+  },
+  {
+    id: "people",
+    label: "People & Body",
+    icon: User,
+    emojis: [
+      "👋", "🤚", "🖐️", "✋", "🖖", "🫱", "🫲", "🫳", "🫴", "👌",
+      "🤌", "🤏", "✌️", "🤞", "🫰", "🤟", "🤘", "🤙", "👈", "👉",
+      "👆", "🖕", "👇", "☝️", "🫵", "👍", "👎", "✊", "👊", "🤛",
+      "🤜", "👏", "🙌", "🫶", "👐", "🤲", "🤝", "🙏", "✍️", "💅",
+      "🤳", "💪", "🦾", "🦿", "🦵", "🦶", "👂", "🦻", "👃", "🧠",
+      "🫀", "🫁", "🦷", "🦴", "👀", "👁️", "👅", "👄", "🫦", "👶",
+      "🧒", "👦", "👧", "🧑", "👱", "👨", "🧔", "👩", "🧓", "👴",
+      "👵", "🙍", "🙎", "🙅", "🙆", "💁", "🙋", "🧏", "🙇", "🤦",
+      "🤷", "💆", "💇", "🚶", "🧍", "🧎", "🏃", "💃", "🕺", "👯",
+    ],
+  },
+  {
+    id: "animals",
+    label: "Animals & Nature",
+    icon: Dog,
+    emojis: [
+      "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨",
+      "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🙈", "🙉", "🙊", "🐒",
+      "🐔", "🐧", "🐦", "🐤", "🐣", "🐥", "🦆", "🦅", "🦉", "🦇",
+      "🐺", "🐗", "🐴", "🦄", "🐝", "🪱", "🐛", "🦋", "🐌", "🐞",
+      "🐜", "🪰", "🪲", "🪳", "🦟", "🦗", "🕷️", "🦂", "🐢", "🐍",
+      "🦎", "🦖", "🦕", "🐙", "🦑", "🦐", "🦞", "🦀", "🐡", "🐠",
+      "🐟", "🐬", "🐳", "🐋", "🦈", "🐊", "🐅", "🐆", "🦓", "🦍",
+      "🌸", "💐", "🌹", "🥀", "🌺", "🌻", "🌼", "🌷", "🌱", "🪴",
+      "🌲", "🌳", "🌴", "🌵", "🌾", "🌿", "☘️", "🍀", "🍁", "🍂",
+    ],
+  },
+  {
+    id: "food",
+    label: "Food & Drink",
+    icon: UtensilsCrossed,
+    emojis: [
+      "🍇", "🍈", "🍉", "🍊", "🍋", "🍌", "🍍", "🥭", "🍎", "🍏",
+      "🍐", "🍑", "🍒", "🍓", "🫐", "🥝", "🍅", "🫒", "🥥", "🥑",
+      "🍆", "🥔", "🥕", "🌽", "🌶️", "🫑", "🥒", "🥬", "🥦", "🧄",
+      "🧅", "🍄", "🥜", "🫘", "🌰", "🍞", "🥐", "🥖", "🫓", "🥨",
+      "🥯", "🥞", "🧇", "🧀", "🍖", "🍗", "🥩", "🥓", "🍔", "🍟",
+      "🍕", "🌭", "🥪", "🌮", "🌯", "🫔", "🥙", "🧆", "🥚", "🍳",
+      "🥘", "🍲", "🫕", "🥣", "🥗", "🍿", "🧈", "🧂", "🥫", "🍱",
+      "☕", "🍵", "🧃", "🥤", "🧋", "🍶", "🍺", "🍻", "🥂", "🍷",
+    ],
+  },
+  {
+    id: "activities",
+    label: "Activities",
+    icon: Trophy,
+    emojis: [
+      "⚽", "🏀", "🏈", "⚾", "🥎", "🎾", "🏐", "🏉", "🥏", "🎱",
+      "🪀", "🏓", "🏸", "🏒", "🏑", "🥍", "🏏", "🪃", "🥅", "⛳",
+      "🪁", "🏹", "🎣", "🤿", "🥊", "🥋", "🎽", "🛹", "🛼", "🛷",
+      "⛸️", "🥌", "🎿", "⛷️", "🏂", "🪂", "🏋️", "🤼", "🤸", "🤺",
+      "⛹️", "🏊", "🚴", "🧘", "🎪", "🎭", "🎨", "🎬", "🎤", "🎧",
+      "🎼", "🎹", "🥁", "🪘", "🎷", "🎺", "🪗", "🎸", "🎻", "🎲",
+      "♟️", "🎯", "🎳", "🎮", "🕹️", "🧩", "🏆", "🥇", "🥈", "🥉",
+      "🏅", "🎖️", "🏵️", "🎗️", "🎫", "🎟️", "🎠", "🎡", "🎢", "🎆",
+    ],
+  },
+  {
+    id: "travel",
+    label: "Travel & Places",
+    icon: Car,
+    emojis: [
+      "🚗", "🚕", "🚙", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚐",
+      "🛻", "🚚", "🚛", "🚜", "🏍️", "🛵", "🚲", "🛴", "🛺", "🚁",
+      "✈️", "🛩️", "🛫", "🛬", "🪂", "🚀", "🛸", "🚢", "⛵", "🚤",
+      "🛥️", "⛴️", "🏠", "🏡", "🏢", "🏣", "🏤", "🏥", "🏦", "🏨",
+      "🏩", "🏪", "🏫", "🏬", "🏭", "🏯", "🏰", "💒", "🗼", "🗽",
+      "⛪", "🕌", "🕍", "⛩️", "🕋", "⛲", "⛺", "🌁", "🌃", "🏙️",
+      "🌄", "🌅", "🌆", "🌇", "🌉", "♨️", "🎠", "🛝", "🎡", "🎢",
+    ],
+  },
+  {
+    id: "objects",
+    label: "Objects",
+    icon: Lightbulb,
+    emojis: [
+      "⌚", "📱", "💻", "⌨️", "🖥️", "🖨️", "🖱️", "🖲️", "💾", "💿",
+      "📀", "📷", "📸", "📹", "🎥", "📽️", "🎞️", "📞", "☎️", "📟",
+      "📠", "📺", "📻", "🎙️", "🎚️", "🎛️", "🧭", "⏱️", "⏲️", "⏰",
+      "🕰️", "⌛", "⏳", "📡", "🔋", "🪫", "🔌", "💡", "🔦", "🕯️",
+      "🪔", "🧯", "🛢️", "💸", "💵", "💴", "💶", "💷", "🪙", "💰",
+      "💎", "⚖️", "🪜", "🧰", "🪛", "🔧", "🔨", "⚒️", "🛠️", "⛏️",
+      "🪚", "🔩", "⚙️", "🪤", "🧲", "🔫", "💣", "🧨", "🪓", "🔪",
+      "📌", "📎", "✂️", "📏", "📐", "📝", "✏️", "🖊️", "🖋️", "🖌️",
+    ],
+  },
+  {
+    id: "symbols",
+    label: "Symbols",
+    icon: Heart,
+    emojis: [
+      "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔",
+      "❤️‍🔥", "❤️‍🩹", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝",
+      "💟", "☮️", "✝️", "☪️", "🕉️", "☸️", "✡️", "🔯", "🕎", "☯️",
+      "☦️", "🛐", "⛎", "♈", "♉", "♊", "♋", "♌", "♍", "♎",
+      "♏", "♐", "♑", "♒", "♓", "🆔", "⚛️", "🉑", "☢️", "☣️",
+      "📴", "📳", "🈶", "🈚", "🈸", "🈺", "🈷️", "✴️", "🆚", "💮",
+      "🉐", "㊙️", "㊗️", "🈴", "🈵", "🈹", "🈲", "🅰️", "🅱️", "🆎",
+      "🆑", "🅾️", "🆘", "❌", "⭕", "🛑", "⛔", "📛", "🚫", "💯",
+      "💢", "♨️", "🚷", "🚯", "🚳", "🚱", "🔞", "📵", "🚭", "❗",
+      "❕", "❓", "❔", "‼️", "⁉️", "🔅", "🔆", "〽️", "⚠️", "🚸",
+      "🔱", "⚜️", "🔰", "♻️", "✅", "🈯", "💹", "❇️", "✳️", "❎",
+      "🔥", "⭐", "🌟", "💫", "✨", "⚡", "💥", "💦", "💨", "🕊️",
+    ],
+  },
+  {
+    id: "flags",
+    label: "Flags",
+    icon: Flag,
+    emojis: [
+      "🏁", "🚩", "🎌", "🏴", "🏳️", "🏳️‍🌈", "🏳️‍⚧️", "🏴‍☠️",
+      "🇦🇺", "🇧🇷", "🇨🇦", "🇨🇳", "🇩🇪", "🇪🇸", "🇫🇷", "🇬🇧",
+      "🇮🇳", "🇮🇹", "🇯🇵", "🇰🇷", "🇲🇽", "🇳🇱", "🇵🇹", "🇷🇺",
+      "🇸🇦", "🇸🇪", "🇹🇷", "🇺🇸", "🇿🇦", "🇦🇪", "🇦🇷", "🇦🇹",
+    ],
+  },
+];
+
+// ─── LocalStorage sync key for cross-tab chat ──────────────────────────────
+const CHAT_STORAGE_KEY = "creo-slack-chat-messages";
+const CHAT_SYNC_EVENT = "creo-chat-sync";
+
+function loadMessagesFromStorage(): Record<string, ChatMessage[]> | null {
+  try {
+    const stored = localStorage.getItem(CHAT_STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch { /* ignore parse errors */ }
+  return null;
+}
+
+function saveMessagesToStorage(messages: Record<string, ChatMessage[]>) {
+  try {
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+    // Dispatch custom event for same-tab sync (storage event only fires cross-tab)
+    window.dispatchEvent(new CustomEvent(CHAT_SYNC_EVENT, { detail: messages }));
+  } catch { /* ignore quota errors */ }
+}
+
+// Recently used emojis storage
+const RECENT_EMOJIS_KEY = "creo-recent-emojis";
+function loadRecentEmojis(): string[] {
+  try {
+    const stored = localStorage.getItem(RECENT_EMOJIS_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch { /* ignore */ }
+  return ["👍", "❤️", "🚀", "🔥", "😂", "👏", "🎉", "💯"];
+}
+function saveRecentEmoji(emoji: string) {
+  const recent = loadRecentEmojis();
+  const updated = [emoji, ...recent.filter(e => e !== emoji)].slice(0, 32);
+  localStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(updated));
+  return updated;
+}
 
 interface ChatMessage {
   id: string;
@@ -64,6 +260,15 @@ export function SlackChatPage() {
   const [messageText, setMessageText] = useState("");
   const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "info" } | null>(null);
 
+  // Emoji picker states
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const [emojiSearch, setEmojiSearch] = useState("");
+  const [activeEmojiCategory, setActiveEmojiCategory] = useState("smileys");
+  const [recentEmojis, setRecentEmojis] = useState<string[]>(loadRecentEmojis());
+  const [reactionPickerMsgId, setReactionPickerMsgId] = useState<string | null>(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const reactionPickerRef = useRef<HTMLDivElement>(null);
+
   // Modals
   const [assignTaskModalOpen, setAssignTaskModalOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("TikTok 9:16 Kinetic Teaser (Ver C)");
@@ -77,8 +282,22 @@ export function SlackChatPage() {
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Initial messages by channel
-  const [channelMessages, setChannelMessages] = useState<Record<string, ChatMessage[]>>({
+  // Close emoji pickers when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
+        setEmojiPickerOpen(false);
+      }
+      if (reactionPickerRef.current && !reactionPickerRef.current.contains(e.target as Node)) {
+        setReactionPickerMsgId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Default seed messages
+  const defaultMessages: Record<string, ChatMessage[]> = {
     "pod-a-general": [
       {
         id: "m-1",
@@ -108,7 +327,7 @@ export function SlackChatPage() {
         sender: "Chloe Tan",
         role: "Backup Motion & QA",
         avatar: "CT",
-        avatarBg: "bg-teal-600",
+        avatarBg: "bg-sky-600",
         content: "Standing by for spillover renders if Node #04 needs extra capacity. Ready for handoffs.",
         timestamp: "09:41 AM",
         reactions: [{ emoji: "❤️", count: 1, users: ["David Kim"] }],
@@ -143,7 +362,7 @@ export function SlackChatPage() {
         sender: "Sarah Jenkins (Client)",
         role: "Brand Director • Northwind Labs",
         avatar: "SJ",
-        avatarBg: "bg-gradient-to-br from-indigo-600 to-purple-600",
+        avatarBg: "bg-gradient-to-br from-blue-700 to-blue-500",
         content: "Hey Creo Pod! The Hero 3D visual loop is absolutely phenomenal. Our executive team loved the pacing!",
         timestamp: "10:12 AM",
         reactions: [
@@ -174,7 +393,33 @@ export function SlackChatPage() {
         reactions: [{ emoji: "👀", count: 2, users: ["Maya Lin", "David Kim"] }],
       },
     ],
+  };
+
+  // Initialize from localStorage or defaults — enables cross-tab/role sync
+  const [channelMessages, setChannelMessages] = useState<Record<string, ChatMessage[]>>(() => {
+    return loadMessagesFromStorage() || defaultMessages;
   });
+
+  // Sync messages TO localStorage whenever they change
+  useEffect(() => {
+    saveMessagesToStorage(channelMessages);
+  }, [channelMessages]);
+
+  // Listen for cross-tab storage events to sync chat in real-time
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === CHAT_STORAGE_KEY && e.newValue) {
+        try {
+          const updated = JSON.parse(e.newValue);
+          setChannelMessages(updated);
+        } catch { /* ignore */ }
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const showToast = (text: string, type: "success" | "info" = "success") => {
     setToastMessage({ text, type });
@@ -205,7 +450,7 @@ export function SlackChatPage() {
       currentPersona === "Maya Lin"
         ? "bg-blue-600"
         : currentPersona === "Sarah Jenkins (Client)"
-        ? "bg-gradient-to-br from-indigo-600 to-purple-600"
+        ? "bg-gradient-to-br from-blue-700 to-blue-500"
         : currentPersona === "Admin Operations"
         ? "bg-slate-900"
         : "bg-[#2563EB]";
@@ -239,6 +484,11 @@ export function SlackChatPage() {
   };
 
   const handleAddReaction = (msgId: string, emoji: string) => {
+    // Track recent emoji
+    const updatedRecent = saveRecentEmoji(emoji);
+    setRecentEmojis(updatedRecent);
+    setReactionPickerMsgId(null);
+
     setChannelMessages((prev) => {
       const msgs = prev[activeKey] || [];
       const updated = msgs.map((m) => {
@@ -273,6 +523,125 @@ export function SlackChatPage() {
       });
       return { ...prev, [activeKey]: updated };
     });
+  };
+
+  // Insert emoji into message text
+  const handleInsertEmoji = useCallback((emoji: string) => {
+    setMessageText((prev) => prev + emoji);
+    const updatedRecent = saveRecentEmoji(emoji);
+    setRecentEmojis(updatedRecent);
+  }, []);
+
+
+  // Build emoji picker render component
+  const renderEmojiPicker = (onSelect: (emoji: string) => void, position?: string) => {
+    const categoriesWithRecent = EMOJI_CATEGORIES.map(cat =>
+      cat.id === "recent" ? { ...cat, emojis: recentEmojis } : cat
+    );
+    const activeCategory = categoriesWithRecent.find(c => c.id === activeEmojiCategory) ?? categoriesWithRecent[1];
+    if (!activeCategory) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 8, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className={`absolute ${position || 'bottom-full mb-2'} z-[9999] w-[340px] sm:w-[380px] bg-[#161F2D] border border-[#2A3446] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden`}
+      >
+        {/* Search Bar */}
+        <div className="p-3 border-b border-[#2A3446]">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0B111C] border border-[#2A3446]/80">
+            <Search className="size-3.5 text-[#97A0B3] shrink-0" />
+            <input
+              type="text"
+              value={emojiSearch}
+              onChange={(e) => setEmojiSearch(e.target.value)}
+              placeholder="Search emojis..."
+              className="flex-1 bg-transparent text-xs font-medium placeholder:text-[#97A0B3] focus:outline-none text-white"
+              autoFocus
+            />
+            {emojiSearch && (
+              <button
+                onClick={() => setEmojiSearch("")}
+                className="text-[#97A0B3] hover:text-white"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-[#2A3446] overflow-x-auto scrollbar-hide">
+          {categoriesWithRecent.map((cat) => {
+            const IconComp = cat.icon;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  setActiveEmojiCategory(cat.id);
+                  setEmojiSearch("");
+                }}
+                className={`p-2 rounded-lg transition-all cursor-pointer shrink-0 ${
+                  activeEmojiCategory === cat.id
+                    ? "bg-[#2563EB] text-white"
+                    : "text-[#97A0B3] hover:bg-[#1F2C3F] hover:text-white"
+                }`}
+                title={cat.label}
+              >
+                <IconComp className="size-4" />
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Category Label */}
+        <div className="px-3 pt-2 pb-1">
+          <span className="text-[10px] font-black uppercase tracking-wider text-[#97A0B3]">
+            {activeCategory.label}
+          </span>
+        </div>
+
+        {/* Emoji Grid */}
+        <div className="h-[220px] overflow-y-auto px-2 pb-2">
+          {activeCategory.emojis.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-xs text-[#97A0B3]">
+              {activeEmojiCategory === "recent" ? "No recently used emojis yet" : "No emojis found"}
+            </div>
+          ) : (
+            <div className="grid grid-cols-8 gap-0.5">
+              {activeCategory.emojis.map((emoji, idx) => (
+                <button
+                  key={`${emoji}-${idx}`}
+                  onClick={() => {
+                    onSelect(emoji);
+                  }}
+                  className="size-10 rounded-lg hover:bg-[#1F2C3F] flex items-center justify-center text-xl transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  title={emoji}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Quick Access Bar */}
+        <div className="flex items-center gap-1 px-3 py-2 border-t border-[#2A3446] bg-[#0B111C]/60">
+          <span className="text-[10px] text-[#97A0B3] mr-1">Quick:</span>
+          {["👍", "❤️", "😂", "🔥", "🚀", "👏", "🎉", "💯", "👀", "✅"].map((emoji) => (
+            <button
+              key={emoji}
+              onClick={() => onSelect(emoji)}
+              className="size-7 rounded-md hover:bg-[#1F2C3F] flex items-center justify-center text-sm transition-all cursor-pointer hover:scale-110"
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+    );
   };
 
   const handleConfirmAssignTask = (e: React.FormEvent) => {
@@ -325,11 +694,11 @@ export function SlackChatPage() {
           <div
             className={`fixed top-20 right-4 sm:right-8 z-[9999] p-4 rounded-2xl border text-xs font-bold flex items-center gap-2 shadow-2xl animate-fade-in ${
               toastMessage.type === "info"
-                ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-blue-800"
-                : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-blue-300"
+                : "bg-blue-950/80 border-blue-800 text-blue-200"
             }`}
           >
-            <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="size-4 text-[#60A5FA] shrink-0" />
             <span>{toastMessage.text}</span>
             <button onClick={() => setToastMessage(null)} className="ml-2 text-current opacity-70 hover:opacity-100">
               &times;
@@ -351,7 +720,7 @@ export function SlackChatPage() {
                 <span className="font-black text-sm text-white tracking-tight">Creo Slack Hub</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-[#60A5FA] border border-blue-500/30">
                   Live Pod A
                 </span>
                 {mobileView === "channels" && (
@@ -392,7 +761,7 @@ export function SlackChatPage() {
             {/* Quick Task Assign Button in Sidebar */}
             <button
               onClick={() => setAssignTaskModalOpen(true)}
-              className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 text-white font-black text-xs shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
+              className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 hover:brightness-110 text-white font-black text-xs shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
             >
               <Plus className="size-4" />
               Assign Task in Chat
@@ -439,9 +808,9 @@ export function SlackChatPage() {
 
               {[
                 { name: "Maya Lin", role: "Pod Lead", avatar: "ML", bg: "bg-blue-600", online: true },
-                { name: "Chloe Tan", role: "Backup QA", avatar: "CT", bg: "bg-teal-600", online: true },
+                { name: "Chloe Tan", role: "Backup QA", avatar: "CT", bg: "bg-blue-700", online: true },
                 { name: "Marcus Vance", role: "Copy Lead", avatar: "MV", bg: "bg-slate-700", online: false },
-                { name: "Sarah Jenkins", role: "Client Lead", avatar: "SJ", bg: "bg-purple-600", online: true },
+                { name: "Sarah Jenkins", role: "Client Lead", avatar: "SJ", bg: "bg-blue-600", online: true },
               ].map((dm) => (
                 <button
                   key={dm.name}
@@ -462,7 +831,7 @@ export function SlackChatPage() {
                     <span className="truncate text-xs">{dm.name}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className={`size-2 rounded-full ${dm.online ? "bg-emerald-400" : "bg-slate-600"}`} />
+                    <span className={`size-2 rounded-full ${dm.online ? "bg-[#60A5FA]" : "bg-slate-600"}`} />
                     <ChevronRight className="size-3.5 opacity-40 md:hidden text-[#97A0B3]" />
                   </div>
                 </button>
@@ -477,8 +846,8 @@ export function SlackChatPage() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-black text-white truncate">{currentPersona}</div>
-              <div className="text-[10px] text-emerald-400 flex items-center gap-1">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="text-[10px] text-[#60A5FA] flex items-center gap-1">
+                <span className="size-1.5 rounded-full bg-[#60A5FA] animate-pulse" />
                 Active in workspace
               </div>
             </div>
@@ -582,7 +951,7 @@ export function SlackChatPage() {
                         <span
                           className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
                             msg.taskData.priority === "P1 High"
-                              ? "bg-rose-100 text-rose-700 border border-rose-200"
+                              ? "bg-blue-900/60 text-[#93C5FD] border border-blue-500/40"
                               : "bg-[#7FA0D6]/20 text-[#7FA0D6]"
                           }`}
                         >
@@ -668,6 +1037,29 @@ export function SlackChatPage() {
                       {emoji}
                     </button>
                   ))}
+                  {/* Open full emoji picker for reactions */}
+                  <div className="relative" ref={reactionPickerMsgId === msg.id ? reactionPickerRef : undefined}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setReactionPickerMsgId(reactionPickerMsgId === msg.id ? null : msg.id);
+                      }}
+                      className="size-7 hover:bg-blue-500/20 rounded-lg flex items-center justify-center text-xs transition-colors cursor-pointer text-[#97A0B3] hover:text-[#60A5FA]"
+                      title="More reactions"
+                    >
+                      <Smile className="size-3.5" />
+                    </button>
+                    <AnimatePresence>
+                      {reactionPickerMsgId === msg.id && (
+                        <div ref={reactionPickerRef}>
+                          {renderEmojiPicker(
+                            (emoji) => handleAddReaction(msg.id, emoji),
+                            "top-full mt-2 right-0"
+                          )}
+                        </div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
             ))}
@@ -694,10 +1086,35 @@ export function SlackChatPage() {
                 className="flex-1 bg-transparent text-xs font-medium placeholder:text-[#97A0B3] focus:outline-none px-1.5 sm:px-2 min-w-0"
               />
 
+              {/* Emoji Picker Button */}
+              <div className="relative" ref={emojiPickerRef}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmojiPickerOpen(!emojiPickerOpen);
+                    setEmojiSearch("");
+                  }}
+                  className={`p-1 sm:p-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+                    emojiPickerOpen
+                      ? "text-[#60A5FA] bg-blue-500/15"
+                      : "text-[#97A0B3] hover:text-[#F1F5F9] hover:bg-[#1F2C3F]"
+                  }`}
+                  title="Open Emoji Picker"
+                >
+                  <Smile className="size-4 sm:size-[18px]" />
+                </button>
+
+                <AnimatePresence>
+                  {emojiPickerOpen && renderEmojiPicker((emoji) => {
+                    handleInsertEmoji(emoji);
+                  }, "bottom-full mb-2 right-0")}
+                </AnimatePresence>
+              </div>
+
               <button
                 type="button"
                 onClick={() => showToast("Simulated file upload attached!", "info")}
-                className="p-1 sm:p-1.5 text-[#97A0B3] hover:text-[#F1F5F9] rounded-lg hover:bg-slate-200/60 transition-colors cursor-pointer shrink-0"
+                className="p-1 sm:p-1.5 text-[#97A0B3] hover:text-[#F1F5F9] rounded-lg hover:bg-[#1F2C3F] transition-colors cursor-pointer shrink-0"
                 title="Attach File"
               >
                 <Paperclip className="size-3.5 sm:size-4" />

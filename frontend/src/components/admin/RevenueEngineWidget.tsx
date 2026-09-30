@@ -157,8 +157,8 @@ export function RevenueEngineWidget({ kpis, clients: _clients }: RevenueEngineWi
                 {displayRevenue} <span className="text-[10px] text-[#97A0B3] font-normal">/ mo</span>
               </div>
               <div className="text-[11px] font-bold text-[#7FA0D6] mt-1 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400">+14.2% Growth</span>
+                <TrendingUp className="w-3.5 h-3.5 text-[#60A5FA]" />
+                <span className="text-[#60A5FA]">+14.2% Growth</span>
                 <span>· {displayClients} Retainers</span>
               </div>
             </div>

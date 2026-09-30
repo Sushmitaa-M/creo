@@ -216,10 +216,10 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full space-y-6 pb-12"
+      className="w-full space-y-4 sm:space-y-5 pb-6 sm:pb-8"
     >
       {/* Header Container */}
-      <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="rounded-xl border border-[#2A3446] bg-[#161F2D] p-4 sm:p-6 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-[11px] font-extrabold uppercase tracking-widest mb-3">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />

@@ -34,7 +34,7 @@ function ProgressStepper({
   return (
     <div className="w-full mb-4 sm:mb-5">
       {/* Stepper Card */}
-      <div className="relative bg-[#161F2D] rounded-2xl shadow-xl border border-[#2A3446] px-3 sm:px-8 py-3.5">
+      <div className="relative bg-[#161F2D] rounded-xl shadow-xl border border-[#2A3446] px-2.5 sm:px-7 py-3.5 sm:py-4">
         <div className="flex items-start justify-between relative">
 
           {/* Background track line - mathematically centered between step 1 (10%) and step 5 (90%) */}
@@ -97,7 +97,7 @@ function ProgressStepper({
                     }`}>
                       Step {s.step}
                     </p>
-                    <p className={`text-xs font-semibold transition-colors truncate px-0.5 ${
+                    <p className={`text-[11px] sm:text-xs font-semibold transition-colors truncate px-0.5 ${
                       isActive
                         ? "text-white font-bold"
                         : isDone
@@ -185,7 +185,7 @@ function StageVerifyEmail({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
-      className="max-w-xl mx-auto rounded-2xl border border-[#2A3446] bg-[#161F2D] p-8 sm:p-12 shadow-xl text-center"
+      className="w-full max-w-xl mx-auto rounded-xl border border-[#2A3446] bg-[#161F2D] p-5 sm:p-8 shadow-xl text-center"
     >
       <div className="size-14 mx-auto mb-4 rounded-2xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-center text-[#7FA0D6]">
         {verifiedSuccess ? (
@@ -447,7 +447,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   }
 
   return (
-    <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col items-center pb-6">
+    <div className="w-full max-w-6xl mx-auto flex flex-col items-center pb-4 sm:pb-6">
       {/* Visual Stepper */}
       <ProgressStepper
         activeStep={currentStep}

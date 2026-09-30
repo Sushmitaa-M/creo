@@ -818,9 +818,9 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   }
 
   return (
-    <div ref={formTopRef} className="w-full space-y-6 onboarding-dark-canvas" style={{ colorScheme: "dark" }}>
+    <div ref={formTopRef} className="w-full space-y-4 sm:space-y-5 onboarding-dark-canvas" style={{ colorScheme: "dark" }}>
       {/* Header Banner */}
-      <div className="bg-[#161F2D] rounded-2xl p-6 sm:p-7 text-white shadow-xl relative overflow-hidden border border-[#2A3446]">
+      <div className="bg-[#161F2D] rounded-xl p-4 sm:p-6 text-white shadow-xl relative overflow-hidden border border-[#2A3446]">
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#7FA0D6] mb-1">
@@ -979,7 +979,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
       )}
 
       {/* Main Section Content Form (Full dark theme, high contrast) */}
-      <div className="bg-[#161F2D] rounded-2xl border border-[#2A3446] p-6 sm:p-8 shadow-xl text-white" style={{ colorScheme: "dark" }}>
+      <div className="bg-[#161F2D] rounded-xl border border-[#2A3446] p-4 sm:p-6 shadow-xl text-white" style={{ colorScheme: "dark" }}>
         
         {/* SECTION A: BRAND IDENTITY */}
         {activeSection === "a" && (

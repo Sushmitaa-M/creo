@@ -6,24 +6,60 @@ import {
 import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../../lib/auth-context";
 
+const PENDING_REGISTRATION_KEY = "creo_pending_registration";
+
+interface PendingRegistration {
+  email: string;
+  fullName: string;
+  expiresAt: number;
+}
+
+function readPendingRegistration(): PendingRegistration | null {
+  try {
+    const raw = sessionStorage.getItem(PENDING_REGISTRATION_KEY);
+    if (!raw) return null;
+    const pending = JSON.parse(raw) as PendingRegistration;
+    if (!pending.email || pending.expiresAt <= Date.now()) {
+      sessionStorage.removeItem(PENDING_REGISTRATION_KEY);
+      return null;
+    }
+    return pending;
+  } catch {
+    return null;
+  }
+}
+
+function writePendingRegistration(email: string, fullName: string): void {
+  sessionStorage.setItem(PENDING_REGISTRATION_KEY, JSON.stringify({
+    email,
+    fullName,
+    expiresAt: Date.now() + 10 * 60_000,
+  } satisfies PendingRegistration));
+}
+
+function clearPendingRegistration(): void {
+  sessionStorage.removeItem(PENDING_REGISTRATION_KEY);
+}
+
 export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { loginWithPassword, registerIntent, verifyRegistration, getGoogleAuthUrl, forgotPassword } = useAuth();
+  const { loginWithPassword, registerIntent, resendRegistration, verifyRegistration, getGoogleAuthUrl, forgotPassword } = useAuth();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const initialMode = location.pathname === "/signup" || defaultView === "signup" ? "signup" : "signin";
+  const initialPending = initialMode === "signup" ? readPendingRegistration() : null;
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
   const [rememberMe, setRememberMe] = useState(initialMode === "signin");
 
   // Controlled form state
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialPending?.email || "");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [registrationPending, setRegistrationPending] = useState(false);
+  const [fullName, setFullName] = useState(initialPending?.fullName || "");
+  const [registrationPending, setRegistrationPending] = useState(Boolean(initialPending));
   const [otpCode, setOtpCode] = useState("");
 
   // Forgot password modal state
@@ -82,6 +118,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
       } else {
         // Move to the OTP surface immediately; delivery continues in this request.
         setRegistrationPending(true);
+        writePendingRegistration(cleanEmail, cleanName);
         await registerIntent(cleanEmail, cleanPass, cleanName);
       }
     } catch (err: any) {
@@ -102,7 +139,8 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
     try {
       setLoading(true);
       setError(null);
-      await verifyRegistration(email.trim(), otpCode, password.trim(), fullName.trim());
+      await verifyRegistration(email.trim(), otpCode, password.trim() || undefined, fullName.trim());
+      clearPendingRegistration();
       navigate("/portal", { replace: true });
     } catch (err: any) {
       setError(err.message || "The verification code is invalid or has expired.");
@@ -115,7 +153,12 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
     try {
       setLoading(true);
       setError(null);
-      await registerIntent(email.trim(), password.trim(), fullName.trim());
+      if (password.trim()) {
+        await registerIntent(email.trim(), password.trim(), fullName.trim());
+      } else {
+        await resendRegistration(email.trim());
+      }
+      writePendingRegistration(email.trim(), fullName.trim());
       setOtpCode("");
     } catch (err: any) {
       setError(err.message || "Unable to resend the verification code.");
@@ -285,6 +328,8 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                   type="button"
                   onClick={() => {
                     setMode("signin");
+                    setRegistrationPending(false);
+                    clearPendingRegistration();
                     setRememberMe(true);
                     setError(null);
                     navigate("/login", { replace: true });
@@ -380,6 +425,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                         setRegistrationPending(false);
                         setOtpCode("");
                         setError(null);
+                        clearPendingRegistration();
                       }}
                       className="text-[#97A0B3] hover:text-white transition-colors disabled:opacity-50"
                     >

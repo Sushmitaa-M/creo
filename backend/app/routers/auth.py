@@ -38,6 +38,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # Ephemeral in-memory OTP storage: key -> [code, expiry_timestamp, attempts]
 _otp_store: dict[str, list[Any]] = {}
+_pending_registration_store: dict[str, dict[str, str]] = {}
 
 # Ephemeral rate limiting store: key -> list of timestamp floats
 _rate_limits: dict[str, list[float]] = {}
@@ -45,6 +46,51 @@ _rate_limits: dict[str, list[float]] = {}
 
 def _otp_redis_key(key: str) -> str:
     return f"auth:otp:{key}"
+
+
+def _registration_redis_key(email: str) -> str:
+    return f"auth:registration:{email}"
+
+
+async def _save_pending_registration(email: str, value: dict[str, str]) -> None:
+    _pending_registration_store[email] = value
+    try:
+        redis = await get_redis()
+        await redis.setex(_registration_redis_key(email), 600, json.dumps(value))
+    except Exception as exc:
+        if settings.ENVIRONMENT == "production":
+            logger.error("registration_store_unavailable", error=str(exc))
+            raise HTTPException(
+                status_code=503,
+                detail="Verification service is temporarily unavailable.",
+            ) from exc
+
+
+async def _load_pending_registration(email: str) -> dict[str, str] | None:
+    try:
+        redis = await get_redis()
+        raw = await redis.get(_registration_redis_key(email))
+        if raw:
+            value = json.loads(raw)
+            return value if isinstance(value, dict) else None
+    except Exception as exc:
+        if settings.ENVIRONMENT == "production":
+            logger.error("registration_store_unavailable", error=str(exc))
+            raise HTTPException(
+                status_code=503,
+                detail="Verification service is temporarily unavailable.",
+            ) from exc
+    return _pending_registration_store.get(email)
+
+
+async def _delete_pending_registration(email: str) -> None:
+    _pending_registration_store.pop(email, None)
+    try:
+        redis = await get_redis()
+        await redis.delete(_registration_redis_key(email))
+    except Exception as exc:
+        if settings.ENVIRONMENT == "production":
+            logger.warning("registration_delete_failed", error=str(exc))
 
 
 async def _save_otp(key: str, value: list[Any]) -> None:
@@ -142,8 +188,12 @@ class RegisterIntentRequest(BaseModel):
 class VerifyRegistrationRequest(BaseModel):
     email: EmailStr
     code: str = Field(..., min_length=4, max_length=8)
-    password: str = Field(..., min_length=8, max_length=128)
+    password: str | None = Field(default=None, min_length=8, max_length=128)
     full_name: str | None = None
+
+
+class ResendRegistrationRequest(BaseModel):
+    email: EmailStr
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -198,13 +248,56 @@ async def register_intent(
     # Generate cryptographically secure 6-digit OTP
     otp_code = f"{secrets.randbelow(900000) + 100000}"
     expires_at = time.time() + 600.0  # 10 minutes
+    pending_registration = {
+        "password_hash": hash_password(payload.password),
+        "full_name": payload.full_name or email_clean.split("@")[0].capitalize(),
+    }
     await _deliver_otp_or_raise(email_clean, otp_code)
     await _save_otp(f"reg:{email_clean}", [otp_code, expires_at, 0])
+    await _save_pending_registration(email_clean, pending_registration)
 
     return {
         "status": "sent",
         "email": email_clean,
         "message": "Verification code sent to email. Please verify to complete account creation.",
+        "email_delivered": True,
+        "expires_in_seconds": 600,
+    }
+
+
+@router.post("/resend-registration", response_model=dict[str, Any])
+async def resend_registration(
+    payload: ResendRegistrationRequest,
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
+    """Resend registration OTP without requiring the password after refresh."""
+    email_clean = payload.email.strip().lower()
+    if not _check_rate_limit(f"reg_resend:{email_clean}", max_requests=5, window_seconds=600):
+        raise HTTPException(
+            status_code=429,
+            detail="Too many resend attempts. Please wait a few minutes.",
+        )
+
+    pending = await _load_pending_registration(email_clean)
+    if not pending:
+        raise HTTPException(
+            status_code=400,
+            detail="Registration session expired. Please enter your details again.",
+        )
+
+    existing = await db.execute(select(User.id).where(func.lower(User.email) == email_clean))
+    if existing.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="This account already exists. Please sign in.")
+
+    otp_code = f"{secrets.randbelow(900000) + 100000}"
+    expires_at = time.time() + 600.0
+    await _deliver_otp_or_raise(email_clean, otp_code)
+    await _save_otp(f"reg:{email_clean}", [otp_code, expires_at, 0])
+    await _save_pending_registration(email_clean, pending)
+    return {
+        "status": "sent",
+        "email": email_clean,
+        "message": "A new verification code was sent to your email.",
         "email_delivered": True,
         "expires_in_seconds": 600,
     }
@@ -219,6 +312,7 @@ async def verify_registration(
     email_clean = payload.email.strip().lower()
     store_key = f"reg:{email_clean}"
     stored = await _load_otp(store_key)
+    pending_registration = await _load_pending_registration(email_clean)
 
     if not stored:
         raise HTTPException(status_code=400, detail="No active verification code found for this email. Please request a new code.")
@@ -236,12 +330,20 @@ async def verify_registration(
     if stored[0] != payload.code.strip():
         raise HTTPException(status_code=400, detail="Invalid verification code. Please check the code sent to your email.")
 
-    await _delete_otp(store_key)
-
-    # Validate password strength
-    valid, err = validate_password_strength(payload.password)
-    if not valid:
-        raise HTTPException(status_code=400, detail=err)
+    if pending_registration:
+        hashed_pw = pending_registration.get("password_hash", "")
+        resolved_name = pending_registration.get("full_name") or email_clean.split("@")[0].capitalize()
+    else:
+        if not payload.password:
+            raise HTTPException(
+                status_code=400,
+                detail="Registration session expired. Please enter your details again.",
+            )
+        valid, err = validate_password_strength(payload.password)
+        if not valid:
+            raise HTTPException(status_code=400, detail=err)
+        hashed_pw = hash_password(payload.password)
+        resolved_name = payload.full_name or email_clean.split("@")[0].capitalize()
 
     stmt = select(User).where(func.lower(User.email) == email_clean)
     res = await db.execute(stmt)
@@ -262,11 +364,10 @@ async def verify_registration(
                 raise HTTPException(403, "Agency account is past due. New client registration is blocked.")
             # Could also enforce client limits here, but we have capacity_service
             
-    hashed_pw = hash_password(payload.password)
     user = User(
         auth_id=f"auth-pwd-{uuid.uuid4().hex[:12]}",
         email=email_clean,
-        full_name=payload.full_name or email_clean.split("@")[0].capitalize(),
+        full_name=resolved_name,
         hashed_password=hashed_pw,
         role=assigned_role,
         account_status=AccountStatus.ACTIVE,
@@ -281,6 +382,8 @@ async def verify_registration(
     db.add(profile)
     await db.commit()
     await db.refresh(user)
+    await _delete_otp(store_key)
+    await _delete_pending_registration(email_clean)
 
     access_token = create_access_token(
         subject=user.id,

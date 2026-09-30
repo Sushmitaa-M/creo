@@ -25,7 +25,7 @@ export function PortalLayout() {
         {/* Main Content Area: Offset on desktop to sit beside the permanent sidebar */}
         <div className="flex-1 min-w-0 md:pl-64 lg:pl-72 flex flex-col min-h-screen">
           {/* Top Header with Hamburger (mobile), Page Title, Notification Bell & Profile */}
-          <AdminTopHeader />
+          <AdminTopHeader showBackButton />
 
           {/* Main Content Area */}
           <main

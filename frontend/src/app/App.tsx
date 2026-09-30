@@ -301,6 +301,17 @@ function ScrollToTop() {
   return null;
 }
 
+function SupportRedirect() {
+  const { user } = useAuth();
+  if (user?.role === "admin" || user?.role === "super_admin") {
+    return <Navigate to="/admin/support" replace />;
+  }
+  if (user) {
+    return <Navigate to="/portal/support" replace />;
+  }
+  return <Navigate to="/faq" replace />;
+}
+
 export function App() {
   return (
     <AuthProvider>
@@ -309,6 +320,9 @@ export function App() {
           <ScrollToTop />
           <Suspense fallback={<RouteLoading />}>
             <Routes>
+              {/* Universal Support Redirect */}
+              <Route path="/support" element={<SupportRedirect />} />
+
               {/* 1. Public Marketing Pages (Open to All) */}
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<HomePage />} />

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Download, Loader2 } from "lucide-react";
+import { Link } from "react-router";
+import { Download, Loader2, CreditCard, ArrowRight, LifeBuoy } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../lib/auth-context";
 import { request } from "../../lib/http";
@@ -95,20 +96,33 @@ export function PortalPaymentsPage() {
     alert("Compare plans modal will open here.");
   };
 
-  if (isSetupIncomplete && dashboard) {
+  if (isSetupIncomplete && dashboard && !subData?.subscription) {
     return (
       <div className="flex items-center justify-center min-h-[70vh]">
-        <div className="text-center max-w-md bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-8">
-          <h2 className="text-xl font-bold text-white mb-2">Complete Your Setup</h2>
-          <p className="text-sm text-[#9CA3AF] mb-6">
-            You need to finish the onboarding process before you can fully access and manage your plans and billing.
+        <div className="text-center max-w-md bg-[#161C2D] border border-white/[0.08] rounded-3xl p-8 shadow-2xl space-y-4">
+          <div className="size-12 mx-auto rounded-2xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center font-bold">
+            <CreditCard className="size-6" />
+          </div>
+          <h2 className="text-xl font-bold text-white tracking-tight">Production Plan Setup Required</h2>
+          <p className="text-xs text-[#9CA3AF] leading-relaxed">
+            Select a creative plan or complete your account onboarding to activate automated invoices, quotas, and production deliverables.
           </p>
-          <a
-            href="/onboarding"
-            className="inline-flex items-center justify-center w-full px-5 py-3 rounded-xl bg-white text-[#0E1420] text-[13px] font-bold hover:bg-white/90 transition-colors"
-          >
-            Resume Onboarding
-          </a>
+          <div className="pt-2 flex flex-col gap-2.5">
+            <Link
+              to="/onboarding?step=3"
+              className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-white text-[#0E1420] text-xs font-bold hover:bg-white/90 transition-colors shadow-sm"
+            >
+              <span>Choose Production Plan (Step 3)</span>
+              <ArrowRight className="size-3.5" />
+            </Link>
+            <Link
+              to="/portal/support"
+              className="inline-flex items-center justify-center gap-2 w-full px-5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-[#97A0B3] text-xs font-bold hover:text-white transition-colors"
+            >
+              <LifeBuoy className="size-3.5 text-[#7FA0D6]" />
+              <span>Contact Support Desk</span>
+            </Link>
+          </div>
         </div>
       </div>
     );

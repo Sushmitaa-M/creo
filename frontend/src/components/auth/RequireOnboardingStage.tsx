@@ -35,9 +35,11 @@ export function RequireOnboardingStage({ children }: RequireOnboardingStageProps
     return <CreoLoadingScreen label="Checking onboarding stage..." />;
   }
 
-  // If already complete, forward to portal
+  // If already complete AND subscription is active, forward to portal.
+  // If subscription is inactive/expired, allow access to choose a plan or renew without infinite loops.
   const isComplete = Boolean(status?.is_complete || (status && status.stage >= 8) || status?.checklist?.onboarding_completed);
-  if (isClient && isComplete) {
+  const isSubActive = Boolean(status?.checklist?.subscription_active);
+  if (isClient && isComplete && isSubActive) {
     return <Navigate to="/portal" replace />;
   }
 

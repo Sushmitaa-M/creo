@@ -59,12 +59,22 @@ export function SubscriptionLockedState({
   let statusBadgeColor = "bg-amber-500/15 text-amber-300 border-amber-500/30";
 
   if (!isPaid) {
-    resumeRoute = "/onboarding?step=3";
-    resumeLabel = "Choose Production Plan (Step 3)";
-    statusBadge = "Retainer Subscription Required";
-    statusBadgeColor = "bg-amber-500/15 text-amber-300 border-amber-500/30";
-    if (!description) {
-      dynamicDescription = "An active creative retainer is required to activate your dedicated creative pod. Choose a plan or book a negotiation call with our leadership to set custom rates.";
+    if (isComplete) {
+      resumeRoute = "/portal/payments";
+      resumeLabel = "Renew Retainer in Plans & Billing";
+      statusBadge = "Retainer Renewal Required";
+      statusBadgeColor = "bg-amber-500/15 text-amber-300 border-amber-500/30";
+      if (!description) {
+        dynamicDescription = "Your creative retainer is expired or awaiting renewal. Renew your subscription in Plans & Billing or contact your dedicated pod to reactivate content production.";
+      }
+    } else {
+      resumeRoute = "/onboarding?step=3";
+      resumeLabel = "Choose Production Plan (Step 3)";
+      statusBadge = "Retainer Subscription Required";
+      statusBadgeColor = "bg-amber-500/15 text-amber-300 border-amber-500/30";
+      if (!description) {
+        dynamicDescription = "An active creative retainer is required to activate your dedicated creative pod. Choose a plan or book a negotiation call with our leadership to set custom rates.";
+      }
     }
   } else if (!isQuestionnaireDone || stage === 3) {
     resumeRoute = "/onboarding/questionnaire";
@@ -214,6 +224,21 @@ export function SubscriptionLockedState({
               <LifeBuoy className="size-4 text-[#7FA0D6]" />
               <span>Need help? Contact Support</span>
             </button>
+          </div>
+
+          {/* Quick Navigation Links to Prevent Getting Trapped */}
+          <div className="flex items-center justify-center gap-3 pt-3 border-t border-[#2A3446]/60 w-full text-xs text-[#97A0B3]">
+            <Link to="/portal" className="hover:text-white transition-colors underline-offset-4 hover:underline">
+              Dashboard
+            </Link>
+            <span>•</span>
+            <Link to="/portal/payments" className="hover:text-white transition-colors underline-offset-4 hover:underline">
+              Plans & Billing
+            </Link>
+            <span>•</span>
+            <Link to="/portal/support" className="hover:text-white transition-colors underline-offset-4 hover:underline">
+              Support Desk
+            </Link>
           </div>
         </div>
       </div>

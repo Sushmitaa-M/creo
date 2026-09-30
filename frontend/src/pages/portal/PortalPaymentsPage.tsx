@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Download, Loader2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { Download, Loader2, PauseCircle, CheckCircle2 } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../lib/auth-context";
 import { request } from "../../lib/http";
 import { openRazorpayCheckout } from "../../lib/razorpay";
 import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { ResumeOnboardingBanner } from "../../components/portal/ResumeOnboardingBanner";
+import { PausePlanModal } from "../../components/portal/PausePlanModal";
+import { ComparePlansModal } from "../../components/portal/ComparePlansModal";
+import { PlanBargainCallModal } from "../../components/portal/PlanBargainCallModal";
 
 interface SubscriptionData {
   status: string;
@@ -16,10 +19,17 @@ interface SubscriptionData {
 
 export function PortalPaymentsPage() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [downloadingInv, setDownloadingInv] = useState<string | null>(null);
   const [processingAddon, setProcessingAddon] = useState<string | null>(null);
+  const [pauseModalOpen, setPauseModalOpen] = useState(false);
+  const [compareModalOpen, setCompareModalOpen] = useState(false);
+  const [negotiateModalOpen, setNegotiateModalOpen] = useState(false);
+  const [negotiateTopic, setNegotiateTopic] = useState("Custom Pricing / Retainer Discount");
+  const [resumingSub, setResumingSub] = useState(false);
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
 
-  const { data: subData } = useQuery<{ subscription?: SubscriptionData }>({
+  const { data: subData } = useQuery<{ subscription?: SubscriptionData; is_paused_next_month?: boolean }>({
     queryKey: ["client-subscription", user?.id],
     queryFn: () => request<any>("/api/v1/payments/subscription"),
     enabled: !!user?.id,
@@ -34,6 +44,8 @@ export function PortalPaymentsPage() {
   const renewalDate = subData?.subscription?.current_period_end 
     ? new Date(subData.subscription.current_period_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase()
     : "NEXT BILLING CYCLE";
+
+  const isPausedNextMonth = !!(subData as any)?.is_paused_next_month;
 
   const addons = [
     { id: "extra_reel", name: "Extra reel", desc: "Delivered within this batch", price: 4500 },
@@ -76,7 +88,10 @@ export function PortalPaymentsPage() {
           order_id: "addon_" + addon.id + "_" + Date.now(),
           prefill: { name: user?.full_name || "", email: user?.email || "" }
         },
-        () => alert(`Successfully added ${addon.name} to this cycle!`),
+        () => {
+          setActionNotice(`Successfully added ${addon.name} to this cycle!`);
+          setTimeout(() => setActionNotice(null), 4000);
+        },
         () => {}
       );
     }, 600);
@@ -87,12 +102,22 @@ export function PortalPaymentsPage() {
     setTimeout(() => setDownloadingInv(null), 1200);
   };
 
-  const handleComparePlans = () => {
-    alert("Compare plans modal will open here.");
+  const handleResumePlan = async () => {
+    try {
+      setResumingSub(true);
+      await request("/api/v1/payments/subscription/resume", { method: "POST" });
+      queryClient.invalidateQueries({ queryKey: ["client-subscription", user?.id] });
+      setActionNotice("Subscription resumed! Your next cycle will renew automatically.");
+      setTimeout(() => setActionNotice(null), 4000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to resume subscription.";
+      alert(msg);
+    } finally {
+      setResumingSub(false);
+    }
   };
 
   // No plan yet: show where to resume instead of placeholder plan figures.
-  // Clients with an existing (e.g. expired) subscription still see billing so they can renew.
   if (!gate.isPaid && !subData?.subscription) {
     return (
       <div className="space-y-6 pb-12">
@@ -113,33 +138,90 @@ export function PortalPaymentsPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6 pb-12">
-      {/* ── Header ── */}
+      {/* Action Toast / Confirmation Notice */}
+      {actionNotice && (
+        <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-700/60 text-emerald-300 text-xs font-semibold flex items-center gap-2.5 animate-[fadeIn_0.2s_ease-out]">
+          <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
+          <span>{actionNotice}</span>
+        </div>
+      )}
+
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <p className="text-[11px] uppercase font-bold tracking-[0.16em] text-[#7E889C] mb-2">
-            {planName} PLAN · RENEWS {renewalDate}
+            {planName} PLAN • RENEWS {renewalDate}
           </p>
           <h1 className="text-3xl font-bold text-white tracking-tight">Plan & billing</h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button 
-            onClick={handleComparePlans}
-            className="px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors"
+            type="button"
+            onClick={() => setCompareModalOpen(true)}
+            className="px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors cursor-pointer"
           >
             Compare plans
           </button>
-          <button className="px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors">
-            Pause next month
-          </button>
+          
+          {isPausedNextMonth ? (
+            <button
+              type="button"
+              onClick={handleResumePlan}
+              disabled={resumingSub}
+              className="px-5 py-2.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-[13px] font-bold text-amber-300 hover:bg-amber-500/20 transition-all flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+            >
+              {resumingSub ? (
+                <Loader2 className="size-4 animate-spin text-amber-400" />
+              ) : (
+                <PauseCircle className="size-4 text-amber-400" />
+              )}
+              <span>Paused for next cycle • Click to resume</span>
+            </button>
+          ) : (
+            <button 
+              type="button"
+              onClick={() => setPauseModalOpen(true)}
+              className="px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] hover:border-amber-500/40 transition-colors cursor-pointer"
+            >
+              Pause next month
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Paid but onboarding unfinished: same resume steps as the dashboard */}
+      {/* Paused for Next Month Notice Banner */}
+      {isPausedNextMonth && (
+        <div className="rounded-2xl border border-amber-600/40 bg-amber-950/25 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-amber-200 shadow-sm animate-[fadeIn_0.2s_ease-out]">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="size-9 rounded-xl bg-amber-900/40 border border-amber-600/50 flex items-center justify-center shrink-0 text-amber-400">
+              <PauseCircle className="size-5" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-amber-300">
+                Subscription renewal scheduled to pause on {renewalDate}
+              </p>
+              <p className="text-xs text-amber-200/80 mt-0.5 leading-relaxed">
+                Your current {planName} deliverables remain 100% active until {renewalDate}. AutoPay renewal charge will not occur next month.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleResumePlan}
+            disabled={resumingSub}
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-[#0B111C] text-xs font-bold transition-colors shrink-0 cursor-pointer disabled:opacity-50"
+          >
+            {resumingSub ? "Resuming..." : "Resume Renewal"}
+          </button>
+        </div>
+      )}
+
+      {/* Paid but onboarding unfinished */}
       <ResumeOnboardingBanner variant="hero" title="Your plan is active — finish setup to start production" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* ── Top Left: Current Plan ── */}
+        {/* Top Left: Current Plan */}
         <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8 flex flex-col justify-between">
           <div className="flex justify-between items-start mb-10">
             <div>
@@ -150,13 +232,11 @@ export function PortalPaymentsPage() {
             </div>
             <div className="text-right">
               <h2 className="text-3xl font-bold text-white">₹{planPrice.toLocaleString('en-IN')}</h2>
-              <p className="text-xs text-[#97A0B3] mt-1">per month · ₹{costPerAsset.toLocaleString('en-IN')} per asset</p>
+              <p className="text-xs text-[#97A0B3] mt-1">per month • ₹{costPerAsset.toLocaleString('en-IN')} per asset</p>
             </div>
           </div>
 
           <div className="space-y-6 mb-8">
-
-
             {usageBars.map(item => (
               <div key={item.label}>
                 <div className="flex items-center justify-between mb-2">
@@ -171,11 +251,11 @@ export function PortalPaymentsPage() {
           </div>
 
           <p className="text-xs text-[#7E889C] font-medium leading-relaxed">
-            2 revision rounds per asset · 2 business-day batch SLA · dedicated account director
+            2 revision rounds per asset • 2 business-day batch SLA • dedicated account director
           </p>
         </div>
 
-        {/* ── Top Right: Add to this cycle ── */}
+        {/* Top Right: Add to this cycle */}
         <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8">
           <h3 className="text-sm font-bold text-white mb-6">Add to this cycle</h3>
           <div className="divide-y divide-white/[0.05]">
@@ -190,7 +270,7 @@ export function PortalPaymentsPage() {
                   <button 
                     onClick={() => handleAddon(addon)}
                     disabled={!!processingAddon}
-                    className="px-5 py-2 rounded-full bg-[#BCCCE6] text-[#0B111C] text-[13px] font-bold hover:bg-white transition-colors w-20 flex items-center justify-center disabled:opacity-50"
+                    className="px-5 py-2 rounded-full bg-[#BCCCE6] text-[#0B111C] text-[13px] font-bold hover:bg-white transition-colors w-20 flex items-center justify-center disabled:opacity-50 cursor-pointer"
                   >
                     {processingAddon === addon.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Add"}
                   </button>
@@ -200,7 +280,7 @@ export function PortalPaymentsPage() {
           </div>
         </div>
 
-        {/* ── Bottom Left: Invoices ── */}
+        {/* Bottom Left: Invoices */}
         <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8">
           <h3 className="text-sm font-bold text-white mb-6">Invoices</h3>
           <div className="overflow-x-auto scrollbar-hide">
@@ -235,7 +315,7 @@ export function PortalPaymentsPage() {
                       <td className="py-4 text-right">
                         <button 
                           onClick={() => handleDownload(inv.id)}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors cursor-pointer"
                         >
                           {downloadingInv === inv.id ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5" />}
                           GST invoice
@@ -249,7 +329,7 @@ export function PortalPaymentsPage() {
           </div>
         </div>
 
-        {/* ── Bottom Right: Payment method ── */}
+        {/* Bottom Right: Payment method */}
         <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8 flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-bold text-white mb-6">Payment method</h3>
@@ -257,11 +337,11 @@ export function PortalPaymentsPage() {
             <div className="space-y-4 mb-8">
               <div className="flex items-center justify-between">
                 <span className="text-[13px] text-[#97A0B3]">Method</span>
-                <span className="text-[13px] font-bold text-white">UPI AutoPay · Razorpay</span>
+                <span className="text-[13px] font-bold text-white">UPI AutoPay • Razorpay</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[13px] text-[#97A0B3]">Next charge</span>
-                <span className="text-[13px] font-bold text-white">₹{planPrice.toLocaleString('en-IN')} · {renewalDate}</span>
+                <span className="text-[13px] font-bold text-white">₹{planPrice.toLocaleString('en-IN')} • {renewalDate}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[13px] text-[#97A0B3]">GSTIN on invoices</span>
@@ -281,17 +361,53 @@ export function PortalPaymentsPage() {
                   description: "Update payment method",
                   order_id: "auth_" + Date.now(),
                 },
-                () => alert("Payment method updated successfully!"),
+                () => {
+                  setActionNotice("Payment method updated successfully!");
+                  setTimeout(() => setActionNotice(null), 4000);
+                },
                 () => {}
               );
             }}
-            className="w-full py-3 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors mt-auto"
+            className="w-full py-3 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors mt-auto cursor-pointer"
           >
             Change payment method
           </button>
         </div>
 
       </div>
+
+      {/* Modals */}
+      <PausePlanModal
+        isOpen={pauseModalOpen}
+        onClose={() => setPauseModalOpen(false)}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["client-subscription", user?.id] });
+          setActionNotice("Plan scheduled to pause for next month.");
+          setTimeout(() => setActionNotice(null), 4000);
+        }}
+        planName={planName}
+        renewalDate={renewalDate}
+      />
+
+      <ComparePlansModal
+        isOpen={compareModalOpen}
+        onClose={() => setCompareModalOpen(false)}
+        currentPlanName={planName}
+        onOpenNegotiation={(topic) => {
+          setNegotiateTopic(topic);
+          setNegotiateModalOpen(true);
+        }}
+      />
+
+      <PlanBargainCallModal
+        isOpen={negotiateModalOpen}
+        onClose={() => setNegotiateModalOpen(false)}
+        initialTopic={negotiateTopic}
+        onSuccess={() => {
+          setActionNotice("Plan consultation call request submitted!");
+          setTimeout(() => setActionNotice(null), 4000);
+        }}
+      />
     </div>
   );
 }

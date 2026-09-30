@@ -63,7 +63,15 @@ def get_first_incomplete_section(quest: Questionnaire | None) -> str:
     sec_e = quest.section_e or {}
     if not (sec_e.get("on_camera") or sec_e.get("shoot_locations")):
         return "e"
-    return "e"
+    # If core A-E are all filled, check if client was on an active section
+    ans = quest.answers or {}
+    last_sec = ans.get("last_active_section")
+    if last_sec and last_sec in ("a", "b", "c", "d", "e", "f", "g"):
+        return last_sec
+    sec_f = quest.section_f or {}
+    if not sec_f:
+        return "f"
+    return "g"
 
 
 async def get_current_stage(db: AsyncSession, client_id: uuid.UUID) -> int:
@@ -106,14 +114,26 @@ async def get_onboarding_status(db: AsyncSession, client_id: uuid.UUID) -> Onboa
         last_stage_name = STAGE_NAMES[2]
     elif stage == 3:
         next_required = "questionnaire"
-        # The questionnaire row is only needed to pick the resume section at this stage
         q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
         quest = (await db.execute(q_stmt)).scalar_one_or_none()
-        resume_section = get_first_incomplete_section(quest)
+        ans = (quest.answers or {}) if quest else {}
+        server_last = ans.get("last_active_section")
+        if server_last and server_last in ("a", "b", "c", "d", "e", "f", "g"):
+            resume_section = server_last
+        else:
+            resume_section = get_first_incomplete_section(quest)
         next_route = "/onboarding/questionnaire"
         last_stage_name = STAGE_NAMES[3]
     elif stage == 4:
         next_required = "brand_dna"
+        q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
+        quest = (await db.execute(q_stmt)).scalar_one_or_none()
+        ans = (quest.answers or {}) if quest else {}
+        server_last = ans.get("last_active_section")
+        if server_last and server_last in ("a", "b", "c", "d", "e", "f", "g"):
+            resume_section = server_last
+        else:
+            resume_section = "g"
         next_route = "/onboarding/questionnaire?step=brand_dna"
         last_stage_name = STAGE_NAMES[4]
     elif stage == 5:
@@ -367,6 +387,13 @@ async def save_questionnaire_section(
             if not quest.submitted_at:
                 quest.submitted_at = now
 
+    # Persist last active section
+    from sqlalchemy.orm.attributes import flag_modified
+    ans = dict(quest.answers or {})
+    ans["last_active_section"] = sec
+    quest.answers = ans
+    flag_modified(quest, "answers")
+
     # Extended completion check
     has_f = bool(quest.section_f and bool(quest.section_f))
     has_g = bool(quest.section_g and bool(quest.section_g))
@@ -421,6 +448,7 @@ async def get_questionnaire_state(
         "core_completed": quest.core_completed_at is not None,
         "extended_completed": quest.extended_completed_at is not None,
         "version": quest.version or 1,
+        "last_active_section": (quest.answers or {}).get("last_active_section"),
     }
 
 

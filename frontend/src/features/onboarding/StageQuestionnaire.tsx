@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
@@ -193,7 +194,80 @@ function generateTonePreview(humour: number, formality: number, respectfulness: 
 }
 
 export function StageQuestionnaire({ userId, initialSection, onComplete }: StageQuestionnaireProps) {
-  const [activeSection, setActiveSection] = useState<SectionKey>(initialSection || "a");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validSections: SectionKey[] = ["a", "b", "c", "d", "e", "f", "g"];
+
+  const getSavedSection = (): SectionKey | null => {
+    // 1. URL search parameters (window.location.search first, then React Router searchParams)
+    if (typeof window !== "undefined") {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlSec = urlParams.get("section")?.toLowerCase();
+        if (urlSec && (validSections as string[]).includes(urlSec)) {
+          return urlSec as SectionKey;
+        }
+      } catch {}
+    }
+    const param = searchParams.get("section")?.toLowerCase();
+    if (param && (validSections as string[]).includes(param)) {
+      return param as SectionKey;
+    }
+
+    // 2. Storage fallback (sessionStorage first, then localStorage)
+    if (typeof window !== "undefined") {
+      try {
+        const uId = userId || "";
+        const sessionVal = (
+          (uId && sessionStorage.getItem(`creo_active_section_${uId}`)) ||
+          sessionStorage.getItem("creo_active_section")
+        )?.toLowerCase();
+        if (sessionVal && (validSections as string[]).includes(sessionVal)) {
+          return sessionVal as SectionKey;
+        }
+
+        const localVal = (
+          (uId && localStorage.getItem(`creo_active_section_${uId}`)) ||
+          localStorage.getItem("creo_active_section")
+        )?.toLowerCase();
+        if (localVal && (validSections as string[]).includes(localVal)) {
+          return localVal as SectionKey;
+        }
+      } catch {}
+    }
+
+    // 3. Initial section prop
+    if (initialSection && validSections.includes(initialSection)) {
+      return initialSection;
+    }
+
+    return null;
+  };
+
+  const [activeSection, setActiveSection] = useState<SectionKey>(() => getSavedSection() || "a");
+
+  useEffect(() => {
+    if (!activeSection) return;
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("creo_active_section", activeSection);
+        localStorage.setItem("creo_active_section", activeSection);
+        if (userId) {
+          sessionStorage.setItem(`creo_active_section_${userId}`, activeSection);
+          localStorage.setItem(`creo_active_section_${userId}`, activeSection);
+        }
+      }
+    } catch {}
+
+    setSearchParams(
+      (prev) => {
+        if (prev.get("section") === activeSection) return prev;
+        const next = new URLSearchParams(prev);
+        next.set("section", activeSection);
+        return next;
+      },
+      { replace: true }
+    );
+  }, [activeSection, userId, setSearchParams]);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
@@ -337,11 +411,11 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
 
       const isCoreDone = Boolean(
         qState.core_completed ||
-        (qState.section_a?.brand_name &&
-         qState.section_b?.ideal_customer &&
-         qState.section_c?.voice_words?.length &&
-         qState.section_d?.visual_direction?.length &&
-         qState.section_e?.shoot_city)
+        (qState.section_a && (qState.section_a.brand_name || qState.section_a.one_liner) &&
+         qState.section_b && qState.section_b.ideal_customer &&
+         qState.section_c && (qState.section_c.humour !== undefined || qState.section_c.voice_words?.length) &&
+         qState.section_d && (qState.section_d.visual_direction?.length || qState.section_d.colours?.length) &&
+         qState.section_e && (qState.section_e.shoot_city || qState.section_e.on_camera?.length))
       );
 
       if (isCoreDone) {
@@ -359,21 +433,27 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
       const e = qState.section_e;
 
       const firstIncomplete: SectionKey =
-        (!a || !a.brand_name) ? "a" :
+        (!a || (!a.brand_name && !a.one_liner)) ? "a" :
         (!b || !b.ideal_customer) ? "b" :
-        (!c || !c.voice_words?.length) ? "c" :
-        (!d || !d.visual_direction?.length) ? "d" :
-        (!e || !e.shoot_city) ? "e" : "a";
+        (!c || (!c.humour && !c.voice_words?.length)) ? "c" :
+        (!d || (!d.visual_direction?.length && !d.colours?.length)) ? "d" :
+        (!e || (!e.shoot_city && !e.on_camera?.length)) ? "e" : "f";
 
-      if (!isCoreDone) {
-        // Enforce completing mandatory core sections first
-        setActiveSection(firstIncomplete);
-      } else if (effectiveInitial) {
-        setActiveSection(effectiveInitial);
-      } else {
-        setActiveSection("a");
+      if (!dataInitialized) {
+        const savedSec = getSavedSection();
+        const serverLast = (qState as any)?.last_active_section as SectionKey | undefined;
+        const validServerLast = serverLast && validSections.includes(serverLast) ? serverLast : null;
+        const preferredSec = savedSec || validServerLast || effectiveInitial;
+
+        if (preferredSec && validSections.includes(preferredSec)) {
+          setActiveSection(preferredSec);
+        } else if (!isCoreDone) {
+          setActiveSection(firstIncomplete);
+        } else {
+          setActiveSection("a");
+        }
+        setDataInitialized(true);
       }
-      setDataInitialized(true);
     }
   }, [qState, initialSection]);
 
@@ -624,19 +704,33 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   };
 
   const handleSelectSectionTab = (targetKey: SectionKey) => {
-    // Sections F & G require core sections (A-E) to be completed first
-    if ((targetKey === "f" || targetKey === "g") && !coreUnlocked) {
+    const inMemoryCore = Boolean(
+      (secA.brand_name || secA.one_liner) &&
+      secB.ideal_customer &&
+      (secC.humour !== undefined || secC.voice_words?.length) &&
+      (secD.visual_direction?.length || secD.colours?.length) &&
+      (secE.shoot_city || secE.on_camera?.length)
+    );
+
+    if ((targetKey === "f" || targetKey === "g") && !coreUnlocked && !inMemoryCore) {
       setValidationBanner("Please complete mandatory Sections A–E before proceeding to optional creative enrichment.");
       return;
+    }
+
+    if (inMemoryCore && !coreUnlocked) {
+      setCoreUnlocked(true);
     }
 
     const targetIdx = SECTIONS.findIndex((s) => s.key === targetKey);
     const currentIdx = SECTIONS.findIndex((s) => s.key === activeSection);
 
-    if (targetIdx <= currentIdx || completedSections.has(targetKey) || coreUnlocked) {
+    if (targetIdx <= currentIdx || completedSections.has(targetKey) || coreUnlocked || inMemoryCore) {
       setFieldErrors({});
       setValidationBanner(null);
       setApiError(null);
+      if (isSectionDirty(activeSection)) {
+        void persistSection(activeSection);
+      }
       setActiveSection(targetKey);
       formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
@@ -749,25 +843,33 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <span>Calendar Ready</span>
               </div>
             )}
-            <div className="text-right">
-              <span className="text-xs text-[#94A3B8] font-mono flex items-center gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsSaving(true);
+                  try {
+                    await persistSection(activeSection);
+                    setSaveSuccess(true);
+                    setTimeout(() => setSaveSuccess(false), 2000);
+                  } catch (e) {
+                    console.error(e);
+                  } finally {
+                    setIsSaving(false);
+                  }
+                }}
+                disabled={isSaving}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#2A3446] bg-[#0B111C] hover:bg-[#1F2C3F] hover:border-[#7FA0D6] text-xs font-bold text-[#CBD5E1] hover:text-white transition-all cursor-pointer disabled:opacity-50"
+              >
                 {isSaving ? (
-                  <>
-                    <Loader2 className="size-3 animate-spin text-[#7FA0D6]" />
-                    <span className="text-[#7FA0D6]">Saving...</span>
-                  </>
+                  <Loader2 className="size-3.5 animate-spin text-[#7FA0D6]" />
                 ) : saveSuccess ? (
-                  <>
-                    <Check className="size-3 text-emerald-400" />
-                    <span className="text-emerald-400">Saved ✓</span>
-                  </>
+                  <Check className="size-3.5 text-emerald-400" />
                 ) : (
-                  <>
-                    <span className="size-1.5 rounded-full bg-emerald-400" />
-                    <span>Autosave Ready</span>
-                  </>
+                  <RefreshCw className="size-3.5 text-[#7FA0D6]" />
                 )}
-              </span>
+                <span>{isSaving ? "Syncing..." : saveSuccess ? "Synced ✓" : "Sync Progress"}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -2006,7 +2108,33 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             <span>Previous Section</span>
           </button>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              onClick={async () => {
+                setIsSaving(true);
+                try {
+                  await persistSection(activeSection);
+                  setSaveSuccess(true);
+                  setTimeout(() => setSaveSuccess(false), 2000);
+                } catch (e) {
+                  console.error(e);
+                } finally {
+                  setIsSaving(false);
+                }
+              }}
+              disabled={isSaving}
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] hover:bg-[#1F2C3F] hover:border-[#7FA0D6] text-xs font-bold text-[#CBD5E1] hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
+              {isSaving ? (
+                <Loader2 className="size-3.5 animate-spin text-[#7FA0D6]" />
+              ) : saveSuccess ? (
+                <Check className="size-3.5 text-emerald-400" />
+              ) : (
+                <RefreshCw className="size-3.5 text-[#7FA0D6]" />
+              )}
+              <span>{isSaving ? "Syncing..." : saveSuccess ? "Synced ✓" : "Sync Draft"}</span>
+            </button>
             {activeSection !== "g" ? (
               <button
                 type="button"

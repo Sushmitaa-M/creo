@@ -100,6 +100,7 @@ class QuestionnaireStateResponse(BaseModel):
     core_completed: bool
     extended_completed: bool
     version: int
+    last_active_section: str | None = None
 
 
 class BrandDNAStatusResponse(BaseModel):

@@ -379,7 +379,14 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
 
   const handleSelectStep = (step: number) => {
     setActiveStep(step);
-    setSearchParams({ step: String(step) }, { replace: true });
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("step", String(step));
+        return next;
+      },
+      { replace: true }
+    );
   };
 
   useEffect(() => {
@@ -489,7 +496,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
             <StageQuestionnaire
               key="questionnaire"
               userId={userId}
-              initialSection={(status?.resume_section as any) || undefined}
+              initialSection={(searchParams.get("section") as any) || (status?.resume_section as any) || undefined}
               onComplete={(team) => {
                 if (team && team.length > 0) {
                   setAssignedTeam(team);

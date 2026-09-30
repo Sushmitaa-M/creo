@@ -3794,7 +3794,7 @@ from app.models.billing import PlanNegotiation  # noqa: E402
 
 @router.get("/negotiations", response_model=list[dict[str, Any]])
 async def list_plan_negotiations(
-    actor: AdminActor = Depends(),
+    actor: Actor = AdminActor,
     db: AsyncSession = Depends(get_db),
 ) -> list[dict[str, Any]]:
     """List all plan negotiation requests for admin review."""
@@ -3842,7 +3842,7 @@ class CreateNegotiationPayload(BaseModel):
 @router.post("/negotiations", response_model=dict[str, Any])
 async def create_plan_negotiation_by_admin(
     payload: CreateNegotiationPayload,
-    actor: AdminActor = Depends(),
+    actor: Actor = AdminActor,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """Admin initiates a custom proposal/negotiation record."""
@@ -3881,7 +3881,7 @@ class NegotiationActionPayload(BaseModel):
 async def update_plan_negotiation(
     neg_id: uuid.UUID,
     payload: NegotiationActionPayload,
-    actor: AdminActor = Depends(),
+    actor: Actor = AdminActor,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """Accept, decline, or counter-offer a plan negotiation."""

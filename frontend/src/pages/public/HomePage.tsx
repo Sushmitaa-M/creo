@@ -47,7 +47,7 @@ function CollageTile({
   label?: string;
 }) {
   return (
-    <TiltCard max={9} lift={30} className={`relative ${aspect} rounded-2xl border border-[#222F44] overflow-hidden bg-[#121926] shadow-[0_18px_40px_-18px_rgba(0,0,0,0.8)]`}>
+    <TiltCard max={9} lift={30} glow="transparent" className={`relative ${aspect} rounded-2xl border border-[#222F44] overflow-hidden bg-[#121926] shadow-[0_18px_40px_-18px_rgba(0,0,0,0.8)]`}>
       <img
         src={src}
         alt={alt}
@@ -104,6 +104,7 @@ const faqs = [
 
 export function HomePage() {
   const navigate = useNavigate();
+  const [sampleEmail, setSampleEmail] = useState("");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [assets, setAssets] = useState([
     { id: 1, name: "Brand Launch Teaser", type: "Reel 9:16", status: "awaiting" },
@@ -125,6 +126,19 @@ export function HomePage() {
     offset: ["start 85%", "end 55%"],
   });
 
+  const handleRequestSample = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (localStorage.getItem('creo_auth') === 'true') {
+      navigate("/portal");
+    } else {
+      const trimmed = sampleEmail.trim();
+      const targetUrl = trimmed
+        ? `/login?email=${encodeURIComponent(trimmed)}`
+        : "/login";
+      navigate(targetUrl);
+    }
+  };
+
   return (
     <div className="w-full bg-[#050810] text-[#F8FAFC] min-h-screen font-sans selection:bg-[#7FA0D6]/30">
       
@@ -136,7 +150,6 @@ export function HomePage() {
           <HeroWaveScene className="absolute inset-x-0 bottom-0 h-[70%] -z-10 opacity-80 [mask-image:linear-gradient(to_top,#000_40%,transparent)] animate-page-in" />
         </Suspense>
         )}
-        <div className="absolute -top-40 -left-40 w-[36rem] h-[36rem] bg-[#7FA0D6]/[0.07] rounded-full blur-[120px] pointer-events-none -z-10" />
 
         <div className="max-w-[1240px] mx-auto px-6 pt-8 pb-16 sm:pt-12 sm:pb-24 lg:pt-14 lg:pb-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-start">
@@ -179,7 +192,7 @@ export function HomePage() {
                   <Magnetic className="w-full sm:w-auto">
                     <Link
                       to="/signup?intent=sample"
-                      className="group relative overflow-hidden bg-[#BCCCE6] text-[#050810] font-bold text-sm px-7 py-3.5 rounded-full hover:bg-white transition-colors w-full sm:w-auto text-center shadow-[0_10px_30px_-10px_rgba(188,204,230,0.55)] inline-flex items-center justify-center gap-2"
+                      className="group relative overflow-hidden bg-[#BCCCE6] text-[#050810] font-bold text-sm px-7 py-3.5 rounded-full hover:bg-white transition-colors w-full sm:w-auto text-center shadow-md inline-flex items-center justify-center gap-2"
                     >
                       Get a free sample batch
                       <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -320,7 +333,7 @@ export function HomePage() {
               { step: "05", time: "Weekly: Publish & repeat", desc: "Consistent output that scales with your growth." }
             ].map((item) => (
               <StaggerItem key={item.step} className="flex flex-col group">
-                <div className="relative w-7 h-7 rounded-full border border-[#2A3446] bg-[#050810] text-[#7FA0D6] flex items-center justify-center text-xs font-bold mb-3 transition-all duration-300 group-hover:border-[#7FA0D6] group-hover:scale-110 group-hover:shadow-[0_0_0_6px_rgba(127,160,214,0.12)]">
+                <div className="relative w-7 h-7 rounded-full border border-[#2A3446] bg-[#050810] text-[#7FA0D6] flex items-center justify-center text-xs font-bold mb-3 transition-all duration-300 group-hover:border-[#7FA0D6] group-hover:scale-110">
                   {item.step}
                 </div>
                 <h4 className="text-sm font-bold text-[#F8FAFC] mb-1">{item.time}</h4>
@@ -367,7 +380,7 @@ export function HomePage() {
                   transition={{ type: "spring", stiffness: 300, damping: 24 }}
                   className={`group bg-[#0A0F18] border rounded-xl overflow-hidden flex flex-col transition-colors duration-300 ${
                     asset.status === "approved"
-                      ? "border-[#7FA0D6]/60 shadow-[0_0_0_1px_rgba(127,160,214,0.15),0_20px_40px_-24px_rgba(127,160,214,0.5)]"
+                      ? "border-[#7FA0D6]/60 shadow-md"
                       : asset.status === "revision"
                         ? "border-[#D8BF9B]/50"
                         : "border-[#2A3446]"
@@ -401,7 +414,7 @@ export function HomePage() {
                         <div className="flex items-center gap-2 w-full">
                           <button 
                             onClick={() => updateStatus(asset.id, "approved")}
-                            className="flex-1 bg-[#BCCCE6] text-[#050810] hover:bg-[#D5E1F2] font-semibold transition-all shadow-sm hover:shadow-[0_0_20px_rgba(188,204,230,0.25)] text-xs py-2 rounded-full flex items-center justify-center gap-1.5"
+                            className="flex-1 bg-[#BCCCE6] text-[#050810] hover:bg-[#D5E1F2] font-semibold transition-all shadow-sm text-xs py-2 rounded-full flex items-center justify-center gap-1.5"
                           >
                             <CheckCircle2 className="size-3.5" /> Approve
                           </button>
@@ -496,7 +509,7 @@ export function HomePage() {
             return (
               <StaggerItem
                 key={idx}
-                className={`backdrop-blur-md bg-[#161F2D]/70 border ${isOpen ? 'border-[#7FA0D6] shadow-[0_0_20px_rgba(127,160,214,0.05)]' : 'border-[#2A3446]/60 hover:border-[#2A3446]'} rounded-2xl p-5 sm:p-6 transition-all`}
+                className={`backdrop-blur-md bg-[#161F2D]/70 border ${isOpen ? 'border-[#7FA0D6] shadow-sm' : 'border-[#2A3446]/60 hover:border-[#2A3446]'} rounded-2xl p-5 sm:p-6 transition-all`}
               >
                 <button
                   type="button"
@@ -553,12 +566,6 @@ export function HomePage() {
 
       {/* 6. "Try Us Before You Pay Us" Lead Capture Section */}
       <section className="relative isolate overflow-hidden bg-[#0B111C] py-16 sm:py-24 border-y border-[#222F44] creo-grain">
-        <motion.div
-          aria-hidden="true"
-          className="absolute left-1/2 top-1/2 -z-10 size-[42rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(127,160,214,0.14),transparent_60%)]"
-          animate={{ scale: [1, 1.12, 1], opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 9, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-        />
         <Reveal className="max-w-3xl mx-auto px-6 text-center">
           <SplitText
             as="h2"
@@ -571,27 +578,24 @@ export function HomePage() {
             Drop your Instagram handle and email below. We'll send you a custom sample batch of reels and carousels for your brand, completely free. No credit card required.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto backdrop-blur-md bg-[#161F2D]/30 p-2 rounded-2xl border border-[#2A3446]/40">
+          <form 
+            onSubmit={handleRequestSample}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto backdrop-blur-md bg-[#161F2D]/30 p-2 rounded-2xl border border-[#2A3446]/40"
+          >
             <input 
               type="email" 
+              value={sampleEmail}
+              onChange={(e) => setSampleEmail(e.target.value)}
               placeholder="Enter work email for a sample deliverable..." 
               className="bg-[#0A0F18] border border-[#2A3446] text-[#F8FAFC] rounded-xl px-4 py-3 text-sm focus:border-[#7FA0D6] focus:outline-none w-full sm:w-80 transition-colors" 
             />
             <button 
-              onClick={(e) => {
-                if (localStorage.getItem('creo_auth') !== 'true') {
-                  e.preventDefault();
-                  alert("Please sign in to message the team.");
-                  navigate("/login?redirect=contact");
-                } else {
-                  alert("Contact Modal Triggered");
-                }
-              }}
-              className="w-full sm:w-auto bg-[#BCCCE6] text-[#050810] hover:bg-[#D5E1F2] font-semibold transition-all shadow-sm hover:shadow-[0_0_20px_rgba(188,204,230,0.25)] text-sm px-6 py-3 rounded-xl shrink-0 flex items-center justify-center gap-2"
+              type="submit"
+              className="w-full sm:w-auto bg-[#BCCCE6] text-[#050810] hover:bg-white font-semibold transition-all shadow-sm text-sm px-6 py-3 rounded-xl shrink-0 flex items-center justify-center gap-2 cursor-pointer"
             >
               Request Sample Batch <ArrowRight className="size-4" />
             </button>
-          </div>
+          </form>
           <div className="text-xs font-semibold text-[#97A0B3] mt-6">
             No commitment. 48-hour pilot turnaround for qualified creative agencies.
           </div>

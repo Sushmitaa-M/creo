@@ -84,11 +84,11 @@ export function PricingCards({ className = "" }: PricingCardsProps) {
             <TiltCard
               max={5}
               lift={plan.isFeatured ? 36 : 22}
-              glow={plan.isFeatured ? "rgba(188,204,230,0.14)" : "rgba(127,160,214,0.12)"}
-              className={`h-full rounded-2xl p-7 flex flex-col justify-between transition-[border-color,box-shadow] duration-300 ${
+              glow="transparent"
+              className={`h-full rounded-2xl p-7 flex flex-col justify-between transition-colors duration-300 shadow-xl ${
                 plan.isFeatured
-                  ? "creo-conic-border shadow-[0_24px_60px_-24px_rgba(127,160,214,0.45)]"
-                  : "bg-[#121926] border border-[#222F44] hover:border-[#7FA0D6]/40 hover:shadow-[0_24px_60px_-30px_rgba(127,160,214,0.35)]"
+                  ? "creo-conic-border"
+                  : "bg-[#121926] border border-[#222F44] hover:border-[#7FA0D6]/60"
               }`}
             >
               <div className="relative z-[2] [transform:translateZ(20px)]">
@@ -143,7 +143,7 @@ export function PricingCards({ className = "" }: PricingCardsProps) {
                   to={plan.ctaLink}
                   className={`group w-full text-sm font-bold py-3.5 px-4 rounded-xl text-center transition-all duration-300 flex items-center justify-center gap-2 shadow-sm ${
                     plan.isFeatured
-                      ? "bg-[#BCCCE6] hover:bg-white text-[#0B111C] hover:shadow-[0_12px_30px_-10px_rgba(188,204,230,0.6)]"
+                      ? "bg-[#BCCCE6] hover:bg-white text-[#0B111C]"
                       : "bg-[#0B111C] border border-[#2A3446] text-[#F8FAFC] hover:border-[#BCCCE6] hover:bg-[#BCCCE6] hover:text-[#0B111C]"
                   }`}
                 >

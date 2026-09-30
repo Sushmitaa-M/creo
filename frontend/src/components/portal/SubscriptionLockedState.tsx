@@ -216,8 +216,20 @@ export function SubscriptionLockedState({
       {/* Support Concierge Modal */}
       {showSupportModal &&
         createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-[#050810]/80 backdrop-blur-sm animate-[fadeIn_0.15s_ease-out]">
-            <div className="relative w-full max-w-lg rounded-3xl bg-[#161F2D] p-6 sm:p-8 shadow-2xl border border-[#2A3446] animate-[zoomIn_0.2s_cubic-bezier(0.16,1,0.3,1)]">
+          <div
+            className="fixed inset-0 z-[99999] grid place-items-center p-4 sm:p-6 overflow-y-auto bg-black/80 animate-[fadeIn_0.15s_ease-out]"
+            style={{
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+            }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowSupportModal(false);
+            }}
+          >
+            <div
+              className="relative w-full max-w-lg rounded-3xl bg-[#161F2D] p-6 sm:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] border border-[#2A3446] m-auto animate-[zoomIn_0.2s_cubic-bezier(0.16,1,0.3,1)]"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
                 onClick={() => setShowSupportModal(false)}
                 className="absolute top-4 right-4 size-8 rounded-full bg-[#0B111C] text-[#97A0B3] hover:bg-[#2A3446] hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-[#2A3446]"

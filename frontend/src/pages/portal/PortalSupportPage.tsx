@@ -68,7 +68,7 @@ export function PortalSupportPage() {
       }
     },
     enabled: !!user?.id,
-    refetchInterval: 30000,
+    refetchInterval: 2 * 60_000,
   });
 
   // Local state

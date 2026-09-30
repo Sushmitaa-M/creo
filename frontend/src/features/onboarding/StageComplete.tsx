@@ -64,7 +64,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
         };
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-4 sm:space-y-5 pb-6 sm:pb-8">
       {/* Success header */}
       <motion.section
         {...rise(0)}
@@ -94,7 +94,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
       {/* Pod */}
       <motion.section
         {...rise(0.12)}
-        className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 shadow-xl"
+        className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-5 sm:p-6 shadow-xl"
       >
         <div className="mb-4 flex items-center gap-2">
           <Users className="size-4 text-[#7FA0D6]" />
@@ -134,7 +134,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
       {/* What happens next */}
       <motion.section
         {...rise(0.22)}
-        className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 shadow-xl"
+        className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-5 sm:p-6 shadow-xl"
       >
         <h3 className="mb-4 text-sm font-bold text-[#F8FAFC]">What happens next</h3>
         <ol className="space-y-3">

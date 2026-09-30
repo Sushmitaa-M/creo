@@ -91,8 +91,9 @@ export function PortalPaymentsPage() {
     alert("Compare plans modal will open here.");
   };
 
-  // No plan yet: show where to resume instead of placeholder plan figures
-  if (!gate.isPaid) {
+  // No plan yet: show where to resume instead of placeholder plan figures.
+  // Clients with an existing (e.g. expired) subscription still see billing so they can renew.
+  if (!gate.isPaid && !subData?.subscription) {
     return (
       <div className="space-y-6 pb-12">
         <div>

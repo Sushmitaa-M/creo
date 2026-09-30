@@ -31,18 +31,29 @@ export function SubscriptionLockedState({
   const { resume, isPaid, stage, completedSteps } = gate;
 
   // Resume destination and copy come from the shared onboarding gate
-  const resumeRoute = resume.route;
-  const resumeLabel = `Step ${resume.step}: ${resume.action}`;
+  let resumeRoute = resume.route;
+  let resumeLabel = `Step ${resume.step}: ${resume.action}`;
   const dynamicTitle = title || "Production Workspace Locked";
   let dynamicDescription = description || resume.description;
   let statusBadge = `Setup ${completedSteps}/${ONBOARDING_TOTAL_STEPS} · ${resume.action}`;
   let statusBadgeColor = "bg-[#D8BF9B]/10 text-[#D8BF9B] border-[#D8BF9B]/30";
 
   if (!isPaid) {
-    statusBadge = "Plan not active yet";
-    if (!description) {
-      dynamicDescription =
-        "An active creative retainer is required to activate your dedicated creative pod. Choose a plan or book a call to set custom rates.";
+    if (gate.status?.checklist?.onboarding_completed) {
+      // Onboarded before, but the retainer lapsed: renew from Plans & Billing
+      resumeRoute = "/portal/payments";
+      resumeLabel = "Renew retainer in Plans & Billing";
+      statusBadge = "Retainer renewal required";
+      if (!description) {
+        dynamicDescription =
+          "Your creative retainer is expired or awaiting renewal. Renew in Plans & Billing or contact your pod to reactivate production.";
+      }
+    } else {
+      statusBadge = "Plan not active yet";
+      if (!description) {
+        dynamicDescription =
+          "An active creative retainer is required to activate your dedicated creative pod. Choose a plan or book a call to set custom rates.";
+      }
     }
   } else if (stage >= 3) {
     statusBadge = "Payment received · Finish setup";
@@ -177,6 +188,21 @@ export function SubscriptionLockedState({
               <LifeBuoy className="size-4 text-[#7FA0D6]" />
               <span>Need help? Contact Support</span>
             </button>
+          </div>
+
+          {/* Quick Navigation Links to Prevent Getting Trapped */}
+          <div className="flex items-center justify-center gap-3 pt-3 border-t border-[#2A3446]/60 w-full text-xs text-[#97A0B3]">
+            <Link to="/portal" className="hover:text-white transition-colors underline-offset-4 hover:underline">
+              Dashboard
+            </Link>
+            <span>•</span>
+            <Link to="/portal/payments" className="hover:text-white transition-colors underline-offset-4 hover:underline">
+              Plans & Billing
+            </Link>
+            <span>•</span>
+            <Link to="/portal/support" className="hover:text-white transition-colors underline-offset-4 hover:underline">
+              Support Desk
+            </Link>
           </div>
         </div>
       </div>

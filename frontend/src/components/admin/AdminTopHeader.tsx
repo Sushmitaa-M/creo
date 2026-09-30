@@ -58,15 +58,20 @@ export function AdminTopHeader({
   const queryClient = useQueryClient();
   const { toggleMobile } = useAdminSidebar();
 
+  const isAdminOrSuper = user?.role === "admin" || user?.role === "super_admin";
+  const isTeamLead = user?.role === "team_lead";
+  const isSpecialist =
+    user?.role === "team_member" ||
+    user?.role === "editor" ||
+    user?.role === "designer";
+
   const isClientRole =
     user?.role === "client" ||
-    location.pathname.startsWith("/portal");
+    (!isAdminOrSuper && !isTeamLead && !isSpecialist && location.pathname.startsWith("/portal"));
 
   const isMemberRole =
     !isClientRole &&
-    (user?.role === "team_member" ||
-      user?.role === "editor" ||
-      user?.role === "designer" ||
+    (isSpecialist ||
       location.pathname.startsWith("/workstation") ||
       location.pathname.startsWith("/member"));
 
@@ -308,7 +313,15 @@ export function AdminTopHeader({
 
           {showBackButton && (
             <Link
-              to={isClientRole ? "/portal" : isMemberRole ? "/workstation" : "/admin"}
+              to={
+                isAdminOrSuper
+                  ? "/admin"
+                  : isTeamLead
+                  ? "/admin/pod-dashboard"
+                  : isMemberRole
+                  ? "/workstation"
+                  : "/portal"
+              }
               className="p-1 rounded-full hover:bg-[#1F2C3F] text-[#97A0B3] hover:text-white transition-colors shrink-0"
               title="Go Back"
             >
@@ -318,7 +331,15 @@ export function AdminTopHeader({
 
           {/* Brand Logo - visible on mobile where sidebar is inside drawer */}
           <Link
-            to={isClientRole ? "/portal" : isMemberRole ? "/workstation" : user?.role === "team_lead" ? "/admin/pod-dashboard" : "/admin"}
+            to={
+              isAdminOrSuper
+                ? "/admin"
+                : isTeamLead
+                ? "/admin/pod-dashboard"
+                : isMemberRole
+                ? "/workstation"
+                : "/portal"
+            }
             className="md:hidden flex items-center gap-0.5 font-black text-white text-sm sm:text-base tracking-tight shrink-0 px-1 hover:opacity-85 transition-opacity"
             title="creo. Home"
           >
@@ -486,6 +507,18 @@ export function AdminTopHeader({
             )}
           </div>
           
+          {/* Quick Return Button for Admins viewing Client Portal */}
+          {isAdminOrSuper && location.pathname.startsWith("/portal") && (
+            <Link
+              to="/admin"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#7FA0D6]/15 hover:bg-[#7FA0D6]/25 border border-[#7FA0D6]/30 text-[#7FA0D6] text-xs font-bold transition-all shadow-xs"
+              title="Return to Admin Ops Console"
+            >
+              <span>Admin Console</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          )}
+
           {/* Profile Avatar with Interactive Dropdown Menu */}
           <div className="relative" ref={profileRef}>
             <button

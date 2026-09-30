@@ -6,6 +6,7 @@ import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
 import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 
 interface CalendarEntry {
   id: string;
@@ -31,7 +32,7 @@ export function PortalCalendarPage() {
   const { user } = useAuth();
   const gate = useOnboardingGate();
 
-  const { data: rawEntries = [] } = useQuery({
+  const { data: rawEntries = [], isLoading: isEntriesLoading } = useQuery({
     queryKey: ["calendar-entries", user?.id],
     enabled: gate.isComplete,
     queryFn: async () => {
@@ -53,6 +54,10 @@ export function PortalCalendarPage() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
   };
+
+  if (!gate.isReady || (gate.isComplete && isEntriesLoading)) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Content Calendar" />;
+  }
 
   if (!gate.isComplete) {
     return (

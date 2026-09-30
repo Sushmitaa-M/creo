@@ -5,6 +5,7 @@ import { fetchPortalDeliverables, approveDeliverable, requestChanges } from "../
 import { Check, Play, Loader2 } from "lucide-react";
 import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 
 export function PortalDeliverablesPage() {
   const { user } = useAuth();
@@ -34,6 +35,10 @@ export function PortalDeliverablesPage() {
       setSelectedId(firstPending ? firstPending.id : (deliverables[0]?.id || null));
     }
   }, [deliverables, selectedId]);
+
+  if (!gate.isReady || (gate.isComplete && isLoading)) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Deliverables Queue" />;
+  }
 
   if (!gate.isComplete) {
     return (

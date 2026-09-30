@@ -4,6 +4,7 @@ import { useAuth } from "../../lib/auth-context";
 import { request } from "../../lib/http";
 import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 import { MessageCircle, Send, Check } from "lucide-react";
 
 interface TeamMember {
@@ -112,6 +113,10 @@ export function PortalCreativePodPage() {
     "bg-[#EF4444]",
     "bg-[#8B5CF6]",
   ];
+
+  if (!gate.isReady || (gate.isComplete && isLoading)) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Creative Pod" />;
+  }
 
   if (!gate.isComplete) {
     return (

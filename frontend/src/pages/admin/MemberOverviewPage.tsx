@@ -22,6 +22,7 @@ import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
 import { useAuth } from "../../lib/auth-context";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 
 interface LeadNoteItem {
   id: string;
@@ -39,7 +40,7 @@ interface LeadNoteItem {
 export function MemberOverviewPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data } = useQuery<PodDashboardData>({
+  const { data, isLoading } = useQuery<PodDashboardData>({
     queryKey: ["pod_dashboard"],
     queryFn: () => fetchPodDashboard(),
   });
@@ -151,6 +152,10 @@ export function MemberOverviewPage() {
     setUploadModalOpen(false);
     showToast(`Successfully uploaded ${uploadAssetTitle} (${uploadClient}) to Frame.io sync pipeline!`);
   };
+
+  if (isLoading || !data) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Workstation Overview" />;
+  }
 
   return (
     <div data-surface="ops" className="min-h-screen bg-[#0B111C] text-white font-sans flex flex-col">

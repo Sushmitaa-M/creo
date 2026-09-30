@@ -14,6 +14,7 @@ import {
 import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
 import { PlanBargainCallModal } from "../../components/portal/PlanBargainCallModal";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 import type { TicketItem } from "../../types/api";
 
 interface SupportTicketData {
@@ -46,7 +47,7 @@ export function PortalSupportPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: subData } = useQuery({
+  const { data: subData, isLoading: isSubLoading } = useQuery({
     queryKey: ["client-subscription"],
     queryFn: () => request<any>("/api/v1/payments/subscription"),
   });
@@ -57,7 +58,7 @@ export function PortalSupportPage() {
     subData?.subscription?.status === "canceled";
   const isStaffOrAdmin = user?.role && user.role !== "client";
 
-  const { data: serverTickets = NO_TICKETS } = useQuery<TicketItem[]>({
+  const { data: serverTickets = NO_TICKETS, isLoading: isTicketsLoading } = useQuery<TicketItem[]>({
     queryKey: ["tickets", user?.id],
     queryFn: async () => {
       try {
@@ -84,6 +85,10 @@ export function PortalSupportPage() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
   };
+
+  if (isSubLoading || isTicketsLoading) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Support Desk" />;
+  }
 
   // Sync server tickets
   React.useEffect(() => {

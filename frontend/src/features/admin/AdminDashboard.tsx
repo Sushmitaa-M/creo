@@ -23,6 +23,7 @@ import { ClientDetailsWidget } from "../../components/admin/ClientDetailsWidget"
 import { SupportTicketsWidget } from "../../components/admin/SupportTicketsWidget";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { SlaPerformanceWidget } from "../../components/admin/SlaPerformanceWidget";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 
 export function AdminDashboard({ actorRole = "admin" }: { actorRole?: string }) {
   const [kpis, setKpis] = useState<AdminKPIs | null>(null);
@@ -73,6 +74,10 @@ export function AdminDashboard({ actorRole = "admin" }: { actorRole?: string }) 
       setRefreshing(false);
     }
   };
+
+  if (!kpis && !message) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Operations Console" />;
+  }
 
   return (
     <div

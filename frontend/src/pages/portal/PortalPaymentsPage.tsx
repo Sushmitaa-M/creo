@@ -11,6 +11,7 @@ import { ResumeOnboardingBanner } from "../../components/portal/ResumeOnboarding
 import { PausePlanModal } from "../../components/portal/PausePlanModal";
 import { ComparePlansModal } from "../../components/portal/ComparePlansModal";
 import { PlanBargainCallModal } from "../../components/portal/PlanBargainCallModal";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 
 interface SubscriptionData {
   status: string;
@@ -32,7 +33,7 @@ export function PortalPaymentsPage() {
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
 
-  const { data: subData } = useQuery<{ subscription?: SubscriptionData; is_paused_next_month?: boolean }>({
+  const { data: subData, isLoading: isSubLoading } = useQuery<{ subscription?: SubscriptionData; is_paused_next_month?: boolean }>({
     queryKey: ["client-subscription", user?.id],
     queryFn: () => request<any>("/api/v1/payments/subscription"),
     enabled: !!user?.id,
@@ -48,13 +49,18 @@ export function PortalPaymentsPage() {
 
   const gate = useOnboardingGate();
 
-  const planName = (subData as any)?.plan?.display_name || subData?.subscription?.name || "Growth";
+  if (!gate.isReady || isSubLoading || !subData) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Plan & Billing" />;
+  }
+
+  const hasActivePlan = Boolean((subData as any)?.is_active || subData?.subscription || (subData as any)?.plan);
+  const planName = (subData as any)?.plan?.display_name || subData?.subscription?.name || (hasActivePlan ? "Active Retainer" : "No Active Plan");
   const planPrice = (subData?.subscription as any)?.amount 
     ? parseFloat((subData?.subscription as any).amount) 
-    : (subData as any)?.plan?.price_minor ? (subData as any).plan.price_minor / 100 : 50000;
+    : (subData as any)?.plan?.price_minor ? (subData as any).plan.price_minor / 100 : 0;
   const renewalDate = subData?.subscription?.current_period_end 
     ? new Date(subData.subscription.current_period_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase()
-    : "NEXT BILLING CYCLE";
+    : (hasActivePlan ? "NEXT BILLING CYCLE" : "INACTIVE");
 
   const isPausedNextMonth = !!(subData as any)?.is_paused_next_month;
 
@@ -75,13 +81,13 @@ export function PortalPaymentsPage() {
 
   const usage = (subData as any)?.quotas || (subData as any)?.usage || {};
   const usageBars = [
-    { label: "Reels", current: usage.reel?.used || 0, max: usage.reel?.quota || (subData as any)?.plan?.reel_quota || 8, color: "bg-[#7FA0D6]" },
-    { label: "Posts", current: (usage.static_post?.used ?? usage.poster?.used) || 0, max: (usage.static_post?.quota ?? usage.poster?.quota) || (subData as any)?.plan?.poster_quota || 4, color: "bg-[#7FA0D6]" },
-    { label: "Stories", current: usage.story?.used || 0, max: usage.story?.quota || (subData as any)?.plan?.story_quota || 8, color: "bg-[#7FA0D6]" }
+    { label: "Reels", current: usage.reel?.used || 0, max: usage.reel?.quota ?? (subData as any)?.plan?.reel_quota ?? 0, color: "bg-[#7FA0D6]" },
+    { label: "Posts", current: (usage.static_post?.used ?? usage.poster?.used) || 0, max: (usage.static_post?.quota ?? usage.poster?.quota) ?? (subData as any)?.plan?.poster_quota ?? 0, color: "bg-[#7FA0D6]" },
+    { label: "Stories", current: usage.story?.used || 0, max: usage.story?.quota ?? (subData as any)?.plan?.story_quota ?? 0, color: "bg-[#7FA0D6]" }
   ];
 
   const totalMax = usageBars.reduce((sum, item) => sum + item.max, 0);
-  const costPerAsset = totalMax > 0 ? Math.round(planPrice / totalMax) : 0;
+  const costPerAsset = totalMax > 0 && planPrice > 0 ? Math.round(planPrice / totalMax) : 0;
 
   const rzpKey = (import.meta.env.VITE_RAZORPAY_KEY_ID as string) || "rzp_test_TO2r0YMjDZSpuC";
 

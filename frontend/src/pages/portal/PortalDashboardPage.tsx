@@ -5,6 +5,7 @@ import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
 import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { ResumeOnboardingBanner } from "../../components/portal/ResumeOnboardingBanner";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 
 /* ── Types ── */
 export interface TeamHandler {
@@ -57,7 +58,7 @@ export function PortalDashboardPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // The dashboard endpoint rejects clients that haven't finished onboarding, so don't call it until then
-  const { data: dashboard } = useQuery<DashboardData>({
+  const { data: dashboard, isLoading: isDashboardLoading } = useQuery<DashboardData>({
     queryKey: ["portal-dashboard", user?.id],
     queryFn: async () => {
       return await request<DashboardData>("/api/v1/portal/dashboard");
@@ -165,6 +166,10 @@ export function PortalDashboardPage() {
   const dateStr = today.toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase();
   const daysRemaining = (dashboard?.active_plan as any)?.days_remaining ?? subData?.days_remaining ?? 30;
   const cycleDay = Math.max(1, Math.min(30, 30 - daysRemaining + 1));
+
+  if (!gate.isReady || (!isLocked && (isDashboardLoading || !dashboard))) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Workspace" />;
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -434,17 +439,17 @@ export function PortalDashboardPage() {
                 {
                   label: "Reels",
                   used: quotas.reel?.used ?? 0,
-                  total: quotas.reel?.quota ?? plan?.reel_quota ?? 8,
+                  total: quotas.reel?.quota ?? plan?.reel_quota ?? 0,
                 },
                 {
                   label: "Posts",
                   used: (quotas.static_post?.used ?? quotas.poster?.used) ?? 0,
-                  total: quotas.static_post?.quota ?? quotas.poster?.quota ?? plan?.poster_quota ?? 4,
+                  total: quotas.static_post?.quota ?? quotas.poster?.quota ?? plan?.poster_quota ?? 0,
                 },
                 {
                   label: "Stories",
                   used: quotas.story?.used ?? 0,
-                  total: quotas.story?.quota ?? plan?.story_quota ?? 8,
+                  total: quotas.story?.quota ?? plan?.story_quota ?? 0,
                 },
               ];
 

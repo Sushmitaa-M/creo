@@ -11,6 +11,7 @@ import {
 } from "../../lib/ops-api";
 import { useAuth } from "../../lib/auth-context";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 import {
   Users,
   Clock,
@@ -53,7 +54,7 @@ export function PodLeadDashboardPage() {
   const [reinforcementsModalOpen, setReinforcementsModalOpen] = useState(false);
   const [reinforceForm, setReinforceForm] = useState({ role: "3D Motion Designer", hours: "+20 hrs/week", urgency: "Immediate (Today)", notes: "" });
 
-  const { data } = useQuery<PodDashboardData>({
+  const { data, isLoading } = useQuery<PodDashboardData>({
     queryKey: ["pod_dashboard", selectedPodKey],
     queryFn: () => fetchPodDashboard(selectedPodKey),
   });
@@ -221,6 +222,10 @@ export function PodLeadDashboardPage() {
     URL.revokeObjectURL(url);
     showToast(`Downloaded ${podName} Weekly Lead Summary CSV report`, "success");
   };
+
+  if (isLoading || !data) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Pod Operations" />;
+  }
 
   return (
     <div data-surface="ops" className="min-h-screen bg-[#0B111C] text-white font-sans flex flex-col">

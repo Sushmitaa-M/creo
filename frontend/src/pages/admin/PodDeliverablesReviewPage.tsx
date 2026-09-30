@@ -130,7 +130,7 @@ export function PodDeliverablesReviewPage() {
             </button>
             <button
               onClick={() => setNewDeliverableModal(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[#7FA0D6] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
               <Plus className="size-3.5" />
               New Deliverable
@@ -385,7 +385,7 @@ export function PodDeliverablesReviewPage() {
                                 : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
                             }`}
                           >
-                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric1 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
+                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric1 ? "bg-[#7FA0D6] text-white" : "border border-[#2A3446]"}`}>
                               {rubric1 && <Check className="size-3.5 stroke-[3]" />}
                             </div>
                             <span className="text-xs font-bold">Brand contrast & typography guidelines verified</span>
@@ -399,7 +399,7 @@ export function PodDeliverablesReviewPage() {
                                 : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
                             }`}
                           >
-                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric2 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
+                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric2 ? "bg-[#7FA0D6] text-white" : "border border-[#2A3446]"}`}>
                               {rubric2 && <Check className="size-3.5 stroke-[3]" />}
                             </div>
                             <span className="text-xs font-bold">Sound stems & frame pacing synchronized</span>
@@ -413,7 +413,7 @@ export function PodDeliverablesReviewPage() {
                                 : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
                             }`}
                           >
-                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric3 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
+                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric3 ? "bg-[#7FA0D6] text-white" : "border border-[#2A3446]"}`}>
                               {rubric3 && <Check className="size-3.5 stroke-[3]" />}
                             </div>
                             <span className="text-xs font-bold">Safe-zone compliance & master export verified</span>
@@ -483,7 +483,7 @@ export function PodDeliverablesReviewPage() {
                                   comment: feedbackNote || "All rubric checks verified. Approved for client sync.",
                                 });
                               }}
-                              className="px-6 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-blue-500/20 transition-all cursor-pointer"
+                              className="px-6 py-2.5 rounded-xl bg-[#7FA0D6] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-blue-500/20 transition-all cursor-pointer"
                             >
                               <Check className="size-4" />
                               Approve & Send to Client
@@ -557,7 +557,7 @@ export function PodDeliverablesReviewPage() {
             <div className="flex justify-end gap-3 pt-3">
               <button
                 onClick={() => setNewDeliverableModal(false)}
-                className="px-4 py-2 rounded-xl bg-[#1F2C3F] text-[#F1F5F9] text-xs font-bold hover:bg-slate-200 transition"
+                className="px-4 py-2 rounded-xl bg-[#161F2D] text-[#F1F5F9] text-xs font-bold hover:bg-slate-200 transition"
               >
                 Cancel
               </button>

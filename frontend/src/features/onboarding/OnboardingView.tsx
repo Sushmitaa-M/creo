@@ -77,7 +77,7 @@ function ProgressStepper({
                           ? "bg-[#7FA0D6] text-[#0B111C] shadow-sm"
                           : isActive
                           ? "bg-[#BCCCE6] text-[#0B111C] font-black ring-4 ring-[#BCCCE6]/25 shadow-md"
-                          : "bg-[#0B111C] text-[#94A3B8] border border-[#2A3446] group-hover:border-[#7FA0D6]/40"
+                          : "bg-[#0B111C] text-[#97A0B3] border border-[#2A3446] group-hover:border-[#7FA0D6]/40"
                       }`}
                     >
                       {isDone ? (
@@ -93,7 +93,7 @@ function ProgressStepper({
                   {/* Step label */}
                   <div className="mt-2.5 text-center w-full">
                     <p className={`text-[11px] font-bold uppercase tracking-wider mb-0.5 ${
-                      isActive ? "text-[#BCCCE6]" : isDone ? "text-[#7FA0D6]" : "text-[#94A3B8]"
+                      isActive ? "text-[#BCCCE6]" : isDone ? "text-[#7FA0D6]" : "text-[#97A0B3]"
                     }`}>
                       Step {s.step}
                     </p>
@@ -101,8 +101,8 @@ function ProgressStepper({
                       isActive
                         ? "text-white font-bold"
                         : isDone
-                        ? "text-[#CBD5E1]"
-                        : "text-[#94A3B8]"
+                        ? "text-[#BCCCE6]"
+                        : "text-[#97A0B3]"
                     }`}>
                       <span className="sm:hidden">{s.short}</span>
                       <span className="hidden sm:inline">{s.label}</span>

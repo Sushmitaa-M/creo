@@ -135,7 +135,7 @@ export function AdminTicketDetailPage() {
           author: "Pod Lead",
           role: "Pod Lead • Creative Pod Alpha",
           avatar: "PL",
-          avatarBg: "bg-[#0F172A]",
+          avatarBg: "bg-[#0B111C]",
           timestamp: "Yesterday at 4:48 PM",
           text: "Hi Sushmitaa, we apologize for the short delay! The final 4K color grade has been expedited and is now ready in your Deliverables tab.",
         },
@@ -445,16 +445,16 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
 
           <div className="flex items-center gap-2">
             {alarmSilenced && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1F2C3F] text-[#F1F5F9] border border-[#2A3446] font-semibold text-[11px]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#161F2D] text-[#F1F5F9] border border-[#2A3446] font-semibold text-[11px]">
                 <BellOff className="size-3.5 text-[#97A0B3]" />
                 Alarms Silenced (1h)
               </span>
             )}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 font-semibold text-[11px]">
-              <Shield className="size-3.5 text-[#60A5FA]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 text-[#BCCCE6] border border-blue-500/30 font-semibold text-[11px]">
+              <Shield className="size-3.5 text-[#BCCCE6]" />
               <span>Enterprise Gold SLA Active</span>
               <span className="text-[#7FA0D6]">•</span>
-              <span className="font-mono text-[#93C5FD]">BATCH-DL-8821</span>
+              <span className="font-mono text-[#BCCCE6]">BATCH-DL-8821</span>
             </div>
           </div>
         </div>
@@ -471,10 +471,10 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
           <div
             className={`p-4 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-xl animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-blue-900/40 border-blue-500/30 text-[#93C5FD]"
+                ? "bg-blue-900/40 border-blue-500/30 text-[#BCCCE6]"
                 : toastMessage.type === "info"
                 ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-[#7FA0D6]"
-                : "bg-blue-600/15 border-blue-500/30 text-[#60A5FA]"
+                : "bg-blue-600/15 border-blue-500/30 text-[#BCCCE6]"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -494,11 +494,11 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${
                   isResolved
-                    ? "bg-blue-600/15 text-[#60A5FA] border-blue-500/30"
-                    : "bg-blue-500/15 text-[#93C5FD] border-blue-500/30"
+                    ? "bg-blue-600/15 text-[#BCCCE6] border-blue-500/30"
+                    : "bg-blue-500/15 text-[#BCCCE6] border-blue-500/30"
                 }`}
               >
-                <span className={`size-1.5 rounded-full ${isResolved ? "bg-[#60A5FA]" : "bg-[#93C5FD] animate-pulse"}`} />
+                <span className={`size-1.5 rounded-full ${isResolved ? "bg-[#BCCCE6]" : "bg-[#BCCCE6] animate-pulse"}`} />
                 {isResolved ? "RESOLVED" : "OPEN"}
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-600 text-white shadow-xs">
@@ -546,11 +546,11 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               onClick={() => setEscalateModalOpen(true)}
               className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-2xs ${
                 isEscalated
-                  ? "bg-blue-900/40 border-blue-500/40 text-[#93C5FD] hover:bg-blue-900/60"
-                  : "border-blue-500/30 bg-blue-500/15 text-[#93C5FD] hover:bg-blue-500/25"
+                  ? "bg-blue-900/40 border-blue-500/40 text-[#BCCCE6] hover:bg-blue-900/60"
+                  : "border-blue-500/30 bg-blue-500/15 text-[#BCCCE6] hover:bg-blue-500/25"
               }`}
             >
-              <AlertTriangle className="size-3.5 text-[#93C5FD]" />
+              <AlertTriangle className="size-3.5 text-[#BCCCE6]" />
               {isEscalated ? "Escalation Active" : "Escalate to Core"}
             </button>
             <button
@@ -675,7 +675,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                           <span
                             className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${
                               msg.isSystemAudit
-                                ? "bg-[#1F2C3F] text-[#F1F5F9] border-[#2A3446]"
+                                ? "bg-[#161F2D] text-[#F1F5F9] border-[#2A3446]"
                                 : msg.isInternal
                                 ? "bg-amber-100 text-amber-800 border-amber-200"
                                 : "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30"
@@ -704,10 +704,10 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                   {msg.id === "msg-1" && (
                     <>
                       {/* Diagnostics Telemetry & Trace Log */}
-                      <div className="rounded-xl bg-[#0F172A] border border-slate-800 overflow-hidden text-slate-200 font-mono text-xs mt-3">
+                      <div className="rounded-xl bg-[#0B111C] border border-slate-800 overflow-hidden text-slate-200 font-mono text-xs mt-3">
                         <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 text-[11px] text-[#97A0B3] font-bold uppercase tracking-wider">
                           <span className="flex items-center gap-2">
-                            <FileText className="size-3.5 text-[#93C5FD]" />
+                            <FileText className="size-3.5 text-[#BCCCE6]" />
                             Diagnostics Telemetry & Trace Log
                           </span>
                           <button
@@ -726,14 +726,14 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                         </div>
                         <div className="p-4 space-y-1.5 text-[11px] leading-relaxed overflow-x-auto text-slate-300">
                           <div className="text-[#97A0B3]"># Gateway trace capture ID: trc_98812_useast_prod</div>
-                          <div className="text-[#93C5FD] font-semibold">
-                            <span className="bg-blue-500/20 px-1 py-0.5 rounded text-[#93C5FD] font-bold mr-1">
+                          <div className="text-[#BCCCE6] font-semibold">
+                            <span className="bg-blue-500/20 px-1 py-0.5 rounded text-[#BCCCE6] font-bold mr-1">
                               [ERROR 504]
                             </span>
                             Webhook delivery failed: https://api.clientdomain.com/v1/deliverables/sync
                           </div>
                           <div className="text-[#97A0B3]">Connection timed out after 30000ms. Retries exhausted (4/4).</div>
-                          <div className="text-[#60A5FA] pt-1">
+                          <div className="text-[#BCCCE6] pt-1">
                             &gt; TLS Handshake: 14ms | Payload Size: 1.48 GB (4 assets) | Socket Hangup: Digest Verification
                           </div>
                         </div>
@@ -805,7 +805,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                 {/* Quick Macros */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[11px] font-bold text-[#97A0B3] uppercase tracking-wider flex items-center gap-1">
-                    <Sparkles className="size-3 text-[#60A5FA]" />
+                    <Sparkles className="size-3 text-[#BCCCE6]" />
                     Quick Macros:
                   </span>
                   <button
@@ -826,7 +826,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                         "Patch deployed to edge ingress router. Asset checksums verified successfully across all 4 Reels. Ticket resolved."
                       )
                     }
-                    className="px-2.5 py-1 rounded-lg bg-blue-600/15 hover:bg-blue-600/25 text-[#60A5FA] text-[11px] font-semibold border border-blue-500/30 transition-colors cursor-pointer"
+                    className="px-2.5 py-1 rounded-lg bg-blue-600/15 hover:bg-blue-600/25 text-[#BCCCE6] text-[11px] font-semibold border border-blue-500/30 transition-colors cursor-pointer"
                   >
                     Resolved with Patch
                   </button>
@@ -837,7 +837,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                         "Could you please confirm if your destination webhook server accepts chunked transfer encoding for assets over 1GB?"
                       )
                     }
-                    className="px-2.5 py-1 rounded-lg bg-[#1F2C3F] hover:bg-slate-200 text-[#F1F5F9] text-[11px] font-semibold border border-[#2A3446] transition-colors cursor-pointer"
+                    className="px-2.5 py-1 rounded-lg bg-[#161F2D] hover:bg-slate-200 text-[#F1F5F9] text-[11px] font-semibold border border-[#2A3446] transition-colors cursor-pointer"
                   >
                     Request Info
                   </button>
@@ -849,7 +849,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                     type="button"
                     onClick={() => handleInsertFormat("**")}
                     title="Bold"
-                    className="p-1.5 hover:bg-[#1F2C3F] rounded text-[#F1F5F9] cursor-pointer"
+                    className="p-1.5 hover:bg-[#161F2D] rounded text-[#F1F5F9] cursor-pointer"
                   >
                     <Bold className="size-3.5" />
                   </button>
@@ -857,7 +857,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                     type="button"
                     onClick={() => handleInsertFormat("*")}
                     title="Italic"
-                    className="p-1.5 hover:bg-[#1F2C3F] rounded text-[#F1F5F9] cursor-pointer"
+                    className="p-1.5 hover:bg-[#161F2D] rounded text-[#F1F5F9] cursor-pointer"
                   >
                     <Italic className="size-3.5" />
                   </button>
@@ -865,7 +865,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                     type="button"
                     onClick={() => handleInsertFormat("`")}
                     title="Code snippet"
-                    className="p-1.5 hover:bg-[#1F2C3F] rounded text-[#F1F5F9] cursor-pointer"
+                    className="p-1.5 hover:bg-[#161F2D] rounded text-[#F1F5F9] cursor-pointer"
                   >
                     <Code className="size-3.5" />
                   </button>
@@ -873,7 +873,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                     type="button"
                     onClick={() => handleInsertFormat("[Link Title](", ")")}
                     title="Insert Link"
-                    className="p-1.5 hover:bg-[#1F2C3F] rounded text-[#F1F5F9] cursor-pointer"
+                    className="p-1.5 hover:bg-[#161F2D] rounded text-[#F1F5F9] cursor-pointer"
                   >
                     <Link2 className="size-3.5" />
                   </button>
@@ -881,13 +881,13 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                     type="button"
                     onClick={() => setReplyText((prev) => `${prev}\n- Item 1\n- Item 2`)}
                     title="Bullet List"
-                    className="p-1.5 hover:bg-[#1F2C3F] rounded text-[#F1F5F9] cursor-pointer"
+                    className="p-1.5 hover:bg-[#161F2D] rounded text-[#F1F5F9] cursor-pointer"
                   >
                     <List className="size-3.5" />
                   </button>
                   <label
                     title="Attach File"
-                    className="p-1.5 hover:bg-[#1F2C3F] rounded text-[#F1F5F9] cursor-pointer"
+                    className="p-1.5 hover:bg-[#161F2D] rounded text-[#F1F5F9] cursor-pointer"
                   >
                     <Paperclip className="size-3.5" />
                     <input
@@ -945,7 +945,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                       }
                       showToast("Draft response saved locally.", "info");
                     }}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[#F1F5F9] hover:bg-[#1F2C3F] transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[#F1F5F9] hover:bg-[#161F2D] transition-colors cursor-pointer"
                   >
                     Save Draft
                   </button>
@@ -1077,7 +1077,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                   {tags.map((tg) => (
                     <span
                       key={tg}
-                      className="px-2 py-0.5 rounded-md bg-[#1F2C3F] text-[#F1F5F9] text-[10px] font-bold border border-[#2A3446] flex items-center gap-1"
+                      className="px-2 py-0.5 rounded-md bg-[#161F2D] text-[#F1F5F9] text-[10px] font-bold border border-[#2A3446] flex items-center gap-1"
                     >
                       {tg}
                       <button
@@ -1154,7 +1154,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               </div>
               <button
                 onClick={() => setReassignModalOpen(false)}
-                className="size-8 rounded-full bg-[#1F2C3F] hover:bg-slate-200 text-[#97A0B3] flex items-center justify-center cursor-pointer transition-colors"
+                className="size-8 rounded-full bg-[#161F2D] hover:bg-slate-200 text-[#97A0B3] flex items-center justify-center cursor-pointer transition-colors"
               >
                 <X className="size-4" />
               </button>
@@ -1211,7 +1211,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               <button
                 type="button"
                 onClick={() => setReassignModalOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] cursor-pointer transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#161F2D] cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -1249,7 +1249,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               </div>
               <button
                 onClick={() => setEscalateModalOpen(false)}
-                className="size-8 rounded-full bg-[#1F2C3F] hover:bg-slate-200 text-[#97A0B3] flex items-center justify-center cursor-pointer transition-colors"
+                className="size-8 rounded-full bg-[#161F2D] hover:bg-slate-200 text-[#97A0B3] flex items-center justify-center cursor-pointer transition-colors"
               >
                 <X className="size-4" />
               </button>
@@ -1321,7 +1321,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               <button
                 type="button"
                 onClick={() => setEscalateModalOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#1F2C3F] cursor-pointer transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-[#F1F5F9] hover:bg-[#161F2D] cursor-pointer transition-colors"
               >
                 Cancel
               </button>

@@ -34,7 +34,7 @@ export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps)
         <Link
           to="/admin/deliverables"
           onClick={(e) => e.stopPropagation()}
-          className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
+          className="bg-[#0B111C] hover:bg-[#161F2D] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
           <div className="flex items-center justify-between gap-1 w-full">
             <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -61,11 +61,11 @@ export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps)
         <Link
           to="/admin/calendar"
           onClick={(e) => e.stopPropagation()}
-          className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
+          className="bg-[#0B111C] hover:bg-[#161F2D] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
           <div className="flex items-center justify-between gap-1 w-full">
             <div className="flex items-center gap-2 min-w-0 flex-1">
-              <div className="w-7 h-7 rounded-xl bg-[#1D4ED8]/20 text-[#93C5FD] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
+              <div className="w-7 h-7 rounded-xl bg-[#7FA0D6]/20 text-[#BCCCE6] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <Calendar className="w-4 h-4" />
               </div>
               <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
@@ -88,11 +88,11 @@ export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps)
         <Link
           to="/admin/tasks"
           onClick={(e) => e.stopPropagation()}
-          className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
+          className="bg-[#0B111C] hover:bg-[#161F2D] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
           <div className="flex items-center justify-between gap-1 w-full">
             <div className="flex items-center gap-2 min-w-0 flex-1">
-              <div className="w-7 h-7 rounded-xl bg-[#6366F1]/20 text-[#A5B4FC] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
+              <div className="w-7 h-7 rounded-xl bg-[#7FA0D6]/20 text-[#BCCCE6] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <ListTodo className="w-4 h-4" />
               </div>
               <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
@@ -115,11 +115,11 @@ export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps)
         <Link
           to="/slack"
           onClick={(e) => e.stopPropagation()}
-          className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
+          className="bg-[#0B111C] hover:bg-[#161F2D] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
           <div className="flex items-center justify-between gap-1 w-full">
             <div className="flex items-center gap-2 min-w-0 flex-1">
-              <div className="w-7 h-7 rounded-xl bg-[#1E40AF]/20 text-[#7FA0D6] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
+              <div className="w-7 h-7 rounded-xl bg-[#7FA0D6]/20 text-[#7FA0D6] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <MessageSquare className="w-4 h-4" />
               </div>
               <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">

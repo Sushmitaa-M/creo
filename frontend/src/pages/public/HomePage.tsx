@@ -200,7 +200,7 @@ export function HomePage() {
                   </Magnetic>
                   <Link
                     to="/portal"
-                    className="bg-[#121926]/80 backdrop-blur border border-[#222F44] text-[#F8FAFC] text-sm px-7 py-3.5 rounded-full hover:border-[#7FA0D6]/60 hover:bg-[#1A2333] transition-colors w-full sm:w-auto text-center"
+                    className="bg-[#121926]/80 backdrop-blur border border-[#222F44] text-[#F8FAFC] text-sm px-7 py-3.5 rounded-full hover:border-[#7FA0D6]/60 hover:bg-[#0B111C] transition-colors w-full sm:w-auto text-center"
                   >
                     Explore the portal first
                   </Link>
@@ -414,7 +414,7 @@ export function HomePage() {
                         <div className="flex items-center gap-2 w-full">
                           <button 
                             onClick={() => updateStatus(asset.id, "approved")}
-                            className="flex-1 bg-[#BCCCE6] text-[#050810] hover:bg-[#D5E1F2] font-semibold transition-all shadow-sm text-xs py-2 rounded-full flex items-center justify-center gap-1.5"
+                            className="flex-1 bg-[#BCCCE6] text-[#050810] hover:bg-[#BCCCE6] font-semibold transition-all shadow-sm text-xs py-2 rounded-full flex items-center justify-center gap-1.5"
                           >
                             <CheckCircle2 className="size-3.5" /> Approve
                           </button>

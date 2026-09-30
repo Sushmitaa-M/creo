@@ -123,7 +123,7 @@ export function PodTaskBoardPage() {
             </button>
             <button
               onClick={() => setAssignModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[#7FA0D6] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
               <Plus className="size-3.5" />
               Assign New Task
@@ -214,15 +214,15 @@ export function PodTaskBoardPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 items-start"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 items-stretch h-[560px] sm:h-[600px] lg:h-[calc(100vh-270px)] min-h-[500px]"
         >
           {/* COLUMN 1: Backlog / To Do */}
           <div
             className={`${
-              activeMobileCol === "all" || activeMobileCol === "backlog" ? "block" : "hidden md:block"
-            } bg-[#161F2D] rounded-2xl p-3 border border-[#2A3446] space-y-2.5`}
+              activeMobileCol === "all" || activeMobileCol === "backlog" ? "flex" : "hidden md:flex"
+            } flex-col h-full bg-[#161F2D] rounded-2xl p-3 border border-[#2A3446] space-y-2.5 min-h-0`}
           >
-            <div className="flex items-center justify-between px-1">
+            <div className="flex items-center justify-between px-1 shrink-0">
               <div className="flex items-center gap-1.5">
                 <span className="size-2 rounded-full bg-slate-400" />
                 <h3 className="text-xs font-black uppercase tracking-wider text-[#F1F5F9]">Backlog</h3>
@@ -233,7 +233,7 @@ export function PodTaskBoardPage() {
             </div>
 
             {/* Cards */}
-            <div className="space-y-2.5">
+            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar min-h-0">
               {(!data?.tasks?.backlog || data.tasks.backlog.length === 0) ? (
                 <div className="bg-[#0B111C]/60 border border-dashed border-[#2A3446] rounded-xl p-4 text-center">
                   <p className="text-xs font-medium text-[#97A0B3]">No backlog tasks</p>
@@ -272,10 +272,10 @@ export function PodTaskBoardPage() {
           {/* COLUMN 2: In Progress / Active */}
           <div
             className={`${
-              activeMobileCol === "all" || activeMobileCol === "in_progress" ? "block" : "hidden md:block"
-            } bg-[#161F2D] rounded-2xl p-3 border border-[#7FA0D6]/30 space-y-2.5`}
+              activeMobileCol === "all" || activeMobileCol === "in_progress" ? "flex" : "hidden md:flex"
+            } flex-col h-full bg-[#161F2D] rounded-2xl p-3 border border-[#7FA0D6]/30 space-y-2.5 min-h-0`}
           >
-            <div className="flex items-center justify-between px-1">
+            <div className="flex items-center justify-between px-1 shrink-0">
               <div className="flex items-center gap-1.5">
                 <span className="size-2 rounded-full bg-[#7FA0D6] animate-pulse" />
                 <h3 className="text-xs font-black uppercase tracking-wider text-[#7FA0D6]">In Progress</h3>
@@ -286,7 +286,7 @@ export function PodTaskBoardPage() {
             </div>
 
             {/* Cards */}
-            <div className="space-y-2.5">
+            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar min-h-0">
               {(!data?.tasks?.in_production || data.tasks.in_production.length === 0) ? (
                 <div className="bg-[#0B111C]/60 border border-dashed border-[#2A3446] rounded-xl p-4 text-center">
                   <p className="text-xs font-medium text-[#97A0B3]">No tasks currently in progress</p>
@@ -321,10 +321,10 @@ export function PodTaskBoardPage() {
           {/* COLUMN 3: Pending Lead QA Review */}
           <div
             className={`${
-              activeMobileCol === "all" || activeMobileCol === "review" ? "block" : "hidden md:block"
-            } bg-[#161F2D] rounded-2xl p-3 border border-amber-500/40 space-y-2.5`}
+              activeMobileCol === "all" || activeMobileCol === "review" ? "flex" : "hidden md:flex"
+            } flex-col h-full bg-[#161F2D] rounded-2xl p-3 border border-amber-500/40 space-y-2.5 min-h-0`}
           >
-            <div className="flex items-center justify-between px-1">
+            <div className="flex items-center justify-between px-1 shrink-0">
               <div className="flex items-center gap-1.5">
                 <span className="size-2 rounded-full bg-amber-400 animate-ping" />
                 <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">Lead QA Review</h3>
@@ -335,7 +335,7 @@ export function PodTaskBoardPage() {
             </div>
 
             {/* Cards */}
-            <div className="space-y-2.5">
+            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar min-h-0">
               {(!data?.tasks?.internal_qa || data.tasks.internal_qa.length === 0) ? (
                 <div className="bg-[#0B111C]/60 border border-dashed border-[#2A3446] rounded-xl p-4 text-center">
                   <p className="text-xs font-medium text-[#97A0B3]">No deliverables awaiting sign-off</p>
@@ -356,7 +356,7 @@ export function PodTaskBoardPage() {
                     <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446]">
                       <Link
                         to="/lead/deliverables"
-                        className="flex-1 py-1 rounded-lg bg-[#161F2D] border border-[#2A3446] hover:bg-[#1E2D42] text-[#F1F5F9] hover:text-[#7FA0D6] text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"
+                        className="flex-1 py-1 rounded-lg bg-[#161F2D] border border-[#2A3446] hover:bg-[#161F2D] text-[#F1F5F9] hover:text-[#7FA0D6] text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"
                       >
                         <Eye className="size-3" /> Inspect
                       </Link>
@@ -364,7 +364,7 @@ export function PodTaskBoardPage() {
                         onClick={() => {
                           qaMutation.mutate({ taskId: task.id, decision: "approve", comment: "Direct QA sign-off from Task Board." });
                         }}
-                        className="flex-1 py-1 rounded-lg bg-[#2563EB] hover:bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center gap-1 shadow-xs cursor-pointer transition-colors"
+                        className="flex-1 py-1 rounded-lg bg-[#7FA0D6] hover:bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center gap-1 shadow-xs cursor-pointer transition-colors"
                       >
                         <Check className="size-3" /> Sign-off
                       </button>
@@ -378,10 +378,10 @@ export function PodTaskBoardPage() {
           {/* COLUMN 4: Approved & Dispatched */}
           <div
             className={`${
-              activeMobileCol === "all" || activeMobileCol === "dispatched" ? "block" : "hidden md:block"
-            } bg-[#161F2D] rounded-2xl p-3 border border-emerald-500/40 space-y-2.5`}
+              activeMobileCol === "all" || activeMobileCol === "dispatched" ? "flex" : "hidden md:flex"
+            } flex-col h-full bg-[#161F2D] rounded-2xl p-3 border border-emerald-500/40 space-y-2.5 min-h-0`}
           >
-            <div className="flex items-center justify-between px-1">
+            <div className="flex items-center justify-between px-1 shrink-0">
               <div className="flex items-center gap-1.5">
                 <span className="size-2 rounded-full bg-emerald-400" />
                 <h3 className="text-xs font-black uppercase tracking-wider text-emerald-400">Dispatched</h3>
@@ -392,7 +392,7 @@ export function PodTaskBoardPage() {
             </div>
 
             {/* Cards */}
-            <div className="space-y-2.5">
+            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar min-h-0">
               {(!data?.tasks?.completed && !data?.tasks?.ready_to_publish) ||
               ((data?.tasks?.completed?.length || 0) === 0 && (data?.tasks?.ready_to_publish?.length || 0) === 0) ? (
                 <div className="bg-[#0B111C]/60 border border-dashed border-[#2A3446] rounded-xl p-4 text-center">
@@ -439,19 +439,19 @@ export function PodTaskBoardPage() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setWorkloadModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6] text-[#F1F5F9] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
+              className="px-3.5 py-2 rounded-xl bg-[#0B111C] hover:bg-[#161F2D] border border-[#2A3446] hover:border-[#7FA0D6] text-[#F1F5F9] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
             >
               <ArrowLeftRight className="size-3.5 text-[#7FA0D6]" /> Balance Workload
             </button>
             <button
               onClick={() => setRerouteModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6] text-[#F1F5F9] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
+              className="px-3.5 py-2 rounded-xl bg-[#0B111C] hover:bg-[#161F2D] border border-[#2A3446] hover:border-[#7FA0D6] text-[#F1F5F9] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
             >
               <RefreshCw className="size-3.5 text-[#7FA0D6]" /> Re-route Blocked
             </button>
             <button
               onClick={handleExportSprintCSV}
-              className="px-3.5 py-2 rounded-xl bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6] text-[#F1F5F9] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
+              className="px-3.5 py-2 rounded-xl bg-[#0B111C] hover:bg-[#161F2D] border border-[#2A3446] hover:border-[#7FA0D6] text-[#F1F5F9] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
             >
               <FileCheck className="size-3.5 text-[#7FA0D6]" /> Export CSV
             </button>
@@ -512,7 +512,7 @@ export function PodTaskBoardPage() {
             <div className="flex justify-end gap-3 pt-3">
               <button
                 onClick={() => setAssignModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-[#0B111C] text-[#F1F5F9] text-xs font-bold hover:bg-[#1E2D42] border border-[#2A3446] transition"
+                className="px-4 py-2 rounded-xl bg-[#0B111C] text-[#F1F5F9] text-xs font-bold hover:bg-[#161F2D] border border-[#2A3446] transition"
               >
                 Cancel
               </button>
@@ -569,7 +569,7 @@ export function PodTaskBoardPage() {
             <div className="flex justify-end gap-3 pt-3 border-t border-[#2A3446]">
               <button
                 onClick={() => setWorkloadModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-[#0B111C] border border-[#2A3446] text-[#F1F5F9] text-xs font-bold hover:bg-[#1E2D42] transition"
+                className="px-4 py-2 rounded-xl bg-[#0B111C] border border-[#2A3446] text-[#F1F5F9] text-xs font-bold hover:bg-[#161F2D] transition"
               >
                 Cancel
               </button>
@@ -578,7 +578,7 @@ export function PodTaskBoardPage() {
                   showToast("Workload distribution verified across specialists.", "success");
                   setWorkloadModalOpen(false);
                 }}
-                className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-600 text-white text-xs font-bold transition shadow-md shadow-blue-500/20"
+                className="px-5 py-2 rounded-xl bg-[#7FA0D6] hover:bg-blue-600 text-white text-xs font-bold transition shadow-md shadow-blue-500/20"
               >
                 Apply Re-balance
               </button>
@@ -623,7 +623,7 @@ export function PodTaskBoardPage() {
             <div className="flex justify-end gap-3 pt-3 border-t border-[#2A3446]">
               <button
                 onClick={() => setRerouteModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-[#0B111C] border border-[#2A3446] text-[#F1F5F9] text-xs font-bold hover:bg-[#1E2D42] transition"
+                className="px-4 py-2 rounded-xl bg-[#0B111C] border border-[#2A3446] text-[#F1F5F9] text-xs font-bold hover:bg-[#161F2D] transition"
               >
                 Cancel
               </button>
@@ -632,7 +632,7 @@ export function PodTaskBoardPage() {
                   showToast(`Re-routed blocked task to ${rerouteTarget || "assigned specialist"}. Slack alert sent!`, "success");
                   setRerouteModalOpen(false);
                 }}
-                className="px-5 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-600 text-white text-xs font-bold transition shadow-md shadow-blue-500/20"
+                className="px-5 py-2 rounded-xl bg-[#7FA0D6] hover:bg-blue-600 text-white text-xs font-bold transition shadow-md shadow-blue-500/20"
               >
                 Re-route Task Now
               </button>

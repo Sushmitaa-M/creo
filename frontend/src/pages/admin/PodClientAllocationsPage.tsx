@@ -115,18 +115,18 @@ export function PodClientAllocationsPage() {
         id: r.client_id || "",
         name,
         avatar: initials,
-        avatarBg: "bg-[#0F172A]",
+        avatarBg: "bg-[#0B111C]",
         tierBadge: (r.plan_display_name || r.plan_name || "GROWTH").toUpperCase(),
-        tierBadgeColor: "bg-blue-500/15 text-[#93C5FD] border-blue-500/30",
+        tierBadgeColor: "bg-blue-500/15 text-[#BCCCE6] border-blue-500/30",
         statusBadge: "● Active Sprint",
-        statusBadgeColor: "bg-blue-500/15 text-[#60A5FA] border-blue-500/30",
+        statusBadgeColor: "bg-blue-500/15 text-[#BCCCE6] border-blue-500/30",
         contact: r.email || "",
         slackChannel: `#${name.toLowerCase().replace(/[^a-z0-9]/g, "")}-creo`,
         reviewAssetsCount: 0,
         deliverableTitle: `${name} Active Campaign Cadence`,
         deliverables: [
           { label: "Reels", current: reelsUsed, target: reelsQuota, percent: Math.round((reelsUsed / (reelsQuota || 1)) * 100), color: "bg-blue-600" },
-          { label: "Stories", current: storiesUsed, target: storiesQuota, percent: Math.round((storiesUsed / (storiesQuota || 1)) * 100), color: "bg-[#60A5FA]" },
+          { label: "Stories", current: storiesUsed, target: storiesQuota, percent: Math.round((storiesUsed / (storiesQuota || 1)) * 100), color: "bg-[#BCCCE6]" },
           { label: "Posts", current: postersUsed, target: postersQuota, percent: Math.round((postersUsed / (postersQuota || 1)) * 100), color: "bg-blue-600" },
         ],
         assignees: [
@@ -214,7 +214,7 @@ export function PodClientAllocationsPage() {
           hasReviewToday: false,
           reviewAssetsCount: 0,
           statusBadge: "● QA Signed Off & Ready",
-          statusBadgeColor: "bg-blue-500/15 text-[#93C5FD] border-blue-500/30 font-bold",
+          statusBadgeColor: "bg-blue-500/15 text-[#BCCCE6] border-blue-500/30 font-bold",
           deliverables: c.deliverables.map((d) =>
             d.percent < 100
               ? { ...d, current: d.target, percent: 100, color: "bg-blue-500", note: undefined }
@@ -268,8 +268,8 @@ export function PodClientAllocationsPage() {
           <div
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-lg animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-blue-500/15 border-blue-500/30 text-[#93C5FD]"
-                : "bg-blue-500/15 border-blue-500/30 text-[#60A5FA]"
+                ? "bg-blue-500/15 border-blue-500/30 text-[#BCCCE6]"
+                : "bg-blue-500/15 border-blue-500/30 text-[#BCCCE6]"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -301,7 +301,7 @@ export function PodClientAllocationsPage() {
             </button>
             <button
               onClick={() => setReallocationModal(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[#7FA0D6] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
               <Plus className="size-3.5" />
               Re-allocation
@@ -317,7 +317,7 @@ export function PodClientAllocationsPage() {
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 filterTab === "all"
                   ? "bg-blue-600 text-white shadow-2xs"
-                  : "bg-[#0B111C] text-[#F1F5F9] hover:bg-[#1F2C3F]"
+                  : "bg-[#0B111C] text-[#F1F5F9] hover:bg-[#161F2D]"
               }`}
             >
               All Assigned ({clients.length})
@@ -327,7 +327,7 @@ export function PodClientAllocationsPage() {
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 filterTab === "sla"
                   ? "bg-blue-600 text-white shadow-2xs"
-                  : "bg-[#0B111C] text-[#F1F5F9] hover:bg-[#1F2C3F]"
+                  : "bg-[#0B111C] text-[#F1F5F9] hover:bg-[#161F2D]"
               }`}
             >
               <span className="size-1.5 rounded-full bg-blue-500" />
@@ -338,7 +338,7 @@ export function PodClientAllocationsPage() {
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 filterTab === "review"
                   ? "bg-blue-600 text-white shadow-2xs"
-                  : "bg-[#0B111C] text-[#F1F5F9] hover:bg-[#1F2C3F]"
+                  : "bg-[#0B111C] text-[#F1F5F9] hover:bg-[#161F2D]"
               }`}
             >
               <span className="size-1.5 rounded-full bg-[#7FA0D6]" />
@@ -382,7 +382,7 @@ export function PodClientAllocationsPage() {
                 <span className="text-lg sm:text-xl font-black text-white">{clients.length} Active</span>
               </div>
               <div className="pt-1.5 border-t border-[#2A3446] text-[10px] sm:text-[11px] flex justify-between items-center">
-                <span className="font-bold text-[#60A5FA] flex items-center gap-1">
+                <span className="font-bold text-[#BCCCE6] flex items-center gap-1">
                   ● 100% SLA compliance
                 </span>
                 <span className="text-[9px] font-bold text-[#97A0B3]">Tier 1 Pod</span>
@@ -417,7 +417,7 @@ export function PodClientAllocationsPage() {
               </div>
               <div className="pt-1.5 border-t border-[#2A3446] text-[10px] sm:text-[11px] flex justify-between items-center">
                 <span className="text-[#97A0B3] font-medium">Sprint burn</span>
-                <span className="font-bold text-[#60A5FA]">On Pace</span>
+                <span className="font-bold text-[#BCCCE6]">On Pace</span>
               </div>
             </div>
           </motion.div>
@@ -435,7 +435,7 @@ export function PodClientAllocationsPage() {
               </span>
               <div
                 className={`size-6 sm:size-7 rounded-lg flex items-center justify-center ${
-                  totalSignoffs > 0 ? "bg-blue-500/15 text-[#60A5FA]" : "bg-blue-500/15 text-[#93C5FD]"
+                  totalSignoffs > 0 ? "bg-blue-500/15 text-[#BCCCE6]" : "bg-blue-500/15 text-[#BCCCE6]"
                 }`}
               >
                 <FileCheck2 className="size-3 sm:size-3.5" />
@@ -445,22 +445,22 @@ export function PodClientAllocationsPage() {
               <div className="flex items-baseline justify-between gap-1 mb-1">
                 <span className="text-lg sm:text-xl font-black text-white">{totalSignoffs} Assets</span>
                 {urgentCount > 0 ? (
-                  <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#60A5FA]">
+                  <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#BCCCE6]">
                     {urgentCount} SLA Alert{urgentCount > 1 ? "s" : ""}
                   </span>
                 ) : (
-                  <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#93C5FD]">
+                  <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#BCCCE6]">
                     All QA Cleared
                   </span>
                 )}
               </div>
               <div className="pt-1.5 border-t border-[#2A3446] text-[10px] sm:text-[11px]">
                 {urgentCount > 0 ? (
-                  <span className="text-[#60A5FA] font-bold flex items-center gap-1">
+                  <span className="text-[#BCCCE6] font-bold flex items-center gap-1">
                     ● Urgent QA awaiting
                   </span>
                 ) : (
-                  <span className="text-[#60A5FA] font-bold flex items-center gap-1">
+                  <span className="text-[#BCCCE6] font-bold flex items-center gap-1">
                     ● All signed off
                   </span>
                 )}
@@ -479,7 +479,7 @@ export function PodClientAllocationsPage() {
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">
                 Client CSAT
               </span>
-              <div className="size-6 sm:size-7 rounded-lg bg-blue-500/15 text-[#60A5FA] flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-blue-500/15 text-[#BCCCE6] flex items-center justify-center">
                 <Star className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -488,13 +488,13 @@ export function PodClientAllocationsPage() {
                 <span className="text-lg sm:text-xl font-black text-white">
                   4.9 <span className="text-[#97A0B3] font-bold text-xs">/ 5.0</span>
                 </span>
-                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#93C5FD]">
+                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#BCCCE6]">
                   +0.2 MoM
                 </span>
               </div>
               <div className="pt-1.5 border-t border-[#2A3446] text-[10px] sm:text-[11px] flex justify-between items-center">
                 <span className="text-[#97A0B3] font-medium">Last 24 ratings</span>
-                <span className="font-bold text-[#60A5FA]">Exceptional</span>
+                <span className="font-bold text-[#BCCCE6]">Exceptional</span>
               </div>
             </div>
           </motion.div>
@@ -576,7 +576,7 @@ export function PodClientAllocationsPage() {
                         className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer ${
                           client.isUrgent
                             ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20 animate-pulse"
-                            : "bg-[#2563EB] hover:bg-blue-700 text-white shadow-blue-500/20"
+                            : "bg-[#7FA0D6] hover:bg-blue-700 text-white shadow-blue-500/20"
                         }`}
                       >
                         {client.isUrgent ? (
@@ -595,9 +595,9 @@ export function PodClientAllocationsPage() {
                       <button
                         type="button"
                         onClick={() => navigate(`/lead/clients/${client.id}`)}
-                        className="px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 shadow-2xs transition-all cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-blue-500/15 text-[#BCCCE6] border border-blue-500/30 shadow-2xs transition-all cursor-pointer"
                       >
-                        <ShieldCheck className="size-3 text-[#60A5FA]" />
+                        <ShieldCheck className="size-3 text-[#BCCCE6]" />
                         QA Cleared
                       </button>
                     )}
@@ -705,7 +705,7 @@ export function PodClientAllocationsPage() {
               <button
                 type="button"
                 onClick={() => setReviewModal(null)}
-                className="size-8 rounded-full bg-[#1F2C3F] hover:bg-slate-200 text-[#97A0B3] hover:text-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
+                className="size-8 rounded-full bg-[#161F2D] hover:bg-slate-200 text-[#97A0B3] hover:text-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Close review dialog"
               >
                 <X className="size-4" />
@@ -719,7 +719,7 @@ export function PodClientAllocationsPage() {
                   Deliverable Awaiting Lead Approval
                 </span>
                 {reviewModal.client.isUrgent ? (
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 animate-pulse">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-500/15 text-[#BCCCE6] border border-blue-500/30 animate-pulse">
                     ⚡ Urgent SLA: 1h 14m remaining
                   </span>
                 ) : (
@@ -781,7 +781,7 @@ export function PodClientAllocationsPage() {
               <button
                 type="button"
                 onClick={() => setReviewModal(null)}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#2A3446] text-[#F1F5F9] text-xs font-bold hover:bg-[#1F2C3F] active:scale-95 transition-all cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#2A3446] text-[#F1F5F9] text-xs font-bold hover:bg-[#161F2D] active:scale-95 transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -791,7 +791,7 @@ export function PodClientAllocationsPage() {
                   setReviewModal(null);
                   navigate("/lead/deliverables");
                 }}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#1F2C3F] hover:bg-slate-200 text-[#F1F5F9] text-xs font-bold active:scale-95 transition-all cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#161F2D] hover:bg-slate-200 text-[#F1F5F9] text-xs font-bold active:scale-95 transition-all cursor-pointer"
               >
                 Open Review Studio →
               </button>
@@ -826,14 +826,14 @@ export function PodClientAllocationsPage() {
             <button
               type="button"
               onClick={() => setAlertModal(null)}
-              className="absolute top-4 right-4 size-8 rounded-full bg-[#1F2C3F] hover:bg-slate-200 text-[#97A0B3] hover:text-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
+              className="absolute top-4 right-4 size-8 rounded-full bg-[#161F2D] hover:bg-slate-200 text-[#97A0B3] hover:text-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="size-4" />
             </button>
 
             {/* Tone Icon Badge */}
-            <div className="size-16 rounded-3xl flex items-center justify-center mb-4 ring-8 shadow-inner bg-blue-500/20 text-[#60A5FA] ring-blue-500/30">
+            <div className="size-16 rounded-3xl flex items-center justify-center mb-4 ring-8 shadow-inner bg-blue-500/20 text-[#BCCCE6] ring-blue-500/30">
               <CheckCircle2 className="size-8" />
             </div>
 
@@ -865,7 +865,7 @@ export function PodClientAllocationsPage() {
                     setAlertModal(null);
                     navigate(`/lead/clients/${id}`);
                   }}
-                  className="px-5 py-3 rounded-2xl bg-[#1F2C3F] hover:bg-slate-200 text-[#F1F5F9] font-bold text-xs active:scale-95 transition-all cursor-pointer"
+                  className="px-5 py-3 rounded-2xl bg-[#161F2D] hover:bg-slate-200 text-[#F1F5F9] font-bold text-xs active:scale-95 transition-all cursor-pointer"
                 >
                   View Client Profile
                 </button>
@@ -894,7 +894,7 @@ export function PodClientAllocationsPage() {
               <button
                 type="button"
                 onClick={() => setReallocationModal(false)}
-                className="size-8 rounded-full bg-[#1F2C3F] hover:bg-slate-200 text-[#97A0B3] hover:text-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
+                className="size-8 rounded-full bg-[#161F2D] hover:bg-slate-200 text-[#97A0B3] hover:text-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="size-4" />
               </button>
@@ -928,7 +928,7 @@ export function PodClientAllocationsPage() {
               <button
                 type="button"
                 onClick={() => setReallocationModal(false)}
-                className="px-4 py-2 rounded-xl bg-[#1F2C3F] text-[#F1F5F9] text-xs font-bold hover:bg-slate-200 transition cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#161F2D] text-[#F1F5F9] text-xs font-bold hover:bg-slate-200 transition cursor-pointer"
               >
                 Cancel
               </button>

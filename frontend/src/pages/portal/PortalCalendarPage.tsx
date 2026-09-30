@@ -68,11 +68,11 @@ interface TypeConfig {
 const DEFAULT_TYPE_CONFIG: TypeConfig = {
   label: "Poster",
   icon: ImageIcon,
-  badgeBg: "bg-[#2B7BC4]",
+  badgeBg: "bg-[#7FA0D6]",
   badgeText: "text-white",
   border: "border-blue-200",
-  softBg: "bg-blue-50 text-[#1E609A] hover:bg-blue-100",
-  pillBg: "bg-blue-600/10 text-[#1E609A] border-blue-200",
+  softBg: "bg-blue-50 text-[#7FA0D6] hover:bg-blue-100",
+  pillBg: "bg-blue-600/10 text-[#7FA0D6] border-blue-200",
 };
 
 const TYPE_CONFIG: Record<string, TypeConfig> = {
@@ -351,7 +351,7 @@ export function PortalCalendarPage() {
   if (isSubLoading || isEntriesLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-[#2B7BC4]" />
+        <Loader2 className="size-8 animate-spin text-[#7FA0D6]" />
       </div>
     );
   }
@@ -433,7 +433,7 @@ export function PortalCalendarPage() {
                       isSelected 
                         ? "border-blue-500 bg-[#7FA0D6]/15 ring-2 ring-blue-500/20 shadow-lg scale-[1.01] z-10"
                         : isTodayCell
-                        ? "border-[#7FA0D6]/40 bg-[#131D2D] shadow-sm"
+                        ? "border-[#7FA0D6]/40 bg-[#161F2D] shadow-sm"
                         : "border-[#2A3446] hover:border-[#7FA0D6]/40 bg-[#0B111C]/40 hover:bg-[#161F2D] shadow-xs"
                     }`}
                   >
@@ -445,27 +445,27 @@ export function PortalCalendarPage() {
                     
                     <div className="mt-auto flex flex-col gap-1.5 w-full">
                       {scheduled > 0 && scheduled !== approved && (
-                        <div className="w-full rounded-full bg-blue-900/40 border border-blue-500/30 text-[#93C5FD] px-2.5 py-1 text-xs font-extrabold truncate text-left shadow-xs">
+                        <div className="w-full rounded-full bg-blue-900/40 border border-blue-500/30 text-[#BCCCE6] px-2.5 py-1 text-xs font-extrabold truncate text-left shadow-xs">
                           {scheduled} Deliverables
                         </div>
                       )}
                       {approved > 0 && (
-                        <div className="w-full rounded-full bg-blue-600/30 border border-blue-500/30 text-[#60A5FA] px-2.5 py-1 text-xs font-extrabold truncate text-left shadow-xs">
+                        <div className="w-full rounded-full bg-blue-600/30 border border-blue-500/30 text-[#BCCCE6] px-2.5 py-1 text-xs font-extrabold truncate text-left shadow-xs">
                           {approved} Approved
                         </div>
                       )}
                       {scheduled > 0 && approved === 0 && (
-                         <div className="w-full rounded-full bg-blue-900/40 border border-blue-500/30 text-[#93C5FD] px-2.5 py-1 text-xs font-extrabold truncate text-left">
+                         <div className="w-full rounded-full bg-blue-900/40 border border-blue-500/30 text-[#BCCCE6] px-2.5 py-1 text-xs font-extrabold truncate text-left">
                           {scheduled} Scheduled
                         </div>
                       )}
                       {dayEntries.length === 0 && day === 15 && (
-                         <div className="w-full rounded-full bg-blue-600/30 text-[#93C5FD] px-2.5 py-0.5 text-[11px] font-black truncate text-left shadow-2xs">
+                         <div className="w-full rounded-full bg-blue-600/30 text-[#BCCCE6] px-2.5 py-0.5 text-[11px] font-black truncate text-left shadow-2xs">
                           3 Scheduled
                         </div>
                       )}
                       {dayEntries.length === 0 && isSlaReview && (
-                         <div className="w-full rounded-full bg-blue-500/20 text-[#60A5FA] px-2.5 py-0.5 text-[11px] font-black truncate text-left shadow-2xs">
+                         <div className="w-full rounded-full bg-blue-500/20 text-[#BCCCE6] px-2.5 py-0.5 text-[11px] font-black truncate text-left shadow-2xs">
                           SLA Review
                         </div>
                       )}
@@ -487,7 +487,7 @@ export function PortalCalendarPage() {
               const activeDay = selectedDate || (isCurrentMonth ? today.getDate() : 1);
               const tasks = getDayEntries(activeDay);
               return (
-                <span className="inline-flex items-center rounded-full bg-[#1F2C3F] border border-[#2A3446] px-3 py-1 text-[12px] font-bold text-[#7FA0D6]">
+                <span className="inline-flex items-center rounded-full bg-[#161F2D] border border-[#2A3446] px-3 py-1 text-[12px] font-bold text-[#7FA0D6]">
                   {tasks.length > 0 ? `${tasks.length} Active` : '0 Active'}
                 </span>
               );
@@ -528,7 +528,7 @@ export function PortalCalendarPage() {
                       <span className="text-[10px] font-black text-[#7FA0D6] uppercase tracking-wider">
                         {podLabel}
                       </span>
-                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${isApproved ? "bg-blue-600/30 text-[#60A5FA] border-blue-500/30" : "bg-blue-950/80 text-blue-300 border-blue-700/50"}`}>
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${isApproved ? "bg-blue-600/30 text-[#BCCCE6] border-blue-500/30" : "bg-blue-950/80 text-blue-300 border-blue-700/50"}`}>
                          {statusLabel}
                       </span>
                     </div>
@@ -539,7 +539,7 @@ export function PortalCalendarPage() {
                     
                     <div className="flex items-center justify-between pt-2 border-t border-[#2A3446]/60 mt-auto">
                       <div className="flex items-center gap-2.5">
-                        <div className="size-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-[#2563EB]">
+                        <div className="size-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-[#7FA0D6]">
                           CP
                         </div>
                         <span className="text-[12px] font-bold text-slate-300">
@@ -581,7 +581,7 @@ export function PortalCalendarPage() {
                     ⚡ Flex Slot (30% Buffer)
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold bg-blue-50 text-[#1E609A] border border-blue-200">
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold bg-blue-50 text-[#7FA0D6] border border-blue-200">
                     🎯 Anchor Slot (70%)
                   </span>
                 )}
@@ -686,11 +686,11 @@ export function PortalCalendarPage() {
 
               {/* Topic and Publication Details */}
               <div>
-                <h3 className="text-lg font-black text-[#0D2137]">
+                <h3 className="text-lg font-black text-[#0B111C]">
                   {previewEntry.topic}
                 </h3>
                 <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
-                  <Clock className="size-3.5 text-[#2B7BC4]" />
+                  <Clock className="size-3.5 text-[#7FA0D6]" />
                   <span>Scheduled Publication: {previewEntry.date} at {previewEntry.scheduled_time || "11:00 AM"}</span>
                 </p>
               </div>
@@ -712,8 +712,8 @@ export function PortalCalendarPage() {
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-sm font-black text-[#0D2137] flex items-center gap-1.5">
-                        <Target className="size-4 text-[#2B7BC4]" />
+                      <h4 className="text-sm font-black text-[#0B111C] flex items-center gap-1.5">
+                        <Target className="size-4 text-[#7FA0D6]" />
                         <span>Select Concept Hook Angle (A / B / C)</span>
                       </h4>
                       <p className="text-[11px] text-slate-500">
@@ -725,7 +725,7 @@ export function PortalCalendarPage() {
                       type="button"
                       onClick={handleRerollConcept}
                       disabled={isConceptSubmitting}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-[#2B7BC4] hover:text-[#1E609A] disabled:opacity-50 cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-[#7FA0D6] hover:text-[#7FA0D6] disabled:opacity-50 cursor-pointer"
                       title="Generate new hook angles (5 daily quota)"
                     >
                       <RotateCcw className="size-3.5" />
@@ -752,13 +752,13 @@ export function PortalCalendarPage() {
                           }}
                           className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                             isSelected || isApprovedHook
-                              ? "border-[#2B7BC4] bg-[#F0F7FD] shadow-xs"
+                              ? "border-[#7FA0D6] bg-[#161F2D] shadow-xs"
                               : "border-slate-200 bg-white hover:border-slate-300"
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1.5">
                             <div className="flex items-center gap-2">
-                              <span className="size-5 rounded-full flex items-center justify-center text-[10px] font-black bg-[#2B7BC4] text-white">
+                              <span className="size-5 rounded-full flex items-center justify-center text-[10px] font-black bg-[#7FA0D6] text-white">
                                 {idx === 0 ? "A" : idx === 1 ? "B" : "C"}
                               </span>
                               <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
@@ -774,7 +774,7 @@ export function PortalCalendarPage() {
                             )}
                           </div>
 
-                          <p className="text-xs font-bold text-[#0D2137] leading-snug">
+                          <p className="text-xs font-bold text-[#0B111C] leading-snug">
                             &ldquo;{hook.text}&rdquo;
                           </p>
                           <p className="text-[11px] text-slate-500 mt-1 italic">
@@ -817,14 +817,14 @@ export function PortalCalendarPage() {
               {previewEntry.blueprint?.beats && previewEntry.blueprint.beats.length > 0 && (
                 <div className="space-y-2 pt-2 border-t border-slate-100">
                   <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <Film className="size-3.5 text-[#2B7BC4]" />
+                    <Film className="size-3.5 text-[#7FA0D6]" />
                     Shot-by-Shot Storyboard Beats
                   </h4>
                   <div className="space-y-2">
                     {previewEntry.blueprint.beats.map((beat, bIdx) => (
                       <div key={bIdx} className="p-3 rounded-xl bg-slate-50 border border-slate-200/60 text-xs space-y-1">
                         <div className="flex items-center justify-between text-[11px] font-bold text-slate-600">
-                          <span className="text-[#2B7BC4] font-extrabold">Shot {bIdx + 1} ({beat.timestamp_range})</span>
+                          <span className="text-[#7FA0D6] font-extrabold">Shot {bIdx + 1} ({beat.timestamp_range})</span>
                           <span className="px-1.5 py-0.5 rounded bg-slate-200/60 text-slate-700 font-semibold text-[10px]">
                             {beat.shot_type}
                           </span>
@@ -887,7 +887,7 @@ export function PortalCalendarPage() {
               <div className="flex gap-3 pt-2 border-t border-slate-100">
                 <Link
                   to="/portal/deliverables"
-                  className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-[#2B7BC4] hover:bg-[#1A5EA8] text-white font-bold text-xs shadow-xs transition-colors"
+                  className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-[#7FA0D6] hover:bg-[#7FA0D6] text-white font-bold text-xs shadow-xs transition-colors"
                 >
                   <span>Deliverables Dock</span>
                   <ExternalLink className="size-3.5" />

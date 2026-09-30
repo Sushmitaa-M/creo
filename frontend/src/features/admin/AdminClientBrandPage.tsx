@@ -32,7 +32,7 @@ function StatusBadge({ status }: { status: string }) {
     active: "bg-emerald-50 text-emerald-700 border-emerald-200",
     trialing: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
     expired: "bg-rose-50 text-rose-700 border-rose-200",
-    canceled: "bg-[#1F2C3F] text-[#F1F5F9] border-[#2A3446]",
+    canceled: "bg-[#161F2D] text-[#F1F5F9] border-[#2A3446]",
   };
   return (
     <span
@@ -86,7 +86,7 @@ function TagBadge({
     red: "bg-rose-50 text-rose-700 border-rose-200",
     green: "bg-emerald-50 text-emerald-700 border-emerald-200",
     amber: "bg-amber-50 text-amber-700 border-amber-200",
-    slate: "bg-[#1F2C3F] text-[#F1F5F9] border-[#2A3446]",
+    slate: "bg-[#161F2D] text-[#F1F5F9] border-[#2A3446]",
   };
   return (
     <span
@@ -103,7 +103,7 @@ function ColorSwatch({ color }: { color: string }) {
     <div className="flex items-center gap-2 rounded-lg border border-[#2A3446] bg-[#0B111C] px-2.5 py-1.5">
       <div
         className="size-5 rounded-md border border-[#2A3446] shadow-inner"
-        style={{ backgroundColor: isValid ? color : "#2B7BC4" }}
+        style={{ backgroundColor: isValid ? color : "#7FA0D6" }}
       />
       <span className="font-mono text-[11px] font-bold text-[#F1F5F9]">
         {color}
@@ -205,14 +205,14 @@ export function AdminClientBrandPage() {
         </div>
 
       {/* ── Client Header Hero ─────────────────────────────── */}
-      <div className="rounded-2xl border border-[#2A3446]/80 bg-gradient-to-br from-[#0D2137] to-[#1E609A] p-6 sm:p-8 text-white relative overflow-hidden">
+      <div className="rounded-2xl border border-[#2A3446]/80 bg-gradient-to-br from-[#0B111C] to-[#7FA0D6] p-6 sm:p-8 text-white relative overflow-hidden">
         {/* Ambient glow */}
         <div className="pointer-events-none absolute -top-20 -right-20 size-56 rounded-full bg-sky-400/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -left-16 size-44 rounded-full bg-[#7FA0D6]/150/15 blur-2xl" />
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-start gap-5">
           {/* Avatar */}
-          <div className="size-16 sm:size-20 rounded-2xl bg-gradient-to-br from-[#2B7BC4] to-[#0EA5E9] border-2 border-white/30 flex items-center justify-center text-2xl sm:text-3xl font-black shadow-lg shadow-blue-500/30 shrink-0">
+          <div className="size-16 sm:size-20 rounded-2xl bg-gradient-to-br from-[#7FA0D6] to-[#7FA0D6] border-2 border-white/30 flex items-center justify-center text-2xl sm:text-3xl font-black shadow-lg shadow-blue-500/30 shrink-0">
             {(client.full_name?.[0] || "C").toUpperCase()}
           </div>
 
@@ -360,7 +360,7 @@ export function AdminClientBrandPage() {
                   {writingRules.map((r, i) => (
                     <li
                       key={i}
-                      className="text-xs text-[#F1F5F9] pl-3 relative before:content-[''] before:absolute before:left-0 before:top-1.5 before:size-1.5 before:rounded-full before:bg-[#2B7BC4]"
+                      className="text-xs text-[#F1F5F9] pl-3 relative before:content-[''] before:absolute before:left-0 before:top-1.5 before:size-1.5 before:rounded-full before:bg-[#7FA0D6]"
                     >
                       {r}
                     </li>
@@ -572,7 +572,7 @@ export function AdminClientBrandPage() {
                       </p>
                       <div className="w-full h-1.5 bg-slate-200 rounded-full mt-1.5 overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-[#2B7BC4] to-[#0EA5E9] rounded-full transition-all"
+                          className="h-full bg-gradient-to-r from-[#7FA0D6] to-[#7FA0D6] rounded-full transition-all"
                           style={{
                             width: `${Math.min(100, q.quota > 0 ? (q.used / q.quota) * 100 : 0)}%`,
                           }}

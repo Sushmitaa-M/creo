@@ -474,6 +474,11 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
               userId={userId}
               onAccepted={handleTermsAccepted}
               onBack={() => handleSelectStep(1)}
+              onSkipToPayment={() => {
+                markStageReached(2);
+                handleSelectStep(3);
+              }}
+              isAlreadyAccepted={backendStage >= 2}
               isSubmitting={termsSubmitting}
               error={termsError}
             />

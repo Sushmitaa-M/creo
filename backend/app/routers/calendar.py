@@ -198,6 +198,7 @@ async def get_calendar_entries(
 @router.post("/{client_id}/draft-month", response_model=dict[str, Any])
 async def draft_calendar_month_endpoint(
     client_id: uuid.UUID | None = None,
+    month: str | None = Query(None, description="Target month in YYYY-MM format (e.g. 2026-10)"),
     actor: Actor = Depends(get_current_actor),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -205,7 +206,15 @@ async def draft_calendar_month_endpoint(
     target_id = client_id or actor.client_id or actor.user_id
     from app.services.dispatch_engine import draft_month_calendar
 
-    slots = await draft_month_calendar(db, target_id)
+    month_anchor = None
+    if month:
+        try:
+            parts = month.strip().split("-")
+            month_anchor = date(int(parts[0]), int(parts[1]), 1)
+        except Exception:
+            pass
+
+    slots = await draft_month_calendar(db, target_id, month_anchor=month_anchor)
     return {
         "status": "drafted",
         "client_id": str(target_id),
@@ -214,6 +223,38 @@ async def draft_calendar_month_endpoint(
         "posters": sum(1 for s in slots if s.slot_kind in ["poster", "static_post"]),
         "stories": sum(1 for s in slots if s.slot_kind in ["story", "carousel"]),
     }
+
+
+@router.post("/rebalance-month", response_model=dict[str, Any])
+@router.post("/{client_id}/rebalance-month", response_model=dict[str, Any])
+async def rebalance_calendar_month_endpoint(
+    client_id: uuid.UUID | None = None,
+    month: str | None = Query(None, description="Target month in YYYY-MM format (e.g. 2026-10)"),
+    actor: Actor = Depends(get_current_actor),
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
+    """Rebalance calendar deliverables across the month to ensure manageable daily pod workload and exact quota match."""
+    target_id = client_id or actor.client_id or actor.user_id
+    from app.services.dispatch_engine import rebalance_month_calendar
+
+    month_anchor = None
+    if month:
+        try:
+            parts = month.strip().split("-")
+            month_anchor = date(int(parts[0]), int(parts[1]), 1)
+        except Exception:
+            pass
+
+    slots = await rebalance_month_calendar(db, target_id, month_anchor=month_anchor)
+    return {
+        "status": "rebalanced",
+        "client_id": str(target_id),
+        "total_slots": len(slots),
+        "reels": sum(1 for s in slots if s.slot_kind == "reel"),
+        "posters": sum(1 for s in slots if s.slot_kind in ["poster", "static_post"]),
+        "stories": sum(1 for s in slots if s.slot_kind in ["story", "carousel"]),
+    }
+
 
 
 @router.post("/approve", response_model=dict[str, Any])

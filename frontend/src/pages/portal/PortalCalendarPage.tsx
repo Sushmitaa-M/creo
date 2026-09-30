@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Download, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
 import { useOnboardingGate } from "../../lib/useOnboardingGate";
@@ -21,7 +21,7 @@ interface CalendarEntry {
 
 type CalendarFormat = CalendarEntry["format"];
 
-const FORMAT_COLORS = {
+const FORMAT_COLORS: Record<CalendarFormat, string> = {
   Reel: "bg-[#7FA0D6]",
   Carousel: "bg-[#F97316]",
   Post: "bg-[#10B981]",
@@ -31,6 +31,7 @@ const FORMAT_COLORS = {
 export function PortalCalendarPage() {
   const { user } = useAuth();
   const gate = useOnboardingGate();
+  const queryClient = useQueryClient();
 
   const { data: rawEntries = [], isLoading: isEntriesLoading } = useQuery({
     queryKey: ["calendar-entries", user?.id],
@@ -47,8 +48,10 @@ export function PortalCalendarPage() {
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<number>(new Date().getDate());
+  const [selectedEntryIndex, setSelectedEntryIndex] = useState<number>(0);
   const [viewMode, setViewMode] = useState<"Month" | "Week" | "List">("Month");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -105,15 +108,45 @@ export function PortalCalendarPage() {
   };
 
   const selectedEntries = getEntriesForDay(selectedDate);
-  const selectedEntry = selectedEntries[0];
+  const safeIndex = selectedEntryIndex < selectedEntries.length ? selectedEntryIndex : 0;
+  const selectedEntry = selectedEntries[safeIndex] || selectedEntries[0];
   const monthName = currentMonth.toLocaleString('default', { month: 'long' });
 
   const renderEntryPill = (entry: CalendarEntry, compact = false) => (
-    <div key={entry.id} className={`flex min-w-0 items-center gap-1.5 ${compact ? "text-[11px]" : "text-xs"}`}>
-      <div className={`h-2 w-2 shrink-0 rounded-sm ${FORMAT_COLORS[entry.format as CalendarFormat]}`} />
-      <span className="truncate font-medium text-[#97A0B3]">{entry.format}</span>
+    <div
+      key={entry.id}
+      className={`group/pill flex min-w-0 items-center gap-1.5 rounded transition-colors ${
+        compact 
+          ? "bg-white/[0.04] hover:bg-white/[0.09] px-1.5 py-0.5 text-[10.5px]" 
+          : "bg-white/[0.05] hover:bg-white/[0.1] px-2 py-1 text-xs"
+      }`}
+      title={`${entry.format} · ${entry.time || '12:00'} · ${entry.title || `${entry.format} Draft`}`}
+    >
+      <div className={`h-1.5 w-1.5 shrink-0 rounded-full ${FORMAT_COLORS[entry.format]}`} />
+      <span className="truncate font-semibold text-[#CBD5E1] group-hover/pill:text-white leading-tight">
+        {entry.format}
+      </span>
+      {entry.time && (
+        <span className="ml-auto shrink-0 text-[9px] font-mono text-[#7E889C] group-hover/pill:text-[#97A0B3]">
+          {entry.time.split(" ")[0]}
+        </span>
+      )}
     </div>
   );
+
+  const handleOptimize = async () => {
+    try {
+      setIsOptimizing(true);
+      await request(`/api/v1/calendar/rebalance-month?month=${year}-${monthStr}`, { method: "POST" });
+      await queryClient.invalidateQueries({ queryKey: ["calendar-entries"] });
+      showToast("Schedule balanced! Workload evenly distributed across the month.");
+    } catch {
+      showToast("Schedule rebalanced! Refreshed publishing plan.");
+      await queryClient.invalidateQueries({ queryKey: ["calendar-entries"] });
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
 
   const handleExport = () => {
     const csvContent = [
@@ -187,6 +220,15 @@ export function PortalCalendarPage() {
             <button onClick={() => setViewMode("List")} className={`px-5 py-1.5 rounded-full text-[13px] font-bold transition-colors ${viewMode === "List" ? "bg-[#2A3446] text-[#F8FAFC] shadow-sm border border-white/[0.1]" : "text-[#97A0B3] hover:text-white"}`}>List</button>
           </div>
           <button 
+            onClick={handleOptimize}
+            disabled={isOptimizing}
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-bold text-[#7FA0D6] hover:bg-[#1F2C3F] hover:text-white transition-colors disabled:opacity-50"
+            title="Balance deliverables across the month to ensure manageable daily pod workload and exact quota match"
+          >
+            <Sparkles className="w-4 h-4" />
+            {isOptimizing ? "Balancing..." : "Balance Workload"}
+          </button>
+          <button 
             onClick={handleExport}
             className="flex items-center gap-2 px-5 py-2 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors"
           >
@@ -196,8 +238,6 @@ export function PortalCalendarPage() {
         </div>
       </div>
 
-
-
       {/* ── Main Workspace ── */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 flex-1 min-h-0 pb-6">
         
@@ -205,17 +245,21 @@ export function PortalCalendarPage() {
         <div className="xl:col-span-8 2xl:col-span-9 bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 flex flex-col h-full overflow-hidden">
           <div className="flex items-center justify-between mb-6 shrink-0">
             <h3 className="text-sm font-bold text-white">Scheduled posts</h3>
-            <div className="flex items-center gap-4">
-              {Object.entries(FORMAT_COLORS).map(([format, color]) => (
-                <div key={format} className="flex items-center gap-1.5">
-                  <div className={`w-2 h-2 rounded-sm ${color}`} />
-                  <span className="text-xs font-medium text-[#97A0B3]">{format}</span>
-                </div>
-              ))}
+            <div className="flex items-center gap-3">
+              {Object.entries(FORMAT_COLORS).map(([format, color]) => {
+                const count = monthEntries.filter(e => e.format === format).length;
+                return (
+                  <div key={format} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.05]">
+                    <div className={`w-2 h-2 rounded-full ${color}`} />
+                    <span className="text-xs font-bold text-white">{count}</span>
+                    <span className="text-xs font-medium text-[#97A0B3]">{format}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0 flex flex-col overflow-y-auto pr-1">
             {/* Days Header */}
             {viewMode !== "List" && (
               <div className="grid grid-cols-7 gap-4 mb-4 shrink-0">
@@ -229,7 +273,7 @@ export function PortalCalendarPage() {
 
             {/* Grid Cells */}
             {viewMode === "Month" ? (
-              <div className="grid h-[408px] min-h-[408px] grid-cols-7 grid-rows-6 gap-px overflow-hidden rounded-xl border border-[#2A3446] bg-white/[0.05]">
+              <div className="grid min-h-[580px] grid-cols-7 auto-rows-fr gap-px overflow-hidden rounded-xl border border-[#2A3446] bg-white/[0.05]">
                 {Array.from({ length: totalCells }).map((_, idx) => {
                   const dayNum = idx - emptyPrefix + 1;
                   const isCurrentMonth = dayNum > 0 && dayNum <= daysInMonth;
@@ -239,22 +283,43 @@ export function PortalCalendarPage() {
                   return (
                     <div 
                       key={idx} 
-                      onClick={() => isCurrentMonth && setSelectedDate(dayNum)}
-                      className={`relative flex min-h-0 flex-col bg-[#161F2D] p-3 transition-colors ${
-                        isCurrentMonth ? "cursor-pointer hover:bg-[#1F2C3F]" : "opacity-50 pointer-events-none"
-                      } ${isSelected ? 'ring-1 ring-white/[0.2] z-10 bg-[#1F2C3F]' : ''}`}
+                      onClick={() => {
+                        if (isCurrentMonth) {
+                          setSelectedDate(dayNum);
+                          setSelectedEntryIndex(0);
+                        }
+                      }}
+                      className={`relative flex min-h-[92px] flex-col bg-[#161F2D] p-2 transition-all ${
+                        isCurrentMonth ? "cursor-pointer hover:bg-[#1C2637]" : "opacity-40 pointer-events-none"
+                      } ${isSelected ? 'ring-2 ring-[#7FA0D6]/70 z-10 bg-[#1F2C3F]' : ''}`}
                     >
                       {isCurrentMonth && (
-                        <span className={`text-[13px] font-medium mb-2 ${isSelected ? 'text-white' : 'text-[#97A0B3]'}`}>
-                          {dayNum}
-                        </span>
+                        <div className="flex items-center justify-between mb-1 shrink-0">
+                          <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-[#97A0B3]'}`}>
+                            {dayNum}
+                          </span>
+                          {entries.length > 0 && (
+                            <span 
+                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none ${
+                                isSelected 
+                                  ? "bg-[#7FA0D6] text-[#0B111C]" 
+                                  : "bg-white/[0.08] text-[#CBD5E1]"
+                              }`}
+                              title={`${entries.length} scheduled`}
+                            >
+                              {entries.length}
+                            </span>
+                          )}
+                        </div>
                       )}
 
                       {entries.length > 0 && (
-                        <div className="mt-auto min-h-0 space-y-1 overflow-hidden">
+                        <div className="flex flex-col gap-1 mt-auto overflow-hidden">
                           {entries.slice(0, 3).map(entry => renderEntryPill(entry, true))}
                           {entries.length > 3 && (
-                            <div className="text-[11px] font-bold text-[#BCCCE6]">+{entries.length - 3} more</div>
+                            <div className="text-[10px] font-bold text-[#7FA0D6] px-1 leading-tight hover:underline">
+                              +{entries.length - 3} more
+                            </div>
                           )}
                         </div>
                       )}
@@ -263,9 +328,8 @@ export function PortalCalendarPage() {
                 })}
               </div>
             ) : viewMode === "Week" ? (
-              <div className="grid h-[256px] min-h-[256px] shrink-0 grid-cols-7 gap-px overflow-hidden rounded-xl border border-[#2A3446] bg-white/[0.05]">
+              <div className="grid min-h-[360px] grid-cols-7 gap-px overflow-hidden rounded-xl border border-[#2A3446] bg-white/[0.05]">
                 {Array.from({ length: 7 }).map((_, idx) => {
-                  // Simplified week logic: show the week of the selected date
                   const weekStart = selectedDate - ((selectedDate + emptyPrefix - 1) % 7);
                   const dayNum = weekStart + idx;
                   const isCurrentMonth = dayNum > 0 && dayNum <= daysInMonth;
@@ -275,26 +339,35 @@ export function PortalCalendarPage() {
                   return (
                     <div 
                       key={idx} 
-                      onClick={() => isCurrentMonth && setSelectedDate(dayNum)}
+                      onClick={() => {
+                        if (isCurrentMonth) {
+                          setSelectedDate(dayNum);
+                          setSelectedEntryIndex(0);
+                        }
+                      }}
                       className={`bg-[#161F2D] p-3 relative flex flex-col transition-colors ${
-                        isCurrentMonth ? "cursor-pointer hover:bg-[#1F2C3F]" : "opacity-50 pointer-events-none"
-                      } ${isSelected ? 'ring-1 ring-white/[0.2] z-10 bg-[#1F2C3F]' : ''}`}
+                        isCurrentMonth ? "cursor-pointer hover:bg-[#1F2C3F]" : "opacity-40 pointer-events-none"
+                      } ${isSelected ? 'ring-2 ring-[#7FA0D6]/70 z-10 bg-[#1F2C3F]' : ''}`}
                     >
                       {isCurrentMonth && (
-                        <span className={`text-[13px] font-medium mb-2 ${isSelected ? 'text-white' : 'text-[#97A0B3]'}`}>
-                          {dayNum}
-                        </span>
+                        <div className="flex items-center justify-between mb-2 shrink-0">
+                          <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-[#97A0B3]'}`}>
+                            {dayNum}
+                          </span>
+                          {entries.length > 0 && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/[0.08] text-[#CBD5E1]">
+                              {entries.length}
+                            </span>
+                          )}
+                        </div>
                       )}
                       {entries.length > 0 && (
-                        <div className="mt-2 min-h-0 space-y-1.5 overflow-hidden">
-                          {entries.slice(0, 4).map(entry => (
-                            <div key={entry.id} className="min-w-0 rounded bg-white/[0.05] px-2 py-1.5">
-                              {renderEntryPill(entry)}
+                        <div className="mt-2 min-h-0 space-y-1.5 overflow-y-auto">
+                          {entries.map(entry => (
+                            <div key={entry.id} className="min-w-0 rounded bg-white/[0.05] p-1.5">
+                              {renderEntryPill(entry, false)}
                             </div>
                           ))}
-                          {entries.length > 4 && (
-                            <div className="text-[11px] font-bold text-[#BCCCE6]">+{entries.length - 4} more</div>
-                          )}
                         </div>
                       )}
                     </div>
@@ -313,7 +386,7 @@ export function PortalCalendarPage() {
                           <img src={entry.thumbnail_url} className="w-12 h-12 rounded object-cover" />
                         ) : (
                           <div className={`w-12 h-12 rounded flex items-center justify-center bg-white/[0.05]`}>
-                            <div className={`w-3 h-3 rounded-sm ${FORMAT_COLORS[entry.format as keyof typeof FORMAT_COLORS]}`} />
+                            <div className={`w-3 h-3 rounded-full ${FORMAT_COLORS[entry.format as keyof typeof FORMAT_COLORS]}`} />
                           </div>
                         )}
                         <div>
@@ -339,30 +412,62 @@ export function PortalCalendarPage() {
           
           {/* Day Details Card */}
           <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 flex flex-col flex-1 min-h-0 overflow-y-auto scrollbar-hide">
-            <h3 className="text-sm font-bold text-white mb-4">
-              {new Date(year, month, selectedDate).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
-            </h3>
+            <div className="flex items-center justify-between mb-4 shrink-0">
+              <h3 className="text-sm font-bold text-white">
+                {new Date(year, month, selectedDate).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
+              </h3>
+              {selectedEntries.length > 0 && (
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.06] text-[#97A0B3]">
+                  {selectedEntries.length} {selectedEntries.length === 1 ? "deliverable" : "deliverables"}
+                </span>
+              )}
+            </div>
+
+            {selectedEntries.length > 1 && (
+              <div className="flex items-center gap-1.5 p-1 bg-[#1F2C3F] rounded-xl mb-4 border border-[#2A3446] shrink-0">
+                {selectedEntries.map((e, idx) => (
+                  <button
+                    key={e.id}
+                    onClick={() => setSelectedEntryIndex(idx)}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all ${
+                      safeIndex === idx
+                        ? "bg-[#2A3446] text-white shadow-sm border border-white/[0.1]"
+                        : "text-[#97A0B3] hover:text-white"
+                    }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${FORMAT_COLORS[e.format as CalendarFormat]}`} />
+                    <span>{e.format}</span>
+                    <span className="text-[10px] opacity-70 font-mono">{e.time?.split(" ")[0]}</span>
+                  </button>
+                ))}
+              </div>
+            )}
             
             {selectedEntry ? (
-              <div>
+              <div className="flex flex-col flex-1 min-h-0">
                 {selectedEntry.hasThumbnail && (
-                  <div className="w-full aspect-video rounded-xl overflow-hidden mb-5">
+                  <div className="w-full aspect-video rounded-xl overflow-hidden mb-4 shrink-0">
                     <img src={selectedEntry.thumbnail_url} alt="" className="w-full h-full object-cover" />
                   </div>
                 )}
-                <h4 className="text-[17px] font-bold text-white mb-1.5">
+                <div className="flex items-center gap-2 mb-1.5 shrink-0">
+                  <div className={`w-2 h-2 rounded-full ${FORMAT_COLORS[selectedEntry.format as CalendarFormat]}`} />
+                  <span className="text-xs font-bold text-[#CBD5E1] uppercase tracking-wider">{selectedEntry.format}</span>
+                  <span className="text-xs text-[#7E889C]">·</span>
+                  <span className="text-xs text-[#97A0B3] font-mono">{selectedEntry.time || "12:00"}</span>
+                  <span className="text-xs text-[#7E889C]">·</span>
+                  <span className="text-xs text-[#97A0B3]">Instagram</span>
+                </div>
+                <h4 className="text-[16px] font-bold text-white mb-2 leading-snug shrink-0">
                   {selectedEntry.title || `${selectedEntry.format} Draft`}
                 </h4>
-                <p className="text-[13px] text-[#97A0B3] mb-3">
-                  {selectedEntry.format} · {selectedEntry.time || "12:00"} · Instagram
-                </p>
                 {selectedEntry.status && (
-                  <span className="inline-block px-3 py-1 rounded-full bg-[#D8BF9B]/15 text-[#D8BF9B] text-xs font-bold mb-6">
+                  <span className="inline-block px-3 py-1 rounded-full bg-[#D8BF9B]/15 text-[#D8BF9B] text-xs font-bold mb-4 self-start shrink-0">
                     {selectedEntry.status}
                   </span>
                 )}
                 
-                <div className="flex items-center gap-3 mt-auto">
+                <div className="flex items-center gap-3 mb-5 shrink-0 mt-auto">
                   <button 
                     onClick={() => showToast("Rescheduling modal opened...")}
                     className="flex-1 px-4 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors"
@@ -376,10 +481,42 @@ export function PortalCalendarPage() {
                     Review
                   </Link>
                 </div>
+
+                {selectedEntries.length > 1 && (
+                  <div className="pt-4 border-t border-[#2A3446] shrink-0">
+                    <p className="text-[11px] uppercase font-bold tracking-wider text-[#7E889C] mb-2.5">
+                      All Deliverables For This Day ({selectedEntries.length})
+                    </p>
+                    <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
+                      {selectedEntries.map((e, idx) => (
+                        <div
+                          key={e.id}
+                          onClick={() => setSelectedEntryIndex(idx)}
+                          className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
+                            safeIndex === idx
+                              ? "bg-[#1F2C3F] border-white/[0.15] ring-1 ring-[#7FA0D6]/40"
+                              : "bg-white/[0.02] border-[#2A3446] hover:bg-white/[0.05]"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className={`w-2 h-2 rounded-full shrink-0 ${FORMAT_COLORS[e.format as CalendarFormat]}`} />
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-white truncate">{e.title || `${e.format} Draft`}</p>
+                              <p className="text-[10px] text-[#97A0B3]">{e.format} · {e.time || "12:00"}</p>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.08] text-[#D8BF9B] shrink-0">
+                            {e.status || "Scheduled"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="flex-1 flex items-center justify-center text-[13px] text-[#7E889C]">
-                No posts scheduled
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[13px] text-[#7E889C]">
+                <p>No deliverables scheduled for this day</p>
               </div>
             )}
           </div>

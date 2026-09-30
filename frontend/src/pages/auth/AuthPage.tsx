@@ -486,7 +486,8 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={mode === "signin" ? "admin@creo.agency" : "founder@agency.com"} 
-                      className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
+                      className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full rounded-md"
+                      style={{ colorScheme: "dark" }}
                       autoComplete="email"
                       required
                     />
@@ -505,7 +506,8 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder={mode === "signin" ? "••••••••" : "Min. 8 chars"} 
-                      className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
+                      className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full rounded-md"
+                      style={{ colorScheme: "dark" }}
                       autoComplete={mode === "signin" ? "current-password" : "new-password"}
                       required
                     />

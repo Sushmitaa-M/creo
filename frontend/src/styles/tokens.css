@@ -702,3 +702,65 @@ html.lenis body {
     animation: none !important;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Browser Autofill / Autocomplete Reset
+   Eliminates Chrome/Safari/Edge grayish-blue background shade (#e8f0fe or rgba(70,90,126,0.4))
+───────────────────────────────────────────────────────────────────────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #0A0F18 inset !important;
+  box-shadow: 0 0 0 1000px #0A0F18 inset !important;
+  -webkit-text-fill-color: #F8FAFC !important;
+  caret-color: #F8FAFC !important;
+  color: #F8FAFC !important;
+  transition: background-color 5000000s ease-in-out 0s, color 5000000s ease-in-out 0s !important;
+}
+
+input:-moz-autofill,
+input:-moz-autofill:hover,
+input:-moz-autofill:focus,
+textarea:-moz-autofill,
+select:-moz-autofill {
+  box-shadow: 0 0 0 1000px #0A0F18 inset !important;
+  -moz-text-fill-color: #F8FAFC !important;
+  caret-color: #F8FAFC !important;
+  color: #F8FAFC !important;
+  filter: none !important;
+}
+
+/* Surface-specific overrides when inputs sit in other dark surfaces */
+.bg-\[\#0B111C\] input:-webkit-autofill,
+.bg-\[\#0B111C\] input:-webkit-autofill:hover,
+.bg-\[\#0B111C\] input:-webkit-autofill:focus,
+.bg-\[\#0B111C\] input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #0B111C inset !important;
+  box-shadow: 0 0 0 1000px #0B111C inset !important;
+}
+
+.bg-\[\#121926\] input:-webkit-autofill,
+.bg-\[\#121926\] input:-webkit-autofill:hover,
+.bg-\[\#121926\] input:-webkit-autofill:focus,
+.bg-\[\#121926\] input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #121926 inset !important;
+  box-shadow: 0 0 0 1000px #121926 inset !important;
+}
+
+.bg-\[\#161F2D\] input:-webkit-autofill,
+.bg-\[\#161F2D\] input:-webkit-autofill:hover,
+.bg-\[\#161F2D\] input:-webkit-autofill:focus,
+.bg-\[\#161F2D\] input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #161F2D inset !important;
+  box-shadow: 0 0 0 1000px #161F2D inset !important;
+}
+

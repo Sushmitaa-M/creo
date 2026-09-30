@@ -49,6 +49,13 @@ class Settings(BaseSettings):
         default="postgresql+asyncpg://postgres:postgres@localhost:5432/creo"
     )
 
+    # Connection pool tuning (per worker process). Set DB_USE_NULLPOOL=true to
+    # fall back to opening a fresh connection for every request.
+    DB_USE_NULLPOOL: bool = Field(default=False)
+    DB_POOL_SIZE: int = Field(default=5)
+    DB_MAX_OVERFLOW: int = Field(default=5)
+    DB_POOL_RECYCLE_SECONDS: int = Field(default=300)
+
     @field_validator("DATABASE_URL", "DIRECT_DATABASE_URL", "REDIS_URL", mode="before")
     @classmethod
     def strip_urls(cls, v: Any) -> Any:

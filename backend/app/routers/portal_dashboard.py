@@ -29,11 +29,16 @@ async def get_portal_dashboard(
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """Fetch aggregated real-time dashboard data for a client."""
+    from app.services.onboarding_service import get_current_stage
+
+    current_stage: int | None = None
     if actor.role == "client":
         target_client_id = actor.client_id or actor.user_id
-        from app.services.onboarding_service import get_onboarding_status
-        ob_status = await get_onboarding_status(db, target_client_id)
-        if not ob_status.is_complete:
+        current_stage = await get_current_stage(db, target_client_id)
+        if current_stage < 8:
+            # Full status is only needed to describe where to resume
+            from app.services.onboarding_service import get_onboarding_status
+            ob_status = await get_onboarding_status(db, target_client_id)
             raise HTTPException(
                 status_code=403,
                 detail={
@@ -86,8 +91,8 @@ async def get_portal_dashboard(
     sub = sub_check["subscription"]
     plan = sub_check["plan"]
 
-    from app.services.onboarding_service import get_current_stage
-    current_stage = await get_current_stage(db, target_client_id)
+    if current_stage is None:
+        current_stage = await get_current_stage(db, target_client_id)
 
     active_plan = None
     if sub and plan and sub_check["is_active"]:

@@ -436,7 +436,9 @@ async def synthesize_brand_dna(answers: dict[str, Any]) -> tuple[BrandDNA, str]:
 # §6.5: REVIEW, VERSIONING & REGENERATION
 # ==============================================================================
 
-async def run_brand_dna_pipeline(db: AsyncSession, client_id: uuid.UUID) -> BrandDNA:
+async def run_brand_dna_pipeline(
+    db: AsyncSession, client_id: uuid.UUID, notify_team: bool = True
+) -> BrandDNA:
     """Load client questionnaire answers, run synthesis chain, and persist results."""
     q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
     quest = (await db.execute(q_stmt)).scalar_one_or_none()
@@ -473,10 +475,12 @@ async def run_brand_dna_pipeline(db: AsyncSession, client_id: uuid.UUID) -> Bran
     await db.refresh(profile)
     logger.info("brand_dna_pipeline_completed", client_id=str(client_id), source=source)
 
-    # If pod is already assigned, deliver updated Brand DNA brief to the team
+    # If pod is already assigned, deliver updated Brand DNA brief to the team (in the background)
+    if not notify_team:
+        return dna
     try:
-        from app.services.onboarding_service import notify_team_of_new_client_summary
-        await notify_team_of_new_client_summary(db, client_id)
+        from app.services.onboarding_service import schedule_team_notification
+        schedule_team_notification(client_id)
     except Exception as e_notif:
         logger.warning("failed_to_notify_team_of_brand_dna", error=str(e_notif))
 

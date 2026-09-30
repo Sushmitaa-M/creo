@@ -6,6 +6,7 @@ Never reads a stored column for stage, never accepts a stage from the request bo
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -87,9 +88,6 @@ async def get_onboarding_status(db: AsyncSession, client_id: uuid.UUID) -> Onboa
     profile_res = await db.execute(profile_stmt)
     profile = profile_res.scalar_one_or_none()
 
-    q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
-    quest = (await db.execute(q_stmt)).scalar_one_or_none()
-
     is_complete = stage >= 8
 
     # Derive resume section and next required stage & route
@@ -108,6 +106,9 @@ async def get_onboarding_status(db: AsyncSession, client_id: uuid.UUID) -> Onboa
         last_stage_name = STAGE_NAMES[2]
     elif stage == 3:
         next_required = "questionnaire"
+        # The questionnaire row is only needed to pick the resume section at this stage
+        q_stmt = select(Questionnaire).where(Questionnaire.user_id == client_id)
+        quest = (await db.execute(q_stmt)).scalar_one_or_none()
         resume_section = get_first_incomplete_section(quest)
         next_route = "/onboarding/questionnaire"
         last_stage_name = STAGE_NAMES[3]
@@ -577,7 +578,8 @@ async def complete_onboarding(db: AsyncSession, client_id: uuid.UUID) -> Onboard
     # Prerequisite 4: Brand DNA generated
     if not profile.brand_dna:
         from app.services.brand_dna import run_brand_dna_pipeline
-        await run_brand_dna_pipeline(db, client_id)
+        # The pod brief is sent once below, after assignment
+        await run_brand_dna_pipeline(db, client_id, notify_team=False)
         await db.refresh(profile)
         if not profile.brand_dna:
             raise Conflict("Brand DNA generation must complete before assigning creative pod", code="BRAND_DNA_REQUIRED")
@@ -622,17 +624,35 @@ async def complete_onboarding(db: AsyncSession, client_id: uuid.UUID) -> Onboard
             "role": "Lead Graphic Designer (Posters & Carousels)",
         })
 
-    # Automatically notify and email the assigned team lead & specialists with the client's Brand DNA summary
-    try:
-        await notify_team_of_new_client_summary(db, client_id)
-    except Exception as e_notify:
-        logger.error("failed_to_notify_team_of_onboarding_summary", error=str(e_notify))
+    # Notify and email the assigned team lead & specialists with the client's Brand DNA summary.
+    # Runs after the response so the client isn't kept waiting on one SMTP round trip per pod member.
+    schedule_team_notification(client_id)
 
     return OnboardingCompleteResponse(
         status="completed",
         onboarding_completed_at=now,
         assigned_team=assigned_team,
     )
+
+
+_background_tasks: set[asyncio.Task[None]] = set()
+
+
+async def _notify_team_in_background(client_id: uuid.UUID) -> None:
+    from app.db.session import AsyncSessionLocal
+
+    try:
+        async with AsyncSessionLocal() as bg_db:
+            await notify_team_of_new_client_summary(bg_db, client_id)
+    except Exception as e_notify:
+        logger.error("failed_to_notify_team_of_onboarding_summary", error=str(e_notify))
+
+
+def schedule_team_notification(client_id: uuid.UUID) -> None:
+    """Fire-and-forget the pod brief emails on their own DB session."""
+    task = asyncio.create_task(_notify_team_in_background(client_id))
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
 
 
 async def notify_team_of_new_client_summary(

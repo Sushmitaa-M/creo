@@ -49,6 +49,10 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
+      # Celery tasks run asyncio.run() per task, so pooled asyncpg connections
+      # cannot be reused across tasks; the web service keeps its pool.
+      - key: DB_USE_NULLPOOL
+        value: "true"
       - key: ENVIRONMENT
         value: production
       - key: DATABASE_URL

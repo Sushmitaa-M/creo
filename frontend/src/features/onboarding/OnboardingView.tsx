@@ -32,9 +32,9 @@ function ProgressStepper({
   onSelectStep?: (step: number) => void;
 }) {
   return (
-    <div className="w-full mb-8 sm:mb-10">
+    <div className="w-full mb-4 sm:mb-5">
       {/* Stepper Card */}
-      <div className="relative bg-[#161F2D] rounded-2xl shadow-xl border border-[#2A3446] px-3 sm:px-8 py-5">
+      <div className="relative bg-[#161F2D] rounded-2xl shadow-xl border border-[#2A3446] px-3 sm:px-8 py-3.5">
         <div className="flex items-start justify-between relative">
 
           {/* Background track line - mathematically centered between step 1 (10%) and step 5 (90%) */}
@@ -335,7 +335,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
     // No polling: every step updates the cache itself after its request succeeds.
     // Refetch on focus still picks up changes made in another tab (e.g. a payment).
     staleTime: 15_000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 
   /**
@@ -440,7 +440,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   }
 
   return (
-    <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col items-center pb-20 sm:pb-28">
+    <div className="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col items-center pb-6">
       {/* Visual Stepper */}
       <ProgressStepper
         activeStep={currentStep}

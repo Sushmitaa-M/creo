@@ -214,7 +214,7 @@ function OnboardingPageWrapper() {
       </header>
 
       {/* Main Onboarding Canvas - full page view with generous space */}
-      <main className="flex-1 max-w-5xl lg:max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col items-center">
+      <main className="flex-1 max-w-5xl lg:max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex flex-col items-center">
         <OnboardingErrorBoundary>
           <Suspense fallback={<CreoInlineLoader label="Loading your onboarding" />}>
             <OnboardingView userId={userId} onPortalLaunch={() => navigate("/portal")} />

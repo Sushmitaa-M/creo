@@ -290,6 +290,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   const { data: qState, isLoading } = useQuery({
     queryKey: ["questionnaire-state", userId],
     queryFn: () => fetchQuestionnaireState(userId),
+    staleTime: 10 * 60_000,
   });
 
   useEffect(() => {

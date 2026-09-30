@@ -128,12 +128,12 @@ export function StageTerms({ onAccepted, onBack, isSubmitting, error }: StageTer
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full space-y-6"
+      className="w-full space-y-3 sm:space-y-4"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch lg:h-[calc(100dvh-335px)] lg:min-h-[480px] lg:max-h-[610px]">
         {/* LEFT COLUMN: Summary & Requirements */}
         <div className="lg:col-span-4 flex flex-col">
-          <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 sm:p-7 shadow-xl h-full flex flex-col justify-between">
+          <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-5 shadow-xl h-full flex flex-col justify-between overflow-y-auto">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7FA0D6]/20 border border-[#7FA0D6]/30 text-[#BCCCE6] text-[11px] font-bold uppercase tracking-wider mb-4 shadow-sm w-fit">
                 Step 2 of 5
@@ -141,11 +141,11 @@ export function StageTerms({ onAccepted, onBack, isSubmitting, error }: StageTer
               <h2 className="text-xl sm:text-2xl font-bold font-display text-white tracking-tight mb-2">
                 Master Service Agreement
               </h2>
-              <p className="text-sm text-[#94A3B8] mb-6 leading-relaxed">
+              <p className="text-sm text-[#94A3B8] mb-4 leading-relaxed">
                 Please review the terms of service below. Scroll to the bottom of the agreement to unlock the acceptance button.
               </p>
 
-              <div className="rounded-xl border border-[#2A3446] bg-[#0B111C] p-4 mb-6">
+              <div className="rounded-xl border border-[#2A3446] bg-[#0B111C] p-3 mb-3">
                 <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-[#2A3446]">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-white">
                     <FileText className="w-4 h-4 text-[#7FA0D6]" />
@@ -205,7 +205,7 @@ export function StageTerms({ onAccepted, onBack, isSubmitting, error }: StageTer
 
         {/* RIGHT COLUMN: Document Viewer */}
         <div className="lg:col-span-8 flex flex-col">
-          <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 sm:p-7 shadow-xl flex flex-col h-full relative overflow-hidden">
+          <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-5 shadow-xl flex flex-col h-full relative overflow-hidden">
             
             {/* Document Header */}
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-[#2A3446]">
@@ -236,7 +236,7 @@ export function StageTerms({ onAccepted, onBack, isSubmitting, error }: StageTer
             <div
               ref={scrollContainerRef}
               onScroll={handleScroll}
-              className="flex-1 min-h-[380px] h-[52vh] max-h-[580px] overflow-y-auto bg-[#0B111C] border border-[#2A3446] rounded-xl p-6 sm:p-7 font-mono text-xs text-[#CBD5E1] leading-relaxed whitespace-pre-wrap select-text scroll-smooth shadow-inner"
+              className="flex-1 min-h-[300px] overflow-y-auto bg-[#0B111C] border border-[#2A3446] rounded-xl p-5 font-mono text-xs text-[#CBD5E1] leading-relaxed whitespace-pre-wrap select-text scroll-smooth shadow-inner"
             >
               {MSA_TEXT}
               {/* IntersectionObserver sentinel */}

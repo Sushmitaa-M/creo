@@ -13,7 +13,6 @@ import {
   AboutPage,
   AuthPage,
   ClientsPage,
-  FaqPage,
   GoogleCallbackPage,
   OnboardingView,
   PortalAccountPage,
@@ -327,7 +326,7 @@ function SupportRedirect() {
   if (user) {
     return <Navigate to="/portal/support" replace />;
   }
-  return <Navigate to="/faq" replace />;
+  return <Navigate to="/pricing" replace />;
 }
 
 export function App() {
@@ -349,7 +348,7 @@ export function App() {
                 <Route path="/portfolio" element={<PortfolioPage />} />
                 <Route path="/clients" element={<ClientsPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/faq" element={<FaqPage />} />
+                <Route path="/faq" element={<Navigate to="/pricing" replace />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
               </Route>

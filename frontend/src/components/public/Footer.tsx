@@ -5,7 +5,6 @@ const QUICK_LINKS = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
   { label: "Pricing & Plans", href: "/pricing" },
-  { label: "FAQ Documentation", href: "/faq" },
 ];
 
 const LEGAL_LINKS = [
@@ -62,7 +61,7 @@ export function Footer() {
             </p>
             <div className="pt-2 text-xs text-[#97A0B3] flex items-center gap-2">
               <MapPin className="size-3.5 text-[#7FA0D6] shrink-0" />
-              <span>Chennai &amp; Bengaluru, India</span>
+              <span>Bangalore, India</span>
             </div>
           </div>
 

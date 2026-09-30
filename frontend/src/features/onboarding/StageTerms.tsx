@@ -217,7 +217,7 @@ export function StageTerms({
             </div>
 
             {/* Quick Action Card inside Left Column */}
-            <div className="rounded-xl border border-[#2A3446] bg-[#0B111C] p-4 space-y-3 mt-2">
+            <div className="rounded-xl border border-[#2A3446] bg-[#0B111C] p-4 space-y-2 mt-2">
               <label className="flex items-start gap-2.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -232,17 +232,12 @@ export function StageTerms({
                   I agree to the Master Service Agreement terms and conditions.
                 </span>
               </label>
-
-              <button
-                type="button"
-                onClick={handleProceed}
-                disabled={isSubmitting}
-                className="w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm bg-[#BCCCE6] text-[#0B111C] hover:bg-white transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                <span>{isAlreadyAccepted ? "Continue to Payment (Step 3)" : "Accept & Continue to Step 3"}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {(agreed || hasScrolled || isAlreadyAccepted) && (
+                <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium pl-6">
+                  <Check className="size-3" />
+                  <span>Terms acknowledged</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -309,17 +304,6 @@ export function StageTerms({
                   <span>Scroll to review or check the agreement box to proceed</span>
                 </div>
               )}
-
-              <button
-                type="button"
-                onClick={handleProceed}
-                disabled={isSubmitting}
-                className="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#BCCCE6] text-[#0B111C] hover:bg-white transition-all shadow-sm flex items-center gap-1.5 ml-auto cursor-pointer disabled:opacity-50"
-              >
-                {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                <span>Continue to Step 3</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
             </div>
           </div>
         </div>
@@ -345,22 +329,12 @@ export function StageTerms({
         ) : <div />}
 
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          {isAlreadyAccepted && onSkipToPayment && (
-            <button
-              type="button"
-              onClick={onSkipToPayment}
-              className="text-xs text-[#94A3B8] hover:text-white underline cursor-pointer pr-2"
-            >
-              Skip to Step 3 →
-            </button>
-          )}
-
           <button
             id="accept-terms-btn"
             type="button"
             onClick={handleProceed}
             disabled={isSubmitting}
-            className="w-full sm:w-auto min-w-[260px] py-3 px-6 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md bg-[#BCCCE6] text-[#0B111C] hover:bg-white hover:shadow-lg shadow-[#BCCCE6]/20 cursor-pointer inline-flex items-center justify-center gap-2"
+            className="w-full sm:w-auto min-w-[260px] py-3 px-6 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md bg-[#BCCCE6] text-[#0B111C] hover:bg-white hover:shadow-lg shadow-[#BCCCE6]/20 cursor-pointer inline-flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             <span>

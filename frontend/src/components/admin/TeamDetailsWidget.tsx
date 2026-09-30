@@ -48,23 +48,20 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
           onClick={(e) => e.stopPropagation()}
           className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-xl bg-blue-600/20 text-[#7FA0D6] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <ShieldCheck className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors truncate">
+              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
                 Active Pods
               </h3>
             </div>
-            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#2563EB]/20 text-[#60A5FA] border border-[#3B82F6]/30">
-              {activePodsCount} Pods
-            </span>
           </div>
 
           <div className="my-1.5 flex items-center gap-2">
             <span className="text-2xl font-black text-white tracking-tight">{activePodsCount}</span>
-            <span className="text-[11px] font-extrabold text-[#60A5FA] bg-[#2563EB]/15 px-2.5 py-0.5 rounded-full border border-[#3B82F6]/30 truncate">
+            <span className="text-[11px] font-extrabold text-[#60A5FA] bg-[#2563EB]/15 px-2.5 py-0.5 rounded-full border border-[#3B82F6]/30">
               Pods Allocated
             </span>
           </div>
@@ -85,23 +82,20 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
           onClick={(e) => e.stopPropagation()}
           className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-xl bg-[#1D4ED8]/20 text-[#93C5FD] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <Users className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors truncate">
+              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
                 Team Members
               </h3>
             </div>
-            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#1D4ED8]/20 text-[#93C5FD] border border-[#1D4ED8]/40">
-              {activeMembersCount} Active
-            </span>
           </div>
 
           <div className="my-1.5 flex items-center gap-2">
             <span className="text-2xl font-black text-white tracking-tight">{activeMembersCount}</span>
-            <span className="text-[11px] font-extrabold text-[#93C5FD] bg-[#1D4ED8]/15 px-2.5 py-0.5 rounded-full border border-[#1D4ED8]/30 truncate">
+            <span className="text-[11px] font-extrabold text-[#93C5FD] bg-[#1D4ED8]/15 px-2.5 py-0.5 rounded-full border border-[#1D4ED8]/30">
               Active Staff
             </span>
           </div>
@@ -122,23 +116,20 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
           onClick={(e) => e.stopPropagation()}
           className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-xl bg-[#6366F1]/20 text-[#A5B4FC] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <CalendarCheck className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors truncate">
+              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
                 Leave Approvals
               </h3>
             </div>
-            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#6366F1]/20 text-[#A5B4FC] border border-[#6366F1]/30">
-              {pendingLeavesCount > 0 ? `${pendingLeavesCount} Pending` : "0 Pending"}
-            </span>
           </div>
 
           <div className="my-1.5 flex items-center gap-2">
             <span className="text-2xl font-black text-white tracking-tight">{pendingLeavesCount}</span>
-            <span className="text-[11px] font-extrabold text-[#A5B4FC] bg-[#6366F1]/15 px-2.5 py-0.5 rounded-full border border-[#6366F1]/30 truncate">
+            <span className="text-[11px] font-extrabold text-[#A5B4FC] bg-[#6366F1]/15 px-2.5 py-0.5 rounded-full border border-[#6366F1]/30">
               {pendingLeavesCount > 0 ? "Review Required" : "Up To Date"}
             </span>
           </div>
@@ -159,23 +150,20 @@ export function TeamDetailsWidget({ queue: _queue }: TeamDetailsWidgetProps) {
           onClick={(e) => e.stopPropagation()}
           className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-xl bg-[#1E40AF]/20 text-[#7FA0D6] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <Building2 className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors truncate">
+              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
                 Active In Office
               </h3>
             </div>
-            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#1E40AF]/20 text-[#7FA0D6] border border-[#1E40AF]/40">
-              {activeMembersCount} On-Site
-            </span>
           </div>
 
           <div className="my-1.5 flex items-center gap-2">
             <span className="text-2xl font-black text-white tracking-tight">{activeMembersCount}</span>
-            <span className="text-[11px] font-extrabold text-[#7FA0D6] bg-[#1E40AF]/15 px-2.5 py-0.5 rounded-full border border-[#1E40AF]/30 truncate">
+            <span className="text-[11px] font-extrabold text-[#7FA0D6] bg-[#1E40AF]/15 px-2.5 py-0.5 rounded-full border border-[#1E40AF]/30">
               On-Site Active
             </span>
           </div>

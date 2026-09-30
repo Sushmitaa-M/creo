@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   ChevronRight,
   MessageSquare,
+  Smile,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useAuth } from "../../lib/auth-context";
@@ -70,6 +71,7 @@ export function SlackChatPage() {
 
   // Input states
   const [messageText, setMessageText] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "info" } | null>(null);
 
   // Modals
@@ -594,7 +596,49 @@ export function SlackChatPage() {
           </div>
 
           {/* Message Input Bar */}
-          <div className="p-3 sm:p-4 border-t border-[#2A3446] bg-[#161F2D]">
+          <div className="p-3 sm:p-4 border-t border-[#2A3446] bg-[#161F2D] relative">
+            {/* WhatsApp Style Emoji Picker Popover */}
+            {showEmojiPicker && (
+              <div className="absolute bottom-16 right-4 z-50 w-72 sm:w-80 bg-[#161F2D] border border-[#2A3446] rounded-2xl p-3 shadow-2xl animate-in fade-in slide-in-from-bottom-2">
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#2A3446]">
+                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Smile className="size-4 text-[#7FA0D6]" />
+                    WhatsApp Emojis
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker(false)}
+                    className="text-[#97A0B3] hover:text-white text-xs font-bold px-1.5 py-0.5 rounded hover:bg-slate-800"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="grid grid-cols-7 gap-1 max-h-48 overflow-y-auto pr-1">
+                  {[
+                    "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "🥲", "🥹", "😊", "😇", "🙂", "🙃",
+                    "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨",
+                    "🧐", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️",
+                    "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😮‍💨", "😤", "😠", "😡", "🤬", "🤯", "😳",
+                    "🥵", "🥶", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🫣", "🤭", "🫡", "🤫", "🫠",
+                    "👍", "👎", "👏", "🙌", "👐", "🤲", "🤝", "🙏", "✌️", "🤟", "🤘", "🤌", "🤏", "👈",
+                    "👉", "👆", "👇", "☝️", "✋", "🤚", "🖐️", "🖖", "👋", "💪", "🔥", "✨", "🎉", "❤️",
+                    "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💯", "🎯", "🚀", "⚡", "💡", "⭐"
+                  ].map((emoji, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setMessageText((prev) => prev + emoji);
+                      }}
+                      className="size-8 rounded-lg hover:bg-slate-800 flex items-center justify-center text-lg transition-transform active:scale-125 cursor-pointer"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSendMessage} className="space-y-2">
               <div className="relative flex items-center">
                 <input
@@ -602,9 +646,17 @@ export function SlackChatPage() {
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   placeholder={`Message #${activeChannel}...`}
-                  className="w-full bg-[#0B111C] border border-[#2A3446] rounded-2xl pl-4 pr-24 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full bg-[#0B111C] border border-[#2A3446] rounded-2xl pl-4 pr-32 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-[#7FA0D6] transition-colors"
                 />
                 <div className="absolute right-2 flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker((prev) => !prev)}
+                    className="p-1.5 text-[#97A0B3] hover:text-[#7FA0D6] rounded-lg transition-colors cursor-pointer"
+                    title="Add Emoji (WhatsApp)"
+                  >
+                    <Smile className="size-4" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => showToast("Attachment upload ready", "info")}

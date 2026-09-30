@@ -9,10 +9,6 @@ interface ContentEngineWidgetProps {
 export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps) {
   const navigate = useNavigate();
 
-  const deliverablesCount = _queue?.backlog ? _queue.backlog.length : 6;
-  const calendarCount = 17;
-  const tasksCount = _queue?.backlog ? _queue.backlog.filter((b) => b.status === "in_progress" || b.status === "pending").length : 8;
-
   return (
     <div
       onClick={() => navigate("/admin/calendar")}
@@ -40,18 +36,15 @@ export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps)
           onClick={(e) => e.stopPropagation()}
           className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-xl bg-blue-600/20 text-[#7FA0D6] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <Layers className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors truncate">
+              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
                 Deliverables
               </h3>
             </div>
-            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#2563EB]/20 text-[#60A5FA] border border-[#3B82F6]/30">
-              {deliverablesCount} Active
-            </span>
           </div>
 
           <p className="text-[11px] text-[#97A0B3] font-medium leading-relaxed my-1">
@@ -70,18 +63,15 @@ export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps)
           onClick={(e) => e.stopPropagation()}
           className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-xl bg-[#1D4ED8]/20 text-[#93C5FD] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <Calendar className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors truncate">
+              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
                 Calendar
               </h3>
             </div>
-            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#1D4ED8]/20 text-[#93C5FD] border border-[#1D4ED8]/40">
-              {calendarCount} Items
-            </span>
           </div>
 
           <p className="text-[11px] text-[#97A0B3] font-medium leading-relaxed my-1">
@@ -100,18 +90,15 @@ export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps)
           onClick={(e) => e.stopPropagation()}
           className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-xl bg-[#6366F1]/20 text-[#A5B4FC] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <ListTodo className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors truncate">
+              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
                 Task Queue
               </h3>
             </div>
-            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#6366F1]/20 text-[#A5B4FC] border border-[#6366F1]/30">
-              {tasksCount} Tasks
-            </span>
           </div>
 
           <p className="text-[11px] text-[#97A0B3] font-medium leading-relaxed my-1">
@@ -130,18 +117,15 @@ export function ContentEngineWidget({ queue: _queue }: ContentEngineWidgetProps)
           onClick={(e) => e.stopPropagation()}
           className="bg-[#0B111C] hover:bg-[#1E2D42] border border-[#2A3446] hover:border-[#7FA0D6]/60 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(127,160,214,0.18)] rounded-2xl p-3.5 flex flex-col justify-between h-full transition-all duration-200 group/box cursor-pointer shadow-md overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-xl bg-[#1E40AF]/20 text-[#7FA0D6] flex items-center justify-center font-bold group-hover/box:scale-110 transition-transform shrink-0">
                 <MessageSquare className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors truncate">
+              <h3 className="text-xs font-extrabold text-white group-hover/box:text-[#7FA0D6] transition-colors whitespace-nowrap">
                 Assign Task
               </h3>
             </div>
-            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#1E40AF]/20 text-[#7FA0D6] border border-[#1E40AF]/40">
-              Slack Hub
-            </span>
           </div>
 
           <p className="text-[11px] text-[#97A0B3] font-medium leading-relaxed my-1">

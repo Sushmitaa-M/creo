@@ -80,8 +80,9 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
       if (mode === "signin") {
         await loginWithPassword(cleanEmail, cleanPass);
       } else {
-        await registerIntent(cleanEmail, cleanPass, cleanName);
+        // Move to the OTP surface immediately; delivery continues in this request.
         setRegistrationPending(true);
+        await registerIntent(cleanEmail, cleanPass, cleanName);
       }
     } catch (err: any) {
       console.error(err);

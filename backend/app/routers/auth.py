@@ -6,6 +6,7 @@ import secrets
 import time
 import urllib.parse
 import uuid
+import json
 from datetime import datetime, timezone
 from typing import Any
 
@@ -18,6 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.core.logging import get_logger
+from app.core.cache import get_redis
 from app.core.rbac import Actor, get_current_actor
 from app.core.security import (
     create_access_token,
@@ -39,6 +41,62 @@ _otp_store: dict[str, list[Any]] = {}
 
 # Ephemeral rate limiting store: key -> list of timestamp floats
 _rate_limits: dict[str, list[float]] = {}
+
+
+def _otp_redis_key(key: str) -> str:
+    return f"auth:otp:{key}"
+
+
+async def _save_otp(key: str, value: list[Any]) -> None:
+    """Persist OTP state across every API worker and instance."""
+    ttl = max(1, int(float(value[1]) - time.time()))
+    _otp_store[key] = value
+    try:
+        redis = await get_redis()
+        await redis.setex(_otp_redis_key(key), ttl, json.dumps(value))
+    except Exception as exc:
+        if settings.ENVIRONMENT == "production":
+            logger.error("otp_store_unavailable", error=str(exc))
+            raise HTTPException(status_code=503, detail="Verification service is temporarily unavailable.") from exc
+
+
+async def _load_otp(key: str) -> list[Any] | None:
+    try:
+        redis = await get_redis()
+        raw = await redis.get(_otp_redis_key(key))
+        if raw:
+            value = json.loads(raw)
+            return value if isinstance(value, list) and len(value) == 3 else None
+    except Exception as exc:
+        if settings.ENVIRONMENT == "production":
+            logger.error("otp_store_unavailable", error=str(exc))
+            raise HTTPException(status_code=503, detail="Verification service is temporarily unavailable.") from exc
+    return _otp_store.get(key)
+
+
+async def _delete_otp(key: str) -> None:
+    _otp_store.pop(key, None)
+    try:
+        redis = await get_redis()
+        await redis.delete(_otp_redis_key(key))
+    except Exception as exc:
+        if settings.ENVIRONMENT == "production":
+            logger.warning("otp_delete_failed", error=str(exc))
+
+
+async def _deliver_otp_or_raise(email: str, otp_code: str) -> None:
+    """Deliver an OTP before making it valid in the shared store."""
+    try:
+        delivered = await send_otp_email(email, otp_code)
+    except Exception as exc:
+        logger.warning("otp_dispatch_error", error=str(exc), email=email)
+        delivered = False
+
+    if not delivered:
+        raise HTTPException(
+            status_code=503,
+            detail="We could not deliver the verification email. Please try again shortly.",
+        )
 
 
 def _check_rate_limit(key: str, max_requests: int, window_seconds: int) -> bool:
@@ -140,19 +198,14 @@ async def register_intent(
     # Generate cryptographically secure 6-digit OTP
     otp_code = f"{secrets.randbelow(900000) + 100000}"
     expires_at = time.time() + 600.0  # 10 minutes
-    _otp_store[f"reg:{email_clean}"] = [otp_code, expires_at, 0]
-
-    email_sent = False
-    try:
-        email_sent = await send_otp_email(email_clean, otp_code)
-    except Exception as e:
-        logger.warning("register_otp_dispatch_error", error=str(e), email=email_clean)
+    await _deliver_otp_or_raise(email_clean, otp_code)
+    await _save_otp(f"reg:{email_clean}", [otp_code, expires_at, 0])
 
     return {
         "status": "sent",
         "email": email_clean,
         "message": "Verification code sent to email. Please verify to complete account creation.",
-        "email_delivered": email_sent,
+        "email_delivered": True,
         "expires_in_seconds": 600,
     }
 
@@ -165,24 +218,25 @@ async def verify_registration(
     """Verify OTP and complete user account creation with hashed password."""
     email_clean = payload.email.strip().lower()
     store_key = f"reg:{email_clean}"
-    stored = _otp_store.get(store_key)
+    stored = await _load_otp(store_key)
 
     if not stored:
         raise HTTPException(status_code=400, detail="No active verification code found for this email. Please request a new code.")
 
     if time.time() > stored[1]:
-        _otp_store.pop(store_key, None)
+        await _delete_otp(store_key)
         raise HTTPException(status_code=400, detail="Verification code has expired. Please request a new code.")
 
     stored[2] += 1
+    await _save_otp(store_key, stored)
     if stored[2] > 5:
-        _otp_store.pop(store_key, None)
+        await _delete_otp(store_key)
         raise HTTPException(status_code=429, detail="Maximum verification attempts exceeded. Please request a new code.")
 
     if stored[0] != payload.code.strip():
         raise HTTPException(status_code=400, detail="Invalid verification code. Please check the code sent to your email.")
 
-    _otp_store.pop(store_key, None)
+    await _delete_otp(store_key)
 
     # Validate password strength
     valid, err = validate_password_strength(payload.password)
@@ -279,19 +333,14 @@ async def forgot_password(
 
     otp_code = f"{secrets.randbelow(900000) + 100000}"
     expires_at = time.time() + 600.0
-    _otp_store[f"reset:{email_clean}"] = [otp_code, expires_at, 0]
-
-    email_sent = False
-    try:
-        email_sent = await send_otp_email(email_clean, otp_code)
-    except Exception as e:
-        logger.warning("reset_otp_dispatch_error", error=str(e), email=email_clean)
+    await _deliver_otp_or_raise(email_clean, otp_code)
+    await _save_otp(f"reset:{email_clean}", [otp_code, expires_at, 0])
 
     return {
         "status": "sent",
         "email": email_clean,
         "message": "Verification code sent to email. Enter the code to proceed with password reset.",
-        "email_delivered": email_sent,
+        "email_delivered": True,
         "expires_in_seconds": 600,
     }
 
@@ -304,24 +353,25 @@ async def verify_reset_otp(
     """Verify reset OTP, authenticate user, and flag account with must_reset_password=True."""
     email_clean = payload.email.strip().lower()
     store_key = f"reset:{email_clean}"
-    stored = _otp_store.get(store_key)
+    stored = await _load_otp(store_key)
 
     if not stored:
         raise HTTPException(status_code=400, detail="No active reset code found for this email. Please request a new code.")
 
     if time.time() > stored[1]:
-        _otp_store.pop(store_key, None)
+        await _delete_otp(store_key)
         raise HTTPException(status_code=400, detail="Reset code has expired. Please request a new code.")
 
     stored[2] += 1
+    await _save_otp(store_key, stored)
     if stored[2] > 5:
-        _otp_store.pop(store_key, None)
+        await _delete_otp(store_key)
         raise HTTPException(status_code=429, detail="Too many failed attempts. Please request a new reset code.")
 
     if stored[0] != payload.code.strip():
         raise HTTPException(status_code=400, detail="Invalid reset code.")
 
-    _otp_store.pop(store_key, None)
+    await _delete_otp(store_key)
 
     stmt = select(User).where(func.lower(User.email) == email_clean)
     res = await db.execute(stmt)
@@ -530,19 +580,14 @@ async def send_otp(payload: SendOtpRequest, db: AsyncSession = Depends(get_db)) 
     # Generate cryptographically secure 6-digit OTP
     otp_code = f"{secrets.randbelow(900000) + 100000}"
     expires_at = time.time() + 600.0  # 10 minutes
-    _otp_store[email_clean] = [otp_code, expires_at, 0]
-
-    email_sent = False
-    try:
-        email_sent = await send_otp_email(email_clean, otp_code)
-    except Exception as e:
-        logger.warning("otp_email_dispatch_error", error=str(e), email=email_clean)
+    await _deliver_otp_or_raise(email_clean, otp_code)
+    await _save_otp(email_clean, [otp_code, expires_at, 0])
 
     return {
         "status": "sent",
         "email": email_clean,
         "message": "Verification code sent to email",
-        "email_delivered": email_sent,
+        "email_delivered": True,
         "expires_in_seconds": 600,
     }
 
@@ -554,24 +599,25 @@ async def verify_otp(
 ) -> dict[str, Any]:
     """Verify OTP and return authenticated user session & token."""
     email_key = payload.email.strip().lower()
-    stored = _otp_store.get(email_key)
+    stored = await _load_otp(email_key)
 
     if not stored:
         raise HTTPException(status_code=400, detail="No active verification code found for this email. Please request a new code.")
 
     if time.time() > stored[1]:
-        _otp_store.pop(email_key, None)
+        await _delete_otp(email_key)
         raise HTTPException(status_code=400, detail="Verification code has expired. Please request a new code.")
 
     stored[2] += 1
+    await _save_otp(email_key, stored)
     if stored[2] > 5:
-        _otp_store.pop(email_key, None)
+        await _delete_otp(email_key)
         raise HTTPException(status_code=429, detail="Maximum verification attempts exceeded. Please request a new code.")
 
     if stored[0] != payload.code.strip():
         raise HTTPException(status_code=400, detail="Invalid verification code.")
 
-    _otp_store.pop(email_key, None)
+    await _delete_otp(email_key)
 
     # Lookup or create user
     stmt = select(User).where(User.email == email_key)

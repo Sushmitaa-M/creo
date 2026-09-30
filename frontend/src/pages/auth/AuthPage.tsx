@@ -56,8 +56,14 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
   const [rememberMe, setRememberMe] = useState(initialMode === "signin");
 
   // Controlled form state
-  const [email, setEmail] = useState(initialPending?.email || "");
+  const queryEmail = new URLSearchParams(location.search).get("email") || "";
+  const [email, setEmail] = useState(queryEmail || initialPending?.email || "");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const qEmail = new URLSearchParams(location.search).get("email");
+    if (qEmail) setEmail(qEmail);
+  }, [location.search]);
   const [fullName, setFullName] = useState(initialPending?.fullName || "");
   const [registrationPending, setRegistrationPending] = useState(Boolean(initialPending));
   const [otpCode, setOtpCode] = useState("");

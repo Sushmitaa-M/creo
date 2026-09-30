@@ -104,6 +104,7 @@ const faqs = [
 
 export function HomePage() {
   const navigate = useNavigate();
+  const [sampleEmail, setSampleEmail] = useState("");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [assets, setAssets] = useState([
     { id: 1, name: "Brand Launch Teaser", type: "Reel 9:16", status: "awaiting" },
@@ -124,6 +125,19 @@ export function HomePage() {
     target: processRef,
     offset: ["start 85%", "end 55%"],
   });
+
+  const handleRequestSample = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (localStorage.getItem('creo_auth') === 'true') {
+      navigate("/portal");
+    } else {
+      const trimmed = sampleEmail.trim();
+      const targetUrl = trimmed
+        ? `/login?email=${encodeURIComponent(trimmed)}`
+        : "/login";
+      navigate(targetUrl);
+    }
+  };
 
   return (
     <div className="w-full bg-[#050810] text-[#F8FAFC] min-h-screen font-sans selection:bg-[#7FA0D6]/30">
@@ -571,27 +585,24 @@ export function HomePage() {
             Drop your Instagram handle and email below. We'll send you a custom sample batch of reels and carousels for your brand, completely free. No credit card required.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto backdrop-blur-md bg-[#161F2D]/30 p-2 rounded-2xl border border-[#2A3446]/40">
+          <form 
+            onSubmit={handleRequestSample}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto backdrop-blur-md bg-[#161F2D]/30 p-2 rounded-2xl border border-[#2A3446]/40"
+          >
             <input 
               type="email" 
+              value={sampleEmail}
+              onChange={(e) => setSampleEmail(e.target.value)}
               placeholder="Enter work email for a sample deliverable..." 
               className="bg-[#0A0F18] border border-[#2A3446] text-[#F8FAFC] rounded-xl px-4 py-3 text-sm focus:border-[#7FA0D6] focus:outline-none w-full sm:w-80 transition-colors" 
             />
             <button 
-              onClick={(e) => {
-                if (localStorage.getItem('creo_auth') !== 'true') {
-                  e.preventDefault();
-                  alert("Please sign in to message the team.");
-                  navigate("/login?redirect=contact");
-                } else {
-                  alert("Contact Modal Triggered");
-                }
-              }}
-              className="w-full sm:w-auto bg-[#BCCCE6] text-[#050810] hover:bg-[#D5E1F2] font-semibold transition-all shadow-sm hover:shadow-[0_0_20px_rgba(188,204,230,0.25)] text-sm px-6 py-3 rounded-xl shrink-0 flex items-center justify-center gap-2"
+              type="submit"
+              className="w-full sm:w-auto bg-[#BCCCE6] text-[#050810] hover:bg-white font-semibold transition-all shadow-sm hover:shadow-[0_0_20px_rgba(188,204,230,0.25)] text-sm px-6 py-3 rounded-xl shrink-0 flex items-center justify-center gap-2 cursor-pointer"
             >
               Request Sample Batch <ArrowRight className="size-4" />
             </button>
-          </div>
+          </form>
           <div className="text-xs font-semibold text-[#97A0B3] mt-6">
             No commitment. 48-hour pilot turnaround for qualified creative agencies.
           </div>

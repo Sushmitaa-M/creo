@@ -819,61 +819,6 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
 
   return (
     <div ref={formTopRef} className="w-full space-y-4 sm:space-y-5 onboarding-dark-canvas" style={{ colorScheme: "dark" }}>
-      {/* Header Banner */}
-      <div className="bg-[#161F2D] rounded-xl p-4 sm:p-6 text-white shadow-xl relative overflow-hidden border border-[#2A3446]">
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#7FA0D6] mb-1">
-              <Sparkles className="w-4 h-4 text-[#D8BF9B]" />
-              <span>Production Intake & Brand DNA Engine</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-display">
-              Creo Brand Discovery & Production Blueprint
-            </h1>
-            <p className="text-sm text-[#94A3B8] mt-1 max-w-2xl leading-relaxed">
-              Sections A–E configure our editor, designer, and shoot director (~10 min).
-              Sections F–G are optional creative enrichment.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0">
-            {coreUnlocked && (
-              <div className="inline-flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs font-semibold px-3 py-1.5 rounded-full">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Calendar Ready</span>
-              </div>
-            )}
-            <div className="flex items-center gap-2.5">
-              <button
-                type="button"
-                onClick={async () => {
-                  setIsSaving(true);
-                  try {
-                    await persistSection(activeSection);
-                    setSaveSuccess(true);
-                    setTimeout(() => setSaveSuccess(false), 2000);
-                  } catch (e) {
-                    console.error(e);
-                  } finally {
-                    setIsSaving(false);
-                  }
-                }}
-                disabled={isSaving}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#2A3446] bg-[#0B111C] hover:bg-[#1F2C3F] hover:border-[#7FA0D6] text-xs font-bold text-[#CBD5E1] hover:text-white transition-all cursor-pointer disabled:opacity-50"
-              >
-                {isSaving ? (
-                  <Loader2 className="size-3.5 animate-spin text-[#7FA0D6]" />
-                ) : saveSuccess ? (
-                  <Check className="size-3.5 text-emerald-400" />
-                ) : (
-                  <RefreshCw className="size-3.5 text-[#7FA0D6]" />
-                )}
-                <span>{isSaving ? "Syncing..." : saveSuccess ? "Synced ✓" : "Sync Progress"}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Core Discovery Complete Shortcut Banner */}
       {coreUnlocked && (

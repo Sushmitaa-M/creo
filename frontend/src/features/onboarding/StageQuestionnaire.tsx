@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { type AllocationStatus, PodAllocationModal } from "./PodAllocationModal";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
@@ -25,7 +26,6 @@ import {
 import {
   fetchQuestionnaireState,
   saveQuestionnaireSection,
-  queueBrandDNAGeneration,
   completeOnboarding,
 } from "../../lib/onboarding-api";
 import type { AssignedTeamMember } from "../../types/api";
@@ -204,7 +204,11 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   const [validationBanner, setValidationBanner] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [failedSection, setFailedSection] = useState<SectionKey | null>(null);
-  const [synthPhase, setSynthPhase] = useState<string>("Synthesizing Brand DNA…");
+  const synthPhase = "Allocating your creative pod…";
+  const [allocOpen, setAllocOpen] = useState(false);
+  const [allocStatus, setAllocStatus] = useState<AllocationStatus>("working");
+  const [allocError, setAllocError] = useState<string | null>(null);
+  const allocatedTeamRef = useRef<AssignedTeamMember[] | undefined>(undefined);
 
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // JSON of what the server last acknowledged per section; unchanged sections are never re-sent
@@ -673,6 +677,9 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     setIsSynthesizing(true);
     setApiError(null);
     setValidationBanner(null);
+    setAllocError(null);
+    setAllocStatus("working");
+    setAllocOpen(true);
 
     // Cancel pending debounce timer
     if (autosaveTimerRef.current) {
@@ -680,38 +687,45 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     }
 
     try {
-      // 2. Persist any section the server hasn't acknowledged yet (usually none — autosave
-      // already sent them). Sequential on purpose: each save re-evaluates core completion.
-      setSynthPhase("Saving your answers…");
+      // 2. Make sure every answered section (A–G) is on the server. Usually nothing is left
+      // because autosave already sent them. Sequential on purpose: each save re-evaluates
+      // core completion.
       const allSections: SectionKey[] = ["a", "b", "c", "d", "e", "f", "g"];
       for (const sec of allSections) {
-        const isCore = sec !== "f" && sec !== "g";
-        if ((isCore || sec === activeSection) && isSectionDirty(sec)) {
+        if (isSectionDirty(sec)) {
           await persistSection(sec);
         }
       }
 
-      // 3. Trigger Brand DNA synthesis pipeline
-      setSynthPhase("Synthesizing Brand DNA…");
-      await queueBrandDNAGeneration(userId);
-
-      // 4. Complete onboarding and allocate creative pod
-      setSynthPhase("Assigning your creative pod…");
+      // 3. Allocate the pod and generate the workspace. This call is fast: the Gemini
+      // summary of sections A–G and the team brief are produced on the server afterwards
+      // and delivered to the team lead and specialists, not to the client.
       const completeRes = await completeOnboarding(userId);
-      onComplete(completeRes.assigned_team);
+      allocatedTeamRef.current = completeRes.assigned_team;
+      setAllocStatus("success");
     } catch (err: unknown) {
       console.error("Failed to complete onboarding", err);
       const errMsg = err instanceof Error ? err.message : String(err);
-      if (errMsg.includes("Sections A-E")) {
-        setActiveSection("a");
-        setValidationBanner("Please review and submit Sections A–E before finalizing Brand DNA.");
-      } else {
-        setApiError(errMsg || "Synthesis pipeline encountered an issue. Please retry.");
-      }
-    } finally {
       setIsSynthesizing(false);
+      if (errMsg.includes("Sections A-E")) {
+        setAllocOpen(false);
+        setActiveSection("a");
+        setValidationBanner("Please review and submit Sections A–E before finalizing your workspace.");
+      } else {
+        setAllocError(errMsg || null);
+        setAllocStatus("error");
+      }
     }
   };
+
+  const labelFor = (options: { value: string; label: string }[], value: unknown, fallback: string) =>
+    options.find((o) => o.value === value)?.label ?? fallback;
+  const allocationAesthetic = labelFor(
+    VISUAL_DIRECTION_OPTIONS,
+    Array.isArray(secD.visual_direction) ? secD.visual_direction[0] : undefined,
+    "chosen visual",
+  );
+  const allocationOutcome = labelFor(GOAL_OPTIONS, secA.primary_goal, "your primary goal");
 
   if (isLoading) {
     return (
@@ -724,6 +738,20 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
 
   return (
     <div ref={formTopRef} className="w-full space-y-6 onboarding-dark-canvas" style={{ colorScheme: "dark" }}>
+      <PodAllocationModal
+        open={allocOpen}
+        status={allocStatus}
+        aesthetic={allocationAesthetic}
+        outcome={allocationOutcome}
+        errorMessage={allocError}
+        onDone={() => {
+          setAllocOpen(false);
+          setIsSynthesizing(false);
+          onComplete(allocatedTeamRef.current);
+        }}
+        onRetry={() => void handleSynthesizeAndFinish()}
+        onClose={() => setAllocOpen(false)}
+      />
       {/* Header Banner */}
       <div className="bg-[#161F2D] rounded-2xl p-6 sm:p-7 text-white shadow-xl relative overflow-hidden border border-[#2A3446]">
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -788,7 +816,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             className="px-4 py-2 bg-[#BCCCE6] text-[#0B111C] hover:bg-white rounded-xl text-xs font-bold transition-all shadow-sm shrink-0 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             {isSynthesizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowRight className="w-3.5 h-3.5" />}
-            <span>Proceed to Creative Pod & Calendar</span>
+            <span>Allocate my creative pod</span>
           </button>
         </div>
       )}
@@ -2039,7 +2067,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 text-[#0B111C]" />
-                    <span>Synthesize Brand DNA & Finish</span>
+                    <span>Finish & allocate my pod</span>
                   </>
                 )}
               </button>

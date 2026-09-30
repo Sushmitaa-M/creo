@@ -8,6 +8,7 @@ and dashboard features.
 from __future__ import annotations
 
 import math
+import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -23,6 +24,9 @@ from app.models.billing import Plan, Subscription
 from app.models.enums import SubscriptionStatus, UserRole
 
 logger = get_logger("app.services.subscription_guard")
+
+_GLOBAL_EXPIRY_SWEEP_INTERVAL_SECONDS = 60.0
+_last_global_expiry_sweep: float = float("-inf")
 
 
 async def expire_stale_subscriptions(db: AsyncSession) -> int:
@@ -63,8 +67,14 @@ async def check_client_subscription(
     - plan: Associated Plan model instance or None
     - status: Current authoritative status string
     """
-    # 1. Run automatic self-healing first
-    await expire_stale_subscriptions(db)
+    # 1. Run the global self-healing sweep at most once per interval per process.
+    # The per-subscription period check below still heals this client's own row
+    # immediately, so skipping the table-wide UPDATE here never serves stale access.
+    global _last_global_expiry_sweep
+    now_monotonic = time.monotonic()
+    if now_monotonic - _last_global_expiry_sweep >= _GLOBAL_EXPIRY_SWEEP_INTERVAL_SECONDS:
+        _last_global_expiry_sweep = now_monotonic
+        await expire_stale_subscriptions(db)
 
     now_utc = datetime.now(timezone.utc)
 

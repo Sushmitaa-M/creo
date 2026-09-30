@@ -5,25 +5,22 @@ import { useSearchParams } from "react-router";
 import { CheckCircle2, Mail, ShieldCheck, ArrowRight, RefreshCw } from "lucide-react";
 import { acceptTerms, fetchOnboardingStatus } from "../../lib/onboarding-api";
 import { useAuth } from "../../lib/auth-context";
+import { CreoInlineLoader } from "../../components/ui/CreoLoader";
+import { ONBOARDING_STEPS } from "../../lib/useOnboardingGate";
 import { StageComplete } from "./StageComplete";
 import { StagePayment } from "./StagePayment";
 import { StageQuestionnaire } from "./StageQuestionnaire";
 import { StageTerms } from "./StageTerms";
 import { OtpPinInput } from "../../components/ui/OtpPinInput";
-import type { AssignedTeamMember } from "../../types/api";
+import type { AssignedTeamMember, OnboardingStatus } from "../../types/api";
 
 interface OnboardingViewProps {
   userId: string;
   onPortalLaunch?: () => void;
 }
 
-const STAGES = [
-  { step: 1, label: "Email Verified", short: "Verify" },
-  { step: 2, label: "Terms Signed", short: "Terms" },
-  { step: 3, label: "Payment Done", short: "Payment" },
-  { step: 4, label: "Brand Set", short: "Brand DNA" },
-  { step: 5, label: "Active", short: "Launch" },
-];
+// Same step names as the portal's resume banner so the wording matches everywhere
+const STAGES = ONBOARDING_STEPS;
 
 function ProgressStepper({
   activeStep,
@@ -35,24 +32,24 @@ function ProgressStepper({
   onSelectStep?: (step: number) => void;
 }) {
   return (
-    <div className="w-full max-w-4xl lg:max-w-5xl mx-auto mb-8 sm:mb-10 px-2 sm:px-4">
+    <div className="w-full mb-4 sm:mb-5">
       {/* Stepper Card */}
-      <div className="relative bg-[#161F2D] rounded-2xl shadow-xl border border-[#2A3446] px-5 sm:px-8 py-4 sm:py-5">
+      <div className="relative bg-[#161F2D] rounded-xl shadow-xl border border-[#2A3446] px-2.5 sm:px-7 py-3.5 sm:py-4">
         <div className="flex items-start justify-between relative">
 
-          {/* Background track line */}
+          {/* Background track line - mathematically centered between step 1 (10%) and step 5 (90%) */}
           <div
-            className="absolute left-0 right-0 h-[2px] rounded-full bg-[#2A3446]"
-            style={{ top: "16px", marginLeft: "8%", marginRight: "8%" }}
+            className="absolute h-[2px] rounded-full bg-[#2A3446] -translate-y-1/2"
+            style={{ top: "18px", left: "10%", right: "10%" }}
           />
 
-          {/* Completed track line (grows with progress) */}
+          {/* Completed track line (grows with progress strictly through circle centers) */}
           <div
-            className="absolute h-[2px] rounded-full transition-all duration-500"
+            className="absolute h-[2px] rounded-full transition-all duration-500 -translate-y-1/2"
             style={{
-              top: "16px",
-              marginLeft: "8%",
-              width: `calc(${Math.max(0, ((maxUnlockedStep - 1) / (STAGES.length - 1)))} * 84%)`,
+              top: "18px",
+              left: "10%",
+              width: `${Math.max(0, Math.min(1, (maxUnlockedStep - 1) / (STAGES.length - 1))) * 80}%`,
               background: "#7FA0D6",
             }}
           />
@@ -63,26 +60,28 @@ function ProgressStepper({
             const isUnlocked = s.step <= maxUnlockedStep;
 
             return (
-              <div key={s.step} className="flex flex-col items-center flex-1 relative z-10">
-                <div
+              <div key={s.step} className="flex flex-col items-center flex-1 relative z-10 px-1">
+                <button
+                  type="button"
                   onClick={() => isUnlocked && onSelectStep?.(s.step)}
-                  className={`flex flex-col items-center select-none ${
-                    isUnlocked ? "cursor-pointer hover:opacity-90" : "cursor-not-allowed"
+                  disabled={!isUnlocked}
+                  className={`flex flex-col items-center select-none w-full group focus:outline-none ${
+                    isUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-80"
                   }`}
                 >
                   {/* Step circle */}
                   <div className="relative flex items-center justify-center">
                     <div
-                      className={`relative size-8 sm:size-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-colors duration-200 ${
+                      className={`relative size-9 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-200 shrink-0 ${
                         isDone
-                          ? "bg-[#7FA0D6] text-[#0B111C]"
+                          ? "bg-[#7FA0D6] text-[#0B111C] shadow-sm"
                           : isActive
-                          ? "bg-[#BCCCE6] text-[#0B111C] font-black ring-4 ring-[#BCCCE6]/20"
-                          : "bg-[#0B111C] text-[#97A0B3] border border-[#2A3446]"
+                          ? "bg-[#BCCCE6] text-[#0B111C] font-black ring-4 ring-[#BCCCE6]/25 shadow-md"
+                          : "bg-[#0B111C] text-[#94A3B8] border border-[#2A3446] group-hover:border-[#7FA0D6]/40"
                       }`}
                     >
                       {isDone ? (
-                        <svg className="size-3.5 sm:size-4" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="size-4" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       ) : (
@@ -92,24 +91,24 @@ function ProgressStepper({
                   </div>
 
                   {/* Step label */}
-                  <div className="mt-2 text-center">
-                    <p className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mb-0.5 ${
-                      isActive ? "text-[#BCCCE6]" : isDone ? "text-[#7FA0D6]" : "text-[#97A0B3]"
+                  <div className="mt-2.5 text-center w-full">
+                    <p className={`text-[11px] font-bold uppercase tracking-wider mb-0.5 ${
+                      isActive ? "text-[#BCCCE6]" : isDone ? "text-[#7FA0D6]" : "text-[#94A3B8]"
                     }`}>
                       Step {s.step}
                     </p>
-                    <p className={`text-[10px] sm:text-xs font-bold transition-colors ${
+                    <p className={`text-[11px] sm:text-xs font-semibold transition-colors truncate px-0.5 ${
                       isActive
-                        ? "text-white"
+                        ? "text-white font-bold"
                         : isDone
-                        ? "text-[#7FA0D6]"
-                        : "text-[#97A0B3]"
+                        ? "text-[#CBD5E1]"
+                        : "text-[#94A3B8]"
                     }`}>
                       <span className="sm:hidden">{s.short}</span>
-                      <span className="hidden sm:inline whitespace-nowrap">{s.label}</span>
+                      <span className="hidden sm:inline">{s.label}</span>
                     </p>
                   </div>
-                </div>
+                </button>
               </div>
             );
           })}
@@ -122,10 +121,12 @@ function ProgressStepper({
 function StageVerifyEmail({
   userEmail,
   isAlreadyVerified,
+  onVerified,
   onContinueToTerms,
 }: {
   userEmail?: string;
   isAlreadyVerified: boolean;
+  onVerified: () => void;
   onContinueToTerms: () => void;
 }) {
   const { sendOtp, verifyOtp } = useAuth();
@@ -167,9 +168,10 @@ function StageVerifyEmail({
     setMessage(null);
     try {
       await verifyOtp(email, codeToVerify);
+      onVerified();
       setVerifiedSuccess(true);
       setMessage({ type: "success", text: "Email verified successfully!" });
-      setTimeout(onContinueToTerms, 600);
+      setTimeout(onContinueToTerms, 400);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Invalid or expired verification code.";
       setMessage({ type: "error", text: msg });
@@ -183,7 +185,7 @@ function StageVerifyEmail({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
-      className="max-w-xl mx-auto rounded-2xl border border-[#2A3446] bg-[#161F2D] p-8 sm:p-12 shadow-xl text-center"
+      className="w-full max-w-xl mx-auto rounded-xl border border-[#2A3446] bg-[#161F2D] p-5 sm:p-8 shadow-xl text-center"
     >
       <div className="size-14 mx-auto mb-4 rounded-2xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-center text-[#7FA0D6]">
         {verifiedSuccess ? (
@@ -196,7 +198,7 @@ function StageVerifyEmail({
       <h2 className="text-xl sm:text-2xl font-bold font-display text-[#F8FAFC] tracking-tight">
         {verifiedSuccess ? "Email Verified" : "Verify Your Email"}
       </h2>
-      <p className="text-xs sm:text-sm text-[#97A0B3] mt-2 max-w-md mx-auto leading-relaxed">
+      <p className="text-sm text-[#97A0B3] mt-2 max-w-md mx-auto leading-relaxed">
         {verifiedSuccess
           ? "Your email address has been confirmed. You can now proceed to review and sign the Master Service Agreement."
           : "We protect your agency workspace with fast email verification. Enter your email to receive a 6-digit code."}
@@ -225,7 +227,7 @@ function StageVerifyEmail({
             <button
               type="button"
               onClick={onContinueToTerms}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#BCCCE6] text-[#0B111C] font-bold text-xs sm:text-sm hover:bg-white shadow-sm transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#BCCCE6] text-[#0B111C] font-bold text-sm hover:bg-white shadow-sm transition-all cursor-pointer"
             >
               <span>Continue to Master Service Agreement (Step 2)</span>
               <ArrowRight className="size-4" />
@@ -315,114 +317,117 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [termsSubmitting, setTermsSubmitting] = useState(false);
+  const [termsError, setTermsError] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [assignedTeam, setAssignedTeam] = useState<AssignedTeamMember[] | undefined>(undefined);
 
   const requestedStepParam = searchParams.get("step");
   const requestedStep = requestedStepParam ? parseInt(requestedStepParam, 10) : null;
 
+  const statusKey = ["onboarding-status", userId];
   const {
     data: status,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["onboarding-status", userId],
+    queryKey: statusKey,
     queryFn: () => fetchOnboardingStatus(userId),
-    refetchInterval: 5000,
+    // No polling: every step updates the cache itself after its request succeeds.
+    // Refetch on focus still picks up changes made in another tab (e.g. a payment).
+    staleTime: 15_000,
+    refetchOnWindowFocus: false,
   });
 
-  // Calculate user's current unlocked step (1 to 5)
-  // Backend view maps:
+  /**
+   * Record that the server accepted a step so the stepper advances immediately,
+   * then confirm the authoritative stage in the background.
+   */
+  const markStageReached = (minStage: number) => {
+    queryClient.setQueryData<OnboardingStatus>(statusKey, (prev) =>
+      prev && prev.stage < minStage ? { ...prev, stage: minStage, is_complete: minStage >= 8 } : prev,
+    );
+    void queryClient.invalidateQueries({ queryKey: statusKey });
+  };
+
+  // Calculate user's current unlocked step (1 to 5) strictly from database stage:
   // stage 0 -> step 1 (Email verification pending)
   // stage 1 -> step 2 (Email verified, terms pending)
   // stage 2 -> step 3 (Terms accepted, payment pending)
-  // stage 3 -> step 4 (Payment done, questionnaire pending)
-  // stage 4 -> step 5 (Questionnaire submitted, ready to complete)
-  // stage 5 -> step 5 (Active)
-  const backendStage = status?.stage ?? 1;
-  const maxUnlockedStep = Math.min(5, Math.max(1, backendStage + 1));
+  // stage 3 -> step 4 (Payment done, questionnaire core pending)
+  // stage 4..8 -> step 5 (Questionnaire complete -> Creative Pod, Brand DNA & Activation)
+  // Until the status request lands, the stage from /auth/me lets us render the right step right away
+  const backendStage = status?.stage ?? user?.onboarding_stage ?? 0;
+  const hasStage = status !== undefined || typeof user?.onboarding_stage === "number";
+  const isQuestionnairePath = typeof window !== "undefined" && window.location.pathname.includes("questionnaire");
+
+  const computedStep = (() => {
+    if (isQuestionnairePath && backendStage <= 3) return 4;
+    if (backendStage === 0) return 1;
+    if (backendStage === 1) return 2;
+    if (backendStage === 2) return 3;
+    if (backendStage === 3) return 4;
+    return 5;
+  })();
+
+  const maxUnlockedStep = (() => {
+    if (backendStage === 0) return 1;
+    if (backendStage === 1) return 2;
+    if (backendStage === 2) return 3;
+    if (backendStage === 3) return 4;
+    return 5;
+  })();
 
   const handleSelectStep = (step: number) => {
     setActiveStep(step);
-    try {
-      localStorage.setItem(`creo_onboard_step_${userId}`, String(step));
-    } catch {
-      // ignore
-    }
-    setSearchParams({ step: String(step) }, { replace: true });
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("step", String(step));
+        return next;
+      },
+      { replace: true }
+    );
   };
 
   useEffect(() => {
-    if (status) {
-      const bStage = status.stage ?? 1;
-      const maxUnlocked = Math.min(5, Math.max(1, bStage + 1));
-
-      setActiveStep((prev) => {
-        // If URL requested a valid unlocked step:
-        if (requestedStep && requestedStep >= 1 && requestedStep <= maxUnlocked) {
-          try {
-            localStorage.setItem(`creo_onboard_step_${userId}`, String(requestedStep));
-          } catch {
-            // ignore
-          }
-          return requestedStep;
-        }
-
-        // On initial mount, resume from localStorage if valid
-        if (prev === null) {
-          try {
-            const savedStr = localStorage.getItem(`creo_onboard_step_${userId}`);
-            const saved = savedStr ? parseInt(savedStr, 10) : null;
-            if (saved && saved >= 1 && saved <= maxUnlocked) {
-              return saved;
-            }
-          } catch {
-            // ignore
-          }
-          // Default to the furthest unlocked step (never resets to step 1)
-          return maxUnlocked;
-        }
-
-        // Advance only if user is strictly behind unlocked steps and not actively working on step 4
-        if (prev < maxUnlocked && prev !== 4) {
-          return maxUnlocked;
-        }
-        return prev;
-      });
-
-      if (status.assigned_team && status.assigned_team.length > 0) {
-        setAssignedTeam(status.assigned_team);
-      }
+    if (!hasStage) return;
+    if (requestedStep && requestedStep >= 1 && requestedStep <= maxUnlockedStep) {
+      setActiveStep(requestedStep);
+    } else {
+      // Enforce exact authoritative step from database state
+      setActiveStep(computedStep);
     }
-  }, [status, requestedStep, userId]);
 
-  const currentStep = activeStep ?? maxUnlockedStep;
+    if (status?.assigned_team && status.assigned_team.length > 0) {
+      setAssignedTeam(status.assigned_team);
+    }
+  }, [status, hasStage, requestedStep, maxUnlockedStep, computedStep]);
+
+  const currentStep = activeStep ?? computedStep;
 
   const handleTermsAccepted = async () => {
     setTermsSubmitting(true);
+    setTermsError(null);
     try {
       await acceptTerms(userId);
-      await queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
+      markStageReached(2);
       handleSelectStep(3); // Advance to Payment
+    } catch (err: unknown) {
+      setTermsError(err instanceof Error ? err.message : "Could not record your acceptance. Please try again.");
     } finally {
       setTermsSubmitting(false);
     }
   };
 
   const refreshStatus = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
+    await queryClient.invalidateQueries({ queryKey: statusKey });
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3 text-[#97A0B3]">
-        <div className="size-8 rounded-full border-3 border-[#7FA0D6] border-t-transparent animate-spin" />
-        <span className="text-sm font-medium">Loading onboarding progress...</span>
-      </div>
-    );
+  if (isLoading && !hasStage) {
+    return <CreoInlineLoader label="Loading your progress" />;
   }
 
-  if (isError || !status) {
+  if (isError && !hasStage) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
         <div className="max-w-md w-full p-6 rounded-2xl bg-[#161F2D] border border-[#2A3446] shadow-xl">
@@ -442,7 +447,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   }
 
   return (
-    <div className="w-full flex flex-col items-center pb-20 sm:pb-28">
+    <div className="w-full max-w-6xl mx-auto flex flex-col items-center pb-4 sm:pb-6">
       {/* Visual Stepper */}
       <ProgressStepper
         activeStep={currentStep}
@@ -458,6 +463,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
               key="verify"
               userEmail={user?.email}
               isAlreadyVerified={backendStage >= 1}
+              onVerified={() => markStageReached(1)}
               onContinueToTerms={() => handleSelectStep(2)}
             />
           )}
@@ -468,7 +474,13 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
               userId={userId}
               onAccepted={handleTermsAccepted}
               onBack={() => handleSelectStep(1)}
+              onSkipToPayment={() => {
+                markStageReached(2);
+                handleSelectStep(3);
+              }}
+              isAlreadyAccepted={backendStage >= 2}
               isSubmitting={termsSubmitting}
+              error={termsError}
             />
           )}
 
@@ -479,7 +491,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
               isAlreadyPaid={backendStage >= 3}
               onBack={() => handleSelectStep(2)}
               onPaymentComplete={() => {
-                void refreshStatus();
+                markStageReached(3);
                 handleSelectStep(4);
               }}
             />
@@ -489,11 +501,12 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
             <StageQuestionnaire
               key="questionnaire"
               userId={userId}
+              initialSection={(searchParams.get("section") as any) || (status?.resume_section as any) || undefined}
               onComplete={(team) => {
                 if (team && team.length > 0) {
                   setAssignedTeam(team);
                 }
-                void refreshStatus();
+                markStageReached(8);
                 handleSelectStep(5);
               }}
             />

@@ -1,843 +1,712 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
-import { motion, AnimatePresence } from "motion/react";
-import {
-  Mail,
-  Lock,
-  User,
-  Eye,
-  EyeOff,
-  Loader2,
-  TrendingUp,
-  Sparkles,
-  ShieldCheck,
-  Zap,
-  ArrowRight,
-  ArrowLeft,
-  CheckCircle2,
-  KeyRound,
-  Edit2,
-  Clipboard,
+import { useState, useEffect } from "react";
+import { 
+  Mail, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, Check, User, 
+  Loader2, ShieldCheck, TrendingUp, Activity, CheckCircle2, Zap, X, Sparkles
 } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../../lib/auth-context";
-import { OtpPinInput } from "../../components/ui/OtpPinInput";
-import { getRoleHome } from "../../components/auth/ProtectedRoute";
-import { getPostLoginRedirect } from "../../lib/useRouteMemory";
 
-type AuthView = "login" | "signup" | "otp" | "forgot" | "forgot_otp";
+const PENDING_REGISTRATION_KEY = "creo_pending_registration";
 
-export function AuthPage({ defaultView = "login" }: { defaultView?: "login" | "signup" }) {
-  const [searchParams] = useSearchParams();
+interface PendingRegistration {
+  email: string;
+  fullName: string;
+  expiresAt: number;
+}
+
+function readPendingRegistration(): PendingRegistration | null {
+  try {
+    const raw = sessionStorage.getItem(PENDING_REGISTRATION_KEY);
+    if (!raw) return null;
+    const pending = JSON.parse(raw) as PendingRegistration;
+    if (!pending.email || pending.expiresAt <= Date.now()) {
+      sessionStorage.removeItem(PENDING_REGISTRATION_KEY);
+      return null;
+    }
+    return pending;
+  } catch {
+    return null;
+  }
+}
+
+function writePendingRegistration(email: string, fullName: string): void {
+  sessionStorage.setItem(PENDING_REGISTRATION_KEY, JSON.stringify({
+    email,
+    fullName,
+    expiresAt: Date.now() + 10 * 60_000,
+  } satisfies PendingRegistration));
+}
+
+function clearPendingRegistration(): void {
+  sessionStorage.removeItem(PENDING_REGISTRATION_KEY);
+}
+
+export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
+  const location = useLocation();
   const navigate = useNavigate();
-  const {
-    loginWithPassword,
-    registerIntent,
-    verifyRegistration,
-    forgotPassword,
-    verifyResetOtp,
-    sendOtp,
-    verifyOtp,
-    getGoogleAuthUrl,
-  } = useAuth();
-
-  const [view, setView] = useState<AuthView>(defaultView);
-  const [email, setEmail] = useState(searchParams.get("email") || "");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [fullName, setFullName] = useState(searchParams.get("name") || "");
-  const [otpCode, setOtpCode] = useState("");
-  const [pendingRegistration, setPendingRegistration] = useState<{
-    email: string;
-    password: string;
-    fullName: string;
-  } | null>(null);
-
+  const { loginWithPassword, registerIntent, resendRegistration, verifyRegistration, getGoogleAuthUrl, forgotPassword } = useAuth();
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [otpCountdown, setOtpCountdown] = useState(60);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Track whether branding panel is on the right (signup mode) or left (login mode)
-  const isRightPanel = view === "signup" || view === "otp";
+  const initialMode = location.pathname === "/signup" || defaultView === "signup" ? "signup" : "signin";
+  const initialPending = initialMode === "signup" ? readPendingRegistration() : null;
+  const [mode, setMode] = useState<"signin" | "signup">(initialMode);
+  const [rememberMe, setRememberMe] = useState(initialMode === "signin");
 
-  // Auto decrement OTP countdown timer
+  // Controlled form state
+  const queryEmail = new URLSearchParams(location.search).get("email") || "";
+  const [email, setEmail] = useState(queryEmail || initialPending?.email || "");
+  const [password, setPassword] = useState("");
+
   useEffect(() => {
-    if ((view !== "otp" && view !== "forgot_otp") || otpCountdown <= 0) return;
-    const timer = setInterval(() => {
-      setOtpCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [view, otpCountdown]);
+    const qEmail = new URLSearchParams(location.search).get("email");
+    if (qEmail) setEmail(qEmail);
+  }, [location.search]);
+  const [fullName, setFullName] = useState(initialPending?.fullName || "");
+  const [registrationPending, setRegistrationPending] = useState(Boolean(initialPending));
+  const [otpCode, setOtpCode] = useState("");
 
-  const selectedPlan = searchParams.get("plan");
-  const redirectedFrom = searchParams.get("redirectedFrom");
+  // Forgot password modal state
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotStatus, setForgotStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+  const [forgotLoading, setForgotLoading] = useState(false);
 
-  const routeByRole = (role: string) => {
-    // For team members, block access to admin-only pages from redirectedFrom
-    if (redirectedFrom) {
-      const decoded = decodeURIComponent(redirectedFrom);
-      const isTeam = role === "team_member" || role === "team_lead" || role === "editor" || role === "designer";
-      const isAdminOnly =
-        decoded === "/admin" ||
-        decoded === "/admin/" ||
-        decoded === "/admin/dashboard" ||
-        decoded === "/admin/clients" ||
-        decoded === "/admin/reports" ||
-        decoded === "/admin/kpi" ||
-        decoded === "/admin/sales" ||
-        decoded === "/admin/settings" ||
-        decoded === "/admin/addons";
+  // Lock body scroll so page remains strictly unscrollable
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
 
-      if (isTeam && isAdminOnly) {
-        navigate("/dashboard");
-        return;
-      }
+  useEffect(() => {
+    if (location.pathname === "/signup") {
+      setMode("signup");
+      setRememberMe(false);
+    } else if (location.pathname === "/login" || location.pathname === "/signin") {
+      setMode("signin");
+      setRememberMe(true);
     }
+  }, [location.pathname]);
 
-    // For clients with a selected plan, go to onboarding
-    if (role === "client" && selectedPlan) {
-      navigate(`/onboarding/terms?plan=${selectedPlan}`);
-      return;
-    }
-
-    // Use smart redirect: redirectedFrom > sessionStorage saved route > role home
-    const defaultHome = getRoleHome(role);
-    const destination = getPostLoginRedirect(
-      role,
-      redirectedFrom ? decodeURIComponent(redirectedFrom) : null,
-      defaultHome,
-    );
-    navigate(destination);
+  const handleDemoFill = () => {
+    setMode("signin");
+    setEmail("admin@creo.agency");
+    setPassword("creo2026");
+    setError(null);
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !password) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const user = await loginWithPassword(email, password);
-      routeByRole(user.role);
-    } catch (err: any) {
-      setError(err.message || "Invalid email or password. Please check your credentials.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const cleanEmail = email.trim();
+    const cleanPass = password.trim();
+    const cleanName = fullName.trim();
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password || !fullName) {
-      setError("Please fill in all fields (Full Name, Email, and Password).");
+    if (!cleanEmail || !cleanPass) {
+      setError("Please enter your email and password.");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+    
+    if (mode === "signup" && !cleanName) {
+      setError("Please enter your full name.");
       return;
     }
-    setLoading(true);
-    setError(null);
-    try {
-      // Step 1: Send OTP to email and transition to OTP screen
-      await registerIntent(email, password, fullName);
-      setPendingRegistration({ email, password, fullName });
-      setOtpCode("");
-      setView("otp");
-      setOtpCountdown(60);
-    } catch (err: any) {
-      setError(err.message || "Failed to initiate registration. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) {
-      setError("Please enter your registered email address.");
-      return;
-    }
-    setLoading(true);
-    setError(null);
     try {
-      await forgotPassword(email);
-      setOtpCode("");
-      setView("forgot_otp");
-      setOtpCountdown(60);
-    } catch (err: any) {
-      setError(err.message || "Could not send reset code. Please check that this email exists.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    if (otpCountdown > 0 || loading) return;
-    setLoading(true);
-    setError(null);
-    try {
-      if (view === "forgot_otp") {
-        await forgotPassword(email);
-      } else if (pendingRegistration) {
-        await registerIntent(pendingRegistration.email, pendingRegistration.password, pendingRegistration.fullName);
+      setLoading(true);
+      setError(null);
+      if (mode === "signin") {
+        await loginWithPassword(cleanEmail, cleanPass);
       } else {
-        await sendOtp(email, fullName);
+        // Move to the OTP surface immediately; delivery continues in this request.
+        setRegistrationPending(true);
+        writePendingRegistration(cleanEmail, cleanName);
+        await registerIntent(cleanEmail, cleanPass, cleanName);
       }
-      setOtpCountdown(60);
     } catch (err: any) {
-      setError(err.message || "Failed to resend code.");
+      console.error(err);
+      if (mode === "signup") {
+        setRegistrationPending(false);
+        clearPendingRegistration();
+      }
+      setError(err.message || "Authentication failed. Please verify credentials.");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const handleVerifyOtp = async (e?: React.FormEvent, explicitCode?: string) => {
-    if (e) e.preventDefault();
-    const codeToVerify = explicitCode || otpCode;
-    if (!codeToVerify || codeToVerify.length < 4) return;
-    setLoading(true);
-    setError(null);
+  async function handleVerifyRegistration(e: React.FormEvent) {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(otpCode)) {
+      setError("Please enter the 6-digit verification code sent to your email.");
+      return;
+    }
+
     try {
-      if (view === "forgot_otp") {
-        const user = await verifyResetOtp(email, codeToVerify);
-        routeByRole(user.role);
-        return;
-      }
-
-      if (pendingRegistration) {
-        const user = await verifyRegistration(
-          pendingRegistration.email,
-          codeToVerify,
-          pendingRegistration.password,
-          pendingRegistration.fullName
-        );
-        routeByRole(user.role);
-        return;
-      }
-
-      const user = await verifyOtp(email, codeToVerify, fullName);
-      routeByRole(user.role);
+      setLoading(true);
+      setError(null);
+      await verifyRegistration(email.trim(), otpCode, password.trim() || undefined, fullName.trim());
+      clearPendingRegistration();
+      navigate("/portal", { replace: true });
     } catch (err: any) {
-      setError(err.message || "Invalid or expired verification code.");
+      setError(err.message || "The verification code is invalid or has expired.");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const handleGoogleAuth = async () => {
+  async function handleResendRegistrationCode() {
     try {
-      const url = await getGoogleAuthUrl();
-      window.location.href = url;
-    } catch {
-      setError("Failed to initialize Google authentication.");
+      setLoading(true);
+      setError(null);
+      if (password.trim()) {
+        await registerIntent(email.trim(), password.trim(), fullName.trim());
+      } else {
+        await resendRegistration(email.trim());
+      }
+      writePendingRegistration(email.trim(), fullName.trim());
+      setOtpCode("");
+    } catch (err: any) {
+      setError(err.message || "Unable to resend the verification code.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
-  const switchView = (newView: AuthView) => {
-    setView(newView);
-    setError(null);
-  };
-
-  // ── Branding Panel Content ──
-  const renderBrandingPanel = () => (
-    <div className="relative h-full flex flex-col justify-between p-6 sm:p-8 lg:p-10 overflow-hidden">
-      {/* Ambient Light Meshes */}
-      <div className="pointer-events-none absolute -top-24 -left-24 size-64 rounded-full bg-sky-200/30 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 size-64 rounded-full bg-blue-200/20 blur-2xl" />
-
-      {/* Top Pill / Status */}
-      <div className="relative z-10 flex items-center justify-between mb-4">
-        <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 border border-sky-200/70 px-3 py-1 text-xs font-bold text-[#2B7BC4] uppercase tracking-wide shadow-2xs">
-          <Sparkles className="size-3 text-[#0EA5E9]" />
-          <span>On-Demand Content Retainer</span>
-        </div>
-        <span className="text-[11px] font-semibold text-slate-500 bg-white/80 border border-slate-200/80 rounded-full px-2.5 py-0.5">
-          Enterprise Ready
-        </span>
-      </div>
-
-      {/* Core Content */}
-      <div className="relative z-10 my-auto py-2 space-y-5">
-        <div className="space-y-2">
-          <h1 className="text-2xl xl:text-3xl font-black tracking-tight text-[#0D2137] leading-tight">
-            {isRightPanel ? "Scale your brand with dedicated creative talent" : "Welcome to your creative workspace"}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            High-converting social deliverables, viral video reels, and studio designs produced with predictable turnaround times.
-          </p>
-        </div>
-
-        {/* Value Highlights */}
-        <div className="space-y-2.5">
-          <div className="flex items-center gap-3.5 rounded-2xl border border-slate-200/80 bg-white/95 p-3.5 shadow-2xs hover:border-[#2B7BC4]/40 hover:shadow-xs transition-all group">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#2B7BC4] group-hover:scale-105 transition-transform">
-              <Zap className="size-4.5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-[#0D2137]">Dedicated Creative Squad</h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">Experienced art directors, editors, and copywriters assigned to your brand.</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5 rounded-2xl border border-slate-200/80 bg-white/95 p-3.5 shadow-2xs hover:border-[#2B7BC4]/40 hover:shadow-xs transition-all group">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-[#0EA5E9] group-hover:scale-105 transition-transform">
-              <TrendingUp className="size-4.5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-[#0D2137]">Guaranteed SLAs & Cadence</h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">Strict 48-hour revision turnarounds with calendar auto-publishing.</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5 rounded-2xl border border-slate-200/80 bg-white/95 p-3.5 shadow-2xs hover:border-[#2B7BC4]/40 hover:shadow-xs transition-all group">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
-              <ShieldCheck className="size-4.5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-[#0D2137]">Zero-Trust Enterprise Security</h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">End-to-end cryptographic JWT authentication with protected asset isolation.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer Trust Note */}
-      <div className="relative z-10 flex items-center justify-between text-xs text-slate-500 pt-3 mt-3 border-t border-slate-200/70">
-        <span>© {new Date().getFullYear()} Creo Technologies Inc.</span>
-        <span className="font-semibold text-slate-700 flex items-center gap-1">
-          <span className="text-amber-500">★</span> 4.9/5 Rating from Top Brands
-        </span>
-      </div>
-    </div>
-  );
-
-  // ── Form Panel Content ──
-  const renderFormPanel = () => (
-    <div className="flex flex-col justify-center p-4 sm:p-8 lg:p-10 bg-white h-full">
-      <div className="w-full max-w-sm mx-auto space-y-4">
-
-        {/* View Switcher Tabs (Sign In vs Create Account) — only on login/signup */}
-        {view !== "otp" && view !== "forgot_otp" && view !== "forgot" && (
-          <div className="flex rounded-xl bg-slate-100 p-1 border border-slate-200/60">
-            <button
-              type="button"
-              onClick={() => switchView("login")}
-              className={`flex-1 rounded-lg py-2 text-xs font-bold transition-all cursor-pointer ${
-                view === "login"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-900"
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => switchView("signup")}
-              className={`flex-1 rounded-lg py-2 text-xs font-bold transition-all cursor-pointer ${
-                view === "signup"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-900"
-              }`}
-            >
-              Create Account
-            </button>
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-xl border border-rose-200 bg-rose-50/90 p-3 text-xs font-medium text-rose-700 animate-in fade-in duration-200">
-            {error}
-          </div>
-        )}
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={view}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.18 }}
-          >
-            {/* 1. LOGIN FORM */}
-            {view === "login" && (
-          <form onSubmit={handleLogin} className="space-y-3.5">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-3 size-4 text-slate-400" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@business.com"
-                  className="w-full rounded-xl border border-slate-200/80 bg-slate-50/50 pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#2B7BC4] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2B7BC4]/10 transition-all shadow-2xs"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
-                  Password
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setView("forgot");
-                    setError(null);
-                  }}
-                  className="text-xs font-semibold text-[#2B7BC4] hover:underline transition-colors cursor-pointer"
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-3 size-4 text-slate-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl border border-slate-200/80 bg-slate-50/50 pl-10 pr-10 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#2B7BC4] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2B7BC4]/10 transition-all shadow-2xs"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2B7BC4] to-[#1E609A] hover:brightness-110 active:scale-[0.98] py-2.5 text-sm font-bold text-white shadow-md shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {loading ? <Loader2 className="size-4 animate-spin" /> : (redirectedFrom?.includes("admin") ? "Sign In to Admin Operations" : "Sign In to Creo")}
-              {!loading && <ArrowRight className="size-4" />}
-            </button>
-          </form>
-        )}
-
-        {/* 2. SIGNUP FORM */}
-        {view === "signup" && (
-          <form onSubmit={handleRegister} className="space-y-3">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                Full Name / Username
-              </label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-3 size-4 text-slate-400" />
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Priya Sharma"
-                  className="w-full rounded-xl border border-slate-200/80 bg-slate-50/50 pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#2B7BC4] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2B7BC4]/10 transition-all shadow-2xs"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                Business Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-3 size-4 text-slate-400" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="priya@urbanbakes.com"
-                  className="w-full rounded-xl border border-slate-200/80 bg-slate-50/50 pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#2B7BC4] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2B7BC4]/10 transition-all shadow-2xs"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-3 size-4 text-slate-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  minLength={8}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 8 characters (letters & numbers)"
-                  className="w-full rounded-xl border border-slate-200/80 bg-slate-50/50 pl-10 pr-10 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#2B7BC4] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2B7BC4]/10 transition-all shadow-2xs"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-              <p className="mt-1 text-[11px] text-slate-400">
-                Minimum 8 characters with at least one letter and number. A 6-digit OTP will verify your email.
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2B7BC4] to-[#1E609A] hover:brightness-110 active:scale-[0.98] py-2.5 text-sm font-bold text-white shadow-md shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {loading ? <Loader2 className="size-4 animate-spin" /> : "Create Account & Send OTP"}
-              {!loading && <ArrowRight className="size-4" />}
-            </button>
-          </form>
-        )}
-
-        {/* 3. FORGOT PASSWORD REQUEST FORM */}
-        {view === "forgot" && (
-          <form onSubmit={handleForgotPassword} className="space-y-3.5">
-            <div className="space-y-1 pb-1">
-              <h3 className="text-lg font-bold text-slate-900">Reset Password</h3>
-              <p className="text-xs text-slate-500">
-                Enter your registered account email and we'll send a 6-digit reset code to your inbox.
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                Account Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-3 size-4 text-slate-400" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@business.com"
-                  className="w-full rounded-xl border border-slate-200/80 bg-slate-50/50 pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#2B7BC4] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2B7BC4]/10 transition-all shadow-2xs"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || !email}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2B7BC4] to-[#1E609A] hover:brightness-110 active:scale-[0.98] py-2.5 text-sm font-bold text-white shadow-md shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {loading ? <Loader2 className="size-4 animate-spin" /> : "Send Reset Code"}
-              {!loading && <ArrowRight className="size-4" />}
-            </button>
-
-            <div className="text-center pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setView("login");
-                  setError(null);
-                }}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
-              >
-                ← Back to Sign In
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* 4. OTP VERIFICATION FORM */}
-        {(view === "otp" || view === "forgot_otp") && (
-          <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <div className="text-center space-y-1.5 pb-1">
-              <div className="mx-auto size-11 rounded-2xl bg-sky-50 border border-sky-200/70 flex items-center justify-center text-[#2B7BC4] shadow-xs">
-                <KeyRound className="size-5 text-[#2B7BC4]" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">
-                {view === "forgot_otp" ? "Reset Code Verification" : "Verify Your Email"}
-              </h3>
-              <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                {view === "forgot_otp"
-                  ? "Enter the 6-digit reset code sent to your email:"
-                  : "We sent a 6-digit verification code to complete your setup:"}
-              </p>
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-slate-100 rounded-full border border-slate-200 text-xs font-semibold text-slate-800">
-                <Mail className="size-3 text-[#2B7BC4]" />
-                <span>{email}</span>
-                <button
-                  type="button"
-                  onClick={() => setView(view === "forgot_otp" ? "forgot" : "signup")}
-                  className="ml-1 text-slate-400 hover:text-[#2B7BC4] transition-colors cursor-pointer"
-                  title="Change email"
-                >
-                  <Edit2 className="size-3" />
-                </button>
-              </div>
-            </div>
-
-            {/* 6-Digit Segmented PIN Input */}
-            <div className="py-1">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 text-center">
-                Enter 6-Digit Security Code
-              </label>
-              <OtpPinInput
-                value={otpCode}
-                onChange={setOtpCode}
-                onComplete={(code) => handleVerifyOtp(undefined, code)}
-                disabled={loading}
-                hasError={Boolean(error)}
-                showDemoFill={false}
-              />
-              <div className="flex items-center justify-center pt-2">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      const text = await navigator.clipboard.readText();
-                      const digits = text.replace(/\D/g, "").slice(0, 6);
-                      if (digits) {
-                        setOtpCode(digits);
-                        if (digits.length === 6) {
-                          handleVerifyOtp(undefined, digits);
-                        }
-                      }
-                    } catch (err) {
-                      // User denied clipboard permission or not supported
-                    }
-                  }}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2B7BC4] hover:text-[#174e82] transition-colors py-1 px-2.5 rounded-lg hover:bg-sky-50 cursor-pointer"
-                  title="Paste verification code from clipboard"
-                >
-                  <Clipboard className="size-3.5" />
-                  <span>Paste code from clipboard</span>
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || otpCode.length < 4}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2B7BC4] to-[#1E609A] hover:brightness-110 active:scale-[0.98] py-2.5 text-sm font-bold text-white shadow-md shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {loading ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : view === "forgot_otp" ? (
-                "Verify Code & Reset Password"
-              ) : (
-                "Verify & Complete Account"
-              )}
-              {!loading && <CheckCircle2 className="size-4" />}
-            </button>
-
-            <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-              <button
-                type="button"
-                onClick={() => setView(view === "forgot_otp" ? "forgot" : "signup")}
-                className="text-slate-500 hover:text-slate-800 transition-colors inline-flex items-center gap-1 cursor-pointer"
-              >
-                <Edit2 className="size-3" />
-                <span>Change Email</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleResendOtp}
-                disabled={otpCountdown > 0 || loading}
-                className="font-semibold text-[#2B7BC4] hover:underline disabled:text-slate-400 disabled:no-underline transition-colors cursor-pointer"
-              >
-                {otpCountdown > 0 ? (
-                  <span className="tabular-nums">Resend in {otpCountdown}s</span>
-                ) : (
-                  "Resend Code"
-                )}
-              </button>
-            </div>
-
-            <div className="text-center pt-2 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => {
-                  setView("login");
-                  setError(null);
-                }}
-                className="text-xs font-semibold text-slate-500 hover:text-[#2B7BC4] transition-colors cursor-pointer inline-flex items-center gap-1.5"
-              >
-                <ArrowLeft className="size-3.5" />
-                <span>Back to Sign In</span>
-              </button>
-            </div>
-          </form>
-        )}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Social Divider & Google OAuth */}
-        {view !== "otp" && view !== "forgot_otp" && (
-          <>
-            <div className="relative flex items-center justify-center pt-1">
-              <div className="w-full border-t border-slate-200" />
-              <span className="absolute bg-white px-3 text-xs uppercase text-slate-400">or</span>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleGoogleAuth}
-              className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200/90 bg-white py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-2xs transition-all cursor-pointer"
-            >
-              <svg className="size-4" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                />
-              </svg>
-              Continue with Google
-            </button>
-          </>
-        )}
-
-        <p className="text-center text-[11px] text-slate-400 pt-1">
-          By continuing, you agree to Creo's{" "}
-          <Link to="/terms" className="text-[#2B7BC4] hover:underline">
-            Terms & Conditions
-          </Link>{" "}
-          and{" "}
-          <Link to="/privacy" className="text-[#2B7BC4] hover:underline">
-            Privacy Policy
-          </Link>.
-        </p>
-      </div>
-    </div>
-  );
+  async function handleForgotPasswordSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!forgotEmail.trim()) {
+      setForgotStatus({ type: "error", msg: "Please enter your email address." });
+      return;
+    }
+    try {
+      setForgotLoading(true);
+      setForgotStatus(null);
+      const res = await forgotPassword(forgotEmail.trim());
+      setForgotStatus({ type: "success", msg: res?.message || "Password reset instructions dispatched." });
+    } catch (err: any) {
+      setForgotStatus({ type: "error", msg: err.message || "Failed to process reset request." });
+    } finally {
+      setForgotLoading(false);
+    }
+  }
 
   return (
-    <div className="h-screen w-screen fixed inset-0 overflow-y-auto lg:overflow-hidden bg-[#030914] flex flex-col justify-between p-3 sm:p-5 lg:p-6 text-slate-900 antialiased relative">
-      {/* ── Animated AI Background Layer ─────────────────────────────────── */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div
-          className="absolute -inset-10 bg-cover bg-center animate-ai-bg-drift filter brightness-[0.70] contrast-[1.12]"
-          style={{ backgroundImage: `url('/assets/auth_bg.jpg')` }}
-        />
-        {/* Atmospheric Cinematic Sapphire Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#030A16]/85 via-[#07192F]/65 to-[#040D1A]/90 backdrop-blur-[2px]" />
-        {/* Animated Ambient Light Pulses */}
-        <div className="absolute -top-28 -left-28 w-[520px] h-[520px] bg-blue-500/20 rounded-full blur-[120px] animate-ai-orb-1" />
-        <div className="absolute -bottom-28 -right-28 w-[580px] h-[580px] bg-cyan-400/15 rounded-full blur-[130px] animate-ai-orb-2" />
+    <div className="fixed inset-0 h-screen max-h-screen w-screen overflow-hidden flex flex-col justify-between bg-[#050810] text-[#F8FAFC] font-sans selection:bg-[#7FA0D6]/30">
+      
+      {/* Background Ambient Glow & Grid Matrix */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#7FA0D6]/10 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-40 right-10 w-[500px] h-[300px] bg-[#38BDF8]/5 rounded-full blur-[100px]" />
+        <svg className="absolute w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="auth-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#7FA0D6" strokeWidth="1" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#auth-grid)" />
+        </svg>
       </div>
 
-      {/* ── Top Header Bar ────────────────────────────────────────────────── */}
-      <header className="max-w-5xl w-full mx-auto flex items-center justify-between pb-1 relative z-10 shrink-0">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#2B7BC4] to-[#0EA5E9] shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform border border-white/20">
-            <span className="font-mono text-lg font-black text-white">C</span>
+      {/* ── Top Header Bar (Compact: 52px) ── */}
+      <header className="relative z-20 h-13 shrink-0 flex items-center justify-between px-6 sm:px-10 border-b border-[#222F44]/40 bg-[#050810]/70 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center text-xl font-black tracking-tight text-[#F8FAFC] hover:opacity-90 transition">
+            <span>creo</span>
+            <span className="text-[#7FA0D6] text-2xl leading-none">.</span>
+          </Link>
+          <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#121926] border border-[#222F44] text-[10px] font-semibold text-[#7FA0D6] uppercase tracking-wider">
+            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Agency OS v2.6
           </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-black tracking-tight text-white drop-shadow-sm">Creo</span>
-            <span className="text-[9px] font-bold tracking-wider text-cyan-300 uppercase">
-              Digital Agency Platform
-            </span>
-          </div>
-        </Link>
+        </div>
 
-        <Link
-          to="/"
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold backdrop-blur-md transition-all group cursor-pointer shadow-xs"
-        >
-          <ArrowLeft className="size-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          <span>Back to Home</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          {mode === "signin" && (
+            <button
+              type="button"
+              onClick={handleDemoFill}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121926] hover:bg-[#1A2333] border border-[#7FA0D6]/40 text-[#7FA0D6] hover:text-[#F8FAFC] text-[11px] font-semibold transition shadow-sm cursor-pointer"
+              title="Auto-fill Executive Admin credentials"
+            >
+              <Sparkles className="size-3 text-[#7FA0D6]" />
+              <span className="hidden xs:inline">Demo: </span>Auto-Fill Admin
+            </button>
+          )}
+
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#222F44] bg-[#0A0F18] text-[11px] font-semibold text-[#F8FAFC] hover:bg-[#121926] hover:border-[#7FA0D6]/40 transition shadow-xs"
+          >
+            <ArrowLeft className="size-3 text-[#97A0B3]" /> 
+            <span>Home</span>
+          </Link>
+        </div>
       </header>
 
-      {/* ── Main Sliding Dual-Panel Container ─────────────────────────── */}
-      <div className="max-w-5xl w-full mx-auto my-2 sm:my-auto rounded-2xl sm:rounded-3xl bg-white/95 backdrop-blur-2xl border border-white/40 shadow-2xl shadow-black/50 overflow-hidden relative z-10 shrink">
-        {/* Desktop: Sliding Dual-Panel Layout */}
-        <div className="hidden lg:block relative w-full overflow-hidden" style={{ minHeight: 560 }}>
-          {/* Form Panel (50% width, slides between 0% and 100%) */}
-          <motion.div
-            className="absolute top-0 bottom-0 left-0 w-1/2 h-full z-20 overflow-y-auto bg-white"
-            initial={false}
-            animate={{ x: isRightPanel ? "0%" : "100%" }}
-            transition={{
-              type: "spring",
-              stiffness: 240,
-              damping: 26,
-              mass: 0.95,
-            }}
-          >
-            {renderFormPanel()}
-          </motion.div>
-
-          {/* Branding Panel (50% width, slides between 100% and 0%) */}
-          <motion.div
-            className="absolute top-0 bottom-0 left-0 w-1/2 h-full z-10 bg-gradient-to-br from-white/95 via-slate-50/90 to-sky-50/70 backdrop-blur-md overflow-hidden"
-            initial={false}
-            animate={{ x: isRightPanel ? "100%" : "0%" }}
-            transition={{
-              type: "spring",
-              stiffness: 240,
-              damping: 26,
-              mass: 0.95,
-            }}
-          >
-            <div className={`h-full border-slate-200/80 transition-shadow duration-300 ${
-              isRightPanel
-                ? "border-l shadow-[-10px_0_30px_-5px_rgba(15,23,42,0.12)]"
-                : "border-r shadow-[10px_0_30px_-5px_rgba(15,23,42,0.12)]"
-            }`}>
-              {renderBrandingPanel()}
+      {/* ── Main Fit-to-Screen Centerfold ── */}
+      <main className="relative z-10 flex-1 min-h-0 flex items-center justify-center px-4 sm:px-8 py-2">
+        <div className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* Left Column: Agency OS Telemetry Feature Deck (Desktop only) */}
+          <div className="hidden lg:flex lg:col-span-6 flex-col justify-center space-y-4 pr-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#121926] border border-[#222F44] px-3 py-1 text-[10px] font-bold tracking-widest uppercase text-[#7FA0D6] w-fit shadow-xs">
+              <Zap className="size-3 text-[#7FA0D6]" />
+              AGENCY COMMAND TELEMETRY
             </div>
-          </motion.div>
+
+            <h1 className="text-3xl xl:text-4xl font-black tracking-tight leading-[1.1] text-[#F8FAFC]">
+              One operating layer for high-velocity <span className="text-[#7FA0D6]">creative agencies.</span>
+            </h1>
+
+            <p className="text-xs text-[#97A0B3] leading-relaxed max-w-md">
+              Replace WhatsApp silos and blind billing with live capacity meters, client approval gates, and unit margin telemetry in real time.
+            </p>
+
+            {/* 3 Telemetry Bento Mini Cards */}
+            <div className="space-y-2.5 pt-1 max-w-md">
+              <div className="bg-[#121926]/70 backdrop-blur-md border border-[#222F44] rounded-xl p-3 flex items-center justify-between hover:border-[#7FA0D6]/30 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-[#0A0F18] border border-[#222F44] flex items-center justify-center text-[#7FA0D6] shrink-0">
+                    <TrendingUp className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-[#F8FAFC]">Retainer Margin Engine</div>
+                    <div className="text-[10px] text-[#97A0B3]">Astra Living &bull; Live P&amp;L Tracker</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-mono font-bold text-[#7FA0D6]">41.25%</span>
+                  <div className="text-[9px] text-[#97A0B3]">Verified Margin</div>
+                </div>
+              </div>
+
+              <div className="bg-[#121926]/70 backdrop-blur-md border border-[#222F44] rounded-xl p-3 flex items-center justify-between hover:border-[#7FA0D6]/30 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-[#0A0F18] border border-[#222F44] flex items-center justify-center text-emerald-400 shrink-0">
+                    <Activity className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-[#F8FAFC]">Capacity Radar</div>
+                    <div className="text-[10px] text-[#97A0B3]">Motion Pod &bull; Zero Burnout Trigger</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-mono font-bold text-emerald-400">82%</span>
+                  <div className="text-[9px] text-[#97A0B3]">Utilization Nominal</div>
+                </div>
+              </div>
+
+              <div className="bg-[#121926]/70 backdrop-blur-md border border-[#222F44] rounded-xl p-3 flex items-center justify-between hover:border-[#7FA0D6]/30 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-[#0A0F18] border border-[#222F44] flex items-center justify-center text-[#7FA0D6] shrink-0">
+                    <CheckCircle2 className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-[#F8FAFC]">1-Click Client Sign-Off</div>
+                    <div className="text-[10px] text-[#97A0B3]">Magic-Links with Frame Annotations</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-mono font-bold text-[#F8FAFC]">2.4h SLA</span>
+                  <div className="text-[9px] text-[#97A0B3]">Turnaround Avg</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-1 text-[11px] text-[#97A0B3]">
+              <span className="flex items-center gap-1.5 font-semibold text-[#F8FAFC]">
+                <ShieldCheck className="size-3.5 text-[#7FA0D6]" />
+                SOC-2 Type II Certified
+              </span>
+              <span>&bull;</span>
+              <span>Trusted by 52+ leading creative studios</span>
+            </div>
+          </div>
+
+          {/* Right Column: Auth Console Bento Card (Fits cleanly in vertical space) */}
+          <div className="col-span-12 lg:col-span-6 flex justify-center">
+            <div className="w-full max-w-[410px] bg-[#121926]/90 backdrop-blur-xl border border-[#222F44] rounded-2xl p-5 sm:p-6 shadow-[0_15px_40px_rgba(0,0,0,0.6)] flex flex-col justify-between">
+              
+              {/* Keep verification focused: account switching is unavailable until OTP succeeds. */}
+              {!registrationPending && <div className="bg-[#0A0F18] border border-[#222F44] p-1 rounded-full flex mb-4">
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setMode("signin");
+                    setRegistrationPending(false);
+                    clearPendingRegistration();
+                    setRememberMe(true);
+                    setError(null);
+                    navigate("/login", { replace: true });
+                  }}
+                  className={`text-xs py-1.5 px-4 rounded-full flex-1 text-center transition font-semibold cursor-pointer ${
+                    mode === "signin" 
+                      ? "bg-[#1C2638] border border-[#7FA0D6]/40 text-[#F8FAFC] shadow-xs" 
+                      : "text-[#97A0B3] hover:text-[#F8FAFC]"
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setMode("signup");
+                    setRememberMe(false);
+                    setError(null);
+                    navigate("/signup", { replace: true });
+                  }}
+                  className={`text-xs py-1.5 px-4 rounded-full flex-1 text-center transition font-semibold cursor-pointer ${
+                    mode === "signup" 
+                      ? "bg-[#1C2638] border border-[#7FA0D6]/40 text-[#F8FAFC] shadow-xs" 
+                      : "text-[#97A0B3] hover:text-[#F8FAFC]"
+                  }`}
+                >
+                  Create Account
+                </button>
+              </div>}
+
+              {/* Title & Subtitle */}
+              <div className="mb-3 text-left">
+                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC]">
+                  {registrationPending
+                    ? "Verify your email"
+                    : mode === "signin" ? "Welcome back to CREO" : "Start operating your studio"}
+                </h2>
+                <p className="text-[11px] text-[#97A0B3] mt-0.5">
+                  {registrationPending
+                    ? `Enter the 6-digit code sent to ${email.trim()}.`
+                    : mode === "signin"
+                    ? "Enter your credentials to access your agency pods." 
+                    : "Deploy CREO across your team and client accounts."}
+                </p>
+              </div>
+
+              {/* Error Banner */}
+              {error && (
+                <div className="mb-3 bg-red-950/40 border border-red-800/60 rounded-xl px-3.5 py-2 text-left">
+                  <p className="text-[11px] text-red-300 font-semibold">{error}</p>
+                </div>
+              )}
+
+              {/* Form */}
+              {registrationPending ? (
+                <form onSubmit={handleVerifyRegistration} className="space-y-3">
+                  <div>
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                      Verification Code
+                    </label>
+                    <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                      <ShieldCheck className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                        placeholder="000000"
+                        aria-label="Six-digit verification code"
+                        className="bg-transparent text-center text-lg font-mono tracking-[0.35em] text-[#F8FAFC] placeholder-[#97A0B3]/40 focus:outline-none w-full"
+                        autoFocus
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading || otpCode.length !== 6}
+                    className="w-full bg-[#BCCCE6] hover:bg-white text-[#050810] font-bold text-xs py-2.5 rounded-xl transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    {loading && <Loader2 className="size-3.5 animate-spin" />}
+                    <span>{loading ? "Verifying..." : "Verify and Continue"}</span>
+                    {!loading && <ArrowRight className="size-3.5" />}
+                  </button>
+
+                  <div className="flex items-center justify-between text-[11px]">
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => {
+                        setRegistrationPending(false);
+                        setOtpCode("");
+                        setError(null);
+                        clearPendingRegistration();
+                      }}
+                      className="text-[#97A0B3] hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      Change details
+                    </button>
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={handleResendRegistrationCode}
+                      className="text-[#7FA0D6] hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      Resend code
+                    </button>
+                  </div>
+                </form>
+              ) : (
+              <form onSubmit={handleSubmit} className="space-y-3">
+                
+                {/* Full Name (Sign Up only) */}
+                {mode === "signup" && (
+                  <div>
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                      Full Name
+                    </label>
+                    <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                      <User className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                      <input 
+                        type="text" 
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Your full name" 
+                        className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
+                        required={mode === "signup"}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Email Field */}
+                <div>
+                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                    {mode === "signin" ? "Business Email" : "Agency / Work Email"}
+                  </label>
+                  <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                    <Mail className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                    <input 
+                      type="email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={mode === "signin" ? "admin@creo.agency" : "founder@agency.com"} 
+                      className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full rounded-md"
+                      style={{ colorScheme: "dark" }}
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Password Field */}
+                <div>
+                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                    {mode === "signin" ? "Password" : "Create Password"}
+                  </label>
+                  <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                    <Lock className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={mode === "signin" ? "••••••••" : "Min. 8 chars"} 
+                      className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full rounded-md"
+                      style={{ colorScheme: "dark" }}
+                      autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                      required
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-[#97A0B3] hover:text-[#F8FAFC] shrink-0 ml-2 transition-colors focus:outline-none cursor-pointer"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Remember Me & Forgot Password Row */}
+                <div className="flex items-center justify-between text-[11px] pt-0.5">
+                  <label 
+                    className="flex items-center gap-2 cursor-pointer group select-none" 
+                    onClick={() => setRememberMe(!rememberMe)}
+                  >
+                    <div className={`w-3.5 h-3.5 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${rememberMe ? 'bg-[#7FA0D6]' : 'bg-[#0A0F18] border border-[#222F44]'}`}>
+                      {rememberMe && <Check className="size-2.5 text-[#050810]" strokeWidth={3.5} />}
+                    </div>
+                    <span className="text-[#97A0B3] group-hover:text-[#F8FAFC] transition-colors">Remember me</span>
+                  </label>
+                  
+                  {mode === "signin" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForgotOpen(true);
+                        setForgotEmail(email);
+                        setForgotStatus(null);
+                      }}
+                      className="text-[#7FA0D6] hover:text-white transition focus:outline-none text-[11px] cursor-pointer"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+
+                {/* Primary Submit CTA */}
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#BCCCE6] hover:bg-white text-[#050810] font-bold text-xs py-2.5 rounded-xl transition shadow-sm hover:shadow-[0_0_20px_rgba(188,204,230,0.25)] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {loading && <Loader2 className="size-3.5 animate-spin" />}
+                  <span>
+                    {mode === "signin" 
+                      ? (loading ? "Authenticating..." : "Sign In to Command Center") 
+                      : (loading ? "Creating Account..." : "Launch Agency Account")}
+                  </span>
+                  {!loading && <ArrowRight className="size-3.5" />}
+                </button>
+              </form>
+              )}
+
+              {/* Alternative Auth / Google Workspace (Sign In Mode) */}
+              {!registrationPending && mode === "signin" ? (
+                <div className="mt-3">
+                  <div className="flex items-center my-2.5">
+                    <div className="flex-1 border-t border-[#222F44]/60"></div>
+                    <span className="px-2 text-[9px] text-[#97A0B3] uppercase tracking-wider font-semibold">
+                      OR
+                    </span>
+                    <div className="flex-1 border-t border-[#222F44]/60"></div>
+                  </div>
+
+                  <button 
+                    type="button"
+                    className="w-full bg-[#0A0F18] border border-[#222F44] hover:bg-[#1A2333] hover:border-[#7FA0D6]/40 text-[#F8FAFC] text-xs font-semibold py-2 rounded-xl flex items-center justify-center gap-2.5 transition shadow-xs cursor-pointer" 
+                    onClick={async () => { 
+                      try { 
+                        setLoading(true); 
+                        const url = await getGoogleAuthUrl(); 
+                        if (url) {
+                          window.location.href = url; 
+                        } else {
+                          navigate("/auth/callback/google");
+                        }
+                      } catch { 
+                        setLoading(false); 
+                      } 
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    <span>Google Workspace</span>
+                  </button>
+                </div>
+              ) : !registrationPending ? (
+                <div className="mt-3 pt-2 text-[10px] text-[#97A0B3] text-center border-t border-[#222F44]/50 leading-relaxed">
+                  By joining, you agree to CREO's{" "}
+                  <Link to="/terms" className="text-[#7FA0D6] hover:underline">Terms</Link> and{" "}
+                  <Link to="/privacy" className="text-[#7FA0D6] hover:underline">Privacy Protocol</Link>.
+                </div>
+              ) : null}
+
+              {/* Bottom security micro badge */}
+              <div className="pt-2 text-center text-[10px] text-[#97A0B3]/50 flex items-center justify-center gap-1.5">
+                <ShieldCheck className="size-3 text-[#7FA0D6]" />
+                <span>256-Bit Encrypted &bull; ISO/SOC-2 Standards</span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      {/* ── Slim Bottom Bar (Compact: 36px) ── */}
+      <footer className="relative z-20 h-9 shrink-0 flex items-center justify-between px-6 sm:px-10 border-t border-[#222F44]/40 bg-[#050810]/70 text-[10px] text-[#97A0B3]/60">
+        <div>
+          &copy; {new Date().getFullYear()} CREO Technologies Inc. All rights reserved.
         </div>
 
-        {/* Mobile: Form-First Stacked Layout */}
-        <div className="lg:hidden flex flex-col">
-          {renderFormPanel()}
-          <div className="bg-gradient-to-br from-slate-50 via-white to-sky-50/40 border-t border-slate-200/70 p-4 sm:p-6">
-            <div className="flex flex-wrap items-center justify-center gap-2 text-center text-xs text-slate-600 mb-2">
-              <span className="inline-flex items-center gap-1 bg-white px-2.5 py-1 rounded-full border border-slate-200/80 font-bold text-[11px] text-[#0D2137] shadow-2xs">
-                ⚡ 48h Turnaround
-              </span>
-              <span className="inline-flex items-center gap-1 bg-white px-2.5 py-1 rounded-full border border-slate-200/80 font-bold text-[#0D2137] shadow-2xs">
-                🔒 Enterprise Security
-              </span>
-              <span className="inline-flex items-center gap-1 bg-white px-2.5 py-1 rounded-full border border-slate-200/80 font-bold text-[#0D2137] shadow-2xs">
-                <span className="text-amber-500">★</span> 4.9/5 Rating
-              </span>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-1.5 text-emerald-400 font-medium">
+            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Systems nominal &bull; 24ms</span>
+          </div>
+          <Link to="/privacy" className="hover:text-[#F8FAFC] transition">Privacy</Link>
+          <Link to="/terms" className="hover:text-[#F8FAFC] transition">Terms</Link>
+        </div>
+      </footer>
+
+      {/* ── Forgot Password Modal ── */}
+      {forgotOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-sm bg-[#121926] border border-[#222F44] rounded-2xl p-6 shadow-2xl relative text-left">
+            <button
+              type="button"
+              onClick={() => setForgotOpen(false)}
+              className="absolute top-4 right-4 text-[#97A0B3] hover:text-[#F8FAFC] transition p-1 cursor-pointer"
+            >
+              <X className="size-4" />
+            </button>
+
+            <div className="flex items-center gap-2.5 mb-2">
+              <div className="size-8 rounded-lg bg-[#0A0F18] border border-[#222F44] flex items-center justify-center text-[#7FA0D6]">
+                <Mail className="size-4" />
+              </div>
+              <h3 className="text-base font-bold text-[#F8FAFC]">Reset Agency Password</h3>
             </div>
-            <p className="text-[10px] text-center text-slate-400">
-              © {new Date().getFullYear()} Creo Technologies Inc. All rights reserved.
+
+            <p className="text-xs text-[#97A0B3] mb-4">
+              Enter your verified business email to receive an authentication reset link.
             </p>
+
+            {forgotStatus && (
+              <div className={`mb-4 px-3 py-2 rounded-xl text-xs font-semibold ${
+                forgotStatus.type === "success" 
+                  ? "bg-emerald-950/40 border border-emerald-800/60 text-emerald-300"
+                  : "bg-red-950/40 border border-red-800/60 text-red-300"
+              }`}>
+                {forgotStatus.msg}
+              </div>
+            )}
+
+            <form onSubmit={handleForgotPasswordSubmit} className="space-y-3">
+              <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6]">
+                <Mail className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                <input 
+                  type="email" 
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  placeholder="admin@creo.agency"
+                  className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setForgotOpen(false)}
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-[#F8FAFC] transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="bg-[#BCCCE6] hover:bg-white text-[#050810] font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  {forgotLoading && <Loader2 className="size-3.5 animate-spin" />}
+                  <span>Send Reset Link</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* ── Bottom Footer Help Note ─────────────────────────────────────── */}
-      <footer className="text-center text-xs text-white/70 py-1 relative z-10 shrink-0">
-        <span>Need assistance with your account? </span>
-        <a
-          href="https://wa.me/919941999415"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-cyan-300 font-semibold hover:text-white hover:underline cursor-pointer transition-colors"
-        >
-          Contact Dedicated Support
-        </a>
-      </footer>
     </div>
   );
 }

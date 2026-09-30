@@ -13,9 +13,18 @@ import {
   Plane,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
 
 export function MemberSchedulePTOPage() {
   const navigate = useNavigate();
+  const { data } = useQuery<PodDashboardData>({
+    queryKey: ["pod_dashboard"],
+    queryFn: () => fetchPodDashboard(),
+  });
+  const leadName = data?.members?.find((m) => m.role?.toLowerCase().includes("lead"))?.full_name || "Pod Lead";
+  const podName = data?.pod?.name || "Pod A";
+  const members = data?.members || [];
 
   // State
   const [ptoRemaining, setPtoRemaining] = useState(14.5);
@@ -28,8 +37,8 @@ export function MemberSchedulePTOPage() {
   const [leaveType, setLeaveType] = useState("Paid Time Off (PTO) - 14.5d avail");
   const [startDate, setStartDate] = useState("2025-11-17");
   const [endDate, setEndDate] = useState("2025-11-19");
-  const [designatedBackup, setDesignatedBackup] = useState("Chloe Tan (Sr. Video Editor & 2D Motion)");
-  const [handoverNotes, setHandoverNotes] = useState("Render queue supervision & emergency Northwind Labs 3D motion handoff.");
+  const [designatedBackup, setDesignatedBackup] = useState("Designated Pod Peer (Creative Specialist)");
+  const [handoverNotes, setHandoverNotes] = useState("Active render queue supervision & creative sprint handoff.");
   const [deductionDays] = useState("3.0");
 
   // Modals
@@ -39,17 +48,7 @@ export function MemberSchedulePTOPage() {
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
 
   // Active Leave List
-  const [activeRequests, setActiveRequests] = useState([
-    {
-      id: "req-1",
-      title: "Medical Leave (Half Day)",
-      status: "Pending Lead Approval (Maya Lin)",
-      statusColor: "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30",
-      tag: "Low Sprint Impact · Approved Pairing",
-      dateRange: "Tomorrow, Nov 8, 2025 · 02:00 PM - 06:00 PM PST (0.5 d)",
-      backup: "Chloe Tan (Avail: Render Queue supervision & emergency Northwind Labs 3D motion handoff)",
-    },
-  ]);
+  const [activeRequests, setActiveRequests] = useState<any[]>([]);
 
   const showToast = (text: string, type: "success" | "info" = "success") => {
     setToastMessage({ text, type });
@@ -62,15 +61,15 @@ export function MemberSchedulePTOPage() {
     const newReq = {
       id: `req-${Date.now()}`,
       title: `${leaveType.split(" - ")[0]} (${deductionDays}d)`,
-      status: "Pending Lead Approval (Maya Lin)",
-      statusColor: "bg-blue-500/15 text-[#93C5FD] border-blue-500/30",
-      tag: "Submitted · Maya Lin Notified",
+      status: "Pending Lead Approval",
+      statusColor: "bg-amber-50 text-amber-800 border-amber-200",
+      tag: "Submitted · Lead Notified",
       dateRange: `${startDate} to ${endDate} (${deductionDays} Working Days)`,
       backup: designatedBackup,
     };
     setActiveRequests([newReq, ...activeRequests]);
     setPtoRemaining((p) => Math.max(0, Number((p - parseFloat(deductionDays || "1")).toFixed(1))));
-    showToast(`Submitted ${deductionDays}d PTO request to Maya Lin for approval!`);
+    showToast(`Submitted ${deductionDays}d PTO request to ${leadName} for approval!`);
   };
 
   const handleConfirmCancelLeave = () => {
@@ -83,7 +82,7 @@ export function MemberSchedulePTOPage() {
   const handleConfirmModifyLeave = (e: React.FormEvent) => {
     e.preventDefault();
     setModifyModalOpen(false);
-    showToast("Updated medical leave notes and notified Maya Lin!");
+    showToast("Updated leave notes and notified ${leadName}!");
   };
 
   return (
@@ -99,11 +98,11 @@ export function MemberSchedulePTOPage() {
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-lg animate-fade-in ${
               toastMessage.type === "info"
                 ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-blue-800"
-                : "bg-blue-500/15 border-blue-500/30 text-[#93C5FD]"
+                : "bg-emerald-50 border-emerald-200 text-emerald-800"
             }`}
           >
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-[#60A5FA] shrink-0" />
+              <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
               <span>{toastMessage.text}</span>
             </div>
             <button onClick={() => setToastMessage(null)} className="text-current opacity-70 hover:opacity-100">
@@ -167,7 +166,7 @@ export function MemberSchedulePTOPage() {
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 SICK & MEDICAL
               </span>
-              <div className="size-7 sm:size-8 rounded-lg bg-blue-500/15 text-[#60A5FA] flex items-center justify-center border border-blue-500/30">
+              <div className="size-7 sm:size-8 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
                 <Shield className="size-4" />
               </div>
             </div>
@@ -188,7 +187,7 @@ export function MemberSchedulePTOPage() {
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 FLOATING & COMP
               </span>
-              <div className="size-7 sm:size-8 rounded-lg bg-blue-500/15 text-[#93C5FD] flex items-center justify-center border border-blue-500/30">
+              <div className="size-7 sm:size-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
                 <Calendar className="size-4" />
               </div>
             </div>
@@ -247,7 +246,7 @@ export function MemberSchedulePTOPage() {
                           <p className="text-xs text-[#97A0B3] mt-0.5 font-medium">{req.dateRange}</p>
                         </div>
                       </div>
-                      <span className="text-xs font-bold text-[#93C5FD] bg-blue-500/15 px-2.5 py-1 rounded-md border border-blue-500/30 self-start">
+                      <span className="text-xs font-bold text-emerald-400 bg-emerald-500/15 px-2.5 py-1 rounded-md border border-emerald-500/30 self-start">
                         {req.tag}
                       </span>
                     </div>
@@ -266,7 +265,7 @@ export function MemberSchedulePTOPage() {
                         </button>
                         <button
                           onClick={() => setCancelModalOpen(true)}
-                          className="px-3 py-1.5 rounded-xl border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 text-xs font-bold cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-bold cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -295,10 +294,10 @@ export function MemberSchedulePTOPage() {
                     </div>
                     <div>
                       <div className="font-black text-white text-xs sm:text-sm">Annual Leave – 3 Days</div>
-                      <div className="text-xs text-[#97A0B3]">Oct 12 – Oct 14, 2025 • Covered by Chloe Tan</div>
+                      <div className="text-xs text-[#97A0B3]">Oct 12 – Oct 14, 2025 • Covered by Designated Pod Peer</div>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-md bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 font-extrabold text-xs">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs">
                     Approved & Completed
                   </span>
                 </div>
@@ -313,7 +312,7 @@ export function MemberSchedulePTOPage() {
                       <div className="text-xs text-[#97A0B3]">Sep 22, 2025 • Standup asynchronous catchup</div>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-md bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 font-extrabold text-xs">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-extrabold text-xs">
                     Approved & Completed
                   </span>
                 </div>
@@ -348,16 +347,16 @@ export function MemberSchedulePTOPage() {
                   Duty / On-Deck
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-blue-400" />
+                  <span className="size-2.5 rounded-full bg-amber-500" />
                   Leave / Pending Off
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-blue-700" />
+                  <span className="size-2.5 rounded-full bg-rose-500" />
                   Sprint Deadline Lock
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-full bg-blue-300" />
-                  Maya Lin (Pod Lead Active)
+                  <span className="size-2.5 rounded-full bg-emerald-500" />
+                  {leadName} ({podName} Lead Active)
                 </span>
               </div>
 
@@ -413,11 +412,11 @@ export function MemberSchedulePTOPage() {
                       item.today
                         ? "bg-[#7FA0D6]/20 border-blue-400 font-black shadow-md ring-1 ring-blue-500/30 text-white"
                         : item.holiday
-                        ? "bg-blue-500/15 border-blue-500/30 text-blue-300"
+                        ? "bg-purple-500/15 border-purple-500/30 text-purple-300"
                         : item.warn
-                        ? "bg-blue-500/15 border-blue-500/30 text-[#93C5FD]"
+                        ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
                         : item.alert
-                        ? "bg-blue-500/15 border-blue-500/30 text-[#60A5FA]"
+                        ? "bg-rose-500/15 border-rose-500/30 text-rose-300"
                         : item.muted
                         ? "bg-[#0B111C]/40 border-[#2A3446] text-slate-400"
                         : "bg-[#161F2D] border-[#2A3446] hover:border-[#7FA0D6]/40 text-[#F1F5F9]"
@@ -430,11 +429,11 @@ export function MemberSchedulePTOPage() {
                           item.today
                             ? "bg-blue-600 text-white shadow-xs"
                             : item.warn
-                            ? "bg-blue-500/25 text-[#93C5FD] border border-blue-500/40"
+                            ? "bg-amber-500/25 text-amber-300 border border-amber-500/40"
                             : item.alert
-                            ? "bg-blue-500/25 text-[#60A5FA] border border-blue-500/40"
+                            ? "bg-rose-500/25 text-rose-300 border border-rose-500/40"
                             : item.holiday
-                            ? "bg-blue-500/25 text-blue-300 border border-blue-500/40"
+                            ? "bg-purple-500/25 text-purple-300 border border-purple-500/40"
                             : "bg-[#1F2C3F] text-[#F1F5F9]"
                         }`}
                       >
@@ -456,7 +455,7 @@ export function MemberSchedulePTOPage() {
                   <h3 className="text-sm font-black text-white">Today's Pod Schedule</h3>
                   <p className="text-xs text-[#97A0B3] font-medium">Monday, Nov 3 • Core Hours (09:00 - 18:00)</p>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-500/15 text-[#93C5FD] border border-blue-500/30">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                   ● Active Shift
                 </span>
               </div>
@@ -488,11 +487,11 @@ export function MemberSchedulePTOPage() {
                     <span className="font-extrabold text-[#7FA0D6] text-xs">01:30 PM – 02:15 PM</span>
                     <span className="text-xs text-[#97A0B3]">Conf Room 3</span>
                   </div>
-                  <div className="font-black text-white text-xs sm:text-sm">Creative Handoff: Northwind Labs</div>
+                  <div className="font-black text-white text-xs sm:text-sm">Creative Handoff: Active Sprint Sync</div>
                   <div className="text-xs text-[#97A0B3]">3D Renders presentation with Product Lead</div>
                   <div className="flex items-center justify-between pt-1 border-t border-[#2A3446] text-xs text-[#97A0B3]">
                     <span>Handoff Cut v.1.0</span>
-                    <span className="text-[#93C5FD] font-bold">Motion QA Ready</span>
+                    <span className="text-emerald-400 font-bold">Motion QA Ready</span>
                   </div>
                 </div>
 
@@ -502,7 +501,7 @@ export function MemberSchedulePTOPage() {
                     <span className="text-xs text-[#97A0B3]">Designated Window</span>
                   </div>
                   <div className="font-black text-white text-xs sm:text-sm">Lead Review & Quality Sign-Off</div>
-                  <div className="text-xs text-[#97A0B3]">Synchronous review block with Maya Lin</div>
+                  <div className="text-xs text-[#97A0B3]">Synchronous review block with {leadName}</div>
                 </div>
               </div>
             </div>
@@ -517,13 +516,13 @@ export function MemberSchedulePTOPage() {
               </div>
 
               <div className="p-3 rounded-xl bg-[#0B111C] border border-[#2A3446]/70 flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
-                  CT
+                <div className="size-10 rounded-xl bg-teal-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
+                  {members[1]?.full_name ? members[1].full_name.slice(0, 2).toUpperCase() : "DP"}
                 </div>
                 <div>
-                  <div className="font-black text-white text-xs sm:text-sm">Chloe Tan</div>
-                  <div className="text-xs text-[#97A0B3] font-medium">Sr. Video Editor & 2D Motion</div>
-                  <span className="inline-block mt-0.5 text-xs font-bold text-[#93C5FD] bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 rounded-md">
+                  <div className="font-black text-white text-xs sm:text-sm">{members[1]?.full_name || "Designated Pod Peer"}</div>
+                  <div className="text-xs text-[#97A0B3] font-medium">{members[1]?.role || "Creative Specialist"}</div>
+                  <span className="inline-block mt-0.5 text-xs font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-md">
                     ● Available for pairing
                   </span>
                 </div>
@@ -532,7 +531,7 @@ export function MemberSchedulePTOPage() {
               <div className="text-xs text-[#97A0B3] space-y-1">
                 <div className="font-extrabold text-white text-xs">Handoff Protocol Active:</div>
                 <p className="leading-relaxed text-xs">
-                  Automatic render queue forwarding to Chloe's node triggered whenever status is switched to <strong>Out of Office (Away)</strong>.
+                  Automatic render queue forwarding to designated peer node triggered whenever status is switched to <strong>Out of Office (Away)</strong>.
                 </p>
               </div>
 
@@ -601,8 +600,15 @@ export function MemberSchedulePTOPage() {
                     onChange={(e) => setDesignatedBackup(e.target.value)}
                     className="w-full px-2.5 py-1.5 rounded-xl border border-[#2A3446] font-semibold bg-[#161F2D] text-xs"
                   >
-                    <option value="Chloe Tan (Sr. Video Editor & 2D Motion)">Chloe Tan (Sr. Video Editor & 2D Motion)</option>
-                    <option value="Elena Ortiz (Brand Designer)">Elena Ortiz (Brand Designer)</option>
+                    {members.length > 0 ? (
+                      members.map((m) => (
+                        <option key={m.id} value={`${m.full_name} (${m.role || "Specialist"})`}>
+                          {m.full_name} ({m.role || "Specialist"})
+                        </option>
+                      ))
+                    ) : (
+                      <option value="Designated Pod Peer (Creative Specialist)">Designated Pod Peer (Creative Specialist)</option>
+                    )}
                   </select>
                 </div>
 
@@ -652,13 +658,13 @@ export function MemberSchedulePTOPage() {
             className="w-full max-w-md bg-[#161F2D] rounded-3xl p-6 sm:p-7 shadow-2xl border border-[#2A3446] space-y-4 animate-scale-up text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="size-12 rounded-2xl bg-blue-500/15 text-[#60A5FA] flex items-center justify-center mx-auto font-black">
+            <div className="size-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto font-black">
               <X className="size-6" />
             </div>
             <div>
               <h3 className="text-base font-black text-white">Cancel Medical Leave Request?</h3>
               <p className="text-xs text-[#97A0B3] mt-1 leading-relaxed">
-                This will withdraw your tomorrow half-day leave request, notify Maya Lin, and restore 0.5d back to your medical balance.
+                This will withdraw your tomorrow half-day leave request, notify {leadName}, and restore 0.5d back to your medical balance.
               </p>
             </div>
 
@@ -673,7 +679,7 @@ export function MemberSchedulePTOPage() {
               <button
                 type="button"
                 onClick={handleConfirmCancelLeave}
-                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-600/20 cursor-pointer"
               >
                 Confirm Cancellation
               </button>
@@ -725,7 +731,7 @@ export function MemberSchedulePTOPage() {
                 <label className="block font-bold text-[#F1F5F9] mb-1">Backup Handover Note</label>
                 <textarea
                   rows={3}
-                  defaultValue="Chloe Tan: Render Queue supervision & emergency Northwind Labs 3D motion handoff."
+                  defaultValue="Designated peer: Active render queue supervision & creative sprint handoff."
                   className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-medium"
                 />
               </div>
@@ -767,7 +773,7 @@ export function MemberSchedulePTOPage() {
                 </div>
                 <div>
                   <h3 className="text-base font-black text-white">Request Time Off / Leave</h3>
-                  <p className="text-xs text-[#97A0B3]">Auto-routes to Maya Lin for Pod A capacity approval</p>
+                  <p className="text-xs text-[#97A0B3]">Auto-routes to {leadName} for {podName} capacity approval</p>
                 </div>
               </div>
               <button
@@ -824,9 +830,15 @@ export function MemberSchedulePTOPage() {
                   onChange={(e) => setDesignatedBackup(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#161F2D]"
                 >
-                  <option value="Chloe Tan (Sr. Video Editor & 2D Motion)">Chloe Tan (Sr. Video Editor & 2D Motion)</option>
-                  <option value="Elena Ortiz (Brand Designer - Pod A)">Elena Ortiz (Brand Designer - Pod A)</option>
-                  <option value="Marcus Vance (Copy Lead - Pod A)">Marcus Vance (Copy Lead - Pod A)</option>
+                  {members.length > 0 ? (
+                    members.map((m) => (
+                      <option key={m.id} value={`${m.full_name} (${m.role || "Specialist"})`}>
+                        {m.full_name} ({m.role || "Specialist"})
+                      </option>
+                    ))
+                  ) : (
+                    <option value="Designated Pod Peer (Creative Specialist)">Designated Pod Peer (Creative Specialist)</option>
+                  )}
                 </select>
               </div>
 
@@ -882,7 +894,7 @@ export function MemberSchedulePTOPage() {
             </div>
             <div>
               <h3 className="text-base font-black text-white">Pod A Standup Session</h3>
-              <p className="text-xs text-[#97A0B3] mt-1">Host: Maya Lin (Pod A Lead)</p>
+              <p className="text-xs text-[#97A0B3] mt-1">Host: {leadName} ({podName} Lead)</p>
             </div>
             <div className="p-3 bg-[#0B111C] rounded-2xl border border-[#2A3446] text-xs font-mono text-[#F1F5F9]">
               zoom.us/j/9814421990

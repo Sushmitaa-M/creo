@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../lib/auth-context";
 import { request } from "../../lib/http";
+import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
-import { ArrowRight, ShieldCheck, Calendar } from "lucide-react";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
+import { MessageCircle, Send, Check } from "lucide-react";
 
 interface TeamMember {
   id: string;
@@ -13,280 +16,261 @@ interface TeamMember {
   is_primary?: boolean;
 }
 
-interface DashboardData {
+interface PodData {
   assigned_team?: TeamMember[];
-  active_plan?: { status: string; name?: string; price_minor?: number } | null;
 }
 
-const ROLE_CONFIG: Record<string, { tag: string; description: string }> = {
-  team_lead: { tag: "MANAGEMENT", description: "Account direction & strategy" },
-  creative_lead: { tag: "CREATIVE LEAD", description: "Art direction & quality control" },
-  editor: { tag: "MOTION & VIDEO", description: "Reels, short-form motion & storytelling" },
-  designer: { tag: "BRAND & VISUALS", description: "Posters, carousel designs & identity" },
-  copywriter: { tag: "COPY & STRATEGY", description: "Ad scripts, hooks & brand messaging" },
-  strategist: { tag: "STRATEGY & RESEARCH", description: "Campaign planning & audience research" },
+const ROLE_DESCRIPTIONS: Record<string, string> = {
+  team_lead: "Strategy, briefs, and client communication. Mon-Fri, 10am-7pm IST.",
+  creative_lead: "Art direction, quality control, and brand consistency.",
+  editor: "Reels, motion graphics, and video editing. Mon-Fri, 10am-7pm IST.",
+  designer: "Static posts, carousels, and brand design. Mon-Fri, 10am-7pm IST.",
+  copywriter: "Captions, hooks, and messaging. Mon-Fri, 10am-7pm IST.",
+  strategist: "Content planning and research. Mon-Fri, 10am-7pm IST.",
 };
 
-function getRoleConfig(role: string) {
+function getRoleDesc(role: string): string {
   const key = role.toLowerCase().replace(/\s+/g, "_");
-  return ROLE_CONFIG[key] || { tag: role.toUpperCase(), description: "Creative execution & support" };
+  return ROLE_DESCRIPTIONS[key] || "Creative execution and support. Mon-Fri, 10am-7pm IST.";
 }
 
 export function PortalCreativePodPage() {
   const { user } = useAuth();
-
-  const { data: dashboard, isLoading } = useQuery<DashboardData>({
-    queryKey: ["portal-dashboard", user?.id],
-    queryFn: () => request<DashboardData>("/api/v1/portal/dashboard"),
-    enabled: !!user?.id,
-  });
-
-  const { data: subData } = useQuery({
-    queryKey: ["client-subscription"],
-    queryFn: () => request<any>("/api/v1/payments/subscription"),
-    staleTime: 0,
-    refetchOnMount: "always",
-  });
-
-  const isExpired =
-    subData?.is_expired === true ||
-    subData?.subscription?.status === "expired" ||
-    subData?.subscription?.status === "canceled";
-
-  const isStaffOrAdmin = user?.role && user.role !== "client";
-
-  const isSubscribed =
-    isStaffOrAdmin ||
-    (!isExpired &&
-      (subData?.is_active === true ||
-        (!!subData?.subscription && ["active", "trialing"].includes(subData?.subscription?.status))));
-
-  const assignedTeam = dashboard?.assigned_team || [];
-  const podLead = assignedTeam.find((m) => m.is_primary || m.raw_role === "team_lead" || m.raw_role === "creative_lead");
-  const otherMembers = assignedTeam.filter((m) => m.id !== podLead?.id);
+  const [chatMessage, setChatMessage] = useState("");
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   
-  const clientTag = user?.full_name?.replace(/\s+/g, "-").toLowerCase() || "creo-client";
+  const [messages, setMessages] = useState<Array<{
+    id: string;
+    sender: string;
+    name: string;
+    text: string;
+    time: string;
+    isUser: boolean;
+  }>>([]);
 
-  if (!isSubscribed && !isLoading) {
+  const upcomingSlots = (() => {
+    const slots = [];
+    const times = ["10:30 AM", "2:00 PM", "11:00 AM", "3:30 PM", "10:00 AM"];
+    let d = new Date();
+    while (slots.length < 5) {
+      d = new Date(d.getTime() + 86400000);
+      const day = d.getDay();
+      if (day !== 0 && day !== 6) {
+        const dateStr = d.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" });
+        slots.push({
+          id: `slot-${d.toISOString().slice(0, 10)}`,
+          date: dateStr,
+          time: times[slots.length % times.length],
+        });
+      }
+    }
+    return slots;
+  })();
+
+  const handleSendMessage = () => {
+    if (!chatMessage.trim()) return;
+    
+    setMessages(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        sender: "user",
+        name: user?.full_name?.charAt(0)?.toUpperCase() || "U",
+        text: chatMessage.trim(),
+        time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+        isUser: true
+      }
+    ]);
+    setChatMessage("");
+  };
+
+  const handleBookSlot = (slotId: string) => {
+    if (!bookedSlots.includes(slotId)) {
+      setBookedSlots(prev => [...prev, slotId]);
+    }
+  };
+
+  // An expired or missing subscription drops the onboarding stage below 8, so the gate covers it
+  const gate = useOnboardingGate();
+
+  const { data: podData, isLoading } = useQuery<PodData>({
+    queryKey: ["portal-pod", user?.id],
+    queryFn: () => request<PodData>("/api/v1/portal/pod"),
+    enabled: !!user?.id && gate.isComplete,
+    staleTime: 5 * 60_000,
+  });
+
+  const assignedTeam = podData?.assigned_team || [];
+  const podLead = assignedTeam.find((m) => m.is_primary || m.raw_role === "team_lead" || m.raw_role === "creative_lead");
+  const allMembers = podLead ? [podLead, ...assignedTeam.filter((m) => m.id !== podLead.id)] : assignedTeam;
+
+  // Avatar color palette
+  const AVATAR_COLORS = [
+    "bg-gradient-to-br from-pink-500 to-orange-400",
+    "bg-[#6366F1]",
+    "bg-[#10B981]",
+    "bg-[#F59E0B]",
+    "bg-[#EF4444]",
+    "bg-[#8B5CF6]",
+  ];
+
+  if (!gate.isReady || (gate.isComplete && isLoading)) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Creative Pod" />;
+  }
+
+  if (!gate.isComplete) {
     return (
-      <div className="animate-page-in space-y-5 max-w-[1440px] mx-auto px-4 md:px-8 pt-4">
+      <div className="flex items-center justify-center py-6 sm:py-10">
         <SubscriptionLockedState
-          title={isExpired ? "Creative Pod Access Expired" : "Creative Pod Locked"}
-          description={isExpired
-            ? "Your retainer has expired. Renew to regain access to your dedicated creative team."
-            : "An active subscription is required to access your Creative Pod team directory."
-          }
+          title="Creative Pod Access Locked"
+          description="Your dedicated creative specialists and lead producer will be provisioned once your account setup is completed."
         />
       </div>
     );
   }
 
   return (
-    <div className="animate-page-in space-y-6 max-w-[1440px] mx-auto px-4 md:px-8 pb-10">
-      
-      {/* Top Section: Lead & Team Directory */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Pod Lead Card (Left, Col-4) */}
-        <div className="lg:col-span-4 flex flex-col">
-          <div className="card-surface p-6 sm:p-7 flex-1 flex flex-col">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex flex-wrap items-center gap-3">
-                <h2 className="text-xl font-black text-[#0F172A] tracking-tight whitespace-nowrap">Pod Lead</h2>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="whitespace-nowrap">Active</span>
-                </span>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <h1 className="text-2xl font-semibold text-white">Your pod</h1>
+
+      {/* ── Team Cards Grid ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {isLoading ? (
+          <div className="col-span-full flex items-center justify-center py-16">
+            <div className="w-8 h-8 border-2 border-[#7FA0D6] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : allMembers.length === 0 ? (
+          <div className="col-span-full py-16 text-center">
+            <p className="text-sm text-[#7E889C]">Your creative pod hasn't been assembled yet.</p>
+            <p className="text-xs text-[#7E889C] mt-1">Team members will appear here once onboarding is complete.</p>
+          </div>
+        ) : (
+          allMembers.map((member, i) => {
+            const initials = member.name.split(" ").filter(w => w.length > 0).map(w => w[0]).join("").toUpperCase().slice(0, 2);
+            const roleDesc = getRoleDesc(member.raw_role);
+
+            return (
+              <div
+                key={member.id}
+                className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446] flex flex-col animate-in fade-in zoom-in-95 duration-500 fill-mode-both"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
+                {/* Avatar + Name */}
+                <div className="flex items-center gap-4 mb-4">
+                  <div className={`w-12 h-12 rounded-full ${AVATAR_COLORS[i % AVATAR_COLORS.length]} flex items-center justify-center text-white text-sm font-bold shrink-0`}>
+                    {initials}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold text-white truncate">{member.name}</h3>
+                    <p className="text-[13px] text-[#97A0B3]">{member.role}</p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-[#7E889C] leading-relaxed mb-4 flex-1">
+                  {roleDesc}
+                </p>
+
+                {/* Working hours */}
+                <p className="text-xs text-[#7E889C] mb-4">
+                  Working hours: <span className="text-[#97A0B3]">Mon-Fri, 10am-7pm IST</span>
+                </p>
+
+                {/* Message Button */}
+                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#1F2C3F] transition-colors mt-auto">
+                  <MessageCircle className="w-4 h-4" strokeWidth={1.8} />
+                  Message {member.name.split(" ")[0]}
+                </button>
               </div>
-              <span className="text-[11px] text-slate-400 font-mono font-medium tracking-wide">#{clientTag}</span>
-            </div>
+            );
+          })
+        )}
+      </div>
 
-            {podLead ? (
-              <div className="flex-1 flex flex-col">
-                <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-5 mb-5 hover:border-slate-200 transition-colors shadow-sm">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="relative">
-                      <div className="size-14 rounded-2xl bg-white border border-slate-200 shadow-sm text-[#0F172A] flex items-center justify-center font-bold text-lg">
-                        {podLead.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                      </div>
-                      <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Lead</span>
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-[#0F172A]">{podLead.name}</h3>
-                    <p className="text-xs text-slate-500 font-medium mt-0.5">{podLead.role}</p>
-                    <p className="text-[11px] text-slate-400 mt-1 font-mono">{podLead.email}</p>
-                  </div>
-                </div>
+      {/* ── Bottom Section: Chat + Booking ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Chat (2 cols) */}
+        <div className="lg:col-span-2 bg-[#161F2D] rounded-2xl border border-[#2A3446] flex flex-col" style={{ minHeight: "400px" }}>
+          {/* Chat Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#2A3446]">
+            <h3 className="text-base font-semibold text-white">Chat with your pod</h3>
+            <span className="text-[13px] text-[#7E889C]">average reply 1h 50m</span>
+          </div>
 
-                <div className="mt-auto">
-                  <button className="w-full flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 text-[11px] font-bold py-3 rounded-xl transition-all shadow-xs cursor-pointer group">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 group-hover:scale-110 transition-transform" />
-                    Message in Slack
-                    <ArrowRight className="size-3.5 ml-1 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-                  <div className="flex items-center justify-between mt-5 px-1">
-                    <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                      <Calendar className="size-3.5" />
-                      Bi-Weekly Sync
-                    </span>
-                    <span className="text-[11px] font-bold text-slate-700">Tomorrow 10:30 AM IST</span>
-                  </div>
-                </div>
+          {/* Messages Area */}
+          <div className="flex-1 px-6 py-4 space-y-4 overflow-y-auto scrollbar-hide flex flex-col justify-center">
+            {messages.length === 0 ? (
+              <div className="py-12 text-center text-[#7E889C]">
+                <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-30 text-white" />
+                <p className="text-sm font-medium text-white/80">No messages yet</p>
+                <p className="text-xs text-[#7E889C] mt-1">Send a message to start communicating directly with your pod.</p>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center py-10 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
-                <span className="text-sm font-semibold text-slate-500">No Lead Assigned</span>
-              </div>
+              messages.map(msg => (
+                <div key={msg.id} className={`flex gap-3 max-w-[80%] ${msg.isUser ? "ml-auto flex-row-reverse" : ""}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5 ${msg.isUser ? "bg-[#BCCCE6] text-[#0B111C]" : "bg-gradient-to-br from-pink-500 to-orange-400 text-white"}`}>
+                    {msg.name}
+                  </div>
+                  <div className={msg.isUser ? "text-right" : ""}>
+                    <div className={`p-3 rounded-2xl text-sm inline-block text-left ${msg.isUser ? "bg-[#BCCCE6] text-[#0B111C] rounded-tr-sm" : "bg-[#1F2C3F] text-white rounded-tl-sm"}`}>
+                      {msg.text}
+                    </div>
+                    <span className={`text-[11px] text-[#7E889C] mt-1 block ${msg.isUser ? "text-right" : ""}`}>
+                      {msg.time}
+                    </span>
+                  </div>
+                </div>
+              ))
             )}
+          </div>
+
+          {/* Chat Input */}
+          <div className="px-4 py-3 border-t border-[#2A3446]">
+            <div className="flex items-center gap-2 bg-[#0B111C] rounded-full px-4 py-2 border border-white/[0.06]">
+              <input
+                type="text"
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                placeholder="Type a message..."
+                className="flex-1 bg-transparent text-sm text-white placeholder-[#7E889C] outline-none"
+              />
+              <button onClick={handleSendMessage} className="px-4 py-1.5 bg-[#BCCCE6] text-[#0B111C] rounded-full text-[13px] font-medium hover:bg-white transition-colors flex items-center gap-1.5 shrink-0">
+                <Send className="w-3.5 h-3.5" />
+                Send
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Creative Team Directory (Right, Col-8) */}
-        <div className="lg:col-span-8 flex flex-col">
-          <div className="card-surface p-6 sm:p-7 flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-black text-[#0F172A] tracking-tight">Creative Team Directory</h2>
-                  <span className="text-[11px] font-bold text-slate-400">({otherMembers.length} Dedicated Specialists)</span>
+        {/* Booking (1 col) */}
+        <div className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446]">
+          <h3 className="text-base font-semibold text-white mb-1">Book a call</h3>
+          <p className="text-[13px] text-[#7E889C] mb-5">15-minute slots with your pod lead</p>
+
+          <div className="space-y-0 divide-y divide-white/[0.05]">
+            {upcomingSlots.map((slot) => {
+              const isBooked = bookedSlots.includes(slot.id);
+              return (
+                <div key={slot.id} className="flex items-center justify-between py-4">
+                  <span className="text-sm text-[#97A0B3]">{slot.date}</span>
+                  <button 
+                    onClick={() => handleBookSlot(slot.id)}
+                    disabled={isBooked}
+                    className={`px-3 py-1 rounded-md text-[13px] font-medium transition-colors flex items-center gap-1.5 ${
+                      isBooked 
+                        ? "bg-[#047857]/20 text-[#34D399] cursor-default" 
+                        : "bg-white/[0.08] text-white hover:bg-white/[0.12]"
+                    }`}
+                  >
+                    {isBooked ? <><Check className="w-3.5 h-3.5"/> Booked</> : slot.time}
+                  </button>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">Assigned full-time creative pod for your brand</p>
-              </div>
-              <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[11px] font-mono font-medium text-slate-500">
-                # creo-{clientTag}
-              </span>
-            </div>
-
-            {isLoading ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="w-8 h-8 border-3 border-[#0052FF] border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : otherMembers.length === 0 ? (
-              <div className="text-center py-16 text-[#64748B]">
-                <p className="text-sm font-semibold">No specialists assigned yet</p>
-                <p className="text-xs mt-1">Your creative pod will be assembled once your onboarding is complete.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {otherMembers.map((member) => {
-                  const rc = getRoleConfig(member.raw_role);
-                  const initials = member.name.split(" ").map((n) => n[0]).join("").slice(0, 2);
-                  return (
-                    <div
-                      key={member.id}
-                      className="group rounded-2xl border border-slate-100 bg-white p-5 hover:border-slate-300 hover:shadow-md transition-all duration-300 cursor-default flex flex-col"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="size-10 rounded-xl bg-slate-50 border border-slate-100 text-[#0F172A] flex items-center justify-center font-bold text-xs group-hover:bg-blue-50 transition-colors">
-                          {initials}
-                        </div>
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-bold uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          Available
-                        </span>
-                      </div>
-                      
-                      <div className="mb-4">
-                        <h3 className="text-sm font-bold text-[#0F172A] mb-0.5">{member.name}</h3>
-                        <p className="text-[11px] font-medium text-slate-500">{member.role}</p>
-                      </div>
-
-                      <div className="mt-auto">
-                        <span className="inline-block px-2.5 py-1 rounded-md border border-slate-200 text-[9px] font-bold text-slate-600 uppercase tracking-widest mb-3">
-                          {rc.tag}
-                        </span>
-                        <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-100 pt-3">
-                          {rc.description}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100">
-              <span className="text-[11px] font-bold text-slate-400">Execution Pod Capacity</span>
-              <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                100% Guaranteed Availability
-              </span>
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>
-
-      {/* Bottom Section: Deliverable Allocation */}
-      {dashboard?.active_plan && (
-        <div className="card-surface p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <h2 className="text-lg font-black text-[#0F172A] tracking-tight">Deliverable Allocation</h2>
-              <p className="text-xs text-slate-500 mt-1">Capacity allotment, review cycle cadence, and current tier specifications</p>
-            </div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[11px] font-bold text-slate-600">
-              <ShieldCheck className="size-3.5 text-emerald-500" />
-              Telemetry Verified
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 flex flex-col justify-between hover:border-slate-200 transition-colors">
-              <span className="text-[11px] font-bold text-slate-500 mb-4">Dedicated Team</span>
-              <div>
-                <div className="flex items-baseline gap-1.5 mb-4 border-b border-slate-200 pb-4">
-                  <span className="text-3xl font-black text-[#0F172A]">{assignedTeam.length}</span>
-                  <span className="text-[13px] font-medium text-slate-500">Specialists</span>
-                </div>
-                <p className="text-[11px] text-slate-400 font-medium">Full dedicated pod allocation</p>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 flex flex-col justify-between hover:border-slate-200 transition-colors">
-              <span className="text-[11px] font-bold text-slate-500 mb-4">Revision Rounds</span>
-              <div>
-                <div className="flex items-baseline gap-1.5 mb-4 border-b border-slate-200 pb-4">
-                  <span className="text-3xl font-black text-[#0F172A]">
-                    {dashboard.active_plan.name?.toLowerCase().includes("pro") ? "∞" : "Standard"}
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400 font-medium">2 rounds included per asset</p>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 flex flex-col justify-between hover:border-slate-200 transition-colors">
-              <span className="text-[11px] font-bold text-slate-500 mb-4">Pod Status</span>
-              <div>
-                <div className="flex items-center gap-2 mb-4 border-b border-slate-200 pb-4">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-2xl font-black text-[#0F172A]">Active</span>
-                </div>
-                <p className="text-[11px] text-slate-400 font-medium">All execution pipelines operational</p>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 flex flex-col justify-between hover:border-slate-200 transition-colors">
-              <span className="text-[11px] font-bold text-slate-500 mb-4">Active Tier</span>
-              <div>
-                <div className="flex items-baseline gap-1.5 mb-4 border-b border-slate-200 pb-4">
-                  <span className="text-xl sm:text-2xl font-black text-[#0F172A] truncate">
-                    {dashboard.active_plan.name || "Brand Accelerator"}
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400 font-medium">
-                  {dashboard.active_plan.price_minor
-                    ? `₹${Number(dashboard.active_plan.price_minor / 100).toLocaleString("en-IN")} / month retainer`
-                    : "Monthly active retainer"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-
     </div>
   );
 }

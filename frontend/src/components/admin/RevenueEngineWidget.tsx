@@ -29,15 +29,6 @@ const TIMEFRAME_LABELS: Record<Timeframe, string> = {
   "365d": "Year",
 };
 
-const MOCK_TREND_POINTS = [
-  { label: "May", value: 14500000 },
-  { label: "Jun", value: 18200000 },
-  { label: "Jul", value: 16800000 },
-  { label: "Aug", value: 21500000 },
-  { label: "Sep", value: 19400000 },
-  { label: "Oct", value: 24800000 },
-];
-
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   const value = payload[0].value as number;
@@ -85,18 +76,18 @@ export function RevenueEngineWidget({ kpis, clients: _clients }: RevenueEngineWi
     loadTrend(activeTimeframe);
   }, [activeTimeframe, loadTrend]);
 
-  const rawPoints = (trendData?.points && trendData.points.length > 0) ? trendData.points : MOCK_TREND_POINTS;
+  const rawPoints = (trendData?.points && trendData.points.length > 0) ? trendData.points : [];
   const chartData = rawPoints.map((p) => ({
     name: p.label,
     revenue: p.value,
   }));
 
   const displayRevenue =
-    (trendData?.total_revenue_formatted && trendData.total_revenue_formatted !== "₹0")
+    trendData?.total_revenue_formatted
       ? trendData.total_revenue_formatted
-      : (kpis?.mrr_formatted && kpis.mrr_formatted !== "₹0" ? kpis.mrr_formatted : "₹24,80,000");
+      : (kpis?.mrr_formatted || "₹0");
 
-  const displayClients = (trendData?.total_clients && trendData.total_clients > 0) ? trendData.total_clients : (activeClients || 32);
+  const displayClients = (trendData?.total_clients !== undefined && trendData.total_clients > 0) ? trendData.total_clients : activeClients;
 
   return (
     <div
@@ -157,9 +148,9 @@ export function RevenueEngineWidget({ kpis, clients: _clients }: RevenueEngineWi
                 {displayRevenue} <span className="text-[10px] text-[#97A0B3] font-normal">/ mo</span>
               </div>
               <div className="text-[11px] font-bold text-[#7FA0D6] mt-1 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-[#60A5FA]" />
-                <span className="text-[#60A5FA]">+14.2% Growth</span>
-                <span>· {displayClients} Retainers</span>
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400">Live Retainers</span>
+                <span>· {displayClients} Active</span>
               </div>
             </div>
           </div>
@@ -246,7 +237,7 @@ export function RevenueEngineWidget({ kpis, clients: _clients }: RevenueEngineWi
             <span className="text-[9px] text-[#7FA0D6] uppercase font-bold tracking-wider mt-1">Active Deals</span>
           </div>
           <div className="bg-[#0B111C] hover:bg-[#1F2C3F] hover:border-[#7FA0D6]/60 hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-200 rounded-xl p-2.5 border border-[#2A3446] flex flex-col items-center justify-center text-center cursor-pointer shadow-sm group/pill">
-            <span className="text-xs sm:text-sm font-black text-white group-hover/pill:text-[#7FA0D6] transition-colors leading-none">{formatCurrency(avgTicket || 7750000)}</span>
+            <span className="text-xs sm:text-sm font-black text-white group-hover/pill:text-[#7FA0D6] transition-colors leading-none">{formatCurrency(avgTicket)}</span>
             <span className="text-[9px] text-[#97A0B3] uppercase font-bold tracking-wider mt-1">Avg Ticket</span>
           </div>
         </div>

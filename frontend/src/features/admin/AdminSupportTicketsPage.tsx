@@ -40,9 +40,9 @@ const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
     issueDesc: "I've not received my deliverables which was scheduled yesterday",
     priority: "High",
     timeLog: "Logged yesterday",
-    agent: "Maya Lin",
+    agent: "Support Lead",
     pod: "Pod Alpha",
-    agentInitials: "ML",
+    agentInitials: "SL",
     status: "Resolved",
     primaryAction: "Reopen",
     secondaryAction: "Assign",
@@ -57,9 +57,9 @@ const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
     issueDesc: "Payload dropped after 4 retries via US-East Gateway during automated delivery sync of 4× 4K Reels.",
     priority: "Urgent",
     timeLog: "18m remaining",
-    agent: "Maya Lin",
+    agent: "Support Lead",
     pod: "Pod C",
-    agentInitials: "ML",
+    agentInitials: "SL",
     status: "Open",
     primaryAction: "Resolve",
     secondaryAction: "Assign",
@@ -142,7 +142,7 @@ export function AdminSupportTicketsPage() {
         const stat = (st.status || "open").toLowerCase();
         const status: TicketItem["status"] =
           stat === "resolved" ? "Resolved" : stat === "in_progress" ? "In Progress" : stat === "waiting_on_client" ? "Pending Client" : "Open";
-        const initials = (st.assignee_name || st.agent || "Maya Lin").split(" ").map((w: string) => w[0]).join("").toUpperCase();
+        const initials = (st.assignee_name || st.agent || "Support Lead").split(" ").map((w: string) => w[0]).join("").toUpperCase();
         const shortId = String(st.id).includes("1781")
           ? "1781"
           : String(st.id).length > 8
@@ -159,7 +159,7 @@ export function AdminSupportTicketsPage() {
           issueDesc: st.description || "",
           priority,
           timeLog: st.time || "Logged recently",
-          agent: st.assignee_name || "Maya Lin",
+          agent: st.assignee_name || "Support Lead",
           pod: "Pod A",
           agentInitials: initials,
           status,
@@ -179,9 +179,9 @@ export function AdminSupportTicketsPage() {
         issueDesc: lt.issueDesc || lt.description || "",
         priority: lt.priority || "Urgent",
         timeLog: lt.timeLog || "Logged just now",
-        agent: lt.agent || "Maya Lin",
+        agent: lt.agent || "Support Lead",
         pod: lt.pod || "Pod A",
-        agentInitials: lt.agentInitials || "ML",
+        agentInitials: lt.agentInitials || "SL",
         status: lt.status || "Open",
         primaryAction: lt.status === "Resolved" ? "Reopen" : "Resolve",
         secondaryAction: "Assign",

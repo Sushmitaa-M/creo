@@ -96,12 +96,12 @@ export function AdminTicketDetailPage() {
   const [messages, setMessages] = useState<MessageEntry[]>([
     {
       id: "msg-1",
-      author: "David K.",
-      role: "VP Operations • Northwind Labs",
-      avatar: "DK",
+      author: "Client Operations",
+      role: "Client Operations Lead",
+      avatar: "CO",
       avatarBg: "bg-slate-800",
-      timestamp: "Today at 09:42 AM (42 mins ago)",
-      text: "Payload dropped after 4 retries via US-East Gateway during automated delivery sync of 4× 4K Reels. The client webhook endpoint returned 504 Gateway Timeout on asset digest verification.\n\nDeliverable batch identifier: #DL-8821. Client edge ingress closed the connection after reaching the 30-second handshake limit before SHA256 checksums were committed.",
+      timestamp: "Logged recently",
+      text: "Payload dropped after retries via Edge Gateway during automated delivery sync of 4K Reels. The client webhook endpoint returned 504 Gateway Timeout on asset digest verification.\n\nDeliverable batch identifier: #DL-8821. Client edge ingress closed connection before SHA256 checksums were committed.",
     },
   ]);
 
@@ -132,9 +132,9 @@ export function AdminTicketDetailPage() {
         },
         {
           id: "msg-1781-2",
-          author: "Maya Lin",
+          author: "Pod Lead",
           role: "Pod Lead • Creative Pod Alpha",
-          avatar: "ML",
+          avatar: "PL",
           avatarBg: "bg-[#0F172A]",
           timestamp: "Yesterday at 4:48 PM",
           text: "Hi Sushmitaa, we apologize for the short delay! The final 4K color grade has been expedited and is now ready in your Deliverables tab.",
@@ -346,12 +346,13 @@ export function AdminTicketDetailPage() {
 
   // Download raw trace log
   const handleDownloadTraceLog = () => {
+    const clientName = ticketData?.client || "Client Workspace";
     const logContent = `--- CREO SENTRY DIAGNOSTICS LOG ---
 Trace ID: trc_98812_useast_prod
 Timestamp: ${new Date().toISOString()}
 Ticket: #${ticketId} (API Webhook Timeout on Deliverables Sync)
-Client: Northwind Labs (#DL-8821)
-Target Endpoint: https://api.northwindlabs.co/v1/deliverables/sync
+Client: ${clientName} (#DL-8821)
+Target Endpoint: https://api.clientdomain.com/v1/deliverables/sync
 Status: 504 Gateway Timeout
 Payload: 1.48 GB (4 assets: 4K Reels)
 Socket: Ingress connection closed after 30000ms limit before SHA256 commit.
@@ -373,18 +374,19 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
 
   // Download payload dump
   const handleDownloadPayloadDump = () => {
+    const clientName = ticketData?.client || "Client Workspace";
     const payloadData = {
       batch_id: "BATCH-DL-8821",
       ticket_id: ticketId,
       timestamp: new Date().toISOString(),
-      client_id: "cli_northwind",
-      client_name: "Northwind Labs",
-      target_uri: "https://api.northwindlabs.co/v1/deliverables/sync",
+      client_id: "cli_account",
+      client_name: clientName,
+      target_uri: "https://api.clientdomain.com/v1/deliverables/sync",
       assets: [
-        { id: "asset_01", title: "Fintech Reel Ad Set 1", format: "mp4", resolution: "3840x2160", sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
-        { id: "asset_02", title: "Fintech Reel Ad Set 2", format: "mp4", resolution: "3840x2160", sha256: "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb" },
-        { id: "asset_03", title: "Fintech Reel Ad Set 3", format: "mp4", resolution: "3840x2160", sha256: "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969" },
-        { id: "asset_04", title: "Fintech Reel Ad Set 4", format: "mp4", resolution: "3840x2160", sha256: "36a92651e299a6491fa807503709e6f0b6ee9a900b9e1fed4428d95af6b42b51" },
+        { id: "asset_01", title: "Deliverable Reel Ad Set 1", format: "mp4", resolution: "3840x2160", sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+        { id: "asset_02", title: "Deliverable Reel Ad Set 2", format: "mp4", resolution: "3840x2160", sha256: "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb" },
+        { id: "asset_03", title: "Deliverable Reel Ad Set 3", format: "mp4", resolution: "3840x2160", sha256: "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969" },
+        { id: "asset_04", title: "Deliverable Reel Ad Set 4", format: "mp4", resolution: "3840x2160", sha256: "36a92651e299a6491fa807503709e6f0b6ee9a900b9e1fed4428d95af6b42b51" },
       ],
       failure_reason: "504 Gateway Timeout during SHA256 checksum handshake",
     };
@@ -402,9 +404,10 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
 
   // Download full incident audit CSV
   const handleDownloadAuditCSV = () => {
+    const clientName = ticketData?.client || "Client Workspace";
     const headers = ["Ticket ID", "Client", "Priority", "Status", "Assigned Lead", "Ingress", "Created", "Resolved", "SLA Compliance"];
     const rows = [
-      [`"#${ticketId}"`, `"Northwind Labs"`, `"${isEscalated ? "P0 (Escalated)" : "P1 Urgent"}"`, `"${isResolved ? "Resolved" : "Open"}"`, `"${selectedLead.name} (${selectedLead.pod})"`, `"Automated Sentry & Webhook"`, `"Today 09:42 AM"`, `"${isResolved ? "Completed" : "In Progress"}"`, `"99.98% Met"`],
+      [`"#${ticketId}"`, `"${clientName}"`, `"${isEscalated ? "P0 (Escalated)" : "P1 Urgent"}"`, `"${isResolved ? "Resolved" : "Open"}"`, `"${selectedLead.name} (${selectedLead.pod})"`, `"Automated Sentry & Webhook"`, `"Today 09:42 AM"`, `"${isResolved ? "Completed" : "In Progress"}"`, `"99.98% Met"`],
     ];
     const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -511,7 +514,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
             </div>
             <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-[#97A0B3] font-medium">
               <span>
-                Client: <strong className="text-white font-bold">{ticketData?.client || "Northwind Labs"}</strong>
+                Client: <strong className="text-white font-bold">{ticketData?.client || "Client Workspace"}</strong>
               </span>
               <span>•</span>
               <span>
@@ -711,7 +714,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                             type="button"
                             onClick={() => {
                               navigator.clipboard?.writeText(
-                                "trc_98812_useast_prod\n[ERROR 504] Webhook delivery failed: https://api.northwindlabs.co/v1/deliverables/sync\nConnection timed out after 30000ms. Retries exhausted (4/4)."
+                                "trc_98812_useast_prod\n[ERROR 504] Webhook delivery failed: https://api.clientdomain.com/v1/deliverables/sync\nConnection timed out after 30000ms. Retries exhausted (4/4)."
                               );
                               showToast("Copied raw trace log to clipboard!", "success");
                             }}
@@ -727,7 +730,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                             <span className="bg-blue-500/20 px-1 py-0.5 rounded text-[#93C5FD] font-bold mr-1">
                               [ERROR 504]
                             </span>
-                            Webhook delivery failed: https://api.northwindlabs.co/v1/deliverables/sync
+                            Webhook delivery failed: https://api.clientdomain.com/v1/deliverables/sync
                           </div>
                           <div className="text-[#97A0B3]">Connection timed out after 30000ms. Retries exhausted (4/4).</div>
                           <div className="text-[#60A5FA] pt-1">
@@ -925,7 +928,7 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder={
                     activeTab === "public"
-                      ? "Type your reply to David K. and Northwind Labs team, or insert a macro above..."
+                      ? `Type your reply to ${ticketData?.client || "client"} team, or insert a macro above...`
                       : "Type an internal engineering note (visible only to Creo Pod team and Admins)..."
                   }
                   className="w-full text-xs sm:text-sm p-3 border border-[#2A3446] rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-slate-400"
@@ -978,11 +981,11 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               {/* Brand Summary */}
               <div className="flex items-center gap-3 bg-[#7FA0D6]/15/60 p-3.5 rounded-xl border border-[#7FA0D6]/30">
                 <div className="size-11 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs shrink-0">
-                  NL
+                  {(ticketData?.client || "CW").slice(0, 2).toUpperCase()}
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white">Northwind Labs</h4>
-                  <p className="text-xs text-[#7FA0D6] font-semibold">Enterprise Domination • ₹95,000/mo</p>
+                  <h4 className="text-sm font-bold text-white">{ticketData?.client || "Client Workspace"}</h4>
+                  <p className="text-xs text-[#7FA0D6] font-semibold">{ticketData?.tier || "Active Retainer"}</p>
                 </div>
               </div>
 
@@ -990,11 +993,11 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
               <div className="text-xs space-y-2.5 pt-1 text-[#F1F5F9]">
                 <div className="flex items-center justify-between">
                   <span className="text-[#97A0B3]">Primary Contact:</span>
-                  <span className="font-bold text-white">David K. (VP Ops)</span>
+                  <span className="font-bold text-white">{ticketData?.client || "Account Owner"}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[#97A0B3]">Direct Channel:</span>
-                  <span className="font-mono text-white">ops@northwindlabs.co</span>
+                  <span className="font-mono text-white">{ticketData?.email || "support@clientdomain.com"}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[#97A0B3]">Assigned Pod:</span>

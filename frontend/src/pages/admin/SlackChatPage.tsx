@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router";
-import { motion, AnimatePresence } from "motion/react";
+import { useState, useRef, useEffect } from "react";
+import { motion } from "motion/react";
 import {
   Hash,
   Send,
@@ -13,205 +12,12 @@ import {
   User,
   ArrowLeft,
   ChevronRight,
-  Smile,
-  Search,
-  Clock,
-  Heart,
-  Dog,
-  UtensilsCrossed,
-  Trophy,
-  Car,
-  Lightbulb,
-  Flag,
+  MessageSquare,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
 import { useAuth } from "../../lib/auth-context";
-
-// ─── WhatsApp-style Emoji Categories ───────────────────────────────────────
-const EMOJI_CATEGORIES = [
-  {
-    id: "recent",
-    label: "Recently Used",
-    icon: Clock,
-    emojis: [] as string[], // populated dynamically
-  },
-  {
-    id: "smileys",
-    label: "Smileys & Emotion",
-    icon: Smile,
-    emojis: [
-      "😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "🙃",
-      "😉", "😊", "😇", "🥰", "😍", "🤩", "😘", "😗", "😚", "😙",
-      "🥲", "😋", "😛", "😜", "🤪", "😝", "🤑", "🤗", "🤭", "🫢",
-      "🫣", "🤫", "🤔", "🫡", "🤐", "🤨", "😐", "😑", "😶", "🫥",
-      "😏", "😒", "🙄", "😬", "🤥", "😌", "😔", "😪", "🤤", "😴",
-      "😷", "🤒", "🤕", "🤢", "🤮", "🥵", "🥶", "🥴", "😵", "🤯",
-      "🤠", "🥳", "🥸", "😎", "🤓", "🧐", "😕", "🫤", "😟", "🙁",
-      "😮", "😯", "😲", "😳", "🥺", "🥹", "😦", "😧", "😨", "😰",
-      "😥", "😢", "😭", "😱", "😖", "😣", "😞", "😓", "😩", "😫",
-      "🥱", "😤", "😡", "😠", "🤬", "😈", "👿", "💀", "☠️", "💩",
-      "🤡", "👹", "👺", "👻", "👽", "👾", "🤖", "😺", "😸", "😹",
-      "😻", "😼", "😽", "🙀", "😿", "😾",
-    ],
-  },
-  {
-    id: "people",
-    label: "People & Body",
-    icon: User,
-    emojis: [
-      "👋", "🤚", "🖐️", "✋", "🖖", "🫱", "🫲", "🫳", "🫴", "👌",
-      "🤌", "🤏", "✌️", "🤞", "🫰", "🤟", "🤘", "🤙", "👈", "👉",
-      "👆", "🖕", "👇", "☝️", "🫵", "👍", "👎", "✊", "👊", "🤛",
-      "🤜", "👏", "🙌", "🫶", "👐", "🤲", "🤝", "🙏", "✍️", "💅",
-      "🤳", "💪", "🦾", "🦿", "🦵", "🦶", "👂", "🦻", "👃", "🧠",
-      "🫀", "🫁", "🦷", "🦴", "👀", "👁️", "👅", "👄", "🫦", "👶",
-      "🧒", "👦", "👧", "🧑", "👱", "👨", "🧔", "👩", "🧓", "👴",
-      "👵", "🙍", "🙎", "🙅", "🙆", "💁", "🙋", "🧏", "🙇", "🤦",
-      "🤷", "💆", "💇", "🚶", "🧍", "🧎", "🏃", "💃", "🕺", "👯",
-    ],
-  },
-  {
-    id: "animals",
-    label: "Animals & Nature",
-    icon: Dog,
-    emojis: [
-      "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨",
-      "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🙈", "🙉", "🙊", "🐒",
-      "🐔", "🐧", "🐦", "🐤", "🐣", "🐥", "🦆", "🦅", "🦉", "🦇",
-      "🐺", "🐗", "🐴", "🦄", "🐝", "🪱", "🐛", "🦋", "🐌", "🐞",
-      "🐜", "🪰", "🪲", "🪳", "🦟", "🦗", "🕷️", "🦂", "🐢", "🐍",
-      "🦎", "🦖", "🦕", "🐙", "🦑", "🦐", "🦞", "🦀", "🐡", "🐠",
-      "🐟", "🐬", "🐳", "🐋", "🦈", "🐊", "🐅", "🐆", "🦓", "🦍",
-      "🌸", "💐", "🌹", "🥀", "🌺", "🌻", "🌼", "🌷", "🌱", "🪴",
-      "🌲", "🌳", "🌴", "🌵", "🌾", "🌿", "☘️", "🍀", "🍁", "🍂",
-    ],
-  },
-  {
-    id: "food",
-    label: "Food & Drink",
-    icon: UtensilsCrossed,
-    emojis: [
-      "🍇", "🍈", "🍉", "🍊", "🍋", "🍌", "🍍", "🥭", "🍎", "🍏",
-      "🍐", "🍑", "🍒", "🍓", "🫐", "🥝", "🍅", "🫒", "🥥", "🥑",
-      "🍆", "🥔", "🥕", "🌽", "🌶️", "🫑", "🥒", "🥬", "🥦", "🧄",
-      "🧅", "🍄", "🥜", "🫘", "🌰", "🍞", "🥐", "🥖", "🫓", "🥨",
-      "🥯", "🥞", "🧇", "🧀", "🍖", "🍗", "🥩", "🥓", "🍔", "🍟",
-      "🍕", "🌭", "🥪", "🌮", "🌯", "🫔", "🥙", "🧆", "🥚", "🍳",
-      "🥘", "🍲", "🫕", "🥣", "🥗", "🍿", "🧈", "🧂", "🥫", "🍱",
-      "☕", "🍵", "🧃", "🥤", "🧋", "🍶", "🍺", "🍻", "🥂", "🍷",
-    ],
-  },
-  {
-    id: "activities",
-    label: "Activities",
-    icon: Trophy,
-    emojis: [
-      "⚽", "🏀", "🏈", "⚾", "🥎", "🎾", "🏐", "🏉", "🥏", "🎱",
-      "🪀", "🏓", "🏸", "🏒", "🏑", "🥍", "🏏", "🪃", "🥅", "⛳",
-      "🪁", "🏹", "🎣", "🤿", "🥊", "🥋", "🎽", "🛹", "🛼", "🛷",
-      "⛸️", "🥌", "🎿", "⛷️", "🏂", "🪂", "🏋️", "🤼", "🤸", "🤺",
-      "⛹️", "🏊", "🚴", "🧘", "🎪", "🎭", "🎨", "🎬", "🎤", "🎧",
-      "🎼", "🎹", "🥁", "🪘", "🎷", "🎺", "🪗", "🎸", "🎻", "🎲",
-      "♟️", "🎯", "🎳", "🎮", "🕹️", "🧩", "🏆", "🥇", "🥈", "🥉",
-      "🏅", "🎖️", "🏵️", "🎗️", "🎫", "🎟️", "🎠", "🎡", "🎢", "🎆",
-    ],
-  },
-  {
-    id: "travel",
-    label: "Travel & Places",
-    icon: Car,
-    emojis: [
-      "🚗", "🚕", "🚙", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚐",
-      "🛻", "🚚", "🚛", "🚜", "🏍️", "🛵", "🚲", "🛴", "🛺", "🚁",
-      "✈️", "🛩️", "🛫", "🛬", "🪂", "🚀", "🛸", "🚢", "⛵", "🚤",
-      "🛥️", "⛴️", "🏠", "🏡", "🏢", "🏣", "🏤", "🏥", "🏦", "🏨",
-      "🏩", "🏪", "🏫", "🏬", "🏭", "🏯", "🏰", "💒", "🗼", "🗽",
-      "⛪", "🕌", "🕍", "⛩️", "🕋", "⛲", "⛺", "🌁", "🌃", "🏙️",
-      "🌄", "🌅", "🌆", "🌇", "🌉", "♨️", "🎠", "🛝", "🎡", "🎢",
-    ],
-  },
-  {
-    id: "objects",
-    label: "Objects",
-    icon: Lightbulb,
-    emojis: [
-      "⌚", "📱", "💻", "⌨️", "🖥️", "🖨️", "🖱️", "🖲️", "💾", "💿",
-      "📀", "📷", "📸", "📹", "🎥", "📽️", "🎞️", "📞", "☎️", "📟",
-      "📠", "📺", "📻", "🎙️", "🎚️", "🎛️", "🧭", "⏱️", "⏲️", "⏰",
-      "🕰️", "⌛", "⏳", "📡", "🔋", "🪫", "🔌", "💡", "🔦", "🕯️",
-      "🪔", "🧯", "🛢️", "💸", "💵", "💴", "💶", "💷", "🪙", "💰",
-      "💎", "⚖️", "🪜", "🧰", "🪛", "🔧", "🔨", "⚒️", "🛠️", "⛏️",
-      "🪚", "🔩", "⚙️", "🪤", "🧲", "🔫", "💣", "🧨", "🪓", "🔪",
-      "📌", "📎", "✂️", "📏", "📐", "📝", "✏️", "🖊️", "🖋️", "🖌️",
-    ],
-  },
-  {
-    id: "symbols",
-    label: "Symbols",
-    icon: Heart,
-    emojis: [
-      "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔",
-      "❤️‍🔥", "❤️‍🩹", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝",
-      "💟", "☮️", "✝️", "☪️", "🕉️", "☸️", "✡️", "🔯", "🕎", "☯️",
-      "☦️", "🛐", "⛎", "♈", "♉", "♊", "♋", "♌", "♍", "♎",
-      "♏", "♐", "♑", "♒", "♓", "🆔", "⚛️", "🉑", "☢️", "☣️",
-      "📴", "📳", "🈶", "🈚", "🈸", "🈺", "🈷️", "✴️", "🆚", "💮",
-      "🉐", "㊙️", "㊗️", "🈴", "🈵", "🈹", "🈲", "🅰️", "🅱️", "🆎",
-      "🆑", "🅾️", "🆘", "❌", "⭕", "🛑", "⛔", "📛", "🚫", "💯",
-      "💢", "♨️", "🚷", "🚯", "🚳", "🚱", "🔞", "📵", "🚭", "❗",
-      "❕", "❓", "❔", "‼️", "⁉️", "🔅", "🔆", "〽️", "⚠️", "🚸",
-      "🔱", "⚜️", "🔰", "♻️", "✅", "🈯", "💹", "❇️", "✳️", "❎",
-      "🔥", "⭐", "🌟", "💫", "✨", "⚡", "💥", "💦", "💨", "🕊️",
-    ],
-  },
-  {
-    id: "flags",
-    label: "Flags",
-    icon: Flag,
-    emojis: [
-      "🏁", "🚩", "🎌", "🏴", "🏳️", "🏳️‍🌈", "🏳️‍⚧️", "🏴‍☠️",
-      "🇦🇺", "🇧🇷", "🇨🇦", "🇨🇳", "🇩🇪", "🇪🇸", "🇫🇷", "🇬🇧",
-      "🇮🇳", "🇮🇹", "🇯🇵", "🇰🇷", "🇲🇽", "🇳🇱", "🇵🇹", "🇷🇺",
-      "🇸🇦", "🇸🇪", "🇹🇷", "🇺🇸", "🇿🇦", "🇦🇪", "🇦🇷", "🇦🇹",
-    ],
-  },
-];
-
-// ─── LocalStorage sync key for cross-tab chat ──────────────────────────────
-const CHAT_STORAGE_KEY = "creo-slack-chat-messages";
-const CHAT_SYNC_EVENT = "creo-chat-sync";
-
-function loadMessagesFromStorage(): Record<string, ChatMessage[]> | null {
-  try {
-    const stored = localStorage.getItem(CHAT_STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch { /* ignore parse errors */ }
-  return null;
-}
-
-function saveMessagesToStorage(messages: Record<string, ChatMessage[]>) {
-  try {
-    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
-    // Dispatch custom event for same-tab sync (storage event only fires cross-tab)
-    window.dispatchEvent(new CustomEvent(CHAT_SYNC_EVENT, { detail: messages }));
-  } catch { /* ignore quota errors */ }
-}
-
-// Recently used emojis storage
-const RECENT_EMOJIS_KEY = "creo-recent-emojis";
-function loadRecentEmojis(): string[] {
-  try {
-    const stored = localStorage.getItem(RECENT_EMOJIS_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch { /* ignore */ }
-  return ["👍", "❤️", "🚀", "🔥", "😂", "👏", "🎉", "💯"];
-}
-function saveRecentEmoji(emoji: string) {
-  const recent = loadRecentEmojis();
-  const updated = [emoji, ...recent.filter(e => e !== emoji)].slice(0, 32);
-  localStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(updated));
-  return updated;
-}
+import { useQuery } from "@tanstack/react-query";
+import { fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
 
 interface ChatMessage {
   id: string;
@@ -236,190 +42,51 @@ interface ChatMessage {
 }
 
 export function SlackChatPage() {
-  const navigate = useNavigate();
   const { user } = useAuth();
 
-  const getDefaultPersona = () => {
-    if (user?.role === "admin" || user?.role === "super_admin") return "Admin Operations";
-    if (user?.role === "team_lead") return "Maya Lin";
-    if (user?.role === "client") return "Sarah Jenkins (Client)";
-    return "David Kim";
-  };
+  const { data: podData } = useQuery<PodDashboardData>({
+    queryKey: ["pod_dashboard"],
+    queryFn: () => fetchPodDashboard(),
+  });
+
+  const podName = podData?.pod?.name || "Pod Operations";
+  const defaultPersona = user?.full_name || user?.email?.split("@")[0] || "Team Member";
 
   // Active channel / DM selection
-  const [activeChannel, setActiveChannel] = useState<string>("pod-a-general");
+  const [activeChannel, setActiveChannel] = useState<string>("general");
   const [activeDm, setActiveDm] = useState<string | null>(null);
 
   // Mobile view toggle ('channels' or 'chat')
   const [mobileView, setMobileView] = useState<"channels" | "chat">("chat");
 
-  // Persona switch (Admin, Team Lead Maya, Member David, Client Sarah)
-  const [currentPersona, setCurrentPersona] = useState<"David Kim" | "Maya Lin" | "Admin Operations" | "Sarah Jenkins (Client)">(getDefaultPersona);
+  // Persona switch
+  const [currentPersona, setCurrentPersona] = useState<string>(defaultPersona);
+
+  useEffect(() => {
+    if (user?.full_name) {
+      setCurrentPersona(user.full_name);
+    }
+  }, [user?.full_name]);
 
   // Input states
   const [messageText, setMessageText] = useState("");
   const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "info" } | null>(null);
 
-  // Emoji picker states
-  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
-  const [emojiSearch, setEmojiSearch] = useState("");
-  const [activeEmojiCategory, setActiveEmojiCategory] = useState("smileys");
-  const [recentEmojis, setRecentEmojis] = useState<string[]>(loadRecentEmojis());
-  const [reactionPickerMsgId, setReactionPickerMsgId] = useState<string | null>(null);
-  const emojiPickerRef = useRef<HTMLDivElement>(null);
-  const reactionPickerRef = useRef<HTMLDivElement>(null);
-
   // Modals
   const [assignTaskModalOpen, setAssignTaskModalOpen] = useState(false);
-  const [taskTitle, setTaskTitle] = useState("TikTok 9:16 Kinetic Teaser (Ver C)");
-  const [taskAssignee, setTaskAssignee] = useState("David Kim (Sr. Motion)");
-  const [taskClient, setTaskClient] = useState("Northwind Labs");
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskAssignee, setTaskAssignee] = useState("");
+  const [taskClient, setTaskClient] = useState("");
   const [taskPriority, setTaskPriority] = useState<"P1 High" | "P2 Med" | "P3 Normal">("P1 High");
   const [taskDeadline, setTaskDeadline] = useState("Today by 05:00 PM PST");
-  const [taskScope, setTaskScope] = useState("Render 15s kinetic cut with high-contrast text overlays and audio normalize to -14 LUFS.");
+  const [taskScope, setTaskScope] = useState("");
 
   const [callModalOpen, setCallModalOpen] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Close emoji pickers when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
-        setEmojiPickerOpen(false);
-      }
-      if (reactionPickerRef.current && !reactionPickerRef.current.contains(e.target as Node)) {
-        setReactionPickerMsgId(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Default seed messages
-  const defaultMessages: Record<string, ChatMessage[]> = {
-    "pod-a-general": [
-      {
-        id: "m-1",
-        sender: "Maya Lin",
-        role: "Pod A Lead",
-        avatar: "ML",
-        avatarBg: "bg-blue-600",
-        content: "Good morning team! Standup is in 25 mins. Please ensure your Octane render caches are synced.",
-        timestamp: "09:35 AM",
-        reactions: [
-          { emoji: "👍", count: 3, users: ["David Kim", "Chloe Tan", "Elena Ortiz"] },
-          { emoji: "⚡", count: 2, users: ["David Kim", "Marcus Vance"] },
-        ],
-      },
-      {
-        id: "m-2",
-        sender: "David Kim",
-        role: "Sr. Motion",
-        avatar: "DK",
-        avatarBg: "bg-[#2563EB]",
-        content: "Morning Maya! Dual RTX 4090 cluster is at 75% on the Northwind 3D Product Teaser. Frame 3,840/5,120 clean.",
-        timestamp: "09:38 AM",
-        reactions: [{ emoji: "🚀", count: 2, users: ["Maya Lin", "Chloe Tan"] }],
-      },
-      {
-        id: "m-3",
-        sender: "Chloe Tan",
-        role: "Backup Motion & QA",
-        avatar: "CT",
-        avatarBg: "bg-sky-600",
-        content: "Standing by for spillover renders if Node #04 needs extra capacity. Ready for handoffs.",
-        timestamp: "09:41 AM",
-        reactions: [{ emoji: "❤️", count: 1, users: ["David Kim"] }],
-      },
-    ],
-    "deliverables-handoff": [
-      {
-        id: "dh-1",
-        sender: "David Kim",
-        role: "Sr. Motion",
-        avatar: "DK",
-        avatarBg: "bg-[#2563EB]",
-        content: "Master ProRes 4444 drop for Northwind Hero Loop. Color space verified Rec.709.",
-        timestamp: "Yesterday at 04:30 PM",
-        attachment: { name: "Northwind_Hero_3D_Visual_Loop_4K.mov", size: "1.4 GB", type: "video" },
-        reactions: [{ emoji: "🔥", count: 3, users: ["Maya Lin", "Sarah Jenkins", "Elena Ortiz"] }],
-      },
-      {
-        id: "dh-2",
-        sender: "Maya Lin",
-        role: "Pod A Lead",
-        avatar: "ML",
-        avatarBg: "bg-blue-600",
-        content: "Signed off on the full 60s master. Dispatched to AWS S302 client vault.",
-        timestamp: "Yesterday at 05:15 PM",
-        reactions: [{ emoji: "🎉", count: 4, users: ["David Kim", "Sarah Jenkins", "Chloe Tan", "Elena Ortiz"] }],
-      },
-    ],
-    "client-northwind": [
-      {
-        id: "cn-1",
-        sender: "Sarah Jenkins (Client)",
-        role: "Brand Director • Northwind Labs",
-        avatar: "SJ",
-        avatarBg: "bg-gradient-to-br from-blue-700 to-blue-500",
-        content: "Hey Creo Pod! The Hero 3D visual loop is absolutely phenomenal. Our executive team loved the pacing!",
-        timestamp: "10:12 AM",
-        reactions: [
-          { emoji: "❤️", count: 4, users: ["David Kim", "Maya Lin", "Marcus Vance", "Elena Ortiz"] },
-          { emoji: "🚀", count: 3, users: ["David Kim", "Maya Lin", "Admin Operations"] },
-        ],
-      },
-      {
-        id: "cn-2",
-        sender: "Maya Lin",
-        role: "Pod A Lead",
-        avatar: "ML",
-        avatarBg: "bg-blue-600",
-        content: "Thrilled to hear that Sarah! David is currently finalizing the 15s TikTok & Reel companion cuts right now.",
-        timestamp: "10:15 AM",
-        reactions: [{ emoji: "👍", count: 2, users: ["Sarah Jenkins (Client)", "David Kim"] }],
-      },
-    ],
-    "urgent-escalations": [
-      {
-        id: "ue-1",
-        sender: "Admin Operations",
-        role: "Lead Ops Desk",
-        avatar: "AO",
-        avatarBg: "bg-slate-900",
-        content: "Atlas Commerce Q4 Bumper turn-around deadline is locked for 5:00 PM EST today. SLA timer green.",
-        timestamp: "08:45 AM",
-        reactions: [{ emoji: "👀", count: 2, users: ["Maya Lin", "David Kim"] }],
-      },
-    ],
-  };
-
-  // Initialize from localStorage or defaults — enables cross-tab/role sync
-  const [channelMessages, setChannelMessages] = useState<Record<string, ChatMessage[]>>(() => {
-    return loadMessagesFromStorage() || defaultMessages;
-  });
-
-  // Sync messages TO localStorage whenever they change
-  useEffect(() => {
-    saveMessagesToStorage(channelMessages);
-  }, [channelMessages]);
-
-  // Listen for cross-tab storage events to sync chat in real-time
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === CHAT_STORAGE_KEY && e.newValue) {
-        try {
-          const updated = JSON.parse(e.newValue);
-          setChannelMessages(updated);
-        } catch { /* ignore */ }
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+  // Messages by channel (clean dynamic state, empty by default)
+  const [channelMessages, setChannelMessages] = useState<Record<string, ChatMessage[]>>({});
 
   const showToast = (text: string, type: "success" | "info" = "success") => {
     setToastMessage({ text, type });
@@ -438,38 +105,27 @@ export function SlackChatPage() {
     if (!messageText.trim()) return;
 
     const senderRole =
-      currentPersona === "Maya Lin"
-        ? "Pod A Lead"
-        : currentPersona === "Sarah Jenkins (Client)"
-        ? "Brand Director • Northwind Labs"
-        : currentPersona === "Admin Operations"
+      user?.role === "admin" || user?.role === "super_admin"
         ? "Operations Executive"
-        : "Sr. Motion";
+        : user?.role === "team_lead"
+        ? `${podName} Lead`
+        : user?.role === "client"
+        ? "Client Representative"
+        : "Specialist";
 
-    const senderBg =
-      currentPersona === "Maya Lin"
-        ? "bg-blue-600"
-        : currentPersona === "Sarah Jenkins (Client)"
-        ? "bg-gradient-to-br from-blue-700 to-blue-500"
-        : currentPersona === "Admin Operations"
-        ? "bg-slate-900"
-        : "bg-[#2563EB]";
-
-    const senderInitials =
-      currentPersona === "Maya Lin"
-        ? "ML"
-        : currentPersona === "Sarah Jenkins (Client)"
-        ? "SJ"
-        : currentPersona === "Admin Operations"
-        ? "AO"
-        : "DK";
+    const senderInitials = (currentPersona || "TM")
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
 
     const newMsg: ChatMessage = {
       id: `m-${Date.now()}`,
       sender: currentPersona,
       role: senderRole,
       avatar: senderInitials,
-      avatarBg: senderBg,
+      avatarBg: "bg-[#2563EB]",
       content: messageText,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       reactions: [],
@@ -484,11 +140,6 @@ export function SlackChatPage() {
   };
 
   const handleAddReaction = (msgId: string, emoji: string) => {
-    // Track recent emoji
-    const updatedRecent = saveRecentEmoji(emoji);
-    setRecentEmojis(updatedRecent);
-    setReactionPickerMsgId(null);
-
     setChannelMessages((prev) => {
       const msgs = prev[activeKey] || [];
       const updated = msgs.map((m) => {
@@ -525,143 +176,42 @@ export function SlackChatPage() {
     });
   };
 
-  // Insert emoji into message text
-  const handleInsertEmoji = useCallback((emoji: string) => {
-    setMessageText((prev) => prev + emoji);
-    const updatedRecent = saveRecentEmoji(emoji);
-    setRecentEmojis(updatedRecent);
-  }, []);
-
-
-  // Build emoji picker render component
-  const renderEmojiPicker = (onSelect: (emoji: string) => void, position?: string) => {
-    const categoriesWithRecent = EMOJI_CATEGORIES.map(cat =>
-      cat.id === "recent" ? { ...cat, emojis: recentEmojis } : cat
-    );
-    const activeCategory = categoriesWithRecent.find(c => c.id === activeEmojiCategory) ?? categoriesWithRecent[1];
-    if (!activeCategory) return null;
-
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 8, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 8, scale: 0.95 }}
-        transition={{ duration: 0.2 }}
-        className={`absolute ${position || 'bottom-full mb-2'} z-[9999] w-[340px] sm:w-[380px] bg-[#161F2D] border border-[#2A3446] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden`}
-      >
-        {/* Search Bar */}
-        <div className="p-3 border-b border-[#2A3446]">
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0B111C] border border-[#2A3446]/80">
-            <Search className="size-3.5 text-[#97A0B3] shrink-0" />
-            <input
-              type="text"
-              value={emojiSearch}
-              onChange={(e) => setEmojiSearch(e.target.value)}
-              placeholder="Search emojis..."
-              className="flex-1 bg-transparent text-xs font-medium placeholder:text-[#97A0B3] focus:outline-none text-white"
-              autoFocus
-            />
-            {emojiSearch && (
-              <button
-                onClick={() => setEmojiSearch("")}
-                className="text-[#97A0B3] hover:text-white"
-              >
-                <X className="size-3" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Category Tabs */}
-        <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-[#2A3446] overflow-x-auto scrollbar-hide">
-          {categoriesWithRecent.map((cat) => {
-            const IconComp = cat.icon;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  setActiveEmojiCategory(cat.id);
-                  setEmojiSearch("");
-                }}
-                className={`p-2 rounded-lg transition-all cursor-pointer shrink-0 ${
-                  activeEmojiCategory === cat.id
-                    ? "bg-[#2563EB] text-white"
-                    : "text-[#97A0B3] hover:bg-[#1F2C3F] hover:text-white"
-                }`}
-                title={cat.label}
-              >
-                <IconComp className="size-4" />
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Category Label */}
-        <div className="px-3 pt-2 pb-1">
-          <span className="text-[10px] font-black uppercase tracking-wider text-[#97A0B3]">
-            {activeCategory.label}
-          </span>
-        </div>
-
-        {/* Emoji Grid */}
-        <div className="h-[220px] overflow-y-auto px-2 pb-2">
-          {activeCategory.emojis.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-xs text-[#97A0B3]">
-              {activeEmojiCategory === "recent" ? "No recently used emojis yet" : "No emojis found"}
-            </div>
-          ) : (
-            <div className="grid grid-cols-8 gap-0.5">
-              {activeCategory.emojis.map((emoji, idx) => (
-                <button
-                  key={`${emoji}-${idx}`}
-                  onClick={() => {
-                    onSelect(emoji);
-                  }}
-                  className="size-10 rounded-lg hover:bg-[#1F2C3F] flex items-center justify-center text-xl transition-all cursor-pointer hover:scale-110 active:scale-95"
-                  title={emoji}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Quick Access Bar */}
-        <div className="flex items-center gap-1 px-3 py-2 border-t border-[#2A3446] bg-[#0B111C]/60">
-          <span className="text-[10px] text-[#97A0B3] mr-1">Quick:</span>
-          {["👍", "❤️", "😂", "🔥", "🚀", "👏", "🎉", "💯", "👀", "✅"].map((emoji) => (
-            <button
-              key={emoji}
-              onClick={() => onSelect(emoji)}
-              className="size-7 rounded-md hover:bg-[#1F2C3F] flex items-center justify-center text-sm transition-all cursor-pointer hover:scale-110"
-            >
-              {emoji}
-            </button>
-          ))}
-        </div>
-      </motion.div>
-    );
-  };
-
   const handleConfirmAssignTask = (e: React.FormEvent) => {
     e.preventDefault();
     setAssignTaskModalOpen(false);
 
+    const resolvedClient = taskClient || podData?.clients?.[0]?.name || "Client";
+    const resolvedAssignee = taskAssignee || podData?.members?.[0]?.name || "Specialist";
+    const resolvedTitle = taskTitle || "Sprint Asset Delivery";
+
+    const senderRole =
+      user?.role === "team_lead"
+        ? `${podName} Lead`
+        : user?.role === "admin" || user?.role === "super_admin"
+        ? "Operations Executive"
+        : "Specialist";
+
+    const senderInitials = (currentPersona || "TM")
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+
     const taskMsg: ChatMessage = {
       id: `task-${Date.now()}`,
       sender: currentPersona,
-      role: currentPersona === "Maya Lin" ? "Pod A Lead" : "Operations Executive",
-      avatar: currentPersona === "Maya Lin" ? "ML" : "AO",
-      avatarBg: currentPersona === "Maya Lin" ? "bg-blue-600" : "bg-slate-900",
-      content: `⚡ New Task Assigned: **${taskTitle}** assigned to **${taskAssignee}** for **${taskClient}**!`,
+      role: senderRole,
+      avatar: senderInitials,
+      avatarBg: "bg-[#2563EB]",
+      content: `⚡ New Task Assigned: **${resolvedTitle}** assigned to **${resolvedAssignee}** for **${resolvedClient}**!`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       isTaskCard: true,
       taskData: {
         id: `TSK-${Math.floor(100 + Math.random() * 900)}`,
-        title: taskTitle,
-        assignee: taskAssignee,
-        client: taskClient,
+        title: resolvedTitle,
+        assignee: resolvedAssignee,
+        client: resolvedClient,
         priority: taskPriority,
         deadline: taskDeadline,
         status: "In Progress",
@@ -674,8 +224,21 @@ export function SlackChatPage() {
       [activeKey]: [...(prev[activeKey] || []), taskMsg],
     }));
 
-    showToast(`Assigned task "${taskTitle}" to ${taskAssignee}! Posted to #${activeChannel}.`);
+    showToast(`Assigned task "${resolvedTitle}" to ${resolvedAssignee}! Posted to #${activeChannel}.`);
+    setTaskTitle("");
   };
+
+  // Channels configuration
+  const channels = [
+    { id: "general", label: "general", desc: `${podName} daily standup & team banter` },
+    { id: "deliverables-handoff", label: "deliverables-handoff", desc: "Master asset sync & drops" },
+    { id: "urgent-escalations", label: "urgent-escalations", desc: "SLA priority alert queue" },
+    ...(podData?.clients || []).map((c) => ({
+      id: `client-${c.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+      label: `client-${c.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+      desc: `${c.name} pod communication`,
+    })),
+  ];
 
   return (
     <div data-surface="ops" className="min-h-screen bg-[#0B111C] text-white font-sans flex flex-col">
@@ -683,7 +246,7 @@ export function SlackChatPage() {
       <AdminTopHeader activeTab="Slack" />
 
       {/* Main Slack Layout (Sidebar + Chat Area) */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
@@ -695,10 +258,10 @@ export function SlackChatPage() {
             className={`fixed top-20 right-4 sm:right-8 z-[9999] p-4 rounded-2xl border text-xs font-bold flex items-center gap-2 shadow-2xl animate-fade-in ${
               toastMessage.type === "info"
                 ? "bg-[#7FA0D6]/15 border-[#7FA0D6]/30 text-blue-300"
-                : "bg-blue-950/80 border-blue-800 text-blue-200"
+                : "bg-emerald-950/90 border-emerald-500/50 text-emerald-300"
             }`}
           >
-            <CheckCircle2 className="size-4 text-[#60A5FA] shrink-0" />
+            <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
             <span>{toastMessage.text}</span>
             <button onClick={() => setToastMessage(null)} className="ml-2 text-current opacity-70 hover:opacity-100">
               &times;
@@ -706,7 +269,7 @@ export function SlackChatPage() {
           </div>
         )}
 
-        {/* 1. SLACK LEFT SIDEBAR (Full width on mobile when channels view active, fixed 72 on desktop) */}
+        {/* 1. SLACK LEFT SIDEBAR */}
         <aside
           className={`${
             mobileView === "channels" ? "flex w-full" : "hidden md:flex md:w-72"
@@ -720,8 +283,8 @@ export function SlackChatPage() {
                 <span className="font-black text-sm text-white tracking-tight">Creo Slack Hub</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-[#60A5FA] border border-blue-500/30">
-                  Live Pod A
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  Live {podName}
                 </span>
                 {mobileView === "channels" && (
                   <button
@@ -742,16 +305,20 @@ export function SlackChatPage() {
               <select
                 value={currentPersona}
                 onChange={(e) => {
-                  const p = e.target.value as any;
+                  const p = e.target.value;
                   setCurrentPersona(p);
                   showToast(`Switched active persona to ${p}`);
                 }}
                 className="w-full px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
               >
-                <option value="David Kim">David Kim (Sr. Motion Specialist)</option>
-                <option value="Maya Lin">Maya Lin (Pod A Lead)</option>
-                <option value="Admin Operations">Admin Operations (Executive)</option>
-                <option value="Sarah Jenkins (Client)">Sarah Jenkins (Client - Northwind Labs)</option>
+                <option value={user?.full_name || "Team Member"}>
+                  {user?.full_name || "Team Member"} (You)
+                </option>
+                {(podData?.members || []).map((m) => (
+                  <option key={m.id} value={m.name}>
+                    {m.name} ({m.role})
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -761,7 +328,7 @@ export function SlackChatPage() {
             {/* Quick Task Assign Button in Sidebar */}
             <button
               onClick={() => setAssignTaskModalOpen(true)}
-              className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 hover:brightness-110 text-white font-black text-xs shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
+              className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 text-white font-black text-xs shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
             >
               <Plus className="size-4" />
               Assign Task in Chat
@@ -771,15 +338,10 @@ export function SlackChatPage() {
             <div className="space-y-1">
               <div className="px-2 text-[10px] font-black uppercase tracking-wider text-[#97A0B3] flex items-center justify-between">
                 <span>Channels</span>
-                <span className="text-[#97A0B3]">4</span>
+                <span className="text-[#97A0B3]">{channels.length}</span>
               </div>
 
-              {[
-                { id: "pod-a-general", label: "pod-a-general", desc: "Daily banter & renders" },
-                { id: "deliverables-handoff", label: "deliverables-handoff", desc: "4K Master Drops" },
-                { id: "client-northwind", label: "client-northwind", desc: "Sarah Jenkins & Pod A" },
-                { id: "urgent-escalations", label: "urgent-escalations", desc: "SLA alert queue" },
-              ].map((c) => (
+              {channels.map((c) => (
                 <button
                   key={c.id}
                   onClick={() => {
@@ -806,36 +368,40 @@ export function SlackChatPage() {
                 Direct Messages
               </div>
 
-              {[
-                { name: "Maya Lin", role: "Pod Lead", avatar: "ML", bg: "bg-blue-600", online: true },
-                { name: "Chloe Tan", role: "Backup QA", avatar: "CT", bg: "bg-blue-700", online: true },
-                { name: "Marcus Vance", role: "Copy Lead", avatar: "MV", bg: "bg-slate-700", online: false },
-                { name: "Sarah Jenkins", role: "Client Lead", avatar: "SJ", bg: "bg-blue-600", online: true },
-              ].map((dm) => (
-                <button
-                  key={dm.name}
-                  onClick={() => {
-                    setActiveDm(dm.name);
-                    setMobileView("chat");
-                  }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold transition-all text-left cursor-pointer ${
-                    activeDm === dm.name
-                      ? "bg-[#2563EB] text-white font-black"
-                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className={`size-5 rounded-md ${dm.bg} text-white font-black text-[9px] flex items-center justify-center shrink-0`}>
-                      {dm.avatar}
-                    </div>
-                    <span className="truncate text-xs">{dm.name}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className={`size-2 rounded-full ${dm.online ? "bg-[#60A5FA]" : "bg-slate-600"}`} />
-                    <ChevronRight className="size-3.5 opacity-40 md:hidden text-[#97A0B3]" />
-                  </div>
-                </button>
-              ))}
+              {(!podData?.members || podData.members.length === 0) ? (
+                <div className="px-3 py-2 text-[11px] text-[#97A0B3]">
+                  No specialists in pod
+                </div>
+              ) : (
+                podData.members.map((dm) => {
+                  const displayName = dm.name || dm.full_name || "Specialist";
+                  return (
+                    <button
+                      key={dm.id}
+                      onClick={() => {
+                        setActiveDm(displayName);
+                        setMobileView("chat");
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold transition-all text-left cursor-pointer ${
+                        activeDm === displayName
+                          ? "bg-[#2563EB] text-white font-black"
+                          : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="size-5 rounded-md bg-[#2563EB] text-white font-black text-[9px] flex items-center justify-center shrink-0">
+                          {displayName.slice(0, 2).toUpperCase()}
+                        </div>
+                        <span className="truncate text-xs">{displayName}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="size-2 rounded-full bg-emerald-400" />
+                        <ChevronRight className="size-3.5 opacity-40 md:hidden text-[#97A0B3]" />
+                      </div>
+                    </button>
+                  );
+                })
+              )}
             </div>
           </div>
 
@@ -846,8 +412,8 @@ export function SlackChatPage() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-black text-white truncate">{currentPersona}</div>
-              <div className="text-[10px] text-[#60A5FA] flex items-center gap-1">
-                <span className="size-1.5 rounded-full bg-[#60A5FA] animate-pulse" />
+              <div className="text-[10px] text-emerald-400 flex items-center gap-1">
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Active in workspace
               </div>
             </div>
@@ -888,8 +454,8 @@ export function SlackChatPage() {
                 </div>
                 <p className="text-[11px] sm:text-xs text-[#97A0B3] truncate hidden sm:block">
                   {activeDm
-                    ? "Direct communication channel with end-to-end task integration"
-                    : "Live sprint channel • Real-time notifications & task drops"}
+                    ? `Direct communication thread with ${activeDm}`
+                    : `Live sprint channel for ${podName}`}
                 </p>
               </div>
             </div>
@@ -907,7 +473,7 @@ export function SlackChatPage() {
 
               <button
                 onClick={() => setCallModalOpen(true)}
-                className="size-8 sm:size-9 rounded-xl bg-[#1F2C3F] hover:bg-slate-200 text-[#F1F5F9] flex items-center justify-center cursor-pointer transition-colors"
+                className="size-8 sm:size-9 rounded-xl bg-[#1F2C3F] hover:bg-slate-700 text-[#F1F5F9] flex items-center justify-center cursor-pointer transition-colors"
                 title="Start Video Huddle"
               >
                 <Video className="size-3.5 sm:size-4" />
@@ -916,252 +482,168 @@ export function SlackChatPage() {
           </div>
 
           {/* Messages Feed */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-[#0B111C]/90 backdrop-blur-xl">
-            {currentMessages.map((msg) => (
-              <div
-                key={msg.id}
-                className="group relative p-3 sm:p-3.5 rounded-2xl hover:bg-[#161F2D]/90 border border-transparent hover:border-[#2A3446] transition-all flex items-start gap-2.5 sm:gap-3.5"
-              >
-                {/* Avatar */}
-                <div className={`size-8 sm:size-10 rounded-xl sm:rounded-2xl ${msg.avatarBg} text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs`}>
-                  {msg.avatar}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-[#0B111C]/90 backdrop-blur-xl flex flex-col">
+            {currentMessages.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
+                <div className="size-14 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-4 border border-blue-500/20">
+                  {activeDm ? <MessageSquare className="size-7" /> : <Hash className="size-7" />}
                 </div>
-
-                <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                    <span className="text-xs font-black text-white">{msg.sender}</span>
-                    <span className="text-[9px] sm:text-[10px] font-bold text-[#97A0B3] bg-[#1F2C3F] px-1.5 sm:px-2 py-0.5 rounded-md">
-                      {msg.role}
-                    </span>
-                    <span className="text-[10px] text-[#97A0B3] ml-auto">{msg.timestamp}</span>
+                <h3 className="text-base font-black text-white">
+                  {activeDm ? `Conversation with ${activeDm}` : `Welcome to #${activeChannel}`}
+                </h3>
+                <p className="text-xs text-[#97A0B3] max-w-sm mt-1">
+                  {activeDm
+                    ? `This is the beginning of your direct message history with ${activeDm}. Send a message or assign a task.`
+                    : `This is the start of the #${activeChannel} channel for ${podName}. Post updates, drop deliverables, or assign sprint tasks.`}
+                </p>
+              </div>
+            ) : (
+              currentMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className="group relative p-3 sm:p-3.5 rounded-2xl hover:bg-[#161F2D]/90 border border-transparent hover:border-[#2A3446] transition-all flex items-start gap-2.5 sm:gap-3.5"
+                >
+                  {/* Avatar */}
+                  <div className={`size-8 sm:size-10 rounded-xl sm:rounded-2xl ${msg.avatarBg} text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs`}>
+                    {msg.avatar}
                   </div>
 
-                  {/* Message Content */}
-                  <div className="text-xs text-[#F1F5F9] leading-relaxed font-medium break-words">
-                    {msg.content}
-                  </div>
-
-                  {/* Task Card Embedded in Chat */}
-                  {msg.isTaskCard && msg.taskData && (
-                    <div className="mt-2.5 p-3.5 sm:p-4 rounded-2xl bg-[#161F2D] border border-[#7FA0D6]/30 shadow-sm hover-card-innovative space-y-2.5 w-full max-w-lg">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono font-bold text-[#7FA0D6] bg-[#7FA0D6]/20 px-2 py-0.5 rounded">
-                          {msg.taskData.id}
-                        </span>
-                        <span
-                          className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                            msg.taskData.priority === "P1 High"
-                              ? "bg-blue-900/60 text-[#93C5FD] border border-blue-500/40"
-                              : "bg-[#7FA0D6]/20 text-[#7FA0D6]"
-                          }`}
-                        >
-                          {msg.taskData.priority}
-                        </span>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs font-black text-white">{msg.taskData.title}</h4>
-                        <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#F1F5F9] mt-1">
-                          <span>👤 Assignee: <strong>{msg.taskData.assignee}</strong></span>
-                          <span>•</span>
-                          <span>🏢 Client: <strong>{msg.taskData.client}</strong></span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-[#7FA0D6]/30/60 text-xs">
-                        <span className="text-[11px] text-[#97A0B3] font-semibold truncate mr-2">
-                          ⏱ Due: {msg.taskData.deadline}
-                        </span>
-                        <button
-                          onClick={() => {
-                            showToast(`Opened task ${msg.taskData?.id} in Kanban board!`);
-                            const targetBoard = (user?.role === "admin" || user?.role === "super_admin") ? "/admin/tasks" : "/workstation/tasks";
-                            navigate(targetBoard);
-                          }}
-                          className="px-3 py-1 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-xs cursor-pointer shrink-0"
-                        >
-                          View Board &rarr;
-                        </button>
-                      </div>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                      <span className="text-xs font-black text-white">{msg.sender}</span>
+                      <span className="text-[9px] sm:text-[10px] font-bold text-[#97A0B3] bg-[#1F2C3F] px-1.5 sm:px-2 py-0.5 rounded-md">
+                        {msg.role}
+                      </span>
+                      <span className="text-[10px] text-[#97A0B3] ml-auto">{msg.timestamp}</span>
                     </div>
-                  )}
 
-                  {/* Attachment Card */}
-                  {msg.attachment && (
-                    <div className="mt-2 p-3 rounded-xl bg-[#0B111C] border border-[#2A3446] flex items-center justify-between w-full max-w-md gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="size-8 rounded-lg bg-[#7FA0D6]/20 text-[#7FA0D6] flex items-center justify-center font-bold text-xs shrink-0">
-                          🎬
+                    {/* Message Content */}
+                    <div className="text-xs text-[#F1F5F9] leading-relaxed font-medium break-words">
+                      {msg.content}
+                    </div>
+
+                    {/* Task Card Embedded in Chat */}
+                    {msg.isTaskCard && msg.taskData && (
+                      <div className="mt-2.5 p-3.5 sm:p-4 rounded-2xl bg-[#161F2D] border border-[#7FA0D6]/30 shadow-sm hover-card-innovative space-y-2.5 w-full max-w-lg">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono font-bold text-[#7FA0D6] bg-[#7FA0D6]/20 px-2 py-0.5 rounded">
+                            {msg.taskData.id}
+                          </span>
+                          <span
+                            className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                              msg.taskData.priority === "P1 High"
+                                ? "bg-rose-100 text-rose-700 border border-rose-200"
+                                : "bg-[#7FA0D6]/20 text-[#7FA0D6]"
+                            }`}
+                          >
+                            {msg.taskData.priority}
+                          </span>
                         </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold text-white truncate">
-                            {msg.attachment.name}
+
+                        <div>
+                          <h4 className="text-xs font-black text-white">{msg.taskData.title}</h4>
+                          <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#F1F5F9] mt-1">
+                            <span>👤 Assignee: <strong>{msg.taskData.assignee}</strong></span>
+                            <span>•</span>
+                            <span>🏢 Client: <strong>{msg.taskData.client}</strong></span>
                           </div>
-                          <div className="text-[10px] text-[#97A0B3]">{msg.attachment.size} • Verified Master</div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-[#2A3446] text-[10px] font-bold text-[#97A0B3]">
+                          <span>Due: {msg.taskData.deadline}</span>
+                          <span className="text-emerald-400">● {msg.taskData.status}</span>
                         </div>
                       </div>
-                      <button
-                        onClick={() => showToast(`Downloading ${msg.attachment?.name}...`)}
-                        className="px-2.5 py-1 rounded-lg bg-[#161F2D] border border-[#2A3446] text-[#7FA0D6] font-bold text-xs hover:bg-[#7FA0D6]/15 cursor-pointer shrink-0"
-                      >
-                        Download
-                      </button>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Reactions List */}
-                  {msg.reactions.length > 0 && (
+                    {/* Reactions Bar */}
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
                       {msg.reactions.map((r, i) => (
                         <button
                           key={i}
                           onClick={() => handleAddReaction(msg.id, r.emoji)}
-                          className="px-2 py-0.5 rounded-full bg-[#1F2C3F] hover:bg-slate-200 text-[11px] font-bold text-[#F1F5F9] flex items-center gap-1 cursor-pointer transition-colors"
+                          className={`text-[11px] px-2 py-0.5 rounded-lg border flex items-center gap-1 transition cursor-pointer ${
+                            r.users.includes(currentPersona)
+                              ? "bg-blue-600/20 border-blue-500 text-blue-300 font-bold"
+                              : "bg-[#161F2D] border-[#2A3446] text-slate-300 hover:bg-slate-800"
+                          }`}
                         >
                           <span>{r.emoji}</span>
                           <span>{r.count}</span>
                         </button>
                       ))}
-                    </div>
-                  )}
-                </div>
 
-                {/* Reaction Bar (Desktop hover / Mobile click) */}
-                <div className="hidden sm:flex opacity-0 group-hover:opacity-100 transition-opacity items-center gap-1 bg-[#161F2D] border border-[#2A3446] shadow-md rounded-xl p-1 absolute top-2 right-2">
-                  {["👍", "❤️", "🚀", "👀", "🔥"].map((emoji) => (
-                    <button
-                      key={emoji}
-                      onClick={() => handleAddReaction(msg.id, emoji)}
-                      className="size-7 hover:bg-[#1F2C3F] rounded-lg flex items-center justify-center text-xs transition-colors cursor-pointer"
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                  {/* Open full emoji picker for reactions */}
-                  <div className="relative" ref={reactionPickerMsgId === msg.id ? reactionPickerRef : undefined}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setReactionPickerMsgId(reactionPickerMsgId === msg.id ? null : msg.id);
-                      }}
-                      className="size-7 hover:bg-blue-500/20 rounded-lg flex items-center justify-center text-xs transition-colors cursor-pointer text-[#97A0B3] hover:text-[#60A5FA]"
-                      title="More reactions"
-                    >
-                      <Smile className="size-3.5" />
-                    </button>
-                    <AnimatePresence>
-                      {reactionPickerMsgId === msg.id && (
-                        <div ref={reactionPickerRef}>
-                          {renderEmojiPicker(
-                            (emoji) => handleAddReaction(msg.id, emoji),
-                            "top-full mt-2 right-0"
-                          )}
-                        </div>
-                      )}
-                    </AnimatePresence>
+                      {/* Quick Reaction Buttons on Hover */}
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 ml-2">
+                        {["👍", "❤️", "🚀", "⚡"].map((emoji) => (
+                          <button
+                            key={emoji}
+                            onClick={() => handleAddReaction(msg.id, emoji)}
+                            className="size-6 rounded-md hover:bg-slate-800 flex items-center justify-center text-xs transition cursor-pointer"
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
             <div ref={chatEndRef} />
           </div>
 
-          {/* Chat Input Bar */}
-          <form onSubmit={handleSendMessage} className="p-2.5 sm:p-4 border-t border-[#2A3446] bg-[#161F2D] space-y-2">
-            <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-2xl bg-[#0B111C] border border-[#2A3446]/80 focus-within:bg-[#161F2D] focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
-              <button
-                type="button"
-                onClick={() => setAssignTaskModalOpen(true)}
-                className="size-7 sm:size-8 rounded-xl bg-[#7FA0D6]/15 hover:bg-[#7FA0D6]/20 text-[#7FA0D6] flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                title="Assign Task in this Channel"
-              >
-                <Plus className="size-3.5 sm:size-4" />
-              </button>
-
-              <input
-                type="text"
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                placeholder={`Message #${activeChannel}...`}
-                className="flex-1 bg-transparent text-xs font-medium placeholder:text-[#97A0B3] focus:outline-none px-1.5 sm:px-2 min-w-0"
-              />
-
-              {/* Emoji Picker Button */}
-              <div className="relative" ref={emojiPickerRef}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmojiPickerOpen(!emojiPickerOpen);
-                    setEmojiSearch("");
-                  }}
-                  className={`p-1 sm:p-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
-                    emojiPickerOpen
-                      ? "text-[#60A5FA] bg-blue-500/15"
-                      : "text-[#97A0B3] hover:text-[#F1F5F9] hover:bg-[#1F2C3F]"
-                  }`}
-                  title="Open Emoji Picker"
-                >
-                  <Smile className="size-4 sm:size-[18px]" />
-                </button>
-
-                <AnimatePresence>
-                  {emojiPickerOpen && renderEmojiPicker((emoji) => {
-                    handleInsertEmoji(emoji);
-                  }, "bottom-full mb-2 right-0")}
-                </AnimatePresence>
+          {/* Message Input Bar */}
+          <div className="p-3 sm:p-4 border-t border-[#2A3446] bg-[#161F2D]">
+            <form onSubmit={handleSendMessage} className="space-y-2">
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  placeholder={`Message #${activeChannel}...`}
+                  className="w-full bg-[#0B111C] border border-[#2A3446] rounded-2xl pl-4 pr-24 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                />
+                <div className="absolute right-2 flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => showToast("Attachment upload ready", "info")}
+                    className="p-1.5 text-[#97A0B3] hover:text-white rounded-lg transition-colors cursor-pointer"
+                    title="Attach file"
+                  >
+                    <Paperclip className="size-4" />
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!messageText.trim()}
+                    className="p-2 rounded-xl bg-[#2563EB] hover:bg-blue-600 disabled:opacity-40 text-white transition cursor-pointer"
+                  >
+                    <Send className="size-4" />
+                  </button>
+                </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => showToast("Simulated file upload attached!", "info")}
-                className="p-1 sm:p-1.5 text-[#97A0B3] hover:text-[#F1F5F9] rounded-lg hover:bg-[#1F2C3F] transition-colors cursor-pointer shrink-0"
-                title="Attach File"
-              >
-                <Paperclip className="size-3.5 sm:size-4" />
-              </button>
-
-              <button
-                type="submit"
-                disabled={!messageText.trim()}
-                className="size-7 sm:size-8 rounded-xl bg-[#2563EB] hover:bg-blue-700 disabled:opacity-40 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer shrink-0"
-              >
-                <Send className="size-3.5 sm:size-4" />
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </section>
       </motion.div>
 
-      {/* ─────────────────────────────────────────────────────────────
-          CENTERED MODALS WITH BLURRED BACKGROUND (z-[99999])
-      ───────────────────────────────────────────────────────────── */}
-
-      {/* MODAL: ASSIGN TASK DIRECTLY IN SLACK */}
+      {/* MODAL: ASSIGN TASK IN CHAT */}
       {assignTaskModalOpen && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[99999] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 w-screen h-screen z-[99999] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fade-in"
           onClick={() => setAssignTaskModalOpen(false)}
         >
           <div
             className="w-full max-w-lg bg-[#161F2D] rounded-3xl p-6 sm:p-7 shadow-2xl border border-[#2A3446] space-y-4 animate-scale-up"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#2A3446] pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="size-9 rounded-2xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center font-bold">
-                  <Sparkles className="size-4.5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-black text-white">Assign Creative Task</h3>
-                  <p className="text-xs text-[#97A0B3]">Post instant task card in #{activeChannel} and sync to Kanban</p>
-                </div>
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A3446]">
+              <div className="flex items-center gap-2">
+                <Sparkles className="size-5 text-[#7FA0D6]" />
+                <h3 className="text-base font-black text-white">Assign Task in Chat</h3>
               </div>
-              <button
-                type="button"
-                onClick={() => setAssignTaskModalOpen(false)}
-                className="size-8 rounded-full bg-[#1F2C3F] hover:bg-slate-200 text-[#97A0B3] flex items-center justify-center cursor-pointer"
-              >
-                <X className="size-4" />
+              <button onClick={() => setAssignTaskModalOpen(false)} className="text-[#97A0B3] hover:text-white">
+                <X className="size-5" />
               </button>
             </div>
 
@@ -1173,7 +655,8 @@ export function SlackChatPage() {
                   required
                   value={taskTitle}
                   onChange={(e) => setTaskTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-bold"
+                  placeholder="e.g. Hero Kinetic Reel Animation"
+                  className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-bold bg-[#0B111C] text-white"
                 />
               </div>
 
@@ -1183,13 +666,20 @@ export function SlackChatPage() {
                   <select
                     value={taskAssignee}
                     onChange={(e) => setTaskAssignee(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#161F2D]"
+                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#0B111C] text-white"
                   >
-                    <option value="David Kim (Sr. Motion)">David Kim (Sr. Motion)</option>
-                    <option value="Elena Ortiz (Brand Designer)">Elena Ortiz (Brand Designer)</option>
-                    <option value="Marcus Vance (Copy Lead)">Marcus Vance (Copy Lead)</option>
-                    <option value="Chloe Tan (Backup Motion & QA)">Chloe Tan (Backup Motion & QA)</option>
-                    <option value="Sarah Jenkins (Client Review)">Sarah Jenkins (Client Review)</option>
+                    {(!podData?.members || podData.members.length === 0) ? (
+                      <option value="">No specialists registered</option>
+                    ) : (
+                      podData.members.map((m) => {
+                        const name = m.name || m.full_name || "Specialist";
+                        return (
+                          <option key={m.id} value={name}>
+                            {name} ({m.role})
+                          </option>
+                        );
+                      })
+                    )}
                   </select>
                 </div>
 
@@ -1198,11 +688,17 @@ export function SlackChatPage() {
                   <select
                     value={taskClient}
                     onChange={(e) => setTaskClient(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#161F2D]"
+                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-semibold bg-[#0B111C] text-white"
                   >
-                    <option value="Northwind Labs">Northwind Labs</option>
-                    <option value="Atlas Commerce">Atlas Commerce</option>
-                    <option value="Bloom Studio">Bloom Studio</option>
+                    {(!podData?.clients || podData.clients.length === 0) ? (
+                      <option value="">No clients assigned</option>
+                    ) : (
+                      podData.clients.map((c) => (
+                        <option key={c.id} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
               </div>
@@ -1213,7 +709,7 @@ export function SlackChatPage() {
                   <select
                     value={taskPriority}
                     onChange={(e) => setTaskPriority(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-bold bg-[#161F2D]"
+                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-bold bg-[#0B111C] text-white"
                   >
                     <option value="P1 High">P1 High (Urgent SLA)</option>
                     <option value="P2 Med">P2 Medium</option>
@@ -1228,7 +724,7 @@ export function SlackChatPage() {
                     required
                     value={taskDeadline}
                     onChange={(e) => setTaskDeadline(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-bold"
+                    className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-bold bg-[#0B111C] text-white"
                   />
                 </div>
               </div>
@@ -1239,7 +735,8 @@ export function SlackChatPage() {
                   rows={3}
                   value={taskScope}
                   onChange={(e) => setTaskScope(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-medium"
+                  placeholder="Add scope details or technical requirements..."
+                  className="w-full px-3 py-2 rounded-xl border border-[#2A3446] font-medium bg-[#0B111C] text-white"
                 />
               </div>
 

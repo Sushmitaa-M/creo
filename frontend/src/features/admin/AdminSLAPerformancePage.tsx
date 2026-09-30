@@ -18,35 +18,35 @@ export function AdminSLAPerformancePage() {
     {
       pod: "Pod A",
       lead: "Vikram Malhotra",
-      bg: "bg-blue-600",
-      text: "text-white",
+      bg: "bg-[#E0E7FF]",
+      text: "text-[#4338CA]",
       slaMet: "99.4%",
       avgResponse: "6.2m",
       resolved: "42 tickets",
       status: "OPTIMAL",
-      statusBg: "bg-blue-600/15 text-[#60A5FA] border-blue-500/30",
+      statusBg: "bg-emerald-100 text-emerald-800 border-emerald-200",
     },
     {
       pod: "Pod B",
       lead: "Sarah Connor",
-      bg: "bg-blue-700",
-      text: "text-white",
+      bg: "bg-[#DBEAFE]",
+      text: "text-[#1E40AF]",
       slaMet: "98.8%",
       avgResponse: "7.8m",
       resolved: "38 tickets",
       status: "OPTIMAL",
-      statusBg: "bg-blue-600/15 text-[#60A5FA] border-blue-500/30",
+      statusBg: "bg-emerald-100 text-emerald-800 border-emerald-200",
     },
     {
       pod: "Pod C",
       lead: "Rohan Mehta",
-      bg: "bg-blue-800",
-      text: "text-white",
+      bg: "bg-[#FEE2E2]",
+      text: "text-[#991B1B]",
       slaMet: "97.5%",
       avgResponse: "9.1m",
       resolved: "35 tickets",
       status: "OPTIMAL",
-      statusBg: "bg-blue-600/15 text-[#60A5FA] border-blue-500/30",
+      statusBg: "bg-emerald-100 text-emerald-800 border-emerald-200",
     },
   ];
 
@@ -71,13 +71,13 @@ export function AdminSLAPerformancePage() {
                 </span>
                 <div className="flex items-baseline gap-2.5">
                   <span className="text-2xl sm:text-3xl font-black text-white">98.4%</span>
-                  <span className="text-xs sm:text-sm font-bold text-[#60A5FA] flex items-center gap-1">
+                  <span className="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-1">
                     <TrendingUp className="size-4" /> +0.6% MoM
                   </span>
                 </div>
                 <div className="flex items-center gap-2 pt-1 text-xs font-bold">
                   <span className="text-[#97A0B3]">Target: <strong className="text-white">98.0%</strong></span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-blue-600/15 text-[#60A5FA] text-xs font-extrabold border border-blue-500/30">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-extrabold border border-emerald-500/30">
                     OPTIMAL
                   </span>
                 </div>
@@ -99,16 +99,16 @@ export function AdminSLAPerformancePage() {
                   <span className="text-xs sm:text-sm font-bold text-[#F1F5F9]">Active</span>
                 </div>
                 <div className="flex items-center gap-2 pt-1 text-xs font-bold">
-                  <span className="px-2.5 py-0.5 rounded-md bg-blue-500/15 text-[#93C5FD] text-xs font-bold border border-blue-500/30">
+                  <span className="px-2.5 py-0.5 rounded-md bg-rose-500/15 text-rose-400 text-xs font-bold border border-rose-500/30">
                     1 Approaching
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-md bg-blue-600/15 text-[#60A5FA] text-xs font-bold border border-blue-500/30">
+                  <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-xs font-bold border border-emerald-500/30">
                     • 1 Resolved
                   </span>
                 </div>
               </div>
 
-              <div className="size-10 sm:size-12 rounded-2xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-[#60A5FA] shrink-0">
+              <div className="size-10 sm:size-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
                 <Bell className="size-5 sm:size-6" />
               </div>
             </div>
@@ -130,8 +130,8 @@ export function AdminSLAPerformancePage() {
                     <span className="size-2.5 rounded-full bg-blue-500" />
                     Response (99.1%)
                   </span>
-                  <span className="flex items-center gap-1.5 text-[#93C5FD]">
-                    <span className="size-2.5 rounded-full bg-blue-400" />
+                  <span className="flex items-center gap-1.5 text-indigo-400">
+                    <span className="size-2.5 rounded-full bg-indigo-500" />
                     Resolution (97.8%)
                   </span>
                 </div>
@@ -140,8 +140,8 @@ export function AdminSLAPerformancePage() {
               {/* SVG Trend Graph Representation */}
               <div className="h-64 w-full relative flex flex-col justify-between pt-2 pb-1">
                 {/* Target Line */}
-                <div className="absolute top-[38%] left-0 right-0 border-b border-dashed border-blue-500/60 z-10 flex justify-end pr-2">
-                  <span className="text-xs font-bold text-[#93C5FD] bg-blue-950/90 border border-blue-500/30 px-2.5 py-0.5 rounded-full shadow-xs -mt-3">
+                <div className="absolute top-[38%] left-0 right-0 border-b border-dashed border-rose-500/60 z-10 flex justify-end pr-2">
+                  <span className="text-xs font-bold text-rose-400 bg-rose-950/90 border border-rose-800/80 px-2.5 py-0.5 rounded-full shadow-xs -mt-3">
                     Min Target 98.0%
                   </span>
                 </div>
@@ -154,8 +154,8 @@ export function AdminSLAPerformancePage() {
                         <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.02" />
                       </linearGradient>
                       <linearGradient id="indigoGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#60A5FA" stopOpacity="0.0" />
+                        <stop offset="0%" stopColor="#6366F1" stopOpacity="0.25" />
+                        <stop offset="100%" stopColor="#6366F1" stopOpacity="0.0" />
                       </linearGradient>
                     </defs>
                     {/* Area Fill */}
@@ -175,7 +175,7 @@ export function AdminSLAPerformancePage() {
                     <path
                       d="M 0 82 C 60 55, 120 68, 180 54 C 240 34, 300 50, 360 40 C 420 24, 470 38, 500 34"
                       fill="none"
-                      stroke="#60A5FA"
+                      stroke="#818CF8"
                       strokeWidth="2.5"
                       strokeDasharray="5 3"
                       strokeLinecap="round"
@@ -211,13 +211,13 @@ export function AdminSLAPerformancePage() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs sm:text-sm font-bold">
                     <span className="flex items-center gap-1.5 text-white">
-                      <span className="size-2.5 rounded-full bg-blue-600" />
+                      <span className="size-2.5 rounded-full bg-rose-500" />
                       Urgent (1h SLA)
                     </span>
                     <span className="text-white">96.8% <span className="text-[#97A0B3] font-normal">(5/5 Compliant)</span></span>
                   </div>
                   <div className="h-2.5 w-full rounded-full bg-[#0B111C] overflow-hidden border border-[#2A3446]">
-                    <div className="h-full bg-blue-600 rounded-full" style={{ width: "96.8%" }} />
+                    <div className="h-full bg-rose-500 rounded-full" style={{ width: "96.8%" }} />
                   </div>
                 </div>
 
@@ -239,13 +239,13 @@ export function AdminSLAPerformancePage() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs sm:text-sm font-bold">
                     <span className="flex items-center gap-1.5 text-white">
-                      <span className="size-2.5 rounded-full bg-blue-400" />
+                      <span className="size-2.5 rounded-full bg-cyan-400" />
                       Medium Priority (4h SLA)
                     </span>
                     <span className="text-white">99.4% <span className="text-[#97A0B3] font-normal">(19/19 Compliant)</span></span>
                   </div>
                   <div className="h-2.5 w-full rounded-full bg-[#0B111C] overflow-hidden border border-[#2A3446]">
-                    <div className="h-full bg-blue-400 rounded-full" style={{ width: "99.4%" }} />
+                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: "99.4%" }} />
                   </div>
                 </div>
 
@@ -253,13 +253,13 @@ export function AdminSLAPerformancePage() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs sm:text-sm font-bold">
                     <span className="flex items-center gap-1.5 text-white">
-                      <span className="size-2.5 rounded-full bg-[#60A5FA]" />
+                      <span className="size-2.5 rounded-full bg-emerald-400" />
                       Normal Priority (12h SLA)
                     </span>
                     <span className="text-white">100.0% <span className="text-[#97A0B3] font-normal">(44/44 Compliant)</span></span>
                   </div>
                   <div className="h-2.5 w-full rounded-full bg-[#0B111C] overflow-hidden border border-[#2A3446]">
-                    <div className="h-full bg-[#60A5FA] rounded-full" style={{ width: "100%" }} />
+                    <div className="h-full bg-emerald-400 rounded-full" style={{ width: "100%" }} />
                   </div>
                 </div>
               </div>
@@ -335,27 +335,27 @@ export function AdminSLAPerformancePage() {
 
               <div className="space-y-3">
                 {/* Warning 1: Approaching Breach */}
-                <div className="p-4 rounded-xl bg-blue-950/40 border border-blue-800/50 backdrop-blur-md space-y-2">
+                <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/50 backdrop-blur-md space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#93C5FD] flex items-center gap-1.5">
-                      <AlertTriangle className="size-3.5 text-[#60A5FA]" />
+                    <span className="text-xs font-bold text-rose-200 flex items-center gap-1.5">
+                      <AlertTriangle className="size-3.5 text-rose-400" />
                       Response Approaching Breach
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-blue-500/20 text-[#93C5FD] border border-blue-500/30">
+                    <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30">
                       WARNING
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#93C5FD]/80">
-                    Ticket <strong className="font-mono text-white">#1042</strong> • Northwind Labs • Pod A (Maya Lin)
+                  <p className="text-[11px] text-rose-300/80">
+                    Ticket <strong className="font-mono text-rose-200">#1042</strong> • Client Retainer • Pod A (On-Call Lead)
                   </p>
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs font-bold text-[#60A5FA] flex items-center gap-1">
+                    <span className="text-xs font-bold text-rose-400 flex items-center gap-1">
                       <Clock className="size-3.5" /> 18m remaining
                     </span>
                     <button
                       type="button"
                       onClick={() => navigate("/admin/support/tickets/1042")}
-                      className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
+                      className="px-3 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-600 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
                     >
                       Intervene
                     </button>
@@ -363,21 +363,21 @@ export function AdminSLAPerformancePage() {
                 </div>
 
                 {/* Warning 2: Escalation Resolved */}
-                <div className="p-4 rounded-xl bg-blue-900/30 border border-blue-800/40 backdrop-blur-md space-y-2">
+                <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/50 backdrop-blur-md space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#60A5FA] flex items-center gap-1.5">
-                      <CheckCircle2 className="size-3.5 text-[#60A5FA]" />
+                    <span className="text-xs font-bold text-emerald-200 flex items-center gap-1.5">
+                      <CheckCircle2 className="size-3.5 text-emerald-400" />
                       Escalation Resolved Cleanly
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-blue-600/20 text-[#60A5FA] border border-blue-500/30">
+                    <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                       CLEARED
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#7FA0D6]">
-                    Ticket <strong className="font-mono text-white">#1035</strong> • Atlas Commerce • Pod C (Lena Ortiz)
+                  <p className="text-[11px] text-emerald-300/80">
+                    Ticket <strong className="font-mono text-emerald-200">#1035</strong> • Client Workspace • Pod C (Creative Lead)
                   </p>
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs font-semibold text-[#60A5FA]">
+                    <span className="text-xs font-semibold text-emerald-400">
                       SLA Intact (1.2h elapsed)
                     </span>
                     <span className="text-[11px] font-medium text-[#97A0B3]">Archived</span>
@@ -385,24 +385,24 @@ export function AdminSLAPerformancePage() {
                 </div>
 
                 {/* Warning 3: Queue Density */}
-                <div className="p-4 rounded-xl bg-blue-950/40 border border-blue-800/50 backdrop-blur-md space-y-2">
+                <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-800/50 backdrop-blur-md space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#93C5FD] flex items-center gap-1.5">
-                      <Zap className="size-3.5 text-[#60A5FA]" />
+                    <span className="text-xs font-bold text-amber-200 flex items-center gap-1.5">
+                      <Zap className="size-3.5 text-amber-400" />
                       High Queue Density Warning
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-blue-500/20 text-[#93C5FD] border border-blue-500/30">
+                    <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
                       SURGE
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#93C5FD]/80">
+                  <p className="text-[11px] text-amber-300/80">
                     8 pending incoming items assigned to Pod C simultaneously. Auto-load balancing recommended.
                   </p>
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs font-semibold text-[#60A5FA]">Auto-load balancing recommended</span>
+                    <span className="text-xs font-semibold text-amber-400">Auto-load balancing recommended</span>
                     <button
                       type="button"
-                      className="px-3 py-1 rounded-lg bg-[#0B111C] border border-blue-500/30 text-[#93C5FD] font-bold text-[11px] hover:bg-blue-950/50 transition-colors cursor-pointer"
+                      className="px-3 py-1 rounded-lg bg-[#0B111C] border border-amber-500/30 text-amber-300 font-bold text-[11px] hover:bg-amber-950/50 transition-colors cursor-pointer"
                     >
                       Monitor
                     </button>

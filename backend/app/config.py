@@ -49,6 +49,13 @@ class Settings(BaseSettings):
         default="postgresql+asyncpg://postgres:postgres@localhost:5432/creo"
     )
 
+    # Connection pool tuning (per worker process). Set DB_USE_NULLPOOL=true to
+    # fall back to opening a fresh connection for every request.
+    DB_USE_NULLPOOL: bool = Field(default=False)
+    DB_POOL_SIZE: int = Field(default=5)
+    DB_MAX_OVERFLOW: int = Field(default=5)
+    DB_POOL_RECYCLE_SECONDS: int = Field(default=300)
+
     @field_validator("DATABASE_URL", "DIRECT_DATABASE_URL", "REDIS_URL", mode="before")
     @classmethod
     def strip_urls(cls, v: Any) -> Any:
@@ -74,10 +81,10 @@ class Settings(BaseSettings):
     # Google Gmail SMTP
     SMTP_SERVER: str = Field(default="smtp.gmail.com")
     SMTP_PORT: int = Field(default=587)
-    SMTP_USERNAME: str = Field(default="creotool26@gmail.com")
-    SMTP_PASSWORD: str = Field(default="gcic myxm rrep lorb")
+    SMTP_USERNAME: str = Field(default="")
+    SMTP_PASSWORD: str = Field(default="")
     SMTP_USE_TLS: bool = Field(default=True)
-    SMTP_FROM_EMAIL: str = Field(default="creotool26@gmail.com")
+    SMTP_FROM_EMAIL: str = Field(default="")
 
     # Payment Gateways — Razorpay
     RAZORPAY_KEY_ID: str = Field(default="rzp_test_TO2r0YMjDZSpuC")
@@ -129,6 +136,7 @@ class Settings(BaseSettings):
     INSTAGRAM_APP_SECRET: str = Field(default="")
     INSTAGRAM_REDIRECT_URI: str = Field(default="http://localhost:3000/api/auth/callback/instagram")
     RESEND_API_KEY: str = Field(default="")
+    RESEND_FROM_EMAIL: str = Field(default="Creo Verification <onboarding@resend.dev>")
     WHATSAPP_API_TOKEN: str = Field(default="")
     WHATSAPP_PHONE_NUMBER_ID: str = Field(default="")
 

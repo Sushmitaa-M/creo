@@ -9,13 +9,11 @@ import {
   ShieldCheck,
   AlertTriangle,
   Clock,
-  ExternalLink,
   Check,
   X,
   Plus,
   Play,
   Download,
-  ArrowRight,
   FileText,
 } from "lucide-react";
 
@@ -56,16 +54,30 @@ export function PodDeliverablesReviewPage() {
 
   const handleExportReviewLedger = () => {
     const headers = ["Deliverable ID", "Title", "Client", "Format", "Specialist", "Due SLA", "QA Status"];
-    const rows = [
-      ["DELIV-01", "Fintech Reel · High Conversion", "Northwind Labs", "Reel (9:16)", "David Kim", "Due in 2h", "Pending Lead Sign-off"],
-      ["DELIV-02", "Holiday Campaign Story Motion", "Bloom Studio", "Story (9:16)", "Chloe Tan", "Due in 3h", "Review Active"],
-      ["DELIV-03", "Brand Architecture Post Carousel", "Atlas Commerce", "Post (1:1)", "Elena Ortiz", "Due in 1h 14m", "Urgent SLA Alert"],
-      ["DELIV-04", "Product Teaser Kinetic Cut", "Northwind Labs", "Reel (9:16)", "David Kim", "Delivered", "Dispatched to Frame.io"],
-      ["DELIV-05", "Creator Q&A Story Highlight Set", "Bloom Studio", "Story (9:16)", "Marcus Vance", "Delivered", "Client Approved"],
-      ["DELIV-06", "Enterprise Case Study Carousel", "Atlas Commerce", "Post (1:1)", "Elena Ortiz", "Delivered", "Client Approved"],
+    const allItems: any[] = [
+      ...(data?.tasks?.internal_qa || []).map((t) => [
+        t.id,
+        t.blueprint?.concept_name || `${t.client_name} Asset`,
+        t.client_name,
+        t.deliverable_type?.toUpperCase(),
+        t.assignee_name,
+        t.due_date ? `Due ${new Date(t.due_date).toLocaleDateString([], { month: "short", day: "numeric" })}` : "Due today",
+        "Pending Lead Sign-off",
+      ]),
+      ...(data?.tasks?.completed || []).map((t) => [
+        t.id,
+        t.blueprint?.concept_name || `${t.client_name} Asset`,
+        t.client_name,
+        t.deliverable_type?.toUpperCase(),
+        t.assignee_name,
+        "Delivered",
+        "Client Approved",
+      ]),
     ];
 
-    const csvContent = [headers.join(","), ...rows.map((r) => r.map((c) => `"${c}"`).join(","))].join("\n");
+    const rows = allItems.length > 0 ? allItems : [["N/A", "No deliverables recorded in ledger", "-", "-", "-", "-", "-"]];
+
+    const csvContent = [headers.join(","), ...rows.map((r: string[]) => r.map((c) => `"${c || ""}"`).join(","))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -90,8 +102,8 @@ export function PodDeliverablesReviewPage() {
           <div
             className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-between shadow-lg animate-fade-in ${
               toastMessage.type === "error"
-                ? "bg-blue-950/80 border-blue-800 text-[#93C5FD]"
-                : "bg-blue-900/80 border-blue-700 text-[#60A5FA]"
+                ? "bg-rose-950/80 border-rose-800 text-rose-300"
+                : "bg-emerald-950/80 border-emerald-800 text-emerald-300"
             }`}
           >
             <span>{toastMessage.text}</span>
@@ -147,7 +159,7 @@ export function PodDeliverablesReviewPage() {
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Deliverables</span>
               </div>
               <div className="flex items-center gap-2 text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
-                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 flex items-center gap-1">
+                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1">
                   ● 2 Urgent
                 </span>
                 <span className="text-[#97A0B3] font-medium">Within 2h SLA threshold</span>
@@ -175,7 +187,7 @@ export function PodDeliverablesReviewPage() {
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="text-[#97A0B3] font-medium">Benchmark: &lt; 2.0h</span>
-                <span className="font-bold text-[#60A5FA]">↗ 68% Faster</span>
+                <span className="font-bold text-emerald-400">↗ 68% Faster</span>
               </div>
             </div>
           </motion.div>
@@ -189,7 +201,7 @@ export function PodDeliverablesReviewPage() {
           >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#97A0B3]">QA First-Pass Pass Rate</span>
-              <div className="size-6 sm:size-7 rounded-lg bg-blue-500/15 text-[#93C5FD] border border-blue-500/30 flex items-center justify-center">
+              <div className="size-6 sm:size-7 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
                 <ShieldCheck className="size-3 sm:size-3.5" />
               </div>
             </div>
@@ -207,276 +219,284 @@ export function PodDeliverablesReviewPage() {
           </motion.div>
         </div>
 
-        {/* 3. Urgent SLA Alert Banner */}
-        <div className="bg-blue-950/40 rounded-2xl p-3.5 sm:p-4 border border-blue-800/50 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="size-8 rounded-xl bg-blue-500/15 border border-blue-500/30 text-[#93C5FD] flex items-center justify-center shrink-0">
-              <AlertTriangle className="size-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-blue-600 text-white">
-                  Urgent SLA Alert
-                </span>
-                <span className="text-xs font-bold text-[#F1F5F9]">Atlas Commerce · Deliverable #03</span>
+        {/* 3. SLA Pipeline Status Banner */}
+        {data?.tasks?.internal_qa && data.tasks.internal_qa.length > 0 ? (
+          <div className="bg-amber-950/40 rounded-2xl p-3.5 sm:p-4 border border-amber-800/50 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+                <AlertTriangle className="size-4" />
               </div>
-              <p className="text-[11px] text-[#F1F5F9] font-medium mt-0.5">
-                Post Carousel SLA: <span className="font-bold text-[#60A5FA]">01h 14m remaining</span> until escalation.
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-amber-600 text-white">
+                    QA Review Required
+                  </span>
+                  <span className="text-xs font-bold text-[#F1F5F9]">
+                    {data.tasks.internal_qa[0]?.client_name || "Client"} · {data.tasks.internal_qa[0]?.deliverable_type?.toUpperCase() || "ASSET"}
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#F1F5F9] font-medium mt-0.5">
+                  Deliverable ready for QA sign-off prior to client portal sync.
+                </p>
+              </div>
             </div>
           </div>
-
-          <button
-            onClick={() => showToast("Focused review active for Atlas Commerce Deliverable #03", "success")}
-            className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer shrink-0"
-          >
-            Review & Approve <ArrowRight className="size-3" />
-          </button>
-        </div>
+        ) : (
+          <div className="bg-[#161F2D] rounded-2xl p-3.5 sm:p-4 border border-emerald-500/30 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                <ShieldCheck className="size-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white">
+                    SLA Optimal
+                  </span>
+                  <span className="text-xs font-bold text-[#F1F5F9]">{podName} Pipeline</span>
+                </div>
+                <p className="text-[11px] text-[#97A0B3] font-medium mt-0.5">
+                  All sprint assets delivered and signed off. No pending SLA escalations.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 4. Active Deliverables Stream Section */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-black text-white">Active Deliverables Stream</h2>
-            <span className="text-[11px] font-bold text-[#97A0B3]">3 Awaiting Lead Action</span>
+            <span className="text-[11px] font-bold text-[#97A0B3]">
+              {data?.tasks?.internal_qa?.length || 0} Awaiting Lead Action
+            </span>
           </div>
 
-          {/* Featured Deliverable Card: Northwind Labs Fintech Reel */}
-          <div className="bg-[#161F2D] rounded-2xl border border-[#2A3446]/80 shadow-2xs p-4 sm:p-5 space-y-4">
-            {/* Header row */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#2A3446] gap-2">
-              <div>
-                <div className="flex items-center gap-2 text-xs font-bold text-[#97A0B3] mb-0.5">
-                  <span className="text-[#7FA0D6] font-black">Northwind Labs</span>
-                  <span>· Reel Sprint Q4</span>
-                </div>
-                <h3 className="text-base font-black text-white">Fintech Reel · High Conversion (9:16 Vertical)</h3>
-                <p className="text-[11px] text-[#97A0B3] font-medium mt-0.5">
-                  Specialist: <span className="font-bold text-white">David Kim</span> (Sr. Motion Designer)
-                </p>
+          {(!data?.tasks?.internal_qa || data.tasks.internal_qa.length === 0) ? (
+            <div className="bg-[#161F2D] rounded-2xl border border-dashed border-[#2A3446] p-12 text-center space-y-3">
+              <div className="size-12 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/20">
+                <Check className="size-6" />
               </div>
-
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-500/15 text-[#60A5FA] border border-blue-500/30 flex items-center gap-1 self-start sm:self-auto">
-                <Clock className="size-3" />
-                Due in 2 hours
-              </span>
+              <h3 className="text-base font-black text-white">All Deliverables Signed Off</h3>
+              <p className="text-xs text-[#97A0B3] max-w-md mx-auto">
+                There are currently no deliverables pending QA review or lead sign-off in this pod. Once specialists submit completed renders, they will appear here.
+              </p>
             </div>
+          ) : (
+            (() => {
+              const currentTask = data?.tasks?.internal_qa?.[0];
+              if (!currentTask) return null;
+              const clientName = currentTask.client_name || "Client";
+              const taskTitle = currentTask.blueprint?.concept_name || `${clientName} ${currentTask.deliverable_type?.toUpperCase() || "Asset"}`;
+              const specialistName = currentTask.assignee_name || "Specialist";
+              return (
+                <div className="bg-[#161F2D] rounded-2xl border border-[#2A3446]/80 shadow-2xs p-4 sm:p-5 space-y-4">
+                  {/* Header row */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#2A3446] gap-2">
+                    <div>
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#97A0B3] mb-0.5">
+                        <span className="text-[#7FA0D6] font-black">{clientName}</span>
+                        <span>· {currentTask.deliverable_type?.toUpperCase()} Sprint</span>
+                      </div>
+                      <h3 className="text-base font-black text-white">{taskTitle}</h3>
+                      <p className="text-[11px] text-[#97A0B3] font-medium mt-0.5">
+                        Specialist: <span className="font-bold text-white">{specialistName}</span>
+                      </p>
+                    </div>
 
-            {/* Media Preview & Review Panel (2 columns) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* Left Column: Media Player Visual Mockup (5 cols) */}
-              <div className="lg:col-span-5 space-y-3">
-                <div className="relative aspect-4/5 sm:aspect-square lg:aspect-4/5 w-full bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-xl flex flex-col justify-between p-4 group">
-                  {/* Top video badges */}
-                  <div className="flex items-center justify-between z-10">
-                    <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-[10px] font-bold text-white border border-white/10">
-                      3 Variations
-                    </span>
-                    <span className="px-2.5 py-1 rounded-lg bg-blue-600/90 backdrop-blur-md text-[10px] font-bold text-white shadow-xs">
-                      MP4 · 4K 60fps
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1 self-start sm:self-auto">
+                      <Clock className="size-3" />
+                      Pending QA Sign-off
                     </span>
                   </div>
 
-                  {/* Visual Center Graphic Mockup */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center pointer-events-none">
-                    <div className="w-48 h-80 rounded-3xl border-2 border-slate-700/80 bg-slate-900/90 p-4 shadow-2xl flex flex-col justify-between transform group-hover:scale-102 transition-transform">
-                      <div className="flex justify-between items-center text-[8px] text-[#97A0B3]">
-                        <span>Reel #01</span>
-                        <span className="text-[#60A5FA]">● Live</span>
-                      </div>
-                      <div className="space-y-2 text-left">
-                        <span className="text-[10px] text-[#97A0B3] font-bold block">PORTFOLIO</span>
-                        <span className="text-sm font-black text-white block leading-none">₹45,230.75</span>
-                        <span className="text-[9px] font-bold text-[#60A5FA] block">+14.2%</span>
-                        <div className="h-10 w-full bg-gradient-to-t from-blue-600/30 to-blue-400/20 rounded-lg flex items-end p-1">
-                          <div className="h-6 w-full bg-[#7FA0D6]/40 rounded-sm" />
+                  {/* Media Preview & Review Panel (2 columns) */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    {/* Left Column: Media Player Visual Mockup */}
+                    <div className="lg:col-span-5 space-y-3">
+                      <div className="relative aspect-4/5 sm:aspect-square lg:aspect-4/5 w-full bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-xl flex flex-col justify-between p-4 group">
+                        <div className="flex items-center justify-between z-10">
+                          <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-[10px] font-bold text-white border border-white/10">
+                            Master Render
+                          </span>
+                          <span className="px-2.5 py-1 rounded-lg bg-blue-600/90 backdrop-blur-md text-[10px] font-bold text-white shadow-xs">
+                            {currentTask.deliverable_type?.toUpperCase()} · HD 60fps
+                          </span>
+                        </div>
+
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center pointer-events-none">
+                          <div className="size-16 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
+                            <Play className="size-7 fill-blue-400 ml-1" />
+                          </div>
+                          <p className="text-xs font-bold text-white mt-3">{taskTitle}</p>
+                          <span className="text-[10px] text-[#97A0B3]">{clientName}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between z-10 pt-2">
+                          <div className="flex items-center gap-2">
+                            <div className="size-7 rounded-full bg-[#161F2D]/60 backdrop-blur-md text-white flex items-center justify-center">
+                              <Play className="size-3.5 fill-white" />
+                            </div>
+                            <span className="text-[10px] font-bold text-white">Preview Ready</span>
+                          </div>
+                          <button
+                            onClick={() => showToast("Downloaded Master Asset Render", "success")}
+                            className="size-7 rounded-full bg-[#161F2D]/60 hover:bg-[#161F2D]/80 backdrop-blur-md text-white flex items-center justify-center transition cursor-pointer"
+                            title="Download Render"
+                          >
+                            <Download className="size-3.5" />
+                          </button>
                         </div>
                       </div>
-                      <span className="text-[8px] font-bold tracking-widest text-[#97A0B3] uppercase">
-                        Finance Redefined
-                      </span>
+                    </div>
+
+                    {/* Right Column: Specs & QA Rubric */}
+                    <div className="lg:col-span-7 space-y-6">
+                      <div className="grid grid-cols-2 gap-3 bg-[#0B111C] rounded-2xl p-4 border border-[#2A3446] text-xs">
+                        <div>
+                          <span className="text-[10px] font-bold text-[#97A0B3] uppercase tracking-wider block">Format</span>
+                          <span className="font-bold text-white mt-0.5 block capitalize">{currentTask.deliverable_type || "Asset"}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-[#97A0B3] uppercase tracking-wider block">Status</span>
+                          <span className="font-bold text-amber-400 mt-0.5 block">QA Review</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-[#97A0B3] uppercase tracking-wider block">Color Profile</span>
+                          <span className="font-bold text-white mt-0.5 block">Rec.709 Mastered</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-[#97A0B3] uppercase tracking-wider block">Audio Loudness</span>
+                          <span className="font-bold text-white mt-0.5 block">-14 LUFS Normalized</span>
+                        </div>
+                      </div>
+
+                      {/* LEAD QA COMPLIANCE RUBRIC */}
+                      <div className="space-y-3">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-[#97A0B3] block">
+                          Lead QA Compliance Rubric
+                        </span>
+
+                        <div className="space-y-2">
+                          <label
+                            onClick={() => setRubric1(!rubric1)}
+                            className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                              rubric1
+                                ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
+                                : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
+                            }`}
+                          >
+                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric1 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
+                              {rubric1 && <Check className="size-3.5 stroke-[3]" />}
+                            </div>
+                            <span className="text-xs font-bold">Brand contrast & typography guidelines verified</span>
+                          </label>
+
+                          <label
+                            onClick={() => setRubric2(!rubric2)}
+                            className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                              rubric2
+                                ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
+                                : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
+                            }`}
+                          >
+                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric2 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
+                              {rubric2 && <Check className="size-3.5 stroke-[3]" />}
+                            </div>
+                            <span className="text-xs font-bold">Sound stems & frame pacing synchronized</span>
+                          </label>
+
+                          <label
+                            onClick={() => setRubric3(!rubric3)}
+                            className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                              rubric3
+                                ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
+                                : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
+                            }`}
+                          >
+                            <div className={`size-5 rounded-lg flex items-center justify-center ${rubric3 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
+                              {rubric3 && <Check className="size-3.5 stroke-[3]" />}
+                            </div>
+                            <span className="text-xs font-bold">Safe-zone compliance & master export verified</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Feedback Input */}
+                      <div className="space-y-2">
+                        <textarea
+                          rows={2}
+                          value={feedbackNote}
+                          onChange={(e) => setFeedbackNote(e.target.value)}
+                          placeholder={`Add specific feedback or revision instructions for ${specialistName}...`}
+                          className="w-full text-xs p-3.5 rounded-2xl border border-[#2A3446] bg-[#0B111C]/50 focus:bg-[#161F2D] focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-white"
+                        />
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-end gap-3 pt-2">
+                        {reviewState === "approved" ? (
+                          <div className="w-full p-3 rounded-2xl bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-xs font-bold flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <Check className="size-4 text-emerald-400 stroke-[3]" />
+                              Approved & Dispatched to {clientName} Portal
+                            </span>
+                            <button
+                              onClick={() => setReviewState("pending")}
+                              className="text-[11px] underline text-emerald-400 hover:text-emerald-200 cursor-pointer font-bold"
+                            >
+                              Reset Review
+                            </button>
+                          </div>
+                        ) : reviewState === "revision" ? (
+                          <div className="w-full p-3 rounded-2xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs font-bold flex items-center justify-between">
+                            <span>Revision request active • Specialist notified</span>
+                            <button
+                              onClick={() => setReviewState("pending")}
+                              className="text-[11px] underline text-rose-400 hover:text-rose-200 cursor-pointer font-bold"
+                            >
+                              Cancel Revision
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => {
+                                setReviewState("revision");
+                                showToast(`Revision request dispatched to ${specialistName}`, "info");
+                                qaMutation.mutate({
+                                  taskId: currentTask.id,
+                                  decision: "reject",
+                                  comment: feedbackNote || "Revisions required for QA compliance.",
+                                });
+                              }}
+                              className="px-5 py-2.5 rounded-xl bg-[#161F2D] border border-[#2A3446] hover:bg-[#0B111C] text-[#F1F5F9] text-xs font-bold transition-colors cursor-pointer"
+                            >
+                              Request Revision
+                            </button>
+                            <button
+                              onClick={() => {
+                                setReviewState("approved");
+                                showToast(`Deliverable QA Approved & Dispatched to ${clientName} portal`, "success");
+                                qaMutation.mutate({
+                                  taskId: currentTask.id,
+                                  decision: "approve",
+                                  comment: feedbackNote || "All rubric checks verified. Approved for client sync.",
+                                });
+                              }}
+                              className="px-6 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-blue-500/20 transition-all cursor-pointer"
+                            >
+                              <Check className="size-4" />
+                              Approve & Send to Client
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-
-                  {/* Bottom Video Controls Mockup */}
-                  <div className="flex items-center justify-between z-10 pt-2">
-                    <div className="flex items-center gap-2">
-                      <div className="size-7 rounded-full bg-[#161F2D]/20 backdrop-blur-md text-white flex items-center justify-center">
-                        <Play className="size-3.5 fill-white" />
-                      </div>
-                      <span className="text-[10px] font-bold text-white">0:15 / 4K UHD</span>
-                    </div>
-                    <button
-                      onClick={() => showToast("Downloaded 4K Master Render (142.4 MB)", "success")}
-                      className="size-7 rounded-full bg-[#161F2D]/20 hover:bg-[#161F2D]/40 backdrop-blur-md text-white flex items-center justify-center transition cursor-pointer"
-                      title="Download Render"
-                    >
-                      <Download className="size-3.5" />
-                    </button>
-                  </div>
                 </div>
-
-                {/* Frame.io Asset Link */}
-                <div className="flex items-center justify-between text-xs px-1">
-                  <a
-                    href="https://frame.io"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold text-[#7FA0D6] hover:underline flex items-center gap-1.5"
-                  >
-                    <ExternalLink className="size-3.5" />
-                    Open in Frame.io Asset View
-                  </a>
-                  <span className="text-[#97A0B3] font-medium">142.4 MB</span>
-                </div>
-              </div>
-
-              {/* Right Column: Specs & QA Rubric (7 cols) */}
-              <div className="lg:col-span-7 space-y-6">
-                {/* Tech Specs Table */}
-                <div className="grid grid-cols-2 gap-3 bg-[#0B111C] rounded-2xl p-4 border border-[#2A3446] text-xs">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#97A0B3] uppercase tracking-wider block">Aspect Ratio</span>
-                    <span className="font-bold text-white mt-0.5 block">9:16 Vertical Reel</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-[#97A0B3] uppercase tracking-wider block">Framerate</span>
-                    <span className="font-bold text-white mt-0.5 block">60 fps Smooth Motion</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-[#97A0B3] uppercase tracking-wider block">Color Profile</span>
-                    <span className="font-bold text-white mt-0.5 block">Rec.709 Mastered</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-[#97A0B3] uppercase tracking-wider block">Audio Bitrate</span>
-                    <span className="font-bold text-white mt-0.5 block">320kbps AAC Stereo</span>
-                  </div>
-                </div>
-
-                {/* LEAD QA COMPLIANCE RUBRIC (Image 3) */}
-                <div className="space-y-3">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-[#97A0B3] block">
-                    Lead QA Compliance Rubric
-                  </span>
-
-                  <div className="space-y-2">
-                    <label
-                      onClick={() => setRubric1(!rubric1)}
-                      className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                        rubric1
-                          ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
-                          : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
-                      }`}
-                    >
-                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric1 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
-                        {rubric1 && <Check className="size-3.5 stroke-[3]" />}
-                      </div>
-                      <span className="text-xs font-bold">Brand contrast & typography guidelines passed</span>
-                    </label>
-
-                    <label
-                      onClick={() => setRubric2(!rubric2)}
-                      className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                        rubric2
-                          ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
-                          : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
-                      }`}
-                    >
-                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric2 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
-                        {rubric2 && <Check className="size-3.5 stroke-[3]" />}
-                      </div>
-                      <span className="text-xs font-bold">Sound stems synchronized</span>
-                    </label>
-
-                    <label
-                      onClick={() => setRubric3(!rubric3)}
-                      className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                        rubric3
-                          ? "bg-[#161F2D] border-[#7FA0D6]/50 text-white shadow-sm"
-                          : "bg-[#0B111C] border-[#2A3446] text-[#97A0B3]"
-                      }`}
-                    >
-                      <div className={`size-5 rounded-lg flex items-center justify-center ${rubric3 ? "bg-[#2563EB] text-white" : "border border-[#2A3446]"}`}>
-                        {rubric3 && <Check className="size-3.5 stroke-[3]" />}
-                      </div>
-                      <span className="text-xs font-bold">Safe-zone compliance (9:16 Reels & Stories)</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Feedback Input */}
-                <div className="space-y-2">
-                  <textarea
-                    rows={2}
-                    value={feedbackNote}
-                    onChange={(e) => setFeedbackNote(e.target.value)}
-                    placeholder="Add specific feedback or revision instructions for David..."
-                    className="w-full text-xs p-3.5 rounded-2xl border border-[#2A3446] bg-[#0B111C]/50 focus:bg-[#161F2D] focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-white"
-                  />
-                </div>
-
-                {/* Action Buttons (Image 3) */}
-                <div className="flex items-center justify-end gap-3 pt-2">
-                  {reviewState === "approved" ? (
-                    <div className="w-full p-3 rounded-2xl bg-blue-950/80 border border-blue-800 text-[#93C5FD] text-xs font-bold flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Check className="size-4 text-[#60A5FA] stroke-[3]" />
-                        Approved & Dispatched to Client Frame.io Portal
-                      </span>
-                      <button
-                        onClick={() => setReviewState("pending")}
-                        className="text-[11px] underline text-[#60A5FA] hover:text-[#93C5FD] cursor-pointer font-bold"
-                      >
-                        Reset Review
-                      </button>
-                    </div>
-                  ) : reviewState === "revision" ? (
-                    <div className="w-full p-3 rounded-2xl bg-blue-950/80 border border-blue-800 text-[#93C5FD] text-xs font-bold flex items-center justify-between">
-                      <span>Revision request active • Specialist notified</span>
-                      <button
-                        onClick={() => setReviewState("pending")}
-                        className="text-[11px] underline text-[#60A5FA] hover:text-[#93C5FD] cursor-pointer font-bold"
-                      >
-                        Cancel Revision
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => {
-                          setReviewState("revision");
-                          showToast("Revision request dispatched to David Kim", "info");
-                          qaMutation.mutate({
-                            taskId: "del-northwind-1",
-                            decision: "reject",
-                            comment: feedbackNote || "Revisions required for brand contrast.",
-                          });
-                        }}
-                        className="px-5 py-2.5 rounded-xl bg-[#161F2D] border border-[#2A3446] hover:bg-[#0B111C] text-[#F1F5F9] text-xs font-bold transition-colors cursor-pointer"
-                      >
-                        Request Revision
-                      </button>
-                      <button
-                        onClick={() => {
-                          setReviewState("approved");
-                          showToast("Deliverable QA Approved & Dispatched to Northwind Labs portal", "success");
-                          qaMutation.mutate({
-                            taskId: "del-northwind-1",
-                            decision: "approve",
-                            comment: feedbackNote || "All rubric checks verified. Approved for client sync.",
-                          });
-                        }}
-                        className="px-6 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-blue-500/20 transition-all cursor-pointer"
-                      >
-                        <Check className="size-4" />
-                        Approve & Send to Client
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+              );
+            })()
+          )}
         </div>
       </main>
 
@@ -495,14 +515,14 @@ export function PodDeliverablesReviewPage() {
                 <label className="font-bold text-[#F1F5F9] block mb-1">Deliverable Name</label>
                 <input
                   type="text"
-                  placeholder="e.g. Q4 TikTok Motion Story (5 Variations)"
-                  className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium"
+                  placeholder="e.g. Q4 Brand Launch Story Sequence"
+                  className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white"
                 />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="font-bold text-[#F1F5F9] block mb-1">Format</label>
-                  <select className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium">
+                  <select className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white">
                     <option value="Reel">Reel</option>
                     <option value="Story">Story</option>
                     <option value="Post">Post</option>
@@ -510,19 +530,26 @@ export function PodDeliverablesReviewPage() {
                 </div>
                 <div>
                   <label className="font-bold text-[#F1F5F9] block mb-1">Client</label>
-                  <select className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium">
-                    <option>Northwind Labs</option>
-                    <option>Bloom Studio</option>
-                    <option>Atlas Commerce</option>
+                  <select className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white">
+                    {(!data?.clients || data.clients.length === 0) ? (
+                      <option value="">No clients assigned</option>
+                    ) : (
+                      data.clients.map((c) => (
+                        <option key={c.id} value={c.name}>{c.name}</option>
+                      ))
+                    )}
                   </select>
                 </div>
                 <div>
                   <label className="font-bold text-[#F1F5F9] block mb-1">Lead Specialist</label>
-                  <select className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium">
-                    <option>David Kim (Motion)</option>
-                    <option>Elena R. (Brand)</option>
-                    <option>Marcus Vance (Copy)</option>
-                    <option>Chloe Tan (Video)</option>
+                  <select className="w-full p-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] font-medium text-white">
+                    {(!data?.members || data.members.length === 0) ? (
+                      <option value="">No specialists registered</option>
+                    ) : (
+                      data.members.map((m) => (
+                        <option key={m.id} value={m.name}>{m.name} ({m.role})</option>
+                      ))
+                    )}
                   </select>
                 </div>
               </div>
@@ -536,7 +563,7 @@ export function PodDeliverablesReviewPage() {
               </button>
               <button
                 onClick={() => {
-                  showToast("Deliverable stream registered in Pod A queue", "success");
+                  showToast("Deliverable stream registered in pod queue", "success");
                   setNewDeliverableModal(false);
                 }}
                 className="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition"

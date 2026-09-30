@@ -13,9 +13,14 @@ class OnboardingStatusResponse(BaseModel):
     """Derived onboarding stage and progress checklist."""
 
     client_id: uuid.UUID
-    stage: int = Field(ge=0, le=5, description="Derived stage 0 to 5")
+    stage: int = Field(ge=0, le=8, description="Derived stage 0 to 8")
     stage_name: str
     checklist: dict[str, bool]
+    is_complete: bool = False
+    next_required_stage: str = "verify"
+    next_route: str = "/onboarding"
+    resume_section: str | None = None
+    last_completed_stage_name: str | None = None
     deadline: datetime | None = None
     company_name: str | None = None
     instagram_username: str | None = None

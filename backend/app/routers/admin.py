@@ -3784,3 +3784,147 @@ async def pod_task_reassign(
         "assignee_name": new_assignee.full_name or new_assignee.email,
     }
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PLAN NEGOTIATIONS (Client-submitted bargain / consultation requests)
+# ─────────────────────────────────────────────────────────────────────────────
+
+from app.models.billing import PlanNegotiation  # noqa: E402
+
+
+@router.get("/negotiations", response_model=list[dict[str, Any]])
+async def list_plan_negotiations(
+    actor: AdminActor = Depends(),
+    db: AsyncSession = Depends(get_db),
+) -> list[dict[str, Any]]:
+    """List all plan negotiation requests for admin review."""
+    stmt = (
+        select(PlanNegotiation)
+        .order_by(PlanNegotiation.created_at.desc())
+        .limit(200)
+    )
+    res = await db.execute(stmt)
+    rows = res.scalars().all()
+
+    return [
+        {
+            "id": str(n.id),
+            "clientName": n.client_name,
+            "clientEmail": n.client_email,
+            "clientLogo": (n.client_name[:2].upper() if n.client_name else "??"),
+            "targetTopic": n.target_topic,
+            "proposedOffer": n.proposed_offer,
+            "phoneNumber": n.phone_number,
+            "preferredTime": n.preferred_time,
+            "notes": n.notes,
+            "status": n.status,
+            "counterPrice": n.counter_price,
+            "counterNote": n.counter_note,
+            "declineReason": n.decline_reason,
+            "requestedAt": n.created_at.isoformat() if n.created_at else None,
+            "reviewedAt": n.reviewed_at.isoformat() if n.reviewed_at else None,
+        }
+        for n in rows
+    ]
+
+
+class CreateNegotiationPayload(BaseModel):
+    client_name: str
+    target_topic: str
+    proposed_offer: str | None = None
+    phone_number: str = "—"
+    preferred_time: str = "—"
+    notes: str | None = None
+    client_email: str | None = None
+    client_id: uuid.UUID | None = None
+
+
+@router.post("/negotiations", response_model=dict[str, Any])
+async def create_plan_negotiation_by_admin(
+    payload: CreateNegotiationPayload,
+    actor: AdminActor = Depends(),
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
+    """Admin initiates a custom proposal/negotiation record."""
+    neg = PlanNegotiation(
+        agency_id=getattr(actor, "agency_id", None),
+        client_id=payload.client_id,
+        client_name=payload.client_name,
+        client_email=payload.client_email or f"{payload.client_name.lower().replace(' ', '')}@creo.agency",
+        target_topic=payload.target_topic,
+        proposed_offer=payload.proposed_offer,
+        phone_number=payload.phone_number,
+        preferred_time=payload.preferred_time,
+        notes=payload.notes,
+        status="Pending Review",
+    )
+    db.add(neg)
+    await db.commit()
+    await db.refresh(neg)
+
+    return {
+        "status": "success",
+        "id": str(neg.id),
+        "negotiation_id": str(neg.id),
+        "message": f"Custom proposal initiated for {neg.client_name}.",
+    }
+
+
+class NegotiationActionPayload(BaseModel):
+    action: str  # "accept" | "decline" | "counter"
+    decline_reason: str | None = None
+    counter_price: int | None = None
+    counter_note: str | None = None
+
+
+@router.patch("/negotiations/{neg_id}", response_model=dict[str, Any])
+async def update_plan_negotiation(
+    neg_id: uuid.UUID,
+    payload: NegotiationActionPayload,
+    actor: AdminActor = Depends(),
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
+    """Accept, decline, or counter-offer a plan negotiation."""
+    neg = await db.get(PlanNegotiation, neg_id)
+    if not neg:
+        raise HTTPException(status_code=404, detail="Negotiation not found")
+
+    now = datetime.now(UTC)
+
+    if payload.action == "accept":
+        neg.status = "Accepted"
+        neg.reviewed_by = actor.user_id
+        neg.reviewed_at = now
+        msg = f"Plan negotiation ACCEPTED for {neg.client_name}."
+    elif payload.action == "decline":
+        neg.status = "Declined"
+        neg.decline_reason = payload.decline_reason
+        neg.reviewed_by = actor.user_id
+        neg.reviewed_at = now
+        msg = f"Plan negotiation DECLINED for {neg.client_name}."
+    elif payload.action == "counter":
+        neg.status = "Counter Offered"
+        neg.counter_price = payload.counter_price
+        neg.counter_note = payload.counter_note
+        neg.reviewed_by = actor.user_id
+        neg.reviewed_at = now
+        msg = f"Counter-offer sent to {neg.client_name}."
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action. Use accept, decline, or counter.")
+
+    # Notify the client if client_id exists
+    if neg.client_id:
+        notif = Notification(
+            agency_id=getattr(actor, "agency_id", None),
+            user_id=neg.client_id,
+            title=f"Plan Negotiation Update: {neg.status}",
+            message=msg,
+            link="/portal/payments",
+        )
+        db.add(notif)
+
+    await db.commit()
+
+    return {"status": "success", "message": msg, "negotiation_id": str(neg.id), "new_status": neg.status}
+
+

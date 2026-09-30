@@ -34,7 +34,6 @@ export type AlertInput =
       confirmText?: string;
       tone?: ConfirmTone;
       icon?: "danger" | "warning" | "logout" | "remove_plan" | "trash" | "info" | "success" | "check";
-      className?: string;
     };
 
 interface ConfirmContextType {
@@ -94,7 +93,6 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
           tone: input.tone || (input.icon === "success" || input.icon === "check" ? "success" : "info"),
           icon: input.icon || (input.tone === "success" ? "success" : "info"),
           isAlertOnly: true,
-          className: input.className,
         });
       }
       setIsOpen(true);
@@ -134,7 +132,6 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
           tone={options.tone || "danger"}
           icon={options.icon}
           isAlertOnly={options.isAlertOnly}
-          className={options.className}
           isProcessing={isProcessing}
           onConfirm={handleConfirm}
           onClose={handleClose}
@@ -154,7 +151,6 @@ export interface ConfirmDialogProps {
   tone?: ConfirmTone;
   icon?: "danger" | "warning" | "logout" | "remove_plan" | "trash" | "info" | "success" | "check";
   isAlertOnly?: boolean;
-  className?: string;
   isProcessing?: boolean;
   onConfirm: () => void;
   onClose: () => void;
@@ -170,7 +166,6 @@ export function ConfirmDialog({
   tone = "danger",
   icon,
   isAlertOnly = false,
-  className,
   isProcessing = false,
   onConfirm,
   onClose,
@@ -238,20 +233,20 @@ export function ConfirmDialog({
   const getConfirmButtonStyle = () => {
     switch (tone) {
       case "success":
-        return "bg-emerald-600 bg-gradient-to-r from-emerald-600 to-teal-700 hover:bg-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white shadow-md shadow-emerald-600/25";
+        return "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white shadow-md shadow-emerald-600/25";
       case "warning":
-        return "bg-amber-600 bg-gradient-to-r from-amber-600 to-amber-700 hover:bg-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-md shadow-amber-600/25";
+        return "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-md shadow-amber-600/25";
       case "info":
-        return "bg-[#2B7BC4] bg-gradient-to-r from-[#2B7BC4] to-[#1E609A] hover:brightness-110 text-white shadow-md shadow-blue-500/25";
+        return "bg-gradient-to-r from-[#2B7BC4] to-[#1E609A] hover:brightness-110 text-white shadow-md shadow-blue-500/25";
       case "danger":
       default:
-        return "bg-rose-600 bg-gradient-to-r from-rose-600 to-rose-700 hover:bg-rose-700 hover:from-rose-700 hover:to-rose-800 text-white shadow-md shadow-rose-600/25";
+        return "bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white shadow-md shadow-rose-600/25";
     }
   };
 
   return createPortal(
     <div
-      className={`fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md transition-opacity duration-200 overflow-y-auto ${className || ""}`}
+      className="fixed inset-0 w-screen h-screen z-[99999] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md transition-opacity duration-200 overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isProcessing) {
           onClose();

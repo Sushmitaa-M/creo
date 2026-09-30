@@ -1,37 +1,46 @@
-import { Suspense, lazy, Component, type ReactNode, type ErrorInfo } from "react";
-import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router";
+import { Suspense, lazy, Component, type ReactNode, type ErrorInfo, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ConfirmProvider } from "../components/ui/ConfirmDialog";
 import { request } from "../lib/http";
 import type { HealthResponse } from "../types/api";
 
-// Public Layout & Pages
+// Public Layout & Landing Page (other pages are split into their own chunks)
 import { PublicLayout } from "../components/public/PublicLayout";
 import { HomePage } from "../pages/public/HomePage";
-import { PricingPage } from "../pages/public/PricingPage";
-import { PortfolioPage } from "../pages/public/PortfolioPage";
-import { ClientsPage } from "../pages/public/ClientsPage";
-import { AboutPage } from "../pages/public/AboutPage";
-import { FaqPage } from "../pages/public/FaqPage";
-import { TermsPage, PrivacyPage } from "../pages/public/TermsPrivacyPages";
+import {
+  AboutPage,
+  AuthPage,
+  ClientsPage,
+  GoogleCallbackPage,
+  OnboardingView,
+  PortalAccountPage,
+  PortalCalendarPage,
+  PortalCreativePodPage,
+  PortalDashboardPage,
+  PortalDeliverablesPage,
+  PortalLibraryPage,
+  PortalPaymentsPage,
+  PortalSupportPage,
+  PortfolioPage,
+  PricingPage,
+  PrivacyPage,
+  TermsPage,
+  preloadPortalPages,
+  whenIdle,
+} from "./lazy-pages";
 
-import { AuthPage } from "../pages/auth/AuthPage";
-import { GoogleCallbackPage } from "../pages/auth/GoogleCallbackPage";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { PublicOnlyRoute } from "../components/auth/PublicOnlyRoute";
+import { RequireOnboardingComplete } from "../components/auth/RequireOnboardingComplete";
+import { RequireOnboardingStage } from "../components/auth/RequireOnboardingStage";
 import { MandatoryPasswordResetModal } from "../components/auth/MandatoryPasswordResetModal";
 import { CreoLoadingScreen } from "../components/ui/CreoLoadingScreen";
+import { CreoLoader, CreoInlineLoader } from "../components/ui/CreoLoader";
 
-// Portal Layout & Pages
+// Portal Layout (pages are lazy-loaded from ./lazy-pages)
 import { PortalLayout } from "../components/portal/PortalLayout";
-import { PortalDashboardPage } from "../pages/portal/PortalDashboardPage";
-import { PortalDeliverablesPage } from "../pages/portal/PortalDeliverablesPage";
-import { PortalCalendarPage } from "../pages/portal/PortalCalendarPage";
-import { PortalPaymentsPage } from "../pages/portal/PortalPaymentsPage";
-import { PortalSupportPage } from "../pages/portal/PortalSupportPage";
-import { PortalAccountPage } from "../pages/portal/PortalAccountPage";
-import { PortalCreativePodPage } from "../pages/portal/PortalCreativePodPage";
 
 // Ops Layout & Features
 import { OpsLayout } from "../components/ops/OpsLayout";
@@ -39,9 +48,6 @@ const AdminDashboard = lazy(() =>
   import("../features/admin/AdminDashboard").then((m) => ({ default: m.AdminDashboard }))
 );
 
-const OnboardingView = lazy(() =>
-  import("../features/onboarding/OnboardingView").then((m) => ({ default: m.OnboardingView }))
-);
 const AdminClientsPage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminClientsPage }))
 );
@@ -154,12 +160,16 @@ class OnboardingErrorBoundary extends Component<
 
 function OnboardingPageWrapper() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const userId = user?.id || "00000000-0000-0000-0000-000000000001";
 
+  // Warm the portal while the client works through onboarding
+  useEffect(() => whenIdle(() => preloadPortalPages()), []);
+
   return (
-    <div data-surface="review" className="bento-theme min-h-screen bg-[#0B111C] text-[#F8FAFC] flex flex-col overflow-x-hidden">
+    <div data-surface="review" className="bento-theme min-h-[100dvh] bg-[#0B111C] text-[#F8FAFC] flex flex-col overflow-x-hidden">
       {/* Top Header Bar */}
-      <header className="sticky top-0 z-30 border-b border-[#2A3446] bg-[#050810]/95 backdrop-blur-md px-4 sm:px-8 py-3 shadow-md shrink-0">
+      <header className="sticky top-0 z-30 border-b border-[#2A3446] bg-[#050810]/95 backdrop-blur-md px-4 sm:px-8 py-2.5 shadow-md shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 group">
             <span className="size-8 flex items-center justify-center rounded-xl bg-[#161F2D] border border-[#2A3446] font-mono text-sm font-bold text-[#7FA0D6] shadow-xs group-hover:scale-105 transition-transform">
@@ -186,30 +196,27 @@ function OnboardingPageWrapper() {
               href="https://wa.me/919941999415"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#97A0B3] hover:text-[#7FA0D6] transition-colors inline-flex items-center gap-1.5"
+              className="whitespace-nowrap text-[#97A0B3] hover:text-[#7FA0D6] transition-colors inline-flex items-center gap-1.5"
             >
-              Need Help?
+              <span className="sm:hidden">Help</span>
+              <span className="hidden sm:inline">Need Help?</span>
             </a>
             <Link
               to="/portal"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#161F2D] text-[#BCCCE6] hover:bg-[#2A3446] border border-[#2A3446] transition-colors"
+              className="whitespace-nowrap inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#161F2D] text-[#BCCCE6] hover:bg-[#2A3446] border border-[#2A3446] transition-colors"
             >
-              Go to Portal →
+              <span className="sm:hidden">Portal →</span>
+              <span className="hidden sm:inline">Go to Portal →</span>
             </Link>
           </div>
         </div>
       </header>
 
       {/* Main Onboarding Canvas - full page view with generous space */}
-      <main className="flex-1 max-w-5xl lg:max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col items-center">
+      <main className="flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-5 flex flex-col items-center">
         <OnboardingErrorBoundary>
-          <Suspense fallback={<RouteLoading />}>
-            <OnboardingView
-              userId={userId}
-              onPortalLaunch={() => {
-                window.location.href = "/portal";
-              }}
-            />
+          <Suspense fallback={<CreoInlineLoader label="Loading your onboarding" />}>
+            <OnboardingView userId={userId} onPortalLaunch={() => navigate("/portal")} />
           </Suspense>
         </OnboardingErrorBoundary>
       </main>
@@ -277,13 +284,63 @@ function HealthPage() {
   );
 }
 
+/** Prefetch the chunks a signed-in user is most likely to open next, once the browser is idle. */
+function RoutePrefetcher() {
+  const { user } = useAuth();
+  const role = user?.role;
+  const needsOnboarding = role === "client" && (user?.onboarding_stage ?? 0) < 8;
+
+  useEffect(() => {
+    if (role !== "client" && role !== "admin" && role !== "super_admin") return;
+    return whenIdle(() => preloadPortalPages({ includeOnboarding: needsOnboarding }));
+  }, [role, needsOnboarding]);
+
+  return null;
+}
+
+function ScrollToTop() {
+  const { pathname, search, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    document.documentElement.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    document.body.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname, search, hash]);
+
+  return null;
+}
+
+function SupportRedirect() {
+  const { user } = useAuth();
+  if (user?.role === "admin" || user?.role === "super_admin") {
+    return <Navigate to="/admin/support" replace />;
+  }
+  if (user) {
+    return <Navigate to="/portal/support" replace />;
+  }
+  return <Navigate to="/pricing" replace />;
+}
+
 export function App() {
   return (
     <AuthProvider>
       <ConfirmProvider>
         <BrowserRouter>
+          <ScrollToTop />
+          <RoutePrefetcher />
           <Suspense fallback={<RouteLoading />}>
             <Routes>
+              {/* Universal Support Redirect */}
+              <Route path="/support" element={<SupportRedirect />} />
+
               {/* 1. Public Marketing Pages (Open to All) */}
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<HomePage />} />
@@ -291,7 +348,7 @@ export function App() {
                 <Route path="/portfolio" element={<PortfolioPage />} />
                 <Route path="/clients" element={<ClientsPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/faq" element={<FaqPage />} />
+                <Route path="/faq" element={<Navigate to="/pricing" replace />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
               </Route>
@@ -323,13 +380,17 @@ export function App() {
               />
               <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
               <Route path="/auth/callback/google" element={<GoogleCallbackPage />} />
+              <Route path="/verifying" element={<CreoLoader />} />
+              <Route path="/loader-preview" element={<CreoLoader />} />
 
               {/* 3. Onboarding Multi-stage Flow (Client + Admin) */}
               <Route
                 path="/onboarding"
                 element={
                   <ProtectedRoute allowedRoles={["client", "admin", "super_admin"]}>
-                    <OnboardingPageWrapper />
+                    <RequireOnboardingStage>
+                      <OnboardingPageWrapper />
+                    </RequireOnboardingStage>
                   </ProtectedRoute>
                 }
               />
@@ -337,7 +398,9 @@ export function App() {
                 path="/onboarding/:stage"
                 element={
                   <ProtectedRoute allowedRoles={["client", "admin", "super_admin"]}>
-                    <OnboardingPageWrapper />
+                    <RequireOnboardingStage>
+                      <OnboardingPageWrapper />
+                    </RequireOnboardingStage>
                   </ProtectedRoute>
                 }
               />
@@ -347,7 +410,9 @@ export function App() {
                 path="/portal"
                 element={
                   <ProtectedRoute allowedRoles={["client", "admin", "super_admin"]}>
-                    <PortalLayout />
+                    <RequireOnboardingComplete>
+                      <PortalLayout />
+                    </RequireOnboardingComplete>
                   </ProtectedRoute>
                 }
               >
@@ -355,9 +420,11 @@ export function App() {
                 <Route path="deliverables" element={<PortalDeliverablesPage />} />
                 <Route path="calendar" element={<PortalCalendarPage />} />
                 <Route path="creative-pod" element={<PortalCreativePodPage />} />
+                <Route path="creative_pod" element={<PortalCreativePodPage />} />
                 <Route path="payments" element={<PortalPaymentsPage />} />
                 <Route path="support" element={<PortalSupportPage />} />
                 <Route path="account" element={<PortalAccountPage />} />
+                <Route path="library" element={<PortalLibraryPage />} />
               </Route>
 
               {/* 5. Agency Operations Surface (Ops Paper Surface - Admin, Super Admin, Team) */}

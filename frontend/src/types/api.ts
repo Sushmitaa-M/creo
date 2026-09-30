@@ -30,13 +30,22 @@ export interface AssignedTeamMember {
 }
 
 export interface OnboardingStatus {
-  stage: number; // 0-5, derived from v_client_onboarding
+  client_id?: string;
+  stage: number; // 0-8, derived from database state
   stage_name: string;
+  is_complete?: boolean;
+  next_required_stage?: string;
+  next_route?: string;
+  resume_section?: "a" | "b" | "c" | "d" | "e" | string | null;
+  last_completed_stage_name?: string | null;
   checklist: {
     email_verified: boolean;
     terms_accepted: boolean;
     subscription_active: boolean;
     questionnaire_submitted: boolean;
+    brand_dna_generated?: boolean;
+    pod_assigned?: boolean;
+    calendar_generated?: boolean;
     onboarding_completed: boolean;
   };
   deadline: string | null;

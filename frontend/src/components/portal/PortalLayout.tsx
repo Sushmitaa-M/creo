@@ -1,14 +1,20 @@
-import { Outlet } from "react-router";
-import { CreoBottomNavbar } from "./CreoBottomNavbar";
-
+import { Suspense } from "react";
+import { Outlet, useLocation } from "react-router";
 import { useRouteMemory } from "../../lib/useRouteMemory";
-import { AdminSidebarProvider } from "../admin/AdminSidebarContext";
 import { AdminSidebar } from "../admin/AdminSidebar";
+import { AdminSidebarProvider } from "../admin/AdminSidebarContext";
 import { AdminTopHeader } from "../admin/AdminTopHeader";
+import { CreoInlineLoader } from "../ui/CreoLoader";
+import { CreoBottomNavbar } from "./CreoBottomNavbar";
+import { ResumeOnboardingBanner } from "./ResumeOnboardingBanner";
 
 export function PortalLayout() {
   // Passively save current route to sessionStorage on every navigation
   useRouteMemory();
+  const { pathname } = useLocation();
+  // The dashboard and plan pages render the larger resume card themselves instead of the strip
+  const hasHeroResume =
+    pathname === "/portal" || pathname === "/portal/" || pathname.startsWith("/portal/payments");
 
   return (
     <AdminSidebarProvider>
@@ -26,18 +32,22 @@ export function PortalLayout() {
         {/* Main Content Area: Offset on desktop to sit beside the permanent sidebar */}
         <div className="flex-1 min-w-0 md:pl-64 lg:pl-72 flex flex-col min-h-screen">
           {/* Top Header with Hamburger (mobile), Page Title, Notification Bell & Profile */}
-          <AdminTopHeader />
+          <AdminTopHeader showBackButton />
 
-          {/* Main Content Area */}
+          {/* Main Content Area — same gutters and max width as the header so everything lines up */}
           <main
             id="main-content"
-            className="portal-main flex-1 w-full px-0 sm:px-2 pt-2 sm:pt-4 pb-20 md:pb-8 animate-page-in"
+            className="portal-main flex-1 w-full px-3.5 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-24 md:pb-10"
           >
-            <Outlet />
+            <div className="mx-auto w-full max-w-[1500px]">
+              {!hasHeroResume && <ResumeOnboardingBanner variant="compact" />}
+              <Suspense fallback={<CreoInlineLoader />}>
+                <div key={pathname} className="animate-page-in">
+                  <Outlet />
+                </div>
+              </Suspense>
+            </div>
           </main>
-
-
-
 
           {/* Mobile Bottom Navigation Bar */}
           <CreoBottomNavbar />
@@ -46,4 +56,3 @@ export function PortalLayout() {
     </AdminSidebarProvider>
   );
 }
-

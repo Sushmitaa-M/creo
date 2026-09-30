@@ -9,7 +9,7 @@ import { useAuth } from "../../lib/auth-context";
 export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { loginWithPassword, register, getGoogleAuthUrl, forgotPassword } = useAuth();
+  const { loginWithPassword, registerIntent, verifyRegistration, getGoogleAuthUrl, forgotPassword } = useAuth();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +23,8 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [registrationPending, setRegistrationPending] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
 
   // Forgot password modal state
   const [forgotOpen, setForgotOpen] = useState(false);
@@ -78,11 +80,44 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
       if (mode === "signin") {
         await loginWithPassword(cleanEmail, cleanPass);
       } else {
-        await register(cleanEmail, cleanPass, cleanName);
+        await registerIntent(cleanEmail, cleanPass, cleanName);
+        setRegistrationPending(true);
       }
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Authentication failed. Please verify credentials.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleVerifyRegistration(e: React.FormEvent) {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(otpCode)) {
+      setError("Please enter the 6-digit verification code sent to your email.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      await verifyRegistration(email.trim(), otpCode, password.trim(), fullName.trim());
+      navigate("/portal", { replace: true });
+    } catch (err: any) {
+      setError(err.message || "The verification code is invalid or has expired.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleResendRegistrationCode() {
+    try {
+      setLoading(true);
+      setError(null);
+      await registerIntent(email.trim(), password.trim(), fullName.trim());
+      setOtpCode("");
+    } catch (err: any) {
+      setError(err.message || "Unable to resend the verification code.");
     } finally {
       setLoading(false);
     }
@@ -282,10 +317,14 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
               {/* Title & Subtitle */}
               <div className="mb-3 text-left">
                 <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC]">
-                  {mode === "signin" ? "Welcome back to CREO" : "Start operating your studio"}
+                  {registrationPending
+                    ? "Verify your email"
+                    : mode === "signin" ? "Welcome back to CREO" : "Start operating your studio"}
                 </h2>
                 <p className="text-[11px] text-[#97A0B3] mt-0.5">
-                  {mode === "signin" 
+                  {registrationPending
+                    ? `Enter the 6-digit code sent to ${email.trim()}.`
+                    : mode === "signin"
                     ? "Enter your credentials to access your agency pods." 
                     : "Deploy CREO across your team and client accounts."}
                 </p>
@@ -299,6 +338,63 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
               )}
 
               {/* Form */}
+              {registrationPending ? (
+                <form onSubmit={handleVerifyRegistration} className="space-y-3">
+                  <div>
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                      Verification Code
+                    </label>
+                    <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                      <ShieldCheck className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                        placeholder="000000"
+                        aria-label="Six-digit verification code"
+                        className="bg-transparent text-center text-lg font-mono tracking-[0.35em] text-[#F8FAFC] placeholder-[#97A0B3]/40 focus:outline-none w-full"
+                        autoFocus
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading || otpCode.length !== 6}
+                    className="w-full bg-[#BCCCE6] hover:bg-white text-[#050810] font-bold text-xs py-2.5 rounded-xl transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    {loading && <Loader2 className="size-3.5 animate-spin" />}
+                    <span>{loading ? "Verifying..." : "Verify and Continue"}</span>
+                    {!loading && <ArrowRight className="size-3.5" />}
+                  </button>
+
+                  <div className="flex items-center justify-between text-[11px]">
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => {
+                        setRegistrationPending(false);
+                        setOtpCode("");
+                        setError(null);
+                      }}
+                      className="text-[#97A0B3] hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      Change details
+                    </button>
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={handleResendRegistrationCode}
+                      className="text-[#7FA0D6] hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      Resend code
+                    </button>
+                  </div>
+                </form>
+              ) : (
               <form onSubmit={handleSubmit} className="space-y-3">
                 
                 {/* Full Name (Sign Up only) */}
@@ -409,9 +505,10 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                   {!loading && <ArrowRight className="size-3.5" />}
                 </button>
               </form>
+              )}
 
               {/* Alternative Auth / Google Workspace (Sign In Mode) */}
-              {mode === "signin" ? (
+              {!registrationPending && mode === "signin" ? (
                 <div className="mt-3">
                   <div className="flex items-center my-2.5">
                     <div className="flex-1 border-t border-[#222F44]/60"></div>
@@ -447,13 +544,13 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                     <span>Google Workspace</span>
                   </button>
                 </div>
-              ) : (
+              ) : !registrationPending ? (
                 <div className="mt-3 pt-2 text-[10px] text-[#97A0B3] text-center border-t border-[#222F44]/50 leading-relaxed">
                   By joining, you agree to CREO's{" "}
                   <Link to="/terms" className="text-[#7FA0D6] hover:underline">Terms</Link> and{" "}
                   <Link to="/privacy" className="text-[#7FA0D6] hover:underline">Privacy Protocol</Link>.
                 </div>
-              )}
+              ) : null}
 
               {/* Bottom security micro badge */}
               <div className="pt-2 text-center text-[10px] text-[#97A0B3]/50 flex items-center justify-center gap-1.5">

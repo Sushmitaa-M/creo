@@ -6,6 +6,7 @@ import secrets
 import time
 import urllib.parse
 import uuid
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -215,6 +216,7 @@ async def verify_registration(
         hashed_password=hashed_pw,
         role=assigned_role,
         account_status=AccountStatus.ACTIVE,
+        email_verified_at=datetime.now(timezone.utc),
         must_reset_password=False,
         agency_id=uuid.UUID(agency_id_str) if agency_id_str else None,
     )
@@ -412,78 +414,11 @@ async def register(
     payload: RegisterRequest,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
-    """Register a new user account with email, password, and full name."""
-    email_clean = payload.email.strip().lower()
-
-    if not _check_rate_limit(f"register:{email_clean}", max_requests=5, window_seconds=600):
-        raise HTTPException(status_code=429, detail="Too many registration attempts. Please try again later.")
-
-    valid, err = validate_password_strength(payload.password)
-    if not valid:
-        raise HTTPException(status_code=400, detail=err)
-
-    # Check if user already exists
-    stmt = select(User).where(func.lower(User.email) == email_clean)
-    res = await db.execute(stmt)
-    existing_user = res.scalar_one_or_none()
-
-    if existing_user:
-        raise HTTPException(
-            status_code=400,
-            detail="An account with this email address already exists. Please sign in instead.",
-        )
-
-    # Determine default role based on email pattern
-    assigned_role = UserRole.CLIENT
-    if email_clean.endswith("@creo.agency") or email_clean.startswith("admin@") or "admin" in email_clean:
-        assigned_role = UserRole.SUPER_ADMIN
-    elif email_clean.startswith("team@") or email_clean.startswith("editor@") or email_clean.startswith("lead@"):
-        assigned_role = UserRole.TEAM_LEAD
-
-    hashed_pw = hash_password(payload.password)
-    user = User(
-        auth_id=f"auth-pwd-{uuid.uuid4().hex[:12]}",
-        email=email_clean,
-        full_name=payload.full_name or email_clean.split("@")[0].capitalize(),
-        hashed_password=hashed_pw,
-        role=assigned_role,
-        account_status=AccountStatus.ACTIVE,
-        must_reset_password=False,
+    """Reject legacy direct registration; new accounts must verify email first."""
+    raise HTTPException(
+        status_code=410,
+        detail="Direct registration is no longer available. Request a verification code first.",
     )
-    db.add(user)
-    await db.flush()
-
-    profile = ClientProfile(user_id=user.id)
-    db.add(profile)
-    await db.commit()
-    await db.refresh(user)
-
-    access_token = create_access_token(
-        subject=user.id,
-        role=user.role.value,
-        email=user.email,
-        client_id=user.id if user.role == UserRole.CLIENT else None,
-        extra_claims={"must_reset_password": False},
-    )
-    refresh_token = create_refresh_token(subject=user.id)
-
-    from app.services.onboarding_service import get_current_stage
-    stage = await get_current_stage(db, user.id) if user.role == UserRole.CLIENT else 5
-
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-        "token_type": "bearer",
-        "user": {
-            "id": str(user.id),
-            "email": user.email,
-            "full_name": user.full_name,
-            "role": user.role.value,
-            "account_status": user.account_status.value,
-            "must_reset_password": False,
-            "onboarding_stage": stage,
-        },
-    }
 
 
 @router.post("/login", response_model=dict[str, Any])

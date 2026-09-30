@@ -28,12 +28,6 @@ export function PricingPage() {
       {/* Hero Header */}
       <div className="relative isolate max-w-4xl mx-auto px-6 text-center mb-12 sm:mb-16">
         <motion.div
-          aria-hidden="true"
-          className="absolute left-1/2 top-0 -z-10 size-[34rem] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[radial-gradient(circle,rgba(127,160,214,0.13),transparent_62%)]"
-          animate={{ scale: [1, 1.08, 1] }}
-          transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-        />
-        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: EASE_OUT_EXPO }}

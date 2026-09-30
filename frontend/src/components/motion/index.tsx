@@ -212,7 +212,7 @@ export function TiltCard({
   children,
   className = "",
   max = 7,
-  glow = "rgba(127,160,214,0.16)",
+  glow = "transparent",
   lift = 24,
 }: TiltCardProps) {
   const reduce = useReducedMotion();
@@ -228,7 +228,8 @@ export function TiltCard({
   const z = useSpring(useTransform(hover, [0, 1], [0, lift]), spring);
   const gx = useTransform(px, (v) => `${v * 100}%`);
   const gy = useTransform(py, (v) => `${v * 100}%`);
-  const spotlight = useMotionTemplate`radial-gradient(420px circle at ${gx} ${gy}, ${glow}, transparent 60%)`;
+  const hasGlow = Boolean(glow && glow !== "transparent" && glow !== "none");
+  const spotlight = useMotionTemplate`radial-gradient(420px circle at ${gx} ${gy}, ${glow || "transparent"}, transparent 60%)`;
 
   const onMove = (e: PointerEvent<HTMLDivElement>) => {
     if (!enabled) return;
@@ -251,7 +252,7 @@ export function TiltCard({
         onPointerEnter={() => enabled && hover.set(1)}
         onPointerLeave={onLeave}
       >
-        {enabled && (
+        {enabled && hasGlow && (
           <motion.div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-[1] rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover/tilt:opacity-100"

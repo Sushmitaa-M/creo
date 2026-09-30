@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
+import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
 
 interface CalendarEntry {
@@ -18,7 +19,7 @@ interface CalendarEntry {
 }
 
 const FORMAT_COLORS = {
-  Reel: "bg-[#3B82F6]",
+  Reel: "bg-[#7FA0D6]",
   Carousel: "bg-[#F97316]",
   Post: "bg-[#10B981]",
   Story: "bg-[#A855F7]"
@@ -26,9 +27,11 @@ const FORMAT_COLORS = {
 
 export function PortalCalendarPage() {
   const { user } = useAuth();
-  
+  const gate = useOnboardingGate();
+
   const { data: rawEntries = [] } = useQuery({
     queryKey: ["calendar-entries", user?.id],
+    enabled: gate.isComplete,
     queryFn: async () => {
       try {
         const res = await request<any[]>("/api/v1/calendar/entries");
@@ -38,15 +41,6 @@ export function PortalCalendarPage() {
       }
     }
   });
-
-  const { data: dashboard } = useQuery({
-    queryKey: ["portal-dashboard", user?.id],
-    queryFn: () => request<any>("/api/v1/portal/dashboard"),
-  });
-  
-  const subscriptionActive = !!dashboard?.active_plan && ["active", "trialing"].includes(dashboard?.active_plan?.status);
-  const isClient = user?.role === "client";
-  const isUnlocked = !isClient || (subscriptionActive && (dashboard?.onboarding_stage ?? 1) >= 8);
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<number>(new Date().getDate());
@@ -58,12 +52,12 @@ export function PortalCalendarPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  if (!isUnlocked && dashboard) {
+  if (!gate.isComplete) {
     return (
-      <div className="flex items-center justify-center min-h-[70vh]">
+      <div className="flex items-center justify-center py-6 sm:py-10">
         <SubscriptionLockedState
           title="Content Calendar Locked"
-          description="Your 30-day content calendar and scheduling pipeline will activate once your onboarding setup and subscription are completed."
+          description="Your 30-day content calendar and scheduling pipeline will activate as soon as your workspace setup is complete."
         />
       </div>
     );
@@ -158,26 +152,26 @@ export function PortalCalendarPage() {
       {/* ── Header ── */}
       <div className="flex justify-between items-end mb-6 shrink-0">
         <div>
-          <p className="text-[10px] uppercase font-bold tracking-[0.16em] text-[#6B7280] mb-2">
+          <p className="text-[11px] uppercase font-bold tracking-[0.16em] text-[#7E889C] mb-2">
             YOUR PUBLISHING PLAN
           </p>
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold text-white">{monthName} {year}</h1>
-            <div className="flex items-center bg-[#1E2536] rounded-full border border-white/[0.05] p-0.5">
-              <button onClick={handlePrev} className="p-1.5 hover:text-white text-[#9CA3AF] hover:bg-white/[0.05] rounded-full transition-colors"><ChevronLeft className="w-5 h-5"/></button>
-              <button onClick={handleNext} className="p-1.5 hover:text-white text-[#9CA3AF] hover:bg-white/[0.05] rounded-full transition-colors"><ChevronRight className="w-5 h-5"/></button>
+            <div className="flex items-center bg-[#1F2C3F] rounded-full border border-[#2A3446] p-0.5">
+              <button onClick={handlePrev} className="p-1.5 hover:text-white text-[#97A0B3] hover:bg-[#1F2C3F] rounded-full transition-colors"><ChevronLeft className="w-5 h-5"/></button>
+              <button onClick={handleNext} className="p-1.5 hover:text-white text-[#97A0B3] hover:bg-[#1F2C3F] rounded-full transition-colors"><ChevronRight className="w-5 h-5"/></button>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex p-1 bg-[#1E2536] rounded-full border border-white/[0.05]">
-            <button onClick={() => setViewMode("Month")} className={`px-5 py-1.5 rounded-full text-[13px] font-bold transition-colors ${viewMode === "Month" ? "bg-[#374151] text-white shadow-sm border border-white/[0.1]" : "text-[#9CA3AF] hover:text-white"}`}>Month</button>
-            <button onClick={() => setViewMode("Week")} className={`px-5 py-1.5 rounded-full text-[13px] font-bold transition-colors ${viewMode === "Week" ? "bg-[#374151] text-white shadow-sm border border-white/[0.1]" : "text-[#9CA3AF] hover:text-white"}`}>Week</button>
-            <button onClick={() => setViewMode("List")} className={`px-5 py-1.5 rounded-full text-[13px] font-bold transition-colors ${viewMode === "List" ? "bg-[#374151] text-white shadow-sm border border-white/[0.1]" : "text-[#9CA3AF] hover:text-white"}`}>List</button>
+          <div className="flex p-1 bg-[#1F2C3F] rounded-full border border-[#2A3446]">
+            <button onClick={() => setViewMode("Month")} className={`px-5 py-1.5 rounded-full text-[13px] font-bold transition-colors ${viewMode === "Month" ? "bg-[#2A3446] text-[#F8FAFC] shadow-sm border border-white/[0.1]" : "text-[#97A0B3] hover:text-white"}`}>Month</button>
+            <button onClick={() => setViewMode("Week")} className={`px-5 py-1.5 rounded-full text-[13px] font-bold transition-colors ${viewMode === "Week" ? "bg-[#2A3446] text-[#F8FAFC] shadow-sm border border-white/[0.1]" : "text-[#97A0B3] hover:text-white"}`}>Week</button>
+            <button onClick={() => setViewMode("List")} className={`px-5 py-1.5 rounded-full text-[13px] font-bold transition-colors ${viewMode === "List" ? "bg-[#2A3446] text-[#F8FAFC] shadow-sm border border-white/[0.1]" : "text-[#97A0B3] hover:text-white"}`}>List</button>
           </div>
           <button 
             onClick={handleExport}
-            className="flex items-center gap-2 px-5 py-2 rounded-full border border-white/[0.12] text-[13px] font-bold text-white hover:bg-white/[0.05] transition-colors"
+            className="flex items-center gap-2 px-5 py-2 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors"
           >
             <Download className="w-4 h-4" />
             Export
@@ -191,14 +185,14 @@ export function PortalCalendarPage() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 flex-1 min-h-0 pb-6">
         
         {/* Left Col: Calendar Grid (col-span-8) */}
-        <div className="xl:col-span-8 2xl:col-span-9 bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-6 flex flex-col h-full overflow-hidden">
+        <div className="xl:col-span-8 2xl:col-span-9 bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 flex flex-col h-full overflow-hidden">
           <div className="flex items-center justify-between mb-6 shrink-0">
             <h3 className="text-sm font-bold text-white">Scheduled posts</h3>
             <div className="flex items-center gap-4">
               {Object.entries(FORMAT_COLORS).map(([format, color]) => (
                 <div key={format} className="flex items-center gap-1.5">
                   <div className={`w-2 h-2 rounded-sm ${color}`} />
-                  <span className="text-[11px] font-medium text-[#9CA3AF]">{format}</span>
+                  <span className="text-xs font-medium text-[#97A0B3]">{format}</span>
                 </div>
               ))}
             </div>
@@ -209,7 +203,7 @@ export function PortalCalendarPage() {
             {viewMode !== "List" && (
               <div className="grid grid-cols-7 gap-4 mb-4 shrink-0">
                 {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(day => (
-                  <div key={day} className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280]">
+                  <div key={day} className="text-[11px] font-bold uppercase tracking-wider text-[#7E889C]">
                     {day}
                   </div>
                 ))}
@@ -218,7 +212,7 @@ export function PortalCalendarPage() {
 
             {/* Grid Cells */}
             {viewMode === "Month" ? (
-              <div className="grid grid-cols-7 gap-px bg-white/[0.05] border border-white/[0.05] rounded-xl flex-1 overflow-hidden">
+              <div className="grid grid-cols-7 gap-px bg-white/[0.05] border border-[#2A3446] rounded-xl flex-1 overflow-hidden">
                 {Array.from({ length: totalCells }).map((_, idx) => {
                   const dayNum = idx - emptyPrefix + 1;
                   const isCurrentMonth = dayNum > 0 && dayNum <= daysInMonth;
@@ -229,12 +223,12 @@ export function PortalCalendarPage() {
                     <div 
                       key={idx} 
                       onClick={() => isCurrentMonth && setSelectedDate(dayNum)}
-                      className={`bg-[#161C2D] p-3 relative flex flex-col transition-colors ${
-                        isCurrentMonth ? "cursor-pointer hover:bg-[#1E2536]" : "opacity-50 pointer-events-none"
-                      } ${isSelected ? 'ring-1 ring-white/[0.2] z-10 bg-[#1E2536]' : ''}`}
+                      className={`bg-[#161F2D] p-3 relative flex flex-col transition-colors ${
+                        isCurrentMonth ? "cursor-pointer hover:bg-[#1F2C3F]" : "opacity-50 pointer-events-none"
+                      } ${isSelected ? 'ring-1 ring-white/[0.2] z-10 bg-[#1F2C3F]' : ''}`}
                     >
                       {isCurrentMonth && (
-                        <span className={`text-[13px] font-medium mb-2 ${isSelected ? 'text-white' : 'text-[#9CA3AF]'}`}>
+                        <span className={`text-[13px] font-medium mb-2 ${isSelected ? 'text-white' : 'text-[#97A0B3]'}`}>
                           {dayNum}
                         </span>
                       )}
@@ -244,7 +238,7 @@ export function PortalCalendarPage() {
                           {entry.hasThumbnail ? (
                             <div className="relative w-full aspect-video rounded-md overflow-hidden mb-1.5">
                               <img src={entry.thumbnail_url} alt="" className="w-full h-full object-cover" />
-                              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-medium text-white">
+                              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-[11px] font-medium text-white">
                                 <div className={`w-1.5 h-1.5 rounded-sm ${FORMAT_COLORS[entry.format as keyof typeof FORMAT_COLORS]}`} />
                                 {entry.format}
                               </div>
@@ -252,7 +246,7 @@ export function PortalCalendarPage() {
                           ) : (
                             <div className="flex items-center gap-1.5">
                               <div className={`w-2 h-2 rounded-sm shrink-0 ${FORMAT_COLORS[entry.format as keyof typeof FORMAT_COLORS]}`} />
-                              <span className="text-[11px] font-medium text-[#9CA3AF] truncate">
+                              <span className="text-xs font-medium text-[#97A0B3] truncate">
                                 {entry.format}
                               </span>
                             </div>
@@ -264,7 +258,7 @@ export function PortalCalendarPage() {
                 })}
               </div>
             ) : viewMode === "Week" ? (
-              <div className="grid grid-cols-7 gap-px bg-white/[0.05] border border-white/[0.05] rounded-xl flex-1 overflow-hidden h-64 shrink-0">
+              <div className="grid grid-cols-7 gap-px bg-white/[0.05] border border-[#2A3446] rounded-xl flex-1 overflow-hidden h-64 shrink-0">
                 {Array.from({ length: 7 }).map((_, idx) => {
                   // Simplified week logic: show the week of the selected date
                   const weekStart = selectedDate - ((selectedDate + emptyPrefix - 1) % 7);
@@ -277,12 +271,12 @@ export function PortalCalendarPage() {
                     <div 
                       key={idx} 
                       onClick={() => isCurrentMonth && setSelectedDate(dayNum)}
-                      className={`bg-[#161C2D] p-3 relative flex flex-col transition-colors ${
-                        isCurrentMonth ? "cursor-pointer hover:bg-[#1E2536]" : "opacity-50 pointer-events-none"
-                      } ${isSelected ? 'ring-1 ring-white/[0.2] z-10 bg-[#1E2536]' : ''}`}
+                      className={`bg-[#161F2D] p-3 relative flex flex-col transition-colors ${
+                        isCurrentMonth ? "cursor-pointer hover:bg-[#1F2C3F]" : "opacity-50 pointer-events-none"
+                      } ${isSelected ? 'ring-1 ring-white/[0.2] z-10 bg-[#1F2C3F]' : ''}`}
                     >
                       {isCurrentMonth && (
-                        <span className={`text-[13px] font-medium mb-2 ${isSelected ? 'text-white' : 'text-[#9CA3AF]'}`}>
+                        <span className={`text-[13px] font-medium mb-2 ${isSelected ? 'text-white' : 'text-[#97A0B3]'}`}>
                           {dayNum}
                         </span>
                       )}
@@ -291,7 +285,7 @@ export function PortalCalendarPage() {
                           {entry.hasThumbnail ? (
                             <div className="relative w-full aspect-video rounded-md overflow-hidden mb-1.5">
                               <img src={entry.thumbnail_url} alt="" className="w-full h-full object-cover" />
-                              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-medium text-white">
+                              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded text-[11px] font-medium text-white">
                                 <div className={`w-1.5 h-1.5 rounded-sm ${FORMAT_COLORS[entry.format as keyof typeof FORMAT_COLORS]}`} />
                                 {entry.format}
                               </div>
@@ -299,7 +293,7 @@ export function PortalCalendarPage() {
                           ) : (
                             <div className="flex items-center gap-1.5 bg-white/[0.05] px-2 py-1.5 rounded">
                               <div className={`w-2 h-2 rounded-sm shrink-0 ${FORMAT_COLORS[entry.format as keyof typeof FORMAT_COLORS]}`} />
-                              <span className="text-[11px] font-medium text-white truncate">
+                              <span className="text-xs font-medium text-white truncate">
                                 {entry.title || entry.format}
                               </span>
                             </div>
@@ -316,7 +310,7 @@ export function PortalCalendarPage() {
                   .filter(e => e.date.startsWith(`${year}-${monthStr}`))
                   .sort((a,b) => a.date.localeCompare(b.date))
                   .map(entry => (
-                  <div key={entry.id} className="bg-white/[0.02] hover:bg-white/[0.05] transition-colors border border-white/[0.05] rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setSelectedDate(parseInt(entry.date.split('-')[2] || "1", 10))}>
+                  <div key={entry.id} className="bg-white/[0.02] hover:bg-[#1F2C3F] transition-colors border border-[#2A3446] rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setSelectedDate(parseInt(entry.date.split('-')[2] || "1", 10))}>
                      <div className="flex items-center gap-4">
                         {entry.hasThumbnail ? (
                           <img src={entry.thumbnail_url} className="w-12 h-12 rounded object-cover" />
@@ -327,14 +321,14 @@ export function PortalCalendarPage() {
                         )}
                         <div>
                            <p className="text-white text-sm font-bold">{entry.title || `${entry.format} Draft`}</p>
-                           <p className="text-[#9CA3AF] text-xs mt-1">{new Date(entry.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · {entry.time || "12:00"} · {entry.format}</p>
+                           <p className="text-[#97A0B3] text-xs mt-1">{new Date(entry.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · {entry.time || "12:00"} · {entry.format}</p>
                         </div>
                      </div>
-                     <span className="text-white text-[11px] font-medium px-3 py-1 bg-white/[0.1] rounded-full">{entry.status || "Scheduled"}</span>
+                     <span className="text-white text-xs font-medium px-3 py-1 bg-white/[0.1] rounded-full">{entry.status || "Scheduled"}</span>
                   </div>
                 ))}
                 {allEntries.filter(e => e.date.startsWith(`${year}-${monthStr}`)).length === 0 && (
-                  <div className="p-8 text-center text-[#6B7280] text-sm border border-dashed border-white/[0.1] rounded-xl">
+                  <div className="p-8 text-center text-[#7E889C] text-sm border border-dashed border-white/[0.1] rounded-xl">
                     No posts scheduled for this month.
                   </div>
                 )}
@@ -347,7 +341,7 @@ export function PortalCalendarPage() {
         <div className="xl:col-span-4 2xl:col-span-3 flex flex-col gap-6 h-full overflow-hidden">
           
           {/* Day Details Card */}
-          <div className="bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-6 flex flex-col flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+          <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 flex flex-col flex-1 min-h-0 overflow-y-auto scrollbar-hide">
             <h3 className="text-sm font-bold text-white mb-4">
               {new Date(year, month, selectedDate).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
             </h3>
@@ -362,11 +356,11 @@ export function PortalCalendarPage() {
                 <h4 className="text-[17px] font-bold text-white mb-1.5">
                   {selectedEntry.title || `${selectedEntry.format} Draft`}
                 </h4>
-                <p className="text-[12px] text-[#9CA3AF] mb-3">
+                <p className="text-[13px] text-[#97A0B3] mb-3">
                   {selectedEntry.format} · {selectedEntry.time || "12:00"} · Instagram
                 </p>
                 {selectedEntry.status && (
-                  <span className="inline-block px-3 py-1 rounded-full bg-[#B45309]/90 text-white text-[11px] font-bold mb-6">
+                  <span className="inline-block px-3 py-1 rounded-full bg-[#D8BF9B]/15 text-[#D8BF9B] text-xs font-bold mb-6">
                     {selectedEntry.status}
                   </span>
                 )}
@@ -374,37 +368,37 @@ export function PortalCalendarPage() {
                 <div className="flex items-center gap-3 mt-auto">
                   <button 
                     onClick={() => showToast("Rescheduling modal opened...")}
-                    className="flex-1 px-4 py-2.5 rounded-full border border-white/[0.12] text-[13px] font-bold text-white hover:bg-white/[0.05] transition-colors"
+                    className="flex-1 px-4 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors"
                   >
                     Move date
                   </button>
                   <Link 
                     to="/portal/deliverables"
-                    className="flex-1 text-center px-4 py-2.5 rounded-full bg-[#E2E8F0] text-[#0E1420] text-[13px] font-bold hover:bg-[#E2E8F0]/90 transition-colors"
+                    className="flex-1 text-center px-4 py-2.5 rounded-full bg-[#BCCCE6] text-[#0B111C] text-[13px] font-bold hover:bg-white transition-colors"
                   >
                     Review
                   </Link>
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex items-center justify-center text-[13px] text-[#6B7280]">
+              <div className="flex-1 flex items-center justify-center text-[13px] text-[#7E889C]">
                 No posts scheduled
               </div>
             )}
           </div>
 
           {/* Stats Card */}
-          <div className="bg-[#161C2D] border border-white/[0.05] rounded-[24px] p-6 shrink-0">
+          <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 shrink-0">
             <h3 className="text-sm font-bold text-white mb-6">This month</h3>
             <div className="space-y-4">
               {[
-                { label: "Reels", count: monthEntries.filter(e => e.format === "Reel").length, max: Math.max(15, monthEntries.filter(e => e.format === "Reel").length), color: "bg-[#3B82F6]" },
+                { label: "Reels", count: monthEntries.filter(e => e.format === "Reel").length, max: Math.max(15, monthEntries.filter(e => e.format === "Reel").length), color: "bg-[#7FA0D6]" },
                 { label: "Carousels", count: monthEntries.filter(e => e.format === "Carousel").length, max: Math.max(15, monthEntries.filter(e => e.format === "Carousel").length), color: "bg-[#F97316]" },
                 { label: "Posts", count: monthEntries.filter(e => e.format === "Post").length, max: Math.max(15, monthEntries.filter(e => e.format === "Post").length), color: "bg-[#10B981]" },
                 { label: "Stories", count: monthEntries.filter(e => e.format === "Story").length, max: Math.max(15, monthEntries.filter(e => e.format === "Story").length), color: "bg-[#A855F7]" },
               ].map(stat => (
                 <div key={stat.label} className="flex items-center justify-between group">
-                  <span className="text-[13px] text-[#9CA3AF] w-20">{stat.label}</span>
+                  <span className="text-[13px] text-[#97A0B3] w-20">{stat.label}</span>
                   <div className="flex-1 mx-4 h-2 bg-white/[0.04] rounded-full overflow-hidden">
                     <div 
                       className={`h-full ${stat.color} rounded-full transition-all duration-500`}
@@ -424,7 +418,7 @@ export function PortalCalendarPage() {
 
       {/* Toast */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#161C2D] text-white px-5 py-3 rounded-xl shadow-2xl border border-white/[0.1] text-sm font-medium flex items-center gap-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#161F2D] text-white px-5 py-3 rounded-xl shadow-2xl border border-white/[0.1] text-sm font-medium flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#6EE7B7]" />
           {toastMessage}
         </div>

@@ -7,9 +7,9 @@ import { AnimatePresence, motion } from "motion/react";
  * opens Razorpay checkout, and polls confirmation with a professional compact state
  * that retains context without wiping out the page.
  */
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { confirmPayment, createOrder, fetchPlans } from "../../lib/onboarding-api";
-import { openRazorpayCheckout } from "../../lib/razorpay";
+import { openRazorpayCheckout, preloadRazorpay } from "../../lib/razorpay";
 import { useAuth } from "../../lib/auth-context";
 import type { Plan } from "../../types/api";
 import { Check, Calendar, Zap, ArrowLeft, ArrowRight, Loader2, ShieldCheck, AlertCircle } from "lucide-react";
@@ -52,18 +52,18 @@ function PlanCard({
       {/* Top Tag Slot (fixed height to ensure exact vertical alignment across all 3 cards) */}
       <div className="h-6 mb-2 flex items-center">
         {plan.is_recommended ? (
-          <span className="inline-flex items-center gap-1 bg-[#7FA0D6] text-[#0B111C] text-[10px] font-black tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
+          <span className="inline-flex items-center gap-1 bg-[#7FA0D6] text-[#0B111C] text-[11px] font-black tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
             <Zap className="size-3 fill-[#0B111C]" /> Most Popular
           </span>
         ) : (
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
             Monthly Retainer
           </span>
         )}
       </div>
 
       <div className="flex-1 flex flex-col">
-        <p className="text-[11px] font-bold tracking-wider text-[#7FA0D6] uppercase mb-1">
+        <p className="text-xs font-bold tracking-wider text-[#7FA0D6] uppercase mb-1">
           {plan.name}
         </p>
         <h3 className="text-lg sm:text-xl font-bold font-display text-white mb-2">
@@ -90,7 +90,7 @@ function PlanCard({
       </div>
 
       <div
-        className={`w-full mt-6 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
+        className={`w-full mt-6 py-2.5 px-4 rounded-xl text-sm font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
           selected
             ? "bg-[#BCCCE6] text-[#0B111C] shadow-md shadow-[#BCCCE6]/20"
             : "bg-[#0B111C] text-[#94A3B8] border border-[#2A3446] hover:text-white hover:border-[#7FA0D6]"
@@ -123,7 +123,12 @@ export function StagePayment({ userId, onPaymentComplete, onBack, isAlreadyPaid 
     queryKey: ["plans"],
     queryFn: fetchPlans,
     enabled: !isAlreadyPaid,
+    staleTime: 5 * 60_000,
   });
+
+  useEffect(() => {
+    if (!isAlreadyPaid) preloadRazorpay();
+  }, [isAlreadyPaid]);
 
   if (isAlreadyPaid) {
     return (
@@ -141,7 +146,7 @@ export function StagePayment({ userId, onPaymentComplete, onBack, isAlreadyPaid 
         <h2 className="text-xl sm:text-2xl font-bold font-display text-white tracking-tight">
           Subscription Active
         </h2>
-        <p className="text-xs sm:text-sm text-[#94A3B8] mt-2 mb-6 max-w-md mx-auto leading-relaxed">
+        <p className="text-sm text-[#94A3B8] mt-2 mb-6 max-w-md mx-auto leading-relaxed">
           Your payment has already been verified and your subscription is active. You do not need to pay again.
         </p>
         <button
@@ -199,11 +204,11 @@ export function StagePayment({ userId, onPaymentComplete, onBack, isAlreadyPaid 
           } catch {
             // Keep polling handled gracefully
           }
-          await queryClient.invalidateQueries({ queryKey: ["client-subscription"] });
-          await queryClient.invalidateQueries({ queryKey: ["onboarding-status"] });
+          // Onboarding status is refreshed by onPaymentComplete; don't block the UI on refetches
+          void queryClient.invalidateQueries({ queryKey: ["client-subscription"] });
           setPhase("confirmed");
           checkoutLock.current = false;
-          setTimeout(onPaymentComplete, 1200);
+          setTimeout(onPaymentComplete, 700);
         },
         () => {
           // Checkout closed without completing
@@ -235,23 +240,23 @@ export function StagePayment({ userId, onPaymentComplete, onBack, isAlreadyPaid 
       <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 sm:p-7 shadow-xl">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7FA0D6]/20 border border-[#7FA0D6]/30 text-[#BCCCE6] text-[10px] font-bold uppercase tracking-wider mb-3 shadow-sm">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7FA0D6]/20 border border-[#7FA0D6]/30 text-[#BCCCE6] text-[11px] font-bold uppercase tracking-wider mb-3 shadow-sm">
               Step 3 of 5
             </div>
             <h2 className="text-xl sm:text-2xl font-bold font-display text-white tracking-tight mb-2">
               Choose Your Retainer Plan
             </h2>
-            <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed max-w-xl">
+            <p className="text-sm text-[#94A3B8] leading-relaxed max-w-xl">
               Select the subscription tier that matches your creative growth ambition. Upgrade, downgrade, or cancel anytime.
             </p>
           </div>
           
           <div className="flex flex-wrap items-center gap-2 mt-2 md:mt-0">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#2A3446] bg-[#0B111C] text-[#7FA0D6] text-[10px] font-bold shadow-xs">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#2A3446] bg-[#0B111C] text-[#7FA0D6] text-[11px] font-bold shadow-xs">
               <Calendar className="w-3.5 h-3.5" />
               <span>30-Day Production Cycle</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-800/50 bg-emerald-950/40 text-emerald-300 text-[10px] font-bold shadow-xs">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-800/50 bg-emerald-950/40 text-emerald-300 text-[11px] font-bold shadow-xs">
               <Zap className="w-3.5 h-3.5 fill-emerald-400 text-emerald-400" />
               <span>Instant Pod Provisioning</span>
             </div>
@@ -346,7 +351,7 @@ export function StagePayment({ userId, onPaymentComplete, onBack, isAlreadyPaid 
             type="button"
             onClick={onBack}
             disabled={phase === "processing" || phase === "polling"}
-            className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#0B111C] border border-[#2A3446] text-xs sm:text-sm font-bold text-[#94A3B8] hover:text-white hover:border-[#7FA0D6] shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#0B111C] border border-[#2A3446] text-sm font-bold text-[#94A3B8] hover:text-white hover:border-[#7FA0D6] shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Service Agreement</span>
@@ -358,7 +363,7 @@ export function StagePayment({ userId, onPaymentComplete, onBack, isAlreadyPaid 
           type="button"
           onClick={handleCheckout}
           disabled={!selectedPlanId || phase === "processing" || phase === "polling" || phase === "confirmed"}
-          className={`w-full sm:w-auto min-w-[280px] py-3 px-8 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md inline-flex items-center justify-center gap-2 ${
+          className={`w-full sm:w-auto min-w-[280px] py-3 px-8 rounded-xl font-bold text-sm transition-all shadow-md inline-flex items-center justify-center gap-2 ${
             selectedPlanId && phase === "select"
               ? "bg-[#BCCCE6] text-[#0B111C] cursor-pointer hover:bg-white shadow-[#BCCCE6]/20"
               : "bg-[#161F2D] text-[#64748B] border border-[#2A3446] cursor-not-allowed shadow-none"

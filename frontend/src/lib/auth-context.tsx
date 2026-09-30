@@ -1,6 +1,40 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { request } from "./http";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { HttpError, request } from "./http";
 import { getAuthToken, setAuthToken } from "./auth-token";
+
+const USER_CACHE_KEY = "creo_auth_user";
+
+function readCachedUser(): AuthUser | null {
+  try {
+    const raw = localStorage.getItem(USER_CACHE_KEY);
+    return raw ? (JSON.parse(raw) as AuthUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** True when the JWT's own expiry is still comfortably in the future. */
+function isTokenUnexpired(token: string | null): boolean {
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]?.replace(/-/g, "+").replace(/_/g, "/") ?? ""));
+    return typeof payload.exp === "number" && payload.exp * 1000 > Date.now() + 10_000;
+  } catch {
+    return false;
+  }
+}
+
+function writeCachedUser(user: AuthUser | null): void {
+  try {
+    if (user) {
+      localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(USER_CACHE_KEY);
+    }
+  } catch {
+    // localStorage unavailable
+  }
+}
 
 export interface AuthUser {
   id: string;
@@ -31,14 +65,33 @@ interface AuthContextType {
   getGoogleAuthUrl: () => Promise<string>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
+  /** Merge fresh fields (e.g. onboarding_stage) into the signed-in user. */
+  patchUser: (fields: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  // With a still-valid token and a cached profile we can render the app immediately and
+  // revalidate /auth/me in the background, instead of blocking every page load on it.
+  // An expired token takes the normal blocking path so nobody sees a flash of the app
+  // right before being sent to the login screen.
+  const [initialUser] = useState<AuthUser | null>(() =>
+    isTokenUnexpired(getAuthToken()) ? readCachedUser() : null,
+  );
+  const [user, setUser] = useState<AuthUser | null>(initialUser);
   const [token, setTokenState] = useState<string | null>(() => getAuthToken());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialUser);
+
+  // Persist the profile for the next page load (and forget it on sign-out)
+  useEffect(() => {
+    if (!loading) writeCachedUser(user);
+  }, [user, loading]);
+
+  const patchUser = useCallback(
+    (fields: Partial<AuthUser>) => setUser((prev) => (prev ? { ...prev, ...fields } : prev)),
+    [],
+  );
 
   const setToken = (newToken: string | null) => {
     setTokenState(newToken);
@@ -58,14 +111,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.access_token && data.access_token !== currentToken) {
         setToken(data.access_token);
       }
-      setUser(data);
-    } catch {
-      setUser(null);
-      setToken(null);
+      const { access_token: _ignored, ...profile } = data;
+      setUser(profile);
+    } catch (err) {
+      // Only an auth rejection ends the session; a network blip keeps the cached user.
+      const isAuthError = err instanceof HttpError && (err.status === 401 || err.status === 403);
+      if (isAuthError || !readCachedUser()) {
+        setUser(null);
+        setToken(null);
+      }
     } finally {
       setLoading(false);
     }
-
   };
 
   useEffect(() => {
@@ -202,6 +259,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         getGoogleAuthUrl,
         logout,
         refresh,
+        patchUser,
       }}
     >
       {children}

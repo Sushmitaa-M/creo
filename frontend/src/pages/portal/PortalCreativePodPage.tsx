@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../lib/auth-context";
 import { request } from "../../lib/http";
+import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
 import { MessageCircle, Send, Check } from "lucide-react";
 
@@ -90,26 +91,14 @@ export function PortalCreativePodPage() {
     }
   };
 
+  // An expired or missing subscription drops the onboarding stage below 8, so the gate covers it
+  const gate = useOnboardingGate();
+
   const { data: dashboard, isLoading } = useQuery<DashboardData>({
     queryKey: ["portal-dashboard", user?.id],
     queryFn: () => request<DashboardData>("/api/v1/portal/dashboard"),
-    enabled: !!user?.id,
+    enabled: !!user?.id && gate.isComplete,
   });
-
-  const { data: subData } = useQuery({
-    queryKey: ["client-subscription"],
-    queryFn: () => request<any>("/api/v1/payments/subscription"),
-    staleTime: 0,
-    refetchOnMount: "always",
-  });
-
-  const isExpired =
-    subData?.is_expired === true ||
-    subData?.subscription?.status === "expired" ||
-    subData?.subscription?.status === "canceled";
-
-  const isStaffOrAdmin = user?.role && user.role !== "client";
-
 
   const assignedTeam = dashboard?.assigned_team || [];
   const podLead = assignedTeam.find((m) => m.is_primary || m.raw_role === "team_lead" || m.raw_role === "creative_lead");
@@ -125,12 +114,9 @@ export function PortalCreativePodPage() {
     "bg-[#8B5CF6]",
   ];
 
-  const subscriptionActive = !!dashboard?.active_plan && ["active", "trialing"].includes(dashboard?.active_plan?.status);
-  const isUnlocked = isStaffOrAdmin || (subscriptionActive && !isExpired && (dashboard?.onboarding_stage ?? 1) >= 8);
-
-  if (!isUnlocked && dashboard) {
+  if (!gate.isComplete) {
     return (
-      <div className="flex items-center justify-center min-h-[70vh]">
+      <div className="flex items-center justify-center py-6 sm:py-10">
         <SubscriptionLockedState
           title="Creative Pod Access Locked"
           description="Your dedicated creative specialists and lead producer will be provisioned once your account setup is completed."
@@ -148,12 +134,12 @@ export function PortalCreativePodPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {isLoading ? (
           <div className="col-span-full flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-2 border-[#93C5FD] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#7FA0D6] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : allMembers.length === 0 ? (
           <div className="col-span-full py-16 text-center">
-            <p className="text-sm text-[#6B7280]">Your creative pod hasn't been assembled yet.</p>
-            <p className="text-xs text-[#6B7280] mt-1">Team members will appear here once onboarding is complete.</p>
+            <p className="text-sm text-[#7E889C]">Your creative pod hasn't been assembled yet.</p>
+            <p className="text-xs text-[#7E889C] mt-1">Team members will appear here once onboarding is complete.</p>
           </div>
         ) : (
           allMembers.map((member, i) => {
@@ -163,7 +149,7 @@ export function PortalCreativePodPage() {
             return (
               <div
                 key={member.id}
-                className="bg-[#161C2D] rounded-2xl p-6 border border-white/[0.05] flex flex-col animate-in fade-in zoom-in-95 duration-500 fill-mode-both"
+                className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446] flex flex-col animate-in fade-in zoom-in-95 duration-500 fill-mode-both"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
                 {/* Avatar + Name */}
@@ -173,22 +159,22 @@ export function PortalCreativePodPage() {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-base font-semibold text-white truncate">{member.name}</h3>
-                    <p className="text-[13px] text-[#9CA3AF]">{member.role}</p>
+                    <p className="text-[13px] text-[#97A0B3]">{member.role}</p>
                   </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-[#6B7280] leading-relaxed mb-4 flex-1">
+                <p className="text-sm text-[#7E889C] leading-relaxed mb-4 flex-1">
                   {roleDesc}
                 </p>
 
                 {/* Working hours */}
-                <p className="text-[11px] text-[#6B7280] mb-4">
-                  Working hours: <span className="text-[#9CA3AF]">Mon-Fri, 10am-7pm IST</span>
+                <p className="text-xs text-[#7E889C] mb-4">
+                  Working hours: <span className="text-[#97A0B3]">Mon-Fri, 10am-7pm IST</span>
                 </p>
 
                 {/* Message Button */}
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.12] text-[13px] font-medium text-white hover:bg-white/[0.05] transition-colors mt-auto">
+                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#1F2C3F] transition-colors mt-auto">
                   <MessageCircle className="w-4 h-4" strokeWidth={1.8} />
                   Message {member.name.split(" ")[0]}
                 </button>
@@ -201,32 +187,32 @@ export function PortalCreativePodPage() {
       {/* ── Bottom Section: Chat + Booking ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chat (2 cols) */}
-        <div className="lg:col-span-2 bg-[#161C2D] rounded-2xl border border-white/[0.05] flex flex-col" style={{ minHeight: "400px" }}>
+        <div className="lg:col-span-2 bg-[#161F2D] rounded-2xl border border-[#2A3446] flex flex-col" style={{ minHeight: "400px" }}>
           {/* Chat Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.05]">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#2A3446]">
             <h3 className="text-base font-semibold text-white">Chat with your pod</h3>
-            <span className="text-[12px] text-[#6B7280]">average reply 1h 50m</span>
+            <span className="text-[13px] text-[#7E889C]">average reply 1h 50m</span>
           </div>
 
           {/* Messages Area */}
           <div className="flex-1 px-6 py-4 space-y-4 overflow-y-auto scrollbar-hide flex flex-col justify-center">
             {messages.length === 0 ? (
-              <div className="py-12 text-center text-[#6B7280]">
+              <div className="py-12 text-center text-[#7E889C]">
                 <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-30 text-white" />
                 <p className="text-sm font-medium text-white/80">No messages yet</p>
-                <p className="text-xs text-[#6B7280] mt-1">Send a message to start communicating directly with your pod.</p>
+                <p className="text-xs text-[#7E889C] mt-1">Send a message to start communicating directly with your pod.</p>
               </div>
             ) : (
               messages.map(msg => (
                 <div key={msg.id} className={`flex gap-3 max-w-[80%] ${msg.isUser ? "ml-auto flex-row-reverse" : ""}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${msg.isUser ? "bg-[#93C5FD] text-[#0E1420]" : "bg-gradient-to-br from-pink-500 to-orange-400 text-white"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5 ${msg.isUser ? "bg-[#BCCCE6] text-[#0B111C]" : "bg-gradient-to-br from-pink-500 to-orange-400 text-white"}`}>
                     {msg.name}
                   </div>
                   <div className={msg.isUser ? "text-right" : ""}>
-                    <div className={`p-3 rounded-2xl text-sm inline-block text-left ${msg.isUser ? "bg-white text-[#0E1420] rounded-tr-sm" : "bg-[#1E2536] text-white rounded-tl-sm"}`}>
+                    <div className={`p-3 rounded-2xl text-sm inline-block text-left ${msg.isUser ? "bg-[#BCCCE6] text-[#0B111C] rounded-tr-sm" : "bg-[#1F2C3F] text-white rounded-tl-sm"}`}>
                       {msg.text}
                     </div>
-                    <span className={`text-[10px] text-[#6B7280] mt-1 block ${msg.isUser ? "text-right" : ""}`}>
+                    <span className={`text-[11px] text-[#7E889C] mt-1 block ${msg.isUser ? "text-right" : ""}`}>
                       {msg.time}
                     </span>
                   </div>
@@ -236,16 +222,16 @@ export function PortalCreativePodPage() {
           </div>
 
           {/* Chat Input */}
-          <div className="px-4 py-3 border-t border-white/[0.05]">
-            <div className="flex items-center gap-2 bg-[#0E1420] rounded-full px-4 py-2 border border-white/[0.06]">
+          <div className="px-4 py-3 border-t border-[#2A3446]">
+            <div className="flex items-center gap-2 bg-[#0B111C] rounded-full px-4 py-2 border border-white/[0.06]">
               <input
                 type="text"
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 bg-transparent text-sm text-white placeholder-[#6B7280] outline-none"
+                className="flex-1 bg-transparent text-sm text-white placeholder-[#7E889C] outline-none"
               />
-              <button onClick={handleSendMessage} className="px-4 py-1.5 bg-white text-[#0E1420] rounded-full text-[13px] font-medium hover:bg-white/90 transition-colors flex items-center gap-1.5 shrink-0">
+              <button onClick={handleSendMessage} className="px-4 py-1.5 bg-[#BCCCE6] text-[#0B111C] rounded-full text-[13px] font-medium hover:bg-white transition-colors flex items-center gap-1.5 shrink-0">
                 <Send className="w-3.5 h-3.5" />
                 Send
               </button>
@@ -254,16 +240,16 @@ export function PortalCreativePodPage() {
         </div>
 
         {/* Booking (1 col) */}
-        <div className="bg-[#161C2D] rounded-2xl p-6 border border-white/[0.05]">
+        <div className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446]">
           <h3 className="text-base font-semibold text-white mb-1">Book a call</h3>
-          <p className="text-[12px] text-[#6B7280] mb-5">15-minute slots with your pod lead</p>
+          <p className="text-[13px] text-[#7E889C] mb-5">15-minute slots with your pod lead</p>
 
           <div className="space-y-0 divide-y divide-white/[0.05]">
             {upcomingSlots.map((slot) => {
               const isBooked = bookedSlots.includes(slot.id);
               return (
                 <div key={slot.id} className="flex items-center justify-between py-4">
-                  <span className="text-sm text-[#9CA3AF]">{slot.date}</span>
+                  <span className="text-sm text-[#97A0B3]">{slot.date}</span>
                   <button 
                     onClick={() => handleBookSlot(slot.id)}
                     disabled={isBooked}

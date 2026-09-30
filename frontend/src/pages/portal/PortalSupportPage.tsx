@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
+import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { SubscriptionLockedState } from "../../components/portal/SubscriptionLockedState";
 import type { TicketItem } from "../../types/api";
 
@@ -26,6 +27,9 @@ interface SupportTicketData {
 
 const CATEGORIES = ["Content", "Billing", "Technical", "Brand", "Other"];
 
+// Stable fallback: a fresh [] each render would re-trigger the ticket sync effect forever
+const NO_TICKETS: TicketItem[] = [];
+
 const FAQ_ITEMS = [
   { q: "How do I request changes on an approved asset?", a: "Once an asset is approved, it moves to the Scheduled queue. If you need a last-minute change, please open a Support ticket with the priority 'High' and mention the asset ID." },
   { q: "What happens if I miss a review deadline?", a: "Assets auto-approve after the SLA timer expires to ensure your delivery pipeline stays on schedule. You can still request a revision via support, but it may eat into your monthly quota." },
@@ -38,17 +42,11 @@ export function PortalSupportPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: subData, isLoading: isSubLoading } = useQuery({
+  const gate = useOnboardingGate();
+
+  const { data: subData } = useQuery({
     queryKey: ["client-subscription"],
     queryFn: () => request<any>("/api/v1/payments/subscription"),
-    staleTime: 0,
-    refetchOnMount: "always",
-  });
-
-  const { data: dashboard } = useQuery({
-    queryKey: ["portal-dashboard", user?.id],
-    queryFn: () => request<any>("/api/v1/portal/dashboard"),
-    enabled: !!user?.id,
   });
 
   const isExpired =
@@ -58,12 +56,12 @@ export function PortalSupportPage() {
   const isStaffOrAdmin = user?.role && user.role !== "client";
   const isSubscribed =
     isStaffOrAdmin ||
-    (!!dashboard?.active_plan && ["active", "trialing"].includes(dashboard?.active_plan?.status)) ||
+    (gate.isPaid && !isExpired) ||
     (!isExpired &&
       (subData?.is_active === true ||
         (!!subData?.subscription && ["active", "trialing"].includes(subData?.subscription?.status))));
 
-  const { data: serverTickets = [] } = useQuery<TicketItem[]>({
+  const { data: serverTickets = NO_TICKETS } = useQuery<TicketItem[]>({
     queryKey: ["tickets", user?.id],
     queryFn: async () => {
       try {
@@ -74,7 +72,7 @@ export function PortalSupportPage() {
       }
     },
     enabled: isSubscribed,
-    refetchInterval: 12000,
+    refetchInterval: 30000,
   });
 
   // Local state
@@ -149,14 +147,6 @@ export function PortalSupportPage() {
     setDescription("");
   };
 
-  if (isSubLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#93C5FD] animate-spin" />
-      </div>
-    );
-  }
-
   if (isExpired && !isStaffOrAdmin) {
     return (
       <SubscriptionLockedState
@@ -172,13 +162,13 @@ export function PortalSupportPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* ── Left Column: Ask your pod (Form) ── */}
-        <div className="bg-[#161C2D] rounded-2xl p-6 border border-white/[0.05]">
+        <div className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446]">
           <h3 className="text-base font-semibold text-white mb-5">Ask your pod</h3>
 
           <form onSubmit={handleFormSubmit} className="space-y-5">
             {/* Category Pills */}
             <div>
-              <label className="block text-sm text-[#9CA3AF] mb-2">What is it about?</label>
+              <label className="block text-sm text-[#97A0B3] mb-2">What is it about?</label>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map((cat) => (
                   <button
@@ -187,8 +177,8 @@ export function PortalSupportPage() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-4 py-2 rounded-full text-[13px] font-medium transition-colors ${
                       selectedCategory === cat
-                        ? "bg-white text-[#0E1420]"
-                        : "bg-transparent border border-white/[0.12] text-white hover:bg-white/[0.05]"
+                        ? "bg-[#BCCCE6] text-[#0B111C]"
+                        : "bg-transparent border border-[#2A3446] text-white hover:bg-[#1F2C3F]"
                     }`}
                   >
                     {cat}
@@ -199,25 +189,25 @@ export function PortalSupportPage() {
 
             {/* Subject Input */}
             <div>
-              <label className="block text-sm text-[#9CA3AF] mb-2">Subject</label>
+              <label className="block text-sm text-[#97A0B3] mb-2">Subject</label>
               <input
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Briefly summarize your request..."
-                className="w-full bg-[#0E1420] border border-white/[0.08] rounded-lg p-3 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-white/[0.2] transition-colors"
+                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#7E889C] focus:outline-none focus:border-white/[0.2] transition-colors"
               />
             </div>
 
             {/* Message */}
             <div>
-              <label className="block text-sm text-[#9CA3AF] mb-2">Message</label>
+              <label className="block text-sm text-[#97A0B3] mb-2">Message</label>
               <textarea
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your issue or request..."
-                className="w-full bg-[#0E1420] border border-white/[0.08] rounded-lg p-3 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-white/[0.2] resize-none transition-colors"
+                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#7E889C] focus:outline-none focus:border-white/[0.2] resize-none transition-colors"
               />
             </div>
 
@@ -226,7 +216,7 @@ export function PortalSupportPage() {
               <button
                 type="submit"
                 disabled={createTicketMutation.isPending}
-                className="w-10 h-10 rounded-full bg-white text-[#0E1420] flex items-center justify-center hover:bg-white/90 transition-colors"
+                className="w-10 h-10 rounded-full bg-[#BCCCE6] text-[#0B111C] flex items-center justify-center hover:bg-white transition-colors"
               >
                 {createTicketMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -241,31 +231,31 @@ export function PortalSupportPage() {
         {/* ── Right Column: Your requests + Common questions ── */}
         <div className="space-y-6">
           {/* Your Requests */}
-          <div className="bg-[#161C2D] rounded-2xl p-6 border border-white/[0.05]">
+          <div className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446]">
             <h3 className="text-base font-semibold text-white mb-4">Your requests</h3>
 
             {ticketsList.length === 0 ? (
-              <p className="text-sm text-[#6B7280] py-6 text-center">No tickets yet. Submit your first request.</p>
+              <p className="text-sm text-[#7E889C] py-6 text-center">No tickets yet. Submit your first request.</p>
             ) : (
               <div className="space-y-3">
                 {ticketsList.slice(0, 5).map((t) => (
-                  <div key={t.id} className="p-4 bg-[#0E1420] rounded-xl border border-white/[0.04]">
+                  <div key={t.id} className="p-4 bg-[#0B111C] rounded-xl border border-white/[0.04]">
                     {/* Top row */}
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="text-[11px] font-mono text-[#6B7280]">{t.id}</span>
-                      <span className="text-[11px] text-[#6B7280]">· {t.category}</span>
-                      <span className="text-[11px] text-[#6B7280] ml-auto">{t.timeAgo}</span>
+                      <span className="text-xs font-mono text-[#7E889C]">{t.id}</span>
+                      <span className="text-xs text-[#7E889C]">· {t.category}</span>
+                      <span className="text-xs text-[#7E889C] ml-auto">{t.timeAgo}</span>
                     </div>
                     {/* Title */}
                     <p className="text-sm font-medium text-white mb-2">{t.title}</p>
                     {/* Status */}
                     <span
-                      className={`inline-flex px-2.5 py-0.5 rounded text-[11px] font-medium ${
+                      className={`inline-flex px-2.5 py-0.5 rounded text-xs font-medium ${
                         t.status === "resolved"
-                          ? "bg-[#93C5FD]/10 text-[#93C5FD]"
+                          ? "bg-[#7FA0D6]/10 text-[#7FA0D6]"
                           : t.status === "in_progress"
                           ? "bg-[#FCD34D]/10 text-[#FCD34D]"
-                          : "bg-white/[0.05] text-[#9CA3AF]"
+                          : "bg-white/[0.05] text-[#97A0B3]"
                       }`}
                     >
                       {t.status === "resolved"
@@ -281,7 +271,7 @@ export function PortalSupportPage() {
           </div>
 
           {/* Common Questions (Accordion) */}
-          <div className="bg-[#161C2D] rounded-2xl p-6 border border-white/[0.05]">
+          <div className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446]">
             <h3 className="text-base font-semibold text-white mb-4">Common questions</h3>
 
             <div className="divide-y divide-white/[0.05]">
@@ -292,15 +282,15 @@ export function PortalSupportPage() {
                     onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
                     className="w-full flex items-center justify-between py-4 text-left group"
                   >
-                    <span className="text-sm text-[#9CA3AF] group-hover:text-white transition-colors pr-4">{item.q}</span>
+                    <span className="text-sm text-[#97A0B3] group-hover:text-white transition-colors pr-4">{item.q}</span>
                     <Plus
-                      className={`w-4 h-4 text-[#6B7280] shrink-0 transition-transform duration-200 ${
+                      className={`w-4 h-4 text-[#7E889C] shrink-0 transition-transform duration-200 ${
                         expandedFaq === i ? "rotate-45" : ""
                       }`}
                     />
                   </button>
                   {expandedFaq === i && (
-                    <div className="pb-4 text-sm text-[#6B7280] animate-in fade-in slide-in-from-top-2">
+                    <div className="pb-4 text-sm text-[#7E889C] animate-in fade-in slide-in-from-top-2">
                       {item.a}
                     </div>
                   )}
@@ -313,10 +303,10 @@ export function PortalSupportPage() {
 
       {/* Toast */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#161C2D] text-white px-5 py-3 rounded-xl shadow-2xl border border-white/[0.1] text-sm font-medium flex items-center gap-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#161F2D] text-white px-5 py-3 rounded-xl shadow-2xl border border-white/[0.1] text-sm font-medium flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#6EE7B7]" />
           {toastMessage}
-          <button type="button" onClick={() => setToastMessage(null)} className="ml-2 text-[#6B7280] hover:text-white">
+          <button type="button" onClick={() => setToastMessage(null)} className="ml-2 text-[#7E889C] hover:text-white">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>

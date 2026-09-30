@@ -48,7 +48,7 @@ export function CreoLoader({
     <div
       role="status"
       aria-live="polite"
-      className={`flex flex-col items-center justify-center select-none -translate-y-2 ${className}`}
+      className={`creo-loader-appear flex flex-col items-center justify-center select-none -translate-y-2 ${className}`}
     >
       {/* ─────────────────────────────────────────────────────────────
           1. MAIN WAVE LOADER (SVG 280 x 80)
@@ -233,7 +233,7 @@ export function CreoLoader({
           4. SECONDARY TEXT: SECURE CONNECTION (~14px below line)
       ───────────────────────────────────────────────────────────── */}
       {showSecondaryText && secondaryText && (
-        <div className="mt-[14px] text-[9px] font-normal uppercase tracking-[0.38em] text-[#97A0B3] opacity-55 select-none leading-none">
+        <div className="mt-[14px] text-[10px] font-medium uppercase tracking-[0.34em] text-[#97A0B3] opacity-70 select-none leading-none">
           {secondaryText}
         </div>
       )}
@@ -242,6 +242,22 @@ export function CreoLoader({
           SCOPED STYLES: CSS Keyframes & Reduced Motion
       ───────────────────────────────────────────────────────────── */}
       <style>{`
+        /* Hold the loader back briefly so fast loads never flash it, then fade in */
+        @keyframes creoLoaderAppear {
+          from {
+            opacity: 0;
+            transform: translateY(4px) scale(0.985);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+
+        .creo-loader-appear {
+          animation: creoLoaderAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+        }
+
         /* Sequential dot opacity pulse (no bounce) */
         @keyframes creoDotOpacity {
           0%, 100% {
@@ -284,6 +300,10 @@ export function CreoLoader({
 
         /* Respect prefers-reduced-motion */
         @media (prefers-reduced-motion: reduce) {
+          .creo-loader-appear {
+            animation: none !important;
+          }
+
           .creo-dot-1,
           .creo-dot-2,
           .creo-dot-3 {
@@ -331,6 +351,15 @@ export function CreoLoader({
   }
 
   return loaderContent;
+}
+
+/** Compact wave loader for content areas (keeps the surrounding layout visible). */
+export function CreoInlineLoader({ label = "Loading", className = "" }: { label?: string; className?: string }) {
+  return (
+    <div className={`flex min-h-[45vh] w-full items-center justify-center ${className}`}>
+      <CreoLoader label={label} highlightWord="" fullScreen={false} showSecondaryText={false} />
+    </div>
+  );
 }
 
 export default CreoLoader;

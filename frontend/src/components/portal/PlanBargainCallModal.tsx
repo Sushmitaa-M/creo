@@ -227,7 +227,7 @@ export function PlanBargainCallModal({ isOpen, onClose, onSuccess }: PlanBargain
                 <MessageSquare className="size-4 text-emerald-400 shrink-0" />
                 <div className="text-left">
                   <p className="text-xs font-bold text-emerald-300">Want to talk immediately?</p>
-                  <p className="text-[10px] text-emerald-400/80">Connect via direct WhatsApp audio call</p>
+                  <p className="text-[11px] text-emerald-400/80">Connect via direct WhatsApp audio call</p>
                 </div>
               </div>
               <a

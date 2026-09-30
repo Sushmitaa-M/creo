@@ -221,14 +221,14 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
       {/* Header Container */}
       <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-[10px] font-extrabold uppercase tracking-widest mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-[11px] font-extrabold uppercase tracking-widest mb-3">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Stage 5 Active • Creative Pod Allocated & Brief Dispatched
           </div>
           <h2 className="text-xl sm:text-2xl font-bold font-display text-white tracking-tight mb-2">
             Your Dedicated Creative Pod is Live!
           </h2>
-          <p className="text-xs sm:text-sm text-[#94A3B8] max-w-2xl leading-relaxed">
+          <p className="text-sm text-[#94A3B8] max-w-2xl leading-relaxed">
             Your retainer is active, your Brand Strategy DNA is synthesized, and your dedicated
             production specialists have been briefed with your 30-day content calendar.
           </p>
@@ -255,11 +255,11 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
               <UserCheck className="size-4 text-[#7FA0D6]" />
               <span>Dedicated Creative Pod (Algorithm Selected)</span>
             </p>
-            <p className="text-[11px] text-[#97A0B3] mt-0.5">
+            <p className="text-xs text-[#97A0B3] mt-0.5">
               Matched based on skill competencies, production headroom, and brand category experience
             </p>
           </div>
-          <span className="self-start sm:self-auto text-[11px] font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-800/60 px-3 py-1 rounded-lg flex items-center gap-1.5">
+          <span className="self-start sm:self-auto text-xs font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-800/60 px-3 py-1 rounded-lg flex items-center gap-1.5">
             <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
             FWB-FCS Pod Active
           </span>
@@ -275,19 +275,19 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
                 <Avatar name={member.name} role={member.role} />
                 <div className="min-w-0 flex-1">
                   <p className="font-extrabold text-sm text-[#F8FAFC] truncate">{member.name}</p>
-                  <p className="text-[11px] font-semibold text-[#97A0B3] truncate mt-0.5">{member.role}</p>
+                  <p className="text-xs font-semibold text-[#97A0B3] truncate mt-0.5">{member.role}</p>
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-3 border-t border-[#2A3446] mt-auto">
-                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded-full flex items-center gap-1">
                   <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   Assigned & Briefed
                 </span>
                 <button
                   type="button"
                   onClick={() => handleMessageSpecialist(member)}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-[#7FA0D6] hover:text-[#BCCCE6] cursor-pointer transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#7FA0D6] hover:text-[#BCCCE6] cursor-pointer transition-colors"
                 >
                   <MessageSquare className="size-3" />
                   <span>Support / Chat</span>
@@ -302,7 +302,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
           {/* Core Strategic Positioning & Audience */}
           <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-5 sm:p-6 shadow-xl">
             <div>
-              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#7FA0D6] mb-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#7FA0D6] mb-1.5">
                 <Compass className="size-3.5" />
                 <span>Core Strategic Positioning Vector</span>
               </div>
@@ -331,12 +331,12 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
                     >
                       <div>
                         <h4 className="font-bold text-xs text-[#F8FAFC] mb-1">{safeString(seg.name, `Segment ${idx + 1}`)}</h4>
-                        <p className="text-[11px] text-[#97A0B3] leading-relaxed mb-2.5">
+                        <p className="text-xs text-[#97A0B3] leading-relaxed mb-2.5">
                           {safeString(seg.description)}
                         </p>
                       </div>
                       {seg.core_pain_point && (
-                        <div className="pt-2 border-t border-[#2A3446] flex items-start gap-1.5 text-[11px] text-rose-300 bg-rose-950/40 p-2 rounded-lg border border-rose-800/60">
+                        <div className="pt-2 border-t border-[#2A3446] flex items-start gap-1.5 text-xs text-rose-300 bg-rose-950/40 p-2 rounded-lg border border-rose-800/60">
                           <Target className="size-3 text-rose-400 mt-0.5 flex-shrink-0" />
                           <span className="font-medium">
                             <strong>Pain Point:</strong> {safeString(seg.core_pain_point)}
@@ -365,7 +365,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
                     className="size-4 rounded border border-white/10 shadow-xs"
                     style={{ backgroundColor: c }}
                   />
-                  <span className="font-mono text-[10px] font-bold text-[#97A0B3]">{c}</span>
+                  <span className="font-mono text-[11px] font-bold text-[#97A0B3]">{c}</span>
                 </div>
               ))}
             </div>
@@ -373,7 +373,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
             {visualStyles.length > 0 && (
               <div className="flex gap-1.5 flex-wrap pt-1">
                 {visualStyles.map((st) => (
-                  <span key={st} className="px-2 py-0.5 rounded-md bg-[#0B111C] text-[#97A0B3] text-[10px] font-semibold border border-[#2A3446]">
+                  <span key={st} className="px-2 py-0.5 rounded-md bg-[#0B111C] text-[#97A0B3] text-[11px] font-semibold border border-[#2A3446]">
                     {st}
                   </span>
                 ))}
@@ -381,7 +381,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
             )}
 
             {visualAvoid.length > 0 && (
-              <div className="text-[10px] text-rose-400">
+              <div className="text-[11px] text-rose-400">
                 <strong>Visual Avoid:</strong> {visualAvoid.join(", ")}
               </div>
             )}
@@ -397,14 +397,14 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
               <Sliders className="size-3.5 text-[#7FA0D6]" />
               <span>Tone & Voice Architecture Matrix</span>
             </div>
-            <span className="text-[10px] font-semibold text-[#97A0B3]">Strict Production Boundary</span>
+            <span className="text-[11px] font-semibold text-[#97A0B3]">Strict Production Boundary</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Left: Voice Words & Anti-Voice */}
             <div className="space-y-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#97A0B3] block mb-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#97A0B3] block mb-1.5">
                   Voice Words (Always Sound)
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -421,7 +421,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
 
               {antiVoiceWords.length > 0 && (
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 block mb-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-rose-400 block mb-1.5">
                     Anti-Voice Words (Never Sound)
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -439,7 +439,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
 
               {writingRules.length > 0 && (
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#97A0B3] block mb-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#97A0B3] block mb-1">
                     Editorial Writing Rules
                   </span>
                   <ul className="space-y-1">
@@ -456,13 +456,13 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
 
             {/* Right: Tone Dimension Sliders */}
             <div className="space-y-2.5 bg-[#0B111C] p-3.5 rounded-xl border border-[#2A3446]">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#97A0B3] block mb-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#97A0B3] block mb-1">
                 Tone Dimensions (0–10 Calibration)
               </span>
               <div className="space-y-2">
                 {toneGauges.map((g) => (
                   <div key={g.label} className="space-y-0.5">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-[#97A0B3]">
+                    <div className="flex items-center justify-between text-xs font-semibold text-[#97A0B3]">
                       <span>{g.label}</span>
                       <span className="font-bold text-[#F8FAFC]">{g.value}/10</span>
                     </div>
@@ -485,7 +485,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
               <Layers className="size-3.5 text-[#7FA0D6]" />
               <span>Synthesized 30-Day Content Pillars</span>
             </div>
-            <span className="text-[10px] font-bold text-[#0B111C] bg-[#BCCCE6] px-2 py-0.5 rounded-full">
+            <span className="text-[11px] font-bold text-[#0B111C] bg-[#BCCCE6] px-2 py-0.5 rounded-full">
               Full Funnel Matrix
             </span>
           </div>
@@ -508,29 +508,29 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
                   >
                     <div>
                       <div className="flex items-center justify-between gap-1 mb-1.5">
-                        <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${stageColor}`}>
+                        <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${stageColor}`}>
                           {stage}
                         </span>
                         {Array.isArray(pillar.best_formats) && pillar.best_formats.length > 0 && (
-                          <span className="text-[9px] font-semibold text-[#97A0B3] truncate">
+                          <span className="text-[10px] font-semibold text-[#97A0B3] truncate">
                             {pillar.best_formats.map((f) => safeString(f)).join(", ")}
                           </span>
                         )}
                       </div>
                       <h4 className="font-bold text-xs text-[#F8FAFC] mb-1">{safeString(pillar.name, `Pillar ${idx + 1}`)}</h4>
-                      <p className="text-[11px] text-[#97A0B3] leading-relaxed">
+                      <p className="text-xs text-[#97A0B3] leading-relaxed">
                         {safeString(pillar.rationale)}
                       </p>
                     </div>
 
                     {Array.isArray(pillar.example_angles) && pillar.example_angles.length > 0 && (
                       <div className="mt-3 pt-2 border-t border-[#2A3446]">
-                        <span className="text-[9px] font-bold uppercase text-[#97A0B3] block mb-1">
+                        <span className="text-[10px] font-bold uppercase text-[#97A0B3] block mb-1">
                           Example Hooks:
                         </span>
                         <ul className="space-y-0.5">
                           {pillar.example_angles.slice(0, 2).map((angle, aIdx) => (
-                            <li key={aIdx} className="text-[10px] text-[#97A0B3] truncate flex items-center gap-1">
+                            <li key={aIdx} className="text-[11px] text-[#97A0B3] truncate flex items-center gap-1">
                               <span className="size-1 rounded-full bg-[#7FA0D6]" />
                               <span>{safeString(angle)}</span>
                             </li>
@@ -567,14 +567,14 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
               {formats.map((f) => (
                 <span
                   key={f}
-                  className="px-2.5 py-1 rounded-md bg-[#0B111C] text-[#7FA0D6] border border-[#2A3446] font-bold text-[11px] shadow-sm"
+                  className="px-2.5 py-1 rounded-md bg-[#0B111C] text-[#7FA0D6] border border-[#2A3446] font-bold text-xs shadow-sm"
                 >
                   {f}
                 </span>
               ))}
             </div>
 
-            <div className="text-[11px] text-[#97A0B3] flex items-center gap-1.5">
+            <div className="text-xs text-[#97A0B3] flex items-center gap-1.5">
               <span className="font-semibold text-[#97A0B3]">Default Reel Style:</span>
               <span className="font-bold text-[#F8FAFC] capitalize">
                 {reelStyle.replace(/_/g, " ")}
@@ -583,13 +583,13 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
 
             {doNotRules.length > 0 && (
               <div className="pt-2 border-t border-[#2A3446]">
-                <div className="flex items-center gap-1 text-[10px] font-bold uppercase text-rose-400 mb-1">
+                <div className="flex items-center gap-1 text-[11px] font-bold uppercase text-rose-400 mb-1">
                   <ShieldAlert className="size-3" />
                   <span>Hard Production Constraints:</span>
                 </div>
                 <ul className="space-y-0.5">
                   {doNotRules.slice(0, 2).map((rule, rIdx) => (
-                    <li key={rIdx} className="text-[10px] text-[#97A0B3] truncate">
+                    <li key={rIdx} className="text-[11px] text-[#97A0B3] truncate">
                       • {rule}
                     </li>
                   ))}
@@ -614,7 +614,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
             type="button"
             onClick={() => resendMutation.mutate()}
             disabled={resendMutation.isPending}
-            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0B111C] border border-[#2A3446] text-emerald-300 hover:text-white hover:border-emerald-600 font-bold text-[11px] shadow-sm cursor-pointer flex-shrink-0 transition-all disabled:opacity-50"
+            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0B111C] border border-[#2A3446] text-emerald-300 hover:text-white hover:border-emerald-600 font-bold text-xs shadow-sm cursor-pointer flex-shrink-0 transition-all disabled:opacity-50"
           >
             {resendMutation.isPending ? (
               <span>Dispatching...</span>
@@ -634,7 +634,7 @@ export function StageComplete({ userId, assignedTeam, onLaunchPortal }: StageCom
       </div>
 
       {/* Calendar Ready Notification Badge */}
-      <div className="flex items-center justify-center gap-2.5 p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-xs sm:text-sm font-bold text-emerald-300 shadow-sm">
+      <div className="flex items-center justify-center gap-2.5 p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-sm font-bold text-emerald-300 shadow-sm">
         <Calendar className="size-4.5 text-emerald-400" />
         <span>Initial 30-day production roadmap generated with +1 business-day due buffer. Ready for kickoff!</span>
       </div>

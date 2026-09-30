@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "../../lib/auth-context";
 import {
   Lock,
   Zap,
@@ -17,9 +15,8 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { request } from "../../lib/http";
-import { fetchOnboardingStatus } from "../../lib/onboarding-api";
+import { ONBOARDING_TOTAL_STEPS, useOnboardingGate } from "../../lib/useOnboardingGate";
 import { PlanBargainCallModal } from "./PlanBargainCallModal";
-import type { OnboardingStatus } from "../../types/api";
 
 interface SubscriptionLockedStateProps {
   title?: string;
@@ -30,60 +27,26 @@ export function SubscriptionLockedState({
   title,
   description,
 }: SubscriptionLockedStateProps) {
-  const { user } = useAuth();
-  const isClient = user?.role === "client";
+  const gate = useOnboardingGate();
+  const { resume, isPaid, stage, completedSteps } = gate;
 
-  const { data: dashboard } = useQuery({
-    queryKey: ["portal-dashboard", user?.id],
-    queryFn: () => request<any>("/api/v1/portal/dashboard"),
-    enabled: !!user?.id,
-  });
-
-  const { data: onboardingStatus } = useQuery<OnboardingStatus>({
-    queryKey: ["onboarding-status", user?.id],
-    queryFn: () => fetchOnboardingStatus(user?.id || ""),
-    enabled: !!user?.id && isClient,
-  });
-
-  const stage = onboardingStatus?.stage ?? dashboard?.onboarding_stage ?? user?.onboarding_stage ?? 1;
-  const isPaid = !!(onboardingStatus?.checklist?.subscription_active || dashboard?.active_plan);
-  const isQuestionnaireDone = !!onboardingStatus?.checklist?.questionnaire_submitted;
-  const isComplete = !!(onboardingStatus?.is_complete || stage >= 8 || onboardingStatus?.checklist?.onboarding_completed);
-
-  // Compute exact resume destination and copy
-  let resumeRoute = "/onboarding";
-  let resumeLabel = "Resume Account Setup";
-  let dynamicTitle = title || "Production Workspace Locked";
-  let dynamicDescription = description || "An active creative retainer and onboarding setup are required to access production deliverables, scheduling, and pod execution.";
-  let statusBadge = "Setup Incomplete";
-  let statusBadgeColor = "bg-amber-500/15 text-amber-300 border-amber-500/30";
+  // Resume destination and copy come from the shared onboarding gate
+  const resumeRoute = resume.route;
+  const resumeLabel = `Step ${resume.step}: ${resume.action}`;
+  const dynamicTitle = title || "Production Workspace Locked";
+  let dynamicDescription = description || resume.description;
+  let statusBadge = `Setup ${completedSteps}/${ONBOARDING_TOTAL_STEPS} · ${resume.action}`;
+  let statusBadgeColor = "bg-[#D8BF9B]/10 text-[#D8BF9B] border-[#D8BF9B]/30";
 
   if (!isPaid) {
-    resumeRoute = "/onboarding?step=3";
-    resumeLabel = "Choose Production Plan (Step 3)";
-    statusBadge = "Retainer Subscription Required";
-    statusBadgeColor = "bg-amber-500/15 text-amber-300 border-amber-500/30";
+    statusBadge = "Plan not active yet";
     if (!description) {
-      dynamicDescription = "An active creative retainer is required to activate your dedicated creative pod. Choose a plan or book a negotiation call with our leadership to set custom rates.";
+      dynamicDescription =
+        "An active creative retainer is required to activate your dedicated creative pod. Choose a plan or book a call to set custom rates.";
     }
-  } else if (!isQuestionnaireDone || stage === 3) {
-    resumeRoute = "/onboarding/questionnaire";
-    resumeLabel = "Complete Brand Questionnaire (Step 4) →";
-    statusBadge = "Payment Received · Questionnaire Pending";
-    statusBadgeColor = "bg-blue-500/15 text-blue-300 border-blue-500/30";
-    if (!title) dynamicTitle = "Complete Your Brand Questionnaire";
-    if (!description) {
-      dynamicDescription = "Your payment has been received! Please complete your brand questionnaire so our creative pod can synthesize your Brand DNA and generate your 30-day production calendar.";
-    }
-  } else if (stage >= 4 && !isComplete) {
-    resumeRoute = "/onboarding?step=5";
-    resumeLabel = "Finalize Workspace Activation (Step 5) →";
-    statusBadge = "Activation in Progress · Pod Assignment";
-    statusBadgeColor = "bg-purple-500/15 text-purple-300 border-purple-500/30";
-    if (!title) dynamicTitle = "Finalize Workspace Activation";
-    if (!description) {
-      dynamicDescription = "Your Brand DNA and dedicated creative specialists are being provisioned. Review and finalize activation to launch your live content pipeline.";
-    }
+  } else if (stage >= 3) {
+    statusBadge = "Payment received · Finish setup";
+    statusBadgeColor = "bg-[#7FA0D6]/15 text-[#BCCCE6] border-[#7FA0D6]/30";
   }
 
   const [showSupportModal, setShowSupportModal] = useState(false);
@@ -124,7 +87,7 @@ export function SubscriptionLockedState({
 
         <div className="relative z-10 flex flex-col items-center space-y-6">
           {/* Status Badge */}
-          <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusBadgeColor} flex items-center gap-1.5`}>
+          <div className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border ${statusBadgeColor} flex items-center gap-1.5`}>
             <span className="size-1.5 rounded-full bg-current animate-pulse" />
             <span>{statusBadge}</span>
           </div>
@@ -142,7 +105,7 @@ export function SubscriptionLockedState({
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
               {dynamicTitle}
             </h2>
-            <p className="text-xs sm:text-[13px] text-[#97A0B3] leading-relaxed">
+            <p className="text-sm sm:text-[15px] text-[#97A0B3] leading-relaxed">
               {dynamicDescription}
             </p>
           </div>
@@ -150,31 +113,31 @@ export function SubscriptionLockedState({
           {/* Feature Highlights Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full text-left pt-1">
             <div className="rounded-2xl border border-[#2A3446] bg-[#0B111C]/80 p-4 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold text-white">
+              <div className="flex items-center gap-2 text-sm font-bold text-white">
                 <CheckCircle2 className="size-4 text-[#7FA0D6] shrink-0" />
                 <span>Dedicated Squad</span>
               </div>
-              <p className="text-[11px] text-[#97A0B3] mt-1 leading-normal">
+              <p className="text-[13px] text-[#97A0B3] mt-1.5 leading-relaxed">
                 Direct creative specialists, editors, and lead producers dedicated to your brand.
               </p>
             </div>
 
             <div className="rounded-2xl border border-[#2A3446] bg-[#0B111C]/80 p-4 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold text-white">
+              <div className="flex items-center gap-2 text-sm font-bold text-white">
                 <CheckCircle2 className="size-4 text-[#7FA0D6] shrink-0" />
                 <span>Guaranteed Cadence</span>
               </div>
-              <p className="text-[11px] text-[#97A0B3] mt-1 leading-normal">
+              <p className="text-[13px] text-[#97A0B3] mt-1.5 leading-relaxed">
                 Monthly quotas of 9:16 video reels, carousel sets, and brand graphics.
               </p>
             </div>
 
             <div className="rounded-2xl border border-[#2A3446] bg-[#0B111C]/80 p-4 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold text-white">
+              <div className="flex items-center gap-2 text-sm font-bold text-white">
                 <CheckCircle2 className="size-4 text-[#7FA0D6] shrink-0" />
                 <span>Publishing Calendar</span>
               </div>
-              <p className="text-[11px] text-[#97A0B3] mt-1 leading-normal">
+              <p className="text-[13px] text-[#97A0B3] mt-1.5 leading-relaxed">
                 30-day auto-publishing schedule with instant review and sign-off docks.
               </p>
             </div>
@@ -185,7 +148,7 @@ export function SubscriptionLockedState({
             {/* Primary Action: Resume Setup */}
             <Link
               to={resumeRoute}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#BCCCE6] px-6 py-3 text-xs font-bold text-[#0B111C] shadow-md hover:bg-white transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#BCCCE6] px-6 py-3 text-sm font-bold text-[#0B111C] shadow-md hover:bg-white transition-all cursor-pointer"
             >
               <Zap className="size-4 text-[#0B111C]" />
               <span>{resumeLabel}</span>
@@ -196,7 +159,7 @@ export function SubscriptionLockedState({
             <button
               type="button"
               onClick={() => setBargainModalOpen(true)}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#7FA0D6]/40 bg-[#7FA0D6]/10 px-5 py-3 text-xs font-bold text-[#7FA0D6] hover:bg-[#7FA0D6]/20 transition-all cursor-pointer shadow-sm"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#7FA0D6]/40 bg-[#7FA0D6]/10 px-5 py-3 text-sm font-semibold text-[#BCCCE6] hover:bg-[#7FA0D6]/20 transition-all cursor-pointer shadow-sm"
             >
               <PhoneCall className="size-4" />
               <span>Call & Bargain / Custom Retainer</span>
@@ -209,7 +172,7 @@ export function SubscriptionLockedState({
                 setSentSuccess(false);
                 setShowSupportModal(true);
               }}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#2A3446] bg-[#0B111C] px-5 py-3 text-xs font-bold text-[#97A0B3] hover:text-white hover:border-[#7FA0D6]/50 transition-all cursor-pointer shadow-sm"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#2A3446] bg-[#0B111C] px-5 py-3 text-sm font-semibold text-[#97A0B3] hover:text-white hover:border-[#7FA0D6]/50 transition-all cursor-pointer shadow-sm"
             >
               <LifeBuoy className="size-4 text-[#7FA0D6]" />
               <span>Need help? Contact Support</span>
@@ -263,7 +226,7 @@ export function SubscriptionLockedState({
                   </div>
                   <div className="text-left min-w-0">
                     <p className="text-xs font-bold text-white">WhatsApp Concierge</p>
-                    <p className="text-[10px] text-emerald-400 truncate">Instant Live Chat</p>
+                    <p className="text-[11px] text-emerald-400 truncate">Instant Live Chat</p>
                   </div>
                 </a>
 
@@ -276,7 +239,7 @@ export function SubscriptionLockedState({
                   </div>
                   <div className="text-left min-w-0">
                     <p className="text-xs font-bold text-white">Email Support</p>
-                    <p className="text-[10px] text-[#7FA0D6] truncate">concierge@creo.agency</p>
+                    <p className="text-[11px] text-[#7FA0D6] truncate">concierge@creo.agency</p>
                   </div>
                 </a>
               </div>

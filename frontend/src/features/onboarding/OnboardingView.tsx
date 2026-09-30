@@ -5,25 +5,22 @@ import { useSearchParams } from "react-router";
 import { CheckCircle2, Mail, ShieldCheck, ArrowRight, RefreshCw } from "lucide-react";
 import { acceptTerms, fetchOnboardingStatus } from "../../lib/onboarding-api";
 import { useAuth } from "../../lib/auth-context";
+import { CreoInlineLoader } from "../../components/ui/CreoLoader";
+import { ONBOARDING_STEPS } from "../../lib/useOnboardingGate";
 import { StageComplete } from "./StageComplete";
 import { StagePayment } from "./StagePayment";
 import { StageQuestionnaire } from "./StageQuestionnaire";
 import { StageTerms } from "./StageTerms";
 import { OtpPinInput } from "../../components/ui/OtpPinInput";
-import type { AssignedTeamMember } from "../../types/api";
+import type { AssignedTeamMember, OnboardingStatus } from "../../types/api";
 
 interface OnboardingViewProps {
   userId: string;
   onPortalLaunch?: () => void;
 }
 
-const STAGES = [
-  { step: 1, label: "Email Verified", short: "Verify" },
-  { step: 2, label: "Terms Signed", short: "Terms" },
-  { step: 3, label: "Payment Done", short: "Payment" },
-  { step: 4, label: "Brand Set", short: "Brand DNA" },
-  { step: 5, label: "Active", short: "Launch" },
-];
+// Same step names as the portal's resume banner so the wording matches everywhere
+const STAGES = ONBOARDING_STEPS;
 
 function ProgressStepper({
   activeStep,
@@ -75,7 +72,7 @@ function ProgressStepper({
                   {/* Step circle */}
                   <div className="relative flex items-center justify-center">
                     <div
-                      className={`relative size-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 shrink-0 ${
+                      className={`relative size-9 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-200 shrink-0 ${
                         isDone
                           ? "bg-[#7FA0D6] text-[#0B111C] shadow-sm"
                           : isActive
@@ -95,7 +92,7 @@ function ProgressStepper({
 
                   {/* Step label */}
                   <div className="mt-2.5 text-center w-full">
-                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${
+                    <p className={`text-[11px] font-bold uppercase tracking-wider mb-0.5 ${
                       isActive ? "text-[#BCCCE6]" : isDone ? "text-[#7FA0D6]" : "text-[#94A3B8]"
                     }`}>
                       Step {s.step}
@@ -124,10 +121,12 @@ function ProgressStepper({
 function StageVerifyEmail({
   userEmail,
   isAlreadyVerified,
+  onVerified,
   onContinueToTerms,
 }: {
   userEmail?: string;
   isAlreadyVerified: boolean;
+  onVerified: () => void;
   onContinueToTerms: () => void;
 }) {
   const { sendOtp, verifyOtp } = useAuth();
@@ -169,9 +168,10 @@ function StageVerifyEmail({
     setMessage(null);
     try {
       await verifyOtp(email, codeToVerify);
+      onVerified();
       setVerifiedSuccess(true);
       setMessage({ type: "success", text: "Email verified successfully!" });
-      setTimeout(onContinueToTerms, 600);
+      setTimeout(onContinueToTerms, 400);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Invalid or expired verification code.";
       setMessage({ type: "error", text: msg });
@@ -198,7 +198,7 @@ function StageVerifyEmail({
       <h2 className="text-xl sm:text-2xl font-bold font-display text-[#F8FAFC] tracking-tight">
         {verifiedSuccess ? "Email Verified" : "Verify Your Email"}
       </h2>
-      <p className="text-xs sm:text-sm text-[#97A0B3] mt-2 max-w-md mx-auto leading-relaxed">
+      <p className="text-sm text-[#97A0B3] mt-2 max-w-md mx-auto leading-relaxed">
         {verifiedSuccess
           ? "Your email address has been confirmed. You can now proceed to review and sign the Master Service Agreement."
           : "We protect your agency workspace with fast email verification. Enter your email to receive a 6-digit code."}
@@ -227,7 +227,7 @@ function StageVerifyEmail({
             <button
               type="button"
               onClick={onContinueToTerms}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#BCCCE6] text-[#0B111C] font-bold text-xs sm:text-sm hover:bg-white shadow-sm transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#BCCCE6] text-[#0B111C] font-bold text-sm hover:bg-white shadow-sm transition-all cursor-pointer"
             >
               <span>Continue to Master Service Agreement (Step 2)</span>
               <ArrowRight className="size-4" />
@@ -317,22 +317,37 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [termsSubmitting, setTermsSubmitting] = useState(false);
+  const [termsError, setTermsError] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [assignedTeam, setAssignedTeam] = useState<AssignedTeamMember[] | undefined>(undefined);
 
   const requestedStepParam = searchParams.get("step");
   const requestedStep = requestedStepParam ? parseInt(requestedStepParam, 10) : null;
 
+  const statusKey = ["onboarding-status", userId];
   const {
     data: status,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["onboarding-status", userId],
+    queryKey: statusKey,
     queryFn: () => fetchOnboardingStatus(userId),
-    refetchInterval: 5000,
-    staleTime: 0,
+    // No polling: every step updates the cache itself after its request succeeds.
+    // Refetch on focus still picks up changes made in another tab (e.g. a payment).
+    staleTime: 15_000,
+    refetchOnWindowFocus: true,
   });
+
+  /**
+   * Record that the server accepted a step so the stepper advances immediately,
+   * then confirm the authoritative stage in the background.
+   */
+  const markStageReached = (minStage: number) => {
+    queryClient.setQueryData<OnboardingStatus>(statusKey, (prev) =>
+      prev && prev.stage < minStage ? { ...prev, stage: minStage, is_complete: minStage >= 8 } : prev,
+    );
+    void queryClient.invalidateQueries({ queryKey: statusKey });
+  };
 
   // Calculate user's current unlocked step (1 to 5) strictly from database stage:
   // stage 0 -> step 1 (Email verification pending)
@@ -340,7 +355,9 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   // stage 2 -> step 3 (Terms accepted, payment pending)
   // stage 3 -> step 4 (Payment done, questionnaire core pending)
   // stage 4..8 -> step 5 (Questionnaire complete -> Creative Pod, Brand DNA & Activation)
-  const backendStage = status?.stage ?? 0;
+  // Until the status request lands, the stage from /auth/me lets us render the right step right away
+  const backendStage = status?.stage ?? user?.onboarding_stage ?? 0;
+  const hasStage = status !== undefined || typeof user?.onboarding_stage === "number";
   const isQuestionnairePath = typeof window !== "undefined" && window.location.pathname.includes("questionnaire");
 
   const computedStep = (() => {
@@ -366,47 +383,44 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
   };
 
   useEffect(() => {
-    if (status) {
-      if (requestedStep && requestedStep >= 1 && requestedStep <= maxUnlockedStep) {
-        setActiveStep(requestedStep);
-      } else {
-        // Enforce exact authoritative step from database state
-        setActiveStep(computedStep);
-      }
-
-      if (status.assigned_team && status.assigned_team.length > 0) {
-        setAssignedTeam(status.assigned_team);
-      }
+    if (!hasStage) return;
+    if (requestedStep && requestedStep >= 1 && requestedStep <= maxUnlockedStep) {
+      setActiveStep(requestedStep);
+    } else {
+      // Enforce exact authoritative step from database state
+      setActiveStep(computedStep);
     }
-  }, [status, requestedStep, maxUnlockedStep, computedStep]);
+
+    if (status?.assigned_team && status.assigned_team.length > 0) {
+      setAssignedTeam(status.assigned_team);
+    }
+  }, [status, hasStage, requestedStep, maxUnlockedStep, computedStep]);
 
   const currentStep = activeStep ?? computedStep;
 
   const handleTermsAccepted = async () => {
     setTermsSubmitting(true);
+    setTermsError(null);
     try {
       await acceptTerms(userId);
-      await queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
+      markStageReached(2);
       handleSelectStep(3); // Advance to Payment
+    } catch (err: unknown) {
+      setTermsError(err instanceof Error ? err.message : "Could not record your acceptance. Please try again.");
     } finally {
       setTermsSubmitting(false);
     }
   };
 
   const refreshStatus = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
+    await queryClient.invalidateQueries({ queryKey: statusKey });
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3 text-[#97A0B3]">
-        <div className="size-8 rounded-full border-3 border-[#7FA0D6] border-t-transparent animate-spin" />
-        <span className="text-sm font-medium">Loading onboarding progress...</span>
-      </div>
-    );
+  if (isLoading && !hasStage) {
+    return <CreoInlineLoader label="Loading your progress" />;
   }
 
-  if (isError || !status) {
+  if (isError && !hasStage) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
         <div className="max-w-md w-full p-6 rounded-2xl bg-[#161F2D] border border-[#2A3446] shadow-xl">
@@ -442,6 +456,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
               key="verify"
               userEmail={user?.email}
               isAlreadyVerified={backendStage >= 1}
+              onVerified={() => markStageReached(1)}
               onContinueToTerms={() => handleSelectStep(2)}
             />
           )}
@@ -453,6 +468,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
               onAccepted={handleTermsAccepted}
               onBack={() => handleSelectStep(1)}
               isSubmitting={termsSubmitting}
+              error={termsError}
             />
           )}
 
@@ -463,7 +479,7 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
               isAlreadyPaid={backendStage >= 3}
               onBack={() => handleSelectStep(2)}
               onPaymentComplete={() => {
-                void refreshStatus();
+                markStageReached(3);
                 handleSelectStep(4);
               }}
             />
@@ -473,12 +489,12 @@ export function OnboardingView({ userId, onPortalLaunch }: OnboardingViewProps) 
             <StageQuestionnaire
               key="questionnaire"
               userId={userId}
-              initialSection={(status.resume_section as any) || undefined}
+              initialSection={(status?.resume_section as any) || undefined}
               onComplete={(team) => {
                 if (team && team.length > 0) {
                   setAssignedTeam(team);
                 }
-                void refreshStatus();
+                markStageReached(8);
                 handleSelectStep(5);
               }}
             />

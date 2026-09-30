@@ -1,41 +1,47 @@
 import { Suspense, lazy, Component, type ReactNode, type ErrorInfo, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from "react-router";
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ConfirmProvider } from "../components/ui/ConfirmDialog";
 import { request } from "../lib/http";
 import type { HealthResponse } from "../types/api";
 
-// Public Layout & Pages
+// Public Layout & Landing Page (other pages are split into their own chunks)
 import { PublicLayout } from "../components/public/PublicLayout";
 import { HomePage } from "../pages/public/HomePage";
-import { PricingPage } from "../pages/public/PricingPage";
-import { PortfolioPage } from "../pages/public/PortfolioPage";
-import { ClientsPage } from "../pages/public/ClientsPage";
-import { AboutPage } from "../pages/public/AboutPage";
-import { FaqPage } from "../pages/public/FaqPage";
-import { TermsPage, PrivacyPage } from "../pages/public/TermsPrivacyPages";
+import {
+  AboutPage,
+  AuthPage,
+  ClientsPage,
+  FaqPage,
+  GoogleCallbackPage,
+  OnboardingView,
+  PortalAccountPage,
+  PortalCalendarPage,
+  PortalCreativePodPage,
+  PortalDashboardPage,
+  PortalDeliverablesPage,
+  PortalLibraryPage,
+  PortalPaymentsPage,
+  PortalSupportPage,
+  PortfolioPage,
+  PricingPage,
+  PrivacyPage,
+  TermsPage,
+  preloadPortalPages,
+  whenIdle,
+} from "./lazy-pages";
 
-import { AuthPage } from "../pages/auth/AuthPage";
-import { GoogleCallbackPage } from "../pages/auth/GoogleCallbackPage";
 import { ProtectedRoute } from "../components/auth/ProtectedRoute";
 import { PublicOnlyRoute } from "../components/auth/PublicOnlyRoute";
 import { RequireOnboardingComplete } from "../components/auth/RequireOnboardingComplete";
 import { RequireOnboardingStage } from "../components/auth/RequireOnboardingStage";
 import { MandatoryPasswordResetModal } from "../components/auth/MandatoryPasswordResetModal";
 import { CreoLoadingScreen } from "../components/ui/CreoLoadingScreen";
-import { CreoLoader } from "../components/ui/CreoLoader";
+import { CreoLoader, CreoInlineLoader } from "../components/ui/CreoLoader";
 
-// Portal Layout & Pages
+// Portal Layout (pages are lazy-loaded from ./lazy-pages)
 import { PortalLayout } from "../components/portal/PortalLayout";
-import { PortalDashboardPage } from "../pages/portal/PortalDashboardPage";
-import { PortalDeliverablesPage } from "../pages/portal/PortalDeliverablesPage";
-import { PortalCalendarPage } from "../pages/portal/PortalCalendarPage";
-import { PortalPaymentsPage } from "../pages/portal/PortalPaymentsPage";
-import { PortalSupportPage } from "../pages/portal/PortalSupportPage";
-import { PortalAccountPage } from "../pages/portal/PortalAccountPage";
-import { PortalCreativePodPage } from "../pages/portal/PortalCreativePodPage";
-import { PortalLibraryPage } from "../pages/portal/PortalLibraryPage";
 
 // Ops Layout & Features
 import { OpsLayout } from "../components/ops/OpsLayout";
@@ -43,9 +49,6 @@ const AdminDashboard = lazy(() =>
   import("../features/admin/AdminDashboard").then((m) => ({ default: m.AdminDashboard }))
 );
 
-const OnboardingView = lazy(() =>
-  import("../features/onboarding/OnboardingView").then((m) => ({ default: m.OnboardingView }))
-);
 const AdminClientsPage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminClientsPage }))
 );
@@ -158,7 +161,11 @@ class OnboardingErrorBoundary extends Component<
 
 function OnboardingPageWrapper() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const userId = user?.id || "00000000-0000-0000-0000-000000000001";
+
+  // Warm the portal while the client works through onboarding
+  useEffect(() => whenIdle(() => preloadPortalPages()), []);
 
   return (
     <div data-surface="review" className="bento-theme min-h-screen bg-[#0B111C] text-[#F8FAFC] flex flex-col overflow-x-hidden">
@@ -190,15 +197,17 @@ function OnboardingPageWrapper() {
               href="https://wa.me/919941999415"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#97A0B3] hover:text-[#7FA0D6] transition-colors inline-flex items-center gap-1.5"
+              className="whitespace-nowrap text-[#97A0B3] hover:text-[#7FA0D6] transition-colors inline-flex items-center gap-1.5"
             >
-              Need Help?
+              <span className="sm:hidden">Help</span>
+              <span className="hidden sm:inline">Need Help?</span>
             </a>
             <Link
               to="/portal"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#161F2D] text-[#BCCCE6] hover:bg-[#2A3446] border border-[#2A3446] transition-colors"
+              className="whitespace-nowrap inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#161F2D] text-[#BCCCE6] hover:bg-[#2A3446] border border-[#2A3446] transition-colors"
             >
-              Go to Portal →
+              <span className="sm:hidden">Portal →</span>
+              <span className="hidden sm:inline">Go to Portal →</span>
             </Link>
           </div>
         </div>
@@ -207,13 +216,8 @@ function OnboardingPageWrapper() {
       {/* Main Onboarding Canvas - full page view with generous space */}
       <main className="flex-1 max-w-5xl lg:max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col items-center">
         <OnboardingErrorBoundary>
-          <Suspense fallback={<RouteLoading />}>
-            <OnboardingView
-              userId={userId}
-              onPortalLaunch={() => {
-                window.location.href = "/portal";
-              }}
-            />
+          <Suspense fallback={<CreoInlineLoader label="Loading your onboarding" />}>
+            <OnboardingView userId={userId} onPortalLaunch={() => navigate("/portal")} />
           </Suspense>
         </OnboardingErrorBoundary>
       </main>
@@ -281,6 +285,20 @@ function HealthPage() {
   );
 }
 
+/** Prefetch the chunks a signed-in user is most likely to open next, once the browser is idle. */
+function RoutePrefetcher() {
+  const { user } = useAuth();
+  const role = user?.role;
+  const needsOnboarding = role === "client" && (user?.onboarding_stage ?? 0) < 8;
+
+  useEffect(() => {
+    if (role !== "client" && role !== "admin" && role !== "super_admin") return;
+    return whenIdle(() => preloadPortalPages({ includeOnboarding: needsOnboarding }));
+  }, [role, needsOnboarding]);
+
+  return null;
+}
+
 function ScrollToTop() {
   const { pathname, search, hash } = useLocation();
 
@@ -307,6 +325,7 @@ export function App() {
       <ConfirmProvider>
         <BrowserRouter>
           <ScrollToTop />
+          <RoutePrefetcher />
           <Suspense fallback={<RouteLoading />}>
             <Routes>
               {/* 1. Public Marketing Pages (Open to All) */}

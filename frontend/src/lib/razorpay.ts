@@ -43,6 +43,14 @@ function loadRazorpayScript(): Promise<void> {
   return _rzpScriptPromise;
 }
 
+/** Start downloading the checkout SDK early so opening checkout is instant. */
+export function preloadRazorpay(): void {
+  void loadRazorpayScript().catch(() => {
+    // Allow a retry when the user actually clicks pay
+    _rzpScriptPromise = null;
+  });
+}
+
 export async function openRazorpayCheckout(
   options: RazorpayOptions,
   onSuccess: (data: RazorpayPaymentSuccess) => void,

@@ -203,8 +203,15 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [validationBanner, setValidationBanner] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [failedSection, setFailedSection] = useState<SectionKey | null>(null);
+  const [synthPhase, setSynthPhase] = useState<string>("Synthesizing Brand DNA…");
 
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // JSON of what the server last acknowledged per section; unchanged sections are never re-sent
+  const lastSavedRef = useRef<Partial<Record<SectionKey, string>>>({});
+  const serverSectionsRef = useRef<Set<SectionKey>>(new Set());
+  const baselineTakenRef = useRef(false);
+  const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
   const formTopRef = useRef<HTMLDivElement | null>(null);
 
   // Section form states
@@ -288,6 +295,13 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   useEffect(() => {
     if (qState) {
       const completed = new Set<SectionKey>();
+      const allKeys: SectionKey[] = ["a", "b", "c", "d", "e", "f", "g"];
+      serverSectionsRef.current = new Set(
+        allKeys.filter((k) => {
+          const section = qState[`section_${k}` as keyof typeof qState];
+          return Boolean(section && typeof section === "object" && Object.keys(section).length > 0);
+        }),
+      );
 
       if (qState.section_a && Object.keys(qState.section_a).length > 0) {
         setSecA((prev) => ({ ...prev, ...qState.section_a }));
@@ -375,7 +389,37 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     }
   };
 
-  // Continuous debounced autosave
+  // Once restored answers are in state, treat the sections the server already has as saved
+  useEffect(() => {
+    if (!dataInitialized || baselineTakenRef.current) return;
+    baselineTakenRef.current = true;
+    for (const key of serverSectionsRef.current) {
+      lastSavedRef.current[key] = JSON.stringify(getCurrentSectionData(key));
+    }
+  }, [dataInitialized]);
+
+  const isSectionDirty = (secKey: SectionKey) =>
+    lastSavedRef.current[secKey] !== JSON.stringify(getCurrentSectionData(secKey));
+
+  /**
+   * Persist one section if it changed since the last acknowledged save.
+   * Saves are queued so they reach the server one at a time, in order.
+   */
+  const persistSection = (secKey: SectionKey): Promise<void> => {
+    const data = getCurrentSectionData(secKey);
+    const serialized = JSON.stringify(data);
+    const run = async () => {
+      if (lastSavedRef.current[secKey] === serialized) return;
+      const res = await saveQuestionnaireSection(userId, secKey, data);
+      lastSavedRef.current[secKey] = serialized;
+      if (res.core_completed) setCoreUnlocked(true);
+    };
+    const queued = saveQueueRef.current.then(run, run);
+    saveQueueRef.current = queued.catch(() => {});
+    return queued;
+  };
+
+  // Debounced autosave — only sends a request when the active section actually changed
   useEffect(() => {
     if (!dataInitialized || isSaving) return;
 
@@ -384,12 +428,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     }
 
     autosaveTimerRef.current = setTimeout(() => {
-      const currentData = getCurrentSectionData(activeSection);
-      saveQuestionnaireSection(userId, activeSection, currentData)
-        .then((res) => {
-          if (res.core_completed) setCoreUnlocked(true);
-        })
-        .catch((err) => console.warn("Autosave notification:", err));
+      if (!isSectionDirty(activeSection)) return;
+      persistSection(activeSection).catch((err) => console.warn("Autosave notification:", err));
     }, 1500);
 
     return () => {
@@ -509,8 +549,6 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
 
   // Handle Save & Continue with strict validation, background async saving, and section progression
   const handleNextSection = async () => {
-    if (isSaving) return;
-
     // 1. Client-Side Validation
     const { valid, errors, firstKey } = validateCurrentSection(activeSection);
     if (!valid) {
@@ -540,31 +578,33 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
       clearTimeout(autosaveTimerRef.current);
     }
 
-    // 3. Save asynchronously in background
-    setIsSaving(true);
-    try {
-      const currentData = getCurrentSectionData(activeSection);
-      const res = await saveQuestionnaireSection(userId, activeSection, currentData);
-      
-      if (res.core_completed) {
-        setCoreUnlocked(true);
-      }
+    // 3. Advance immediately — the answers are already validated and held in state
+    const savedSection = activeSection;
+    setCompletedSections((prev) => new Set([...prev, savedSection]));
+    const currentIndex = SECTIONS.findIndex((s) => s.key === savedSection);
+    const nextSec = SECTIONS[currentIndex + 1];
+    if (nextSec) {
+      setActiveSection(nextSec.key);
+      formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
 
-      setCompletedSections((prev) => new Set([...prev, activeSection]));
+    // 4. Persist the finished section in the background
+    await saveSectionInBackground(savedSection);
+  };
+
+  const saveSectionInBackground = async (secKey: SectionKey) => {
+    setIsSaving(true);
+    setFailedSection(null);
+    try {
+      await persistSection(secKey);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 1200);
-
-      // 4. Advance strictly one section
-      const currentIndex = SECTIONS.findIndex((s) => s.key === activeSection);
-      const nextSec = SECTIONS[currentIndex + 1];
-      if (nextSec) {
-        setActiveSection(nextSec.key);
-        // Scroll smoothly to top of form
-        formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
     } catch (err) {
       console.error("Save & Continue API failure:", err);
-      setApiError("Failed to save section data to server. Your entered progress is preserved. Please click Retry.");
+      setFailedSection(secKey);
+      setApiError(
+        `We couldn't save Section ${secKey.toUpperCase()} yet. Your answers are kept on this page — click Retry, or they'll be saved when you finish.`,
+      );
     } finally {
       setIsSaving(false);
     }
@@ -640,23 +680,23 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     }
 
     try {
-      // 2. Persist Sections A through E (and active section if f or g) to guarantee backend database state has core_completed_at
-      const sectionsToSave: SectionKey[] = ["a", "b", "c", "d", "e"];
-      if (activeSection === "f" || activeSection === "g") {
-        sectionsToSave.push(activeSection);
-      }
-      for (const sec of sectionsToSave) {
-        const secData = getCurrentSectionData(sec);
-        const res = await saveQuestionnaireSection(userId, sec, secData);
-        if (res.core_completed) {
-          setCoreUnlocked(true);
+      // 2. Persist any section the server hasn't acknowledged yet (usually none — autosave
+      // already sent them). Sequential on purpose: each save re-evaluates core completion.
+      setSynthPhase("Saving your answers…");
+      const allSections: SectionKey[] = ["a", "b", "c", "d", "e", "f", "g"];
+      for (const sec of allSections) {
+        const isCore = sec !== "f" && sec !== "g";
+        if ((isCore || sec === activeSection) && isSectionDirty(sec)) {
+          await persistSection(sec);
         }
       }
 
       // 3. Trigger Brand DNA synthesis pipeline
+      setSynthPhase("Synthesizing Brand DNA…");
       await queueBrandDNAGeneration(userId);
 
       // 4. Complete onboarding and allocate creative pod
+      setSynthPhase("Assigning your creative pod…");
       const completeRes = await completeOnboarding(userId);
       onComplete(completeRes.assigned_team);
     } catch (err: unknown) {
@@ -695,7 +735,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-display">
               Creo Brand Discovery & Production Blueprint
             </h1>
-            <p className="text-xs sm:text-sm text-[#94A3B8] mt-1 max-w-2xl leading-relaxed">
+            <p className="text-sm text-[#94A3B8] mt-1 max-w-2xl leading-relaxed">
               Sections A–E configure our editor, designer, and shoot director (~10 min).
               Sections F–G are optional creative enrichment.
             </p>
@@ -737,7 +777,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
         <div className="bg-emerald-950/40 border border-emerald-800/60 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-emerald-200 shadow-md">
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-            <span className="text-xs sm:text-sm font-medium">
+            <span className="text-sm font-medium">
               <strong className="text-emerald-300">Core Discovery Complete!</strong> Sections A–E are recorded. You may proceed directly to allocate your Creative Pod.
             </span>
           </div>
@@ -774,7 +814,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
               }`}
             >
               <div className="flex items-center justify-between w-full mb-1">
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded font-mono ${
+                <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded font-mono ${
                   isActive
                     ? "bg-[#7FA0D6] text-[#0B111C]"
                     : isDone
@@ -784,11 +824,11 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   {isDone ? `✓ ${sec.badge}` : sec.badge}
                 </span>
                 {!sec.isCore ? (
-                  <span className="text-[9px] font-bold text-[#D8BF9B] bg-[#D8BF9B]/10 border border-[#D8BF9B]/30 px-1 py-0.5 rounded shrink-0">
+                  <span className="text-[10px] font-bold text-[#D8BF9B] bg-[#D8BF9B]/10 border border-[#D8BF9B]/30 px-1 py-0.5 rounded shrink-0">
                     Optional
                   </span>
                 ) : (
-                  <span className="text-[9px] font-bold text-[#7FA0D6] uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[#7FA0D6] uppercase tracking-wider">
                     {isDone ? "Done" : "Req"}
                   </span>
                 )}
@@ -797,7 +837,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-[#7FA0D6]" : isDone ? "text-emerald-400" : "text-[#94A3B8]"}`} />
                 <span className="text-xs font-bold truncate">{sec.label}</span>
               </div>
-              <span className="text-[10px] text-[#94A3B8] mt-1 font-medium">~{sec.estMinutes} min</span>
+              <span className="text-[11px] text-[#94A3B8] mt-1 font-medium">~{sec.estMinutes} min</span>
             </button>
           );
         })}
@@ -824,7 +864,10 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
           </div>
           <button
             type="button"
-            onClick={handleNextSection}
+            onClick={() => {
+              setApiError(null);
+              if (failedSection) void saveSectionInBackground(failedSection);
+            }}
             className="px-3 py-1 bg-white text-[#0B111C] rounded-lg font-bold hover:bg-[#BCCCE6] transition-colors shrink-0 flex items-center gap-1"
           >
             <RefreshCw className="size-3" /> Retry
@@ -900,7 +943,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <label className="block text-xs font-semibold text-[#F1F5F9]">
                   A3: In one sentence, what does your brand do? <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-[10px] text-[#94A3B8] font-mono">
+                <span className="text-[11px] text-[#94A3B8] font-mono">
                   {secA.one_liner?.length || 0}/180
                 </span>
               </div>
@@ -1166,7 +1209,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <Sparkles className="w-4 h-4 text-[#D8BF9B]" />
                 <span>B4: Why might someone hesitate before buying? (Crucial Conversion Asset)</span>
               </div>
-              <p className="text-[11px] text-[#97A0B3] mb-2 leading-relaxed">
+              <p className="text-xs text-[#97A0B3] mb-2 leading-relaxed">
                 Every objection here converts directly into high-converting video and carousel pillars.
               </p>
               <textarea
@@ -1344,7 +1387,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <label className="text-xs font-semibold text-[#F1F5F9]">
                   C5: Pick up to 4 words that describe your voice <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-[11px] text-[#94A3B8] font-mono">
+                <span className="text-xs text-[#94A3B8] font-mono">
                   {secC.voice_words?.length || 0}/4 selected
                 </span>
               </div>
@@ -1389,7 +1432,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   <ShieldAlert className="w-4 h-4 text-rose-400" />
                   <span>C6: Pick up to 4 words your voice must NEVER be (Hard Guardrails) <span className="text-rose-400 font-bold">*</span></span>
                 </label>
-                <span className="text-[11px] text-rose-300 font-mono">
+                <span className="text-xs text-rose-300 font-mono">
                   {secC.anti_voice_words?.length || 0}/4 selected
                 </span>
               </div>
@@ -1569,7 +1612,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <label className="text-xs font-semibold text-[#F1F5F9]">
                   D6: Visual Direction (Pick up to 3) <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-[11px] text-[#94A3B8] font-mono">
+                <span className="text-xs text-[#94A3B8] font-mono">
                   {secD.visual_direction?.length || 0}/3 selected
                 </span>
               </div>
@@ -1786,7 +1829,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <AlertCircle className="w-4 h-4 text-rose-400" />
                 <span>E10: Regulatory or Legal Constraints on Claims (Agency Liability Shield)</span>
               </div>
-              <p className="text-[11px] text-[#97A0B3] mb-2 leading-relaxed">
+              <p className="text-xs text-[#97A0B3] mb-2 leading-relaxed">
                 e.g. Supplements cannot claim to cure disease; FinTech must carry risk disclaimers; healthcare cannot show patient before/after results.
               </p>
               <textarea
@@ -1857,7 +1900,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             <div className="border-b border-[#2A3446] pb-4">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-white">Section F: Historical Content Data</h2>
-                <span className="text-[10px] font-bold bg-[#D8BF9B]/20 text-[#D8BF9B] border border-[#D8BF9B]/30 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] font-bold bg-[#D8BF9B]/20 text-[#D8BF9B] border border-[#D8BF9B]/30 px-2 py-0.5 rounded-full">
                   Optional Enrichment
                 </span>
               </div>
@@ -1885,7 +1928,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             <div className="border-b border-[#2A3446] pb-4">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-white">Section G: Founder Story & Long-Term Vision</h2>
-                <span className="text-[10px] font-bold bg-[#D8BF9B]/20 text-[#D8BF9B] border border-[#D8BF9B]/30 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] font-bold bg-[#D8BF9B]/20 text-[#D8BF9B] border border-[#D8BF9B]/30 px-2 py-0.5 rounded-full">
                   Optional Enrichment
                 </span>
               </div>
@@ -1967,15 +2010,9 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
               <button
                 type="button"
                 onClick={handleNextSection}
-                disabled={isSaving}
-                className="w-full sm:w-auto min-w-[200px] px-6 py-2.5 rounded-xl bg-[#BCCCE6] hover:bg-white text-[#0B111C] text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-wait"
+                className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-xl bg-[#BCCCE6] hover:bg-white text-[#0B111C] text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-[#0B111C]" />
-                    <span>Saving Progress…</span>
-                  </>
-                ) : saveSuccess ? (
+                {saveSuccess ? (
                   <>
                     <Check className="w-4 h-4 text-[#0B111C]" />
                     <span>Saved ✓</span>
@@ -1992,12 +2029,12 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 type="button"
                 onClick={handleSynthesizeAndFinish}
                 disabled={isSynthesizing}
-                className="w-full sm:w-auto min-w-[240px] px-6 py-2.5 rounded-xl bg-[#BCCCE6] hover:bg-white text-[#0B111C] text-xs sm:text-sm font-black transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-wait"
+                className="w-full sm:w-auto min-w-[240px] px-6 py-2.5 rounded-xl bg-[#BCCCE6] hover:bg-white text-[#0B111C] text-sm font-black transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-wait"
               >
                 {isSynthesizing ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-[#0B111C]" />
-                    <span>Synthesizing Brand DNA…</span>
+                    <span>{synthPhase}</span>
                   </>
                 ) : (
                   <>

@@ -7,13 +7,14 @@ import { motion } from "motion/react";
  * on sentinel ensure strict enforcement.
  */
 import { useCallback, useRef, useState, useEffect } from "react";
-import { Clock, Check, FileText, ChevronRight, Lock, ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
+import { Clock, Check, FileText, ChevronRight, Lock, ArrowLeft, ArrowRight, ShieldCheck, Loader2 } from "lucide-react";
 
 interface StageTermsProps {
   userId: string;
   onAccepted: () => void;
   onBack?: () => void;
   isSubmitting: boolean;
+  error?: string | null;
 }
 
 const MSA_TEXT = `MASTER SERVICE AGREEMENT — CREO DIGITAL AGENCY
@@ -73,7 +74,7 @@ understood, and agree to be bound by this Master Service Agreement.
 
 — End of Agreement —`;
 
-export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps) {
+export function StageTerms({ onAccepted, onBack, isSubmitting, error }: StageTermsProps) {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -134,13 +135,13 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
         <div className="lg:col-span-4 flex flex-col">
           <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-6 sm:p-7 shadow-xl h-full flex flex-col justify-between">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7FA0D6]/20 border border-[#7FA0D6]/30 text-[#BCCCE6] text-[10px] font-bold uppercase tracking-wider mb-4 shadow-sm w-fit">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7FA0D6]/20 border border-[#7FA0D6]/30 text-[#BCCCE6] text-[11px] font-bold uppercase tracking-wider mb-4 shadow-sm w-fit">
                 Step 2 of 5
               </div>
               <h2 className="text-xl sm:text-2xl font-bold font-display text-white tracking-tight mb-2">
                 Master Service Agreement
               </h2>
-              <p className="text-xs sm:text-sm text-[#94A3B8] mb-6 leading-relaxed">
+              <p className="text-sm text-[#94A3B8] mb-6 leading-relaxed">
                 Please review the terms of service below. Scroll to the bottom of the agreement to unlock the acceptance button.
               </p>
 
@@ -150,7 +151,7 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
                     <FileText className="w-4 h-4 text-[#7FA0D6]" />
                     Document Highlights
                   </div>
-                  <div className="text-[10px] font-bold text-[#94A3B8] bg-[#161F2D] border border-[#2A3446] px-2 py-0.5 rounded flex items-center gap-1">
+                  <div className="text-[11px] font-bold text-[#94A3B8] bg-[#161F2D] border border-[#2A3446] px-2 py-0.5 rounded flex items-center gap-1">
                     <Lock className="w-2.5 h-2.5 text-[#7FA0D6]" /> Enforced
                   </div>
                 </div>
@@ -159,21 +160,21 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
                   <div className="flex items-center justify-between bg-[#161F2D] border border-[#2A3446] p-3 rounded-lg">
                     <div>
                       <p className="text-xs font-semibold text-white">01. Scope of Services</p>
-                      <p className="text-[11px] text-[#94A3B8] mt-0.5">Content creation, identity, campaigns</p>
+                      <p className="text-xs text-[#94A3B8] mt-0.5">Content creation, identity, campaigns</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-[#7FA0D6] shrink-0" />
                   </div>
                   <div className="flex items-center justify-between bg-[#161F2D] border border-[#2A3446] p-3 rounded-lg">
                     <div>
                       <p className="text-xs font-semibold text-white">02. Payment Terms</p>
-                      <p className="text-[11px] text-[#94A3B8] mt-0.5">Billing cycles & 7-day grace period</p>
+                      <p className="text-xs text-[#94A3B8] mt-0.5">Billing cycles & 7-day grace period</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-[#7FA0D6] shrink-0" />
                   </div>
                   <div className="flex items-center justify-between bg-[#161F2D] border border-[#2A3446] p-3 rounded-lg">
                     <div>
                       <p className="text-xs font-semibold text-white">03. Intellectual Property</p>
-                      <p className="text-[11px] text-[#94A3B8] mt-0.5">Full ownership assigned on payment</p>
+                      <p className="text-xs text-[#94A3B8] mt-0.5">Full ownership assigned on payment</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-[#7FA0D6] shrink-0" />
                   </div>
@@ -187,7 +188,7 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
                 <Clock className="w-5 h-5 text-[#D8BF9B] shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs font-bold text-[#D8BF9B]">Reading in progress ({scrollProgress}%)</p>
-                  <p className="text-[11px] text-[#D8BF9B]/80 font-medium mt-0.5">Scroll through the document on the right to unlock acceptance</p>
+                  <p className="text-xs text-[#D8BF9B]/80 font-medium mt-0.5">Scroll through the document on the right to unlock acceptance</p>
                 </div>
               </div>
             ) : (
@@ -195,7 +196,7 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
                 <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs font-bold text-emerald-300">Reading condition satisfied (100%)</p>
-                  <p className="text-[11px] text-emerald-300/80 font-medium mt-0.5">You can now proceed to accept and continue to payment</p>
+                  <p className="text-xs text-emerald-300/80 font-medium mt-0.5">You can now proceed to accept and continue to payment</p>
                 </div>
               </div>
             )}
@@ -214,7 +215,7 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">creo_master_agreement_2026.pdf</h3>
-                  <p className="text-[11px] text-[#94A3B8] mt-0.5 font-medium">Standard Legal Terms • Rev 2026.01</p>
+                  <p className="text-xs text-[#94A3B8] mt-0.5 font-medium">Standard Legal Terms • Rev 2026.01</p>
                 </div>
               </div>
               
@@ -225,7 +226,7 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
                     style={{ width: `${scrollProgress}%` }}
                   />
                 </div>
-                <span className="text-[11px] font-mono font-bold text-[#BCCCE6] w-9 text-right">
+                <span className="text-xs font-mono font-bold text-[#BCCCE6] w-9 text-right">
                   {scrollProgress}%
                 </span>
               </div>
@@ -259,13 +260,19 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
         </div>
       </div>
 
+      {error && (
+        <div role="alert" className="rounded-xl border border-rose-800/60 bg-rose-950/40 px-4 py-3 text-sm font-medium text-rose-300">
+          {error}
+        </div>
+      )}
+
       {/* FOOTER ACTIONS BAR */}
       <div className="rounded-2xl border border-[#2A3446] bg-[#161F2D] p-4 sm:p-5 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         {onBack ? (
           <button
             type="button"
             onClick={onBack}
-            className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#0B111C] border border-[#2A3446] text-xs sm:text-sm font-bold text-[#94A3B8] hover:text-white hover:border-[#7FA0D6] shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2 shrink-0"
+            className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#0B111C] border border-[#2A3446] text-sm font-bold text-[#94A3B8] hover:text-white hover:border-[#7FA0D6] shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2 shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Step 1</span>
@@ -277,14 +284,15 @@ export function StageTerms({ onAccepted, onBack, isSubmitting }: StageTermsProps
           type="button"
           onClick={onAccepted}
           disabled={!hasScrolled || isSubmitting}
-          className={`w-full sm:w-auto min-w-[280px] py-3 px-8 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md inline-flex items-center justify-center gap-2 ${
+          className={`w-full sm:w-auto min-w-[280px] py-3 px-8 rounded-xl font-bold text-sm transition-all shadow-md inline-flex items-center justify-center gap-2 ${
             hasScrolled && !isSubmitting
               ? "bg-[#BCCCE6] text-[#0B111C] cursor-pointer hover:bg-white shadow-[#BCCCE6]/20"
               : "bg-[#161F2D] text-[#64748B] border border-[#2A3446] cursor-not-allowed shadow-none"
           }`}
         >
-          <span>{isSubmitting ? "Accepting Terms…" : "Accept Agreement & Continue to Payment"}</span>
-          <ArrowRight className="w-4 h-4" />
+          {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+          <span>{isSubmitting ? "Accepting terms…" : "Accept Agreement & Continue to Payment"}</span>
+          {!isSubmitting && <ArrowRight className="w-4 h-4" />}
         </button>
       </div>
     </motion.div>

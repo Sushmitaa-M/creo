@@ -7,7 +7,7 @@ import { motion } from "motion/react";
  * on sentinel ensure strict enforcement.
  */
 import { useCallback, useRef, useState, useEffect } from "react";
-import { Clock, Check, FileText, ChevronRight, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { Clock, Check, FileText, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
 interface StageTermsProps {
   userId: string;
@@ -175,45 +175,9 @@ export function StageTerms({
               <h2 className="text-xl sm:text-2xl font-bold font-display text-white tracking-tight mb-2">
                 Master Service Agreement
               </h2>
-              <p className="text-xs sm:text-sm text-[#94A3B8] mb-4 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
                 Review our terms of service below. You can accept by checking the confirmation box or reviewing the agreement text.
               </p>
-
-              <div className="rounded-xl border border-[#2A3446] bg-[#0B111C] p-3 mb-4 space-y-2">
-                <div className="flex items-center justify-between pb-2 border-b border-[#2A3446]">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-white">
-                    <FileText className="w-4 h-4 text-[#7FA0D6]" />
-                    <span>Agreement Highlights</span>
-                  </div>
-                  <span className="text-[10px] font-bold text-[#7FA0D6] bg-[#161F2D] border border-[#2A3446] px-2 py-0.5 rounded">
-                    Standard 2026
-                  </span>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between bg-[#161F2D] border border-[#2A3446] p-2.5 rounded-lg">
-                    <div>
-                      <p className="font-semibold text-white">01. Deliverables Scope</p>
-                      <p className="text-[#94A3B8] text-[11px]">Reels, posts, stories per active cycle</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-[#7FA0D6] shrink-0" />
-                  </div>
-                  <div className="flex items-center justify-between bg-[#161F2D] border border-[#2A3446] p-2.5 rounded-lg">
-                    <div>
-                      <p className="font-semibold text-white">02. IP Ownership</p>
-                      <p className="text-[#94A3B8] text-[11px]">100% client rights transferred on payment</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-[#7FA0D6] shrink-0" />
-                  </div>
-                  <div className="flex items-center justify-between bg-[#161F2D] border border-[#2A3446] p-2.5 rounded-lg">
-                    <div>
-                      <p className="font-semibold text-white">03. Grace Period</p>
-                      <p className="text-[#94A3B8] text-[11px]">7-day renewal grace before interruption</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-[#7FA0D6] shrink-0" />
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Quick Action Card inside Left Column */}

@@ -123,6 +123,10 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
       }
     } catch (err: any) {
       console.error(err);
+      if (mode === "signup") {
+        setRegistrationPending(false);
+        clearPendingRegistration();
+      }
       setError(err.message || "Authentication failed. Please verify credentials.");
     } finally {
       setLoading(false);
@@ -322,8 +326,8 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
           <div className="col-span-12 lg:col-span-6 flex justify-center">
             <div className="w-full max-w-[410px] bg-[#121926]/90 backdrop-blur-xl border border-[#222F44] rounded-2xl p-5 sm:p-6 shadow-[0_15px_40px_rgba(0,0,0,0.6)] flex flex-col justify-between">
               
-              {/* Segmented Mode Switcher */}
-              <div className="bg-[#0A0F18] border border-[#222F44] p-1 rounded-full flex mb-4">
+              {/* Keep verification focused: account switching is unavailable until OTP succeeds. */}
+              {!registrationPending && <div className="bg-[#0A0F18] border border-[#222F44] p-1 rounded-full flex mb-4">
                 <button 
                   type="button"
                   onClick={() => {
@@ -358,7 +362,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                 >
                   Create Account
                 </button>
-              </div>
+              </div>}
 
               {/* Title & Subtitle */}
               <div className="mb-3 text-left">

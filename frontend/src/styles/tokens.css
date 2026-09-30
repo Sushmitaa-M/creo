@@ -764,3 +764,32 @@ select:-moz-autofill {
   box-shadow: 0 0 0 1000px #161F2D inset !important;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Razorpay Checkout Modal - Floating Dark Backdrop Preservation
+   Prevents Chromium from forcing an opaque white canvas on the checkout iframe
+   when the parent app is in dark mode, keeping the app's usual background.
+───────────────────────────────────────────────────────────────────────────── */
+.razorpay-container {
+  color-scheme: light !important;
+  background: rgba(5, 8, 16, 0.82) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.razorpay-container iframe,
+iframe.razorpay-checkout-frame,
+iframe[src*="razorpay"],
+iframe[name*="razorpay"],
+iframe[id*="razorpay"] {
+  color-scheme: light !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.razorpay-backdrop {
+  background: rgba(5, 8, 16, 0.82) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+

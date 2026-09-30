@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Loader2, PauseCircle, CheckCircle2 } from "lucide-react";
+import { Download, Loader2, PauseCircle, CheckCircle2, AlertCircle } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../lib/auth-context";
 import { request } from "../../lib/http";
@@ -28,6 +28,7 @@ export function PortalPaymentsPage() {
   const [negotiateTopic, setNegotiateTopic] = useState("Custom Pricing / Retainer Discount");
   const [resumingSub, setResumingSub] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [errorNotice, setErrorNotice] = useState<string | null>(null);
 
   const { data: subData } = useQuery<{ subscription?: SubscriptionData; is_paused_next_month?: boolean }>({
     queryKey: ["client-subscription", user?.id],
@@ -105,13 +106,16 @@ export function PortalPaymentsPage() {
   const handleResumePlan = async () => {
     try {
       setResumingSub(true);
+      setErrorNotice(null);
       await request("/api/v1/payments/subscription/resume", { method: "POST" });
-      queryClient.invalidateQueries({ queryKey: ["client-subscription", user?.id] });
+      await queryClient.invalidateQueries({ queryKey: ["client-subscription", user?.id] });
+      await queryClient.refetchQueries({ queryKey: ["client-subscription", user?.id] });
       setActionNotice("Subscription resumed! Your next cycle will renew automatically.");
       setTimeout(() => setActionNotice(null), 4000);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to resume subscription.";
-      alert(msg);
+      const msg = err instanceof Error ? err.message : "Failed to resume subscription renewal.";
+      setErrorNotice(msg);
+      setTimeout(() => setErrorNotice(null), 5000);
     } finally {
       setResumingSub(false);
     }
@@ -143,6 +147,14 @@ export function PortalPaymentsPage() {
         <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-700/60 text-emerald-300 text-xs font-semibold flex items-center gap-2.5 animate-[fadeIn_0.2s_ease-out]">
           <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
           <span>{actionNotice}</span>
+        </div>
+      )}
+
+      {/* Error Toast / Alert Notice */}
+      {errorNotice && (
+        <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs font-semibold flex items-center gap-2.5 animate-[fadeIn_0.2s_ease-out]">
+          <AlertCircle className="size-4 shrink-0 text-rose-400" />
+          <span>{errorNotice}</span>
         </div>
       )}
 
@@ -382,8 +394,9 @@ export function PortalPaymentsPage() {
         onClose={() => setPauseModalOpen(false)}
         onSuccess={() => {
           queryClient.invalidateQueries({ queryKey: ["client-subscription", user?.id] });
-          setActionNotice("Plan scheduled to pause for next month.");
-          setTimeout(() => setActionNotice(null), 4000);
+          queryClient.refetchQueries({ queryKey: ["client-subscription", user?.id] });
+          setActionNotice("Plan scheduled to pause for next month. AutoPay will not charge your account next cycle.");
+          setTimeout(() => setActionNotice(null), 5000);
         }}
         planName={planName}
         renewalDate={renewalDate}

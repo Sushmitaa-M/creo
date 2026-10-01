@@ -231,21 +231,23 @@ export function PortalAccountPage() {
                 {profile?.brand_dna?.summary_line || form.whatYouSell || "Strategic, engaging, and aligned with your target audience brand guidelines."}
               </p>
               <div className="flex flex-wrap gap-2">
-                {form.voiceWords.map(word => (
+                {((profile?.brand_dna?.tone?.voice_words || form.voiceWords) as string[])?.map((word: string) => (
                   <span key={word} className="px-3 py-1.5 rounded-lg border border-[#2A3446] text-[13px] font-medium text-white">{word}</span>
                 ))}
               </div>
             </div>
 
-            <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8 flex gap-8">
+            <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8 flex flex-col gap-6">
               <div className="flex-1">
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#97A0B3] mb-2">MAIN AUDIENCE</h3>
-                <p className="text-[13px] text-white leading-relaxed">{form.audience || profile?.brand_dna?.target_audience || "Target customer demographic and core audience segment."}</p>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#97A0B3] mb-2">WHAT THEY CARE ABOUT</h3>
                 <p className="text-[13px] text-white leading-relaxed">
-                  {profile?.brand_dna?.value_propositions || "Authenticity, product quality, value proposition, and brand reliability."}
+                  {profile?.brand_dna?.audience_segments?.[0]?.description || form.audience || profile?.brand_dna?.target_audience || "Target customer demographic and core audience segment."}
+                </p>
+              </div>
+              <div className="flex-1 pt-6 border-t border-[#2A3446]">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#97A0B3] mb-2">CORE PAIN POINTS & WHAT THEY CARE ABOUT</h3>
+                <p className="text-[13px] text-white leading-relaxed">
+                  {profile?.brand_dna?.audience_segments?.[0]?.core_pain_point || profile?.brand_dna?.value_propositions || "Authenticity, product quality, value proposition, and brand reliability."}
                 </p>
               </div>
             </div>

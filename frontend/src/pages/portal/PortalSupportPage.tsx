@@ -262,7 +262,7 @@ export function PortalSupportPage() {
                     className={`px-4 py-2 rounded-full text-[13px] font-medium transition-colors ${
                       selectedCategory === cat
                         ? "bg-[#BCCCE6] text-[#0B111C]"
-                        : "bg-transparent border border-[#2A3446] text-white hover:bg-[#1F2C3F]"
+                        : "bg-transparent border border-[#2A3446] text-white hover:bg-[#161F2D]"
                     }`}
                   >
                     {cat}
@@ -279,7 +279,7 @@ export function PortalSupportPage() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Briefly summarize your request..."
-                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#7E889C] focus:outline-none focus:border-white/[0.2] transition-colors"
+                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#97A0B3] focus:outline-none focus:border-white/[0.2] transition-colors"
               />
             </div>
 
@@ -291,7 +291,7 @@ export function PortalSupportPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your issue or request..."
-                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#7E889C] focus:outline-none focus:border-white/[0.2] resize-none transition-colors"
+                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#97A0B3] focus:outline-none focus:border-white/[0.2] resize-none transition-colors"
               />
             </div>
 
@@ -319,16 +319,16 @@ export function PortalSupportPage() {
             <h3 className="text-base font-semibold text-white mb-4">Your requests</h3>
 
             {ticketsList.length === 0 ? (
-              <p className="text-sm text-[#7E889C] py-6 text-center">No tickets yet. Submit your first request.</p>
+              <p className="text-sm text-[#97A0B3] py-6 text-center">No tickets yet. Submit your first request.</p>
             ) : (
               <div className="space-y-3">
                 {ticketsList.slice(0, 5).map((t) => (
                   <div key={t.id} className="p-4 bg-[#0B111C] rounded-xl border border-white/[0.04]">
                     {/* Top row */}
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="text-xs font-mono text-[#7E889C]">{t.id}</span>
-                      <span className="text-xs text-[#7E889C]">· {t.category}</span>
-                      <span className="text-xs text-[#7E889C] ml-auto">{t.timeAgo}</span>
+                      <span className="text-xs font-mono text-[#97A0B3]">{t.id}</span>
+                      <span className="text-xs text-[#97A0B3]">· {t.category}</span>
+                      <span className="text-xs text-[#97A0B3] ml-auto">{t.timeAgo}</span>
                     </div>
                     {/* Title */}
                     <p className="text-sm font-medium text-white mb-2">{t.title}</p>
@@ -338,7 +338,7 @@ export function PortalSupportPage() {
                         t.status === "resolved"
                           ? "bg-[#7FA0D6]/10 text-[#7FA0D6]"
                           : t.status === "in_progress"
-                          ? "bg-[#FCD34D]/10 text-[#FCD34D]"
+                          ? "bg-[#D8BF9B]/10 text-[#D8BF9B]"
                           : "bg-white/[0.05] text-[#97A0B3]"
                       }`}
                     >
@@ -368,13 +368,13 @@ export function PortalSupportPage() {
                   >
                     <span className="text-sm text-[#97A0B3] group-hover:text-white transition-colors pr-4">{item.q}</span>
                     <Plus
-                      className={`w-4 h-4 text-[#7E889C] shrink-0 transition-transform duration-200 ${
+                      className={`w-4 h-4 text-[#97A0B3] shrink-0 transition-transform duration-200 ${
                         expandedFaq === i ? "rotate-45" : ""
                       }`}
                     />
                   </button>
                   {expandedFaq === i && (
-                    <div className="pb-4 text-sm text-[#7E889C] animate-in fade-in slide-in-from-top-2">
+                    <div className="pb-4 text-sm text-[#97A0B3] animate-in fade-in slide-in-from-top-2">
                       {item.a}
                     </div>
                   )}
@@ -388,9 +388,9 @@ export function PortalSupportPage() {
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#161F2D] text-white px-5 py-3 rounded-xl shadow-2xl border border-white/[0.1] text-sm font-medium flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#6EE7B7]" />
+          <span className="w-2 h-2 rounded-full bg-[#BCCCE6]" />
           {toastMessage}
-          <button type="button" onClick={() => setToastMessage(null)} className="ml-2 text-[#7E889C] hover:text-white cursor-pointer">
+          <button type="button" onClick={() => setToastMessage(null)} className="ml-2 text-[#97A0B3] hover:text-white cursor-pointer">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>

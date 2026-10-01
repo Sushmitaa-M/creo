@@ -208,7 +208,7 @@ export function AdminTopHeader({
       case "leave":
         return <CalendarCheck className="w-4 h-4 text-[#7FA0D6]" />;
       case "revenue":
-        return <DollarSign className="w-4 h-4 text-[#34D399]" />;
+        return <DollarSign className="w-4 h-4 text-[#BCCCE6]" />;
       case "team":
         return <Users className="w-4 h-4 text-[#D8BF9B]" />;
       default:
@@ -221,7 +221,7 @@ export function AdminTopHeader({
       case "leave":
         return "bg-[#7FA0D6]/15 border-[#7FA0D6]/30";
       case "revenue":
-        return "bg-[#34D399]/15 border-[#34D399]/30";
+        return "bg-[#BCCCE6]/15 border-[#BCCCE6]/30";
       case "team":
         return "bg-[#D8BF9B]/15 border-[#D8BF9B]/30";
       default:
@@ -304,7 +304,7 @@ export function AdminTopHeader({
           <button
             type="button"
             onClick={toggleMobile}
-            className="md:hidden size-8 rounded-full flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] transition-all cursor-pointer border border-transparent hover:border-[#2A3446] focus:outline-none focus:ring-2 focus:ring-[#7FA0D6] shrink-0"
+            className="md:hidden size-8 rounded-full flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#161F2D] transition-all cursor-pointer border border-transparent hover:border-[#2A3446] focus:outline-none focus:ring-2 focus:ring-[#7FA0D6] shrink-0"
             aria-label="Open navigation sidebar"
             title="Open navigation menu"
           >
@@ -322,7 +322,7 @@ export function AdminTopHeader({
                   ? "/workstation"
                   : "/portal"
               }
-              className="p-1 rounded-full hover:bg-[#1F2C3F] text-[#97A0B3] hover:text-white transition-colors shrink-0"
+              className="p-1 rounded-full hover:bg-[#161F2D] text-[#97A0B3] hover:text-white transition-colors shrink-0"
               title="Go Back"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -364,8 +364,8 @@ export function AdminTopHeader({
               onClick={() => setNotificationOpen(!notificationOpen)}
               className={`size-8 sm:size-8.5 rounded-full flex items-center justify-center transition-all relative cursor-pointer ${
                 notificationOpen
-                  ? "bg-[#1F2C3F] text-white shadow-sm border border-[#7FA0D6]"
-                  : "text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F]"
+                  ? "bg-[#161F2D] text-white shadow-sm border border-[#7FA0D6]"
+                  : "text-[#97A0B3] hover:text-white hover:bg-[#161F2D]"
               }`}
               aria-label="Notifications"
             >
@@ -389,7 +389,7 @@ export function AdminTopHeader({
                         {unreadCount} Unread
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#1F2C3F] text-[#97A0B3]">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#161F2D] text-[#97A0B3]">
                         All Caught Up
                       </span>
                     )}
@@ -408,7 +408,7 @@ export function AdminTopHeader({
                     {notificationsList.length > 0 && (
                       <button
                         onClick={handleClearAllNotifications}
-                        className="text-[11px] font-bold text-[#97A0B3] hover:text-[#F87171] flex items-center gap-1 cursor-pointer transition-colors"
+                        className="text-[11px] font-bold text-[#97A0B3] hover:text-[#D8BF9B] flex items-center gap-1 cursor-pointer transition-colors"
                         title="Delete all notifications"
                       >
                         <Trash2 className="w-3.5 h-3.5" /> Clear
@@ -423,7 +423,7 @@ export function AdminTopHeader({
                     <div
                       key={item.id}
                       onClick={() => handleNotificationClick(item)}
-                      className={`p-3.5 sm:p-4 transition-colors cursor-pointer flex items-start gap-3 hover:bg-[#1F2C3F] group relative ${
+                      className={`p-3.5 sm:p-4 transition-colors cursor-pointer flex items-start gap-3 hover:bg-[#161F2D] group relative ${
                         !item.is_read ? "bg-[#7FA0D6]/10" : "bg-transparent opacity-85"
                       }`}
                     >
@@ -446,7 +446,7 @@ export function AdminTopHeader({
                                   type="button"
                                   title="Mark as read"
                                   onClick={(e) => handleMarkSingleAsRead(e, item.id)}
-                                  className="p-1 rounded-lg text-[#7FA0D6] hover:bg-[#1F2C3F] transition-colors cursor-pointer opacity-70 group-hover:opacity-100"
+                                  className="p-1 rounded-lg text-[#7FA0D6] hover:bg-[#161F2D] transition-colors cursor-pointer opacity-70 group-hover:opacity-100"
                                 >
                                   <Check className="w-3.5 h-3.5" />
                                 </button>
@@ -457,7 +457,7 @@ export function AdminTopHeader({
                               type="button"
                               title="Delete notification"
                               onClick={(e) => handleDeleteNotification(e, item.id)}
-                              className="p-1 rounded-lg text-[#97A0B3] hover:text-[#F87171] hover:bg-[#1F2C3F] transition-colors cursor-pointer opacity-70 group-hover:opacity-100"
+                              className="p-1 rounded-lg text-[#97A0B3] hover:text-[#D8BF9B] hover:bg-[#161F2D] transition-colors cursor-pointer opacity-70 group-hover:opacity-100"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -525,7 +525,7 @@ export function AdminTopHeader({
               type="button"
               title={user?.full_name || "Profile & Account"}
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-              className="size-8 sm:size-8.5 rounded-full bg-[#BCCCE6] hover:bg-[#D4E2F5] text-[#0B111C] font-black text-xs sm:text-sm flex items-center justify-center shadow-md shadow-[#050810]/40 cursor-pointer ml-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#7FA0D6]"
+              className="size-8 sm:size-8.5 rounded-full bg-[#BCCCE6] hover:bg-[#BCCCE6] text-[#0B111C] font-black text-xs sm:text-sm flex items-center justify-center shadow-md shadow-[#050810]/40 cursor-pointer ml-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-[#7FA0D6]"
               aria-label="User profile menu"
             >
               {(user?.full_name?.[0] || user?.email?.[0] || (isClientRole ? "C" : isMemberRole ? "D" : "A")).toUpperCase()}
@@ -573,9 +573,9 @@ export function AdminTopHeader({
                       }
                       navigate("/auth");
                     }}
-                    className="w-full flex items-center justify-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#F87171] hover:bg-[#F87171]/15 hover:border-[#F87171]/30 border border-transparent transition-all cursor-pointer shadow-xs"
+                    className="w-full flex items-center justify-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#D8BF9B] hover:bg-[#D8BF9B]/15 hover:border-[#D8BF9B]/30 border border-transparent transition-all cursor-pointer shadow-xs"
                   >
-                    <LogOut className="w-4 h-4 text-[#F87171]" />
+                    <LogOut className="w-4 h-4 text-[#D8BF9B]" />
                     <span>Sign Out / Log Out</span>
                   </button>
                 </div>

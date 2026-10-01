@@ -175,7 +175,7 @@ export function StageTerms({
               <h2 className="text-xl sm:text-2xl font-bold font-display text-white tracking-tight mb-2">
                 Master Service Agreement
               </h2>
-              <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#97A0B3] leading-relaxed">
                 Review our terms of service below. You can accept by checking the confirmation box or reviewing the agreement text.
               </p>
             </div>
@@ -192,7 +192,7 @@ export function StageTerms({
                   }}
                   className="mt-0.5 size-4 rounded border-[#2A3446] bg-[#161F2D] text-[#7FA0D6] focus:ring-0 cursor-pointer"
                 />
-                <span className="text-xs text-[#CBD5E1] leading-snug">
+                <span className="text-xs text-[#BCCCE6] leading-snug">
                   I agree to the Master Service Agreement terms and conditions.
                 </span>
               </label>
@@ -217,7 +217,7 @@ export function StageTerms({
                 </div>
                 <div>
                   <h3 className="text-xs sm:text-sm font-bold text-white">creo_master_agreement_2026.pdf</h3>
-                  <p className="text-[11px] text-[#94A3B8] font-medium">Standard Legal Retainer Terms</p>
+                  <p className="text-[11px] text-[#97A0B3] font-medium">Standard Legal Retainer Terms</p>
                 </div>
               </div>
 
@@ -247,7 +247,7 @@ export function StageTerms({
             <div
               ref={scrollContainerRef}
               onScroll={handleScroll}
-              className="h-[280px] sm:h-[340px] lg:h-[360px] overflow-y-auto bg-[#0B111C] border border-[#2A3446] rounded-xl p-4 sm:p-5 font-mono text-xs text-[#CBD5E1] leading-relaxed whitespace-pre-wrap select-text scroll-smooth shadow-inner"
+              className="h-[280px] sm:h-[340px] lg:h-[360px] overflow-y-auto bg-[#0B111C] border border-[#2A3446] rounded-xl p-4 sm:p-5 font-mono text-xs text-[#BCCCE6] leading-relaxed whitespace-pre-wrap select-text scroll-smooth shadow-inner"
             >
               {MSA_TEXT}
               <div ref={sentinelRef} className="h-4 mt-6 flex items-center justify-center text-[#7FA0D6] text-xs font-sans" aria-hidden="true">
@@ -263,7 +263,7 @@ export function StageTerms({
                   <span>Ready to continue to Step 3 (Payment)</span>
                 </div>
               ) : (
-                <div className="text-xs text-[#94A3B8] flex items-center gap-1.5">
+                <div className="text-xs text-[#97A0B3] flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-[#D8BF9B]" />
                   <span>Scroll to review or check the agreement box to proceed</span>
                 </div>
@@ -285,7 +285,7 @@ export function StageTerms({
           <button
             type="button"
             onClick={onBack}
-            className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-[#0B111C] border border-[#2A3446] text-xs sm:text-sm font-bold text-[#94A3B8] hover:text-white hover:border-[#7FA0D6] shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2 shrink-0"
+            className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-[#0B111C] border border-[#2A3446] text-xs sm:text-sm font-bold text-[#97A0B3] hover:text-white hover:border-[#7FA0D6] shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2 shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Step 1 (Email)</span>

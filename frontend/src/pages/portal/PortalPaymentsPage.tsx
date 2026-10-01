@@ -177,7 +177,7 @@ export function PortalPaymentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="text-[11px] uppercase font-bold tracking-[0.16em] text-[#7E889C] mb-2">
+          <p className="text-[11px] uppercase font-bold tracking-[0.16em] text-[#97A0B3] mb-2">
             {planName} PLAN • RENEWS {renewalDate}
           </p>
           <h1 className="text-3xl font-bold text-white tracking-tight">Plan & billing</h1>
@@ -186,7 +186,7 @@ export function PortalPaymentsPage() {
           <button 
             type="button"
             onClick={() => setCompareModalOpen(true)}
-            className="px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors cursor-pointer"
+            className="px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#161F2D] transition-colors cursor-pointer"
           >
             Compare plans
           </button>
@@ -209,7 +209,7 @@ export function PortalPaymentsPage() {
             <button 
               type="button"
               onClick={() => setPauseModalOpen(true)}
-              className="px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] hover:border-amber-500/40 transition-colors cursor-pointer"
+              className="px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#161F2D] hover:border-amber-500/40 transition-colors cursor-pointer"
             >
               Pause next month
             </button>
@@ -312,7 +312,7 @@ export function PortalPaymentsPage() {
         <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8 flex flex-col justify-between">
           <div className="flex justify-between items-start mb-10">
             <div>
-              <p className="text-[11px] uppercase font-bold tracking-[0.16em] text-[#7E889C] mb-1">
+              <p className="text-[11px] uppercase font-bold tracking-[0.16em] text-[#97A0B3] mb-1">
                 CURRENT PLAN
               </p>
               <h2 className="text-3xl font-bold text-white">{planName}</h2>
@@ -337,7 +337,7 @@ export function PortalPaymentsPage() {
             ))}
           </div>
 
-          <p className="text-xs text-[#7E889C] font-medium leading-relaxed">
+          <p className="text-xs text-[#97A0B3] font-medium leading-relaxed">
             2 revision rounds per asset • 2 business-day batch SLA • dedicated account director
           </p>
         </div>
@@ -350,7 +350,7 @@ export function PortalPaymentsPage() {
               <div key={addon.id} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h4 className="text-[13px] font-bold text-white mb-1">{addon.name}</h4>
-                  <p className="text-xs text-[#7E889C]">{addon.desc}</p>
+                  <p className="text-xs text-[#97A0B3]">{addon.desc}</p>
                 </div>
                 <div className="flex items-center justify-between sm:justify-end gap-6 shrink-0">
                   <span className="text-[13px] font-bold text-white">₹{addon.price.toLocaleString('en-IN')}</span>
@@ -374,17 +374,17 @@ export function PortalPaymentsPage() {
             <table className="w-full min-w-[500px]">
               <thead>
                 <tr className="border-b border-[#2A3446]">
-                  <th className="text-left text-[11px] uppercase tracking-wider font-bold text-[#7E889C] pb-3 font-mono">Invoice</th>
-                  <th className="text-left text-[11px] uppercase tracking-wider font-bold text-[#7E889C] pb-3 font-mono">Period</th>
-                  <th className="text-left text-[11px] uppercase tracking-wider font-bold text-[#7E889C] pb-3 font-mono">Amount</th>
-                  <th className="text-left text-[11px] uppercase tracking-wider font-bold text-[#7E889C] pb-3 font-mono">Status</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-bold text-[#97A0B3] pb-3 font-mono">Invoice</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-bold text-[#97A0B3] pb-3 font-mono">Period</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-bold text-[#97A0B3] pb-3 font-mono">Amount</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-bold text-[#97A0B3] pb-3 font-mono">Status</th>
                   <th className="pb-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.05]">
                 {invoices.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-sm text-[#7E889C]">
+                    <td colSpan={5} className="py-8 text-center text-sm text-[#97A0B3]">
                       No invoices generated yet.
                     </td>
                   </tr>
@@ -402,7 +402,7 @@ export function PortalPaymentsPage() {
                       <td className="py-4 text-right">
                         <button 
                           onClick={() => handleDownload(inv.id)}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#161F2D] transition-colors cursor-pointer"
                         >
                           {downloadingInv === inv.id ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5" />}
                           GST invoice
@@ -455,7 +455,7 @@ export function PortalPaymentsPage() {
                 () => {}
               );
             }}
-            className="w-full py-3 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#1F2C3F] transition-colors mt-auto cursor-pointer"
+            className="w-full py-3 rounded-full border border-[#2A3446] text-[13px] font-bold text-white hover:bg-[#161F2D] transition-colors mt-auto cursor-pointer"
           >
             Change payment method
           </button>

@@ -316,7 +316,7 @@ export function TermsPage() {
           </p>
 
           {/* Quick SLA Highlights */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-[#CBD5E1]">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-[#BCCCE6]">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#161F2D] border border-[#2A3446]">
               <Clock className="size-3.5 text-[#7FA0D6]" /> 7-Day First Batch SLA
             </span>
@@ -412,7 +412,7 @@ export function TermsPage() {
                   <button
                     type="button"
                     onClick={() => setSearch("")}
-                    className="mt-4 px-4 py-2 rounded-xl bg-[#7FA0D6] text-[#050810] text-xs font-bold hover:bg-[#97B8EB] transition-colors cursor-pointer"
+                    className="mt-4 px-4 py-2 rounded-xl bg-[#7FA0D6] text-[#050810] text-xs font-bold hover:bg-[#7FA0D6] transition-colors cursor-pointer"
                   >
                     Reset Search
                   </button>
@@ -520,7 +520,7 @@ export function PrivacyPage() {
           </p>
 
           {/* Quick Security Highlights */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-[#CBD5E1]">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-[#BCCCE6]">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#161F2D] border border-[#2A3446]">
               <ShieldCheck className="size-3.5 text-[#7FA0D6]" /> PostgreSQL Row-Level Security
             </span>
@@ -616,7 +616,7 @@ export function PrivacyPage() {
                   <button
                     type="button"
                     onClick={() => setSearch("")}
-                    className="mt-4 px-4 py-2 rounded-xl bg-[#7FA0D6] text-[#050810] text-xs font-bold hover:bg-[#97B8EB] transition-colors cursor-pointer"
+                    className="mt-4 px-4 py-2 rounded-xl bg-[#7FA0D6] text-[#050810] text-xs font-bold hover:bg-[#7FA0D6] transition-colors cursor-pointer"
                   >
                     Reset Search
                   </button>

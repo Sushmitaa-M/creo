@@ -107,11 +107,11 @@ export function PortalCreativePodPage() {
   // Avatar color palette
   const AVATAR_COLORS = [
     "bg-gradient-to-br from-pink-500 to-orange-400",
-    "bg-[#6366F1]",
-    "bg-[#10B981]",
-    "bg-[#F59E0B]",
-    "bg-[#EF4444]",
-    "bg-[#8B5CF6]",
+    "bg-[#7FA0D6]",
+    "bg-[#7FA0D6]",
+    "bg-[#D8BF9B]",
+    "bg-[#D8BF9B]",
+    "bg-[#7FA0D6]",
   ];
 
   if (!gate.isReady || (gate.isComplete && isLoading)) {
@@ -142,8 +142,8 @@ export function PortalCreativePodPage() {
           </div>
         ) : allMembers.length === 0 ? (
           <div className="col-span-full py-16 text-center">
-            <p className="text-sm text-[#7E889C]">Your creative pod hasn't been assembled yet.</p>
-            <p className="text-xs text-[#7E889C] mt-1">Team members will appear here once onboarding is complete.</p>
+            <p className="text-sm text-[#97A0B3]">Your creative pod hasn't been assembled yet.</p>
+            <p className="text-xs text-[#97A0B3] mt-1">Team members will appear here once onboarding is complete.</p>
           </div>
         ) : (
           allMembers.map((member, i) => {
@@ -168,17 +168,17 @@ export function PortalCreativePodPage() {
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-[#7E889C] leading-relaxed mb-4 flex-1">
+                <p className="text-sm text-[#97A0B3] leading-relaxed mb-4 flex-1">
                   {roleDesc}
                 </p>
 
                 {/* Working hours */}
-                <p className="text-xs text-[#7E889C] mb-4">
+                <p className="text-xs text-[#97A0B3] mb-4">
                   Working hours: <span className="text-[#97A0B3]">Mon-Fri, 10am-7pm IST</span>
                 </p>
 
                 {/* Message Button */}
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#1F2C3F] transition-colors mt-auto">
+                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#161F2D] transition-colors mt-auto">
                   <MessageCircle className="w-4 h-4" strokeWidth={1.8} />
                   Message {member.name.split(" ")[0]}
                 </button>
@@ -195,16 +195,16 @@ export function PortalCreativePodPage() {
           {/* Chat Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#2A3446]">
             <h3 className="text-base font-semibold text-white">Chat with your pod</h3>
-            <span className="text-[13px] text-[#7E889C]">average reply 1h 50m</span>
+            <span className="text-[13px] text-[#97A0B3]">average reply 1h 50m</span>
           </div>
 
           {/* Messages Area */}
           <div className="flex-1 px-6 py-4 space-y-4 overflow-y-auto scrollbar-hide flex flex-col justify-center">
             {messages.length === 0 ? (
-              <div className="py-12 text-center text-[#7E889C]">
+              <div className="py-12 text-center text-[#97A0B3]">
                 <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-30 text-white" />
                 <p className="text-sm font-medium text-white/80">No messages yet</p>
-                <p className="text-xs text-[#7E889C] mt-1">Send a message to start communicating directly with your pod.</p>
+                <p className="text-xs text-[#97A0B3] mt-1">Send a message to start communicating directly with your pod.</p>
               </div>
             ) : (
               messages.map(msg => (
@@ -213,10 +213,10 @@ export function PortalCreativePodPage() {
                     {msg.name}
                   </div>
                   <div className={msg.isUser ? "text-right" : ""}>
-                    <div className={`p-3 rounded-2xl text-sm inline-block text-left ${msg.isUser ? "bg-[#BCCCE6] text-[#0B111C] rounded-tr-sm" : "bg-[#1F2C3F] text-white rounded-tl-sm"}`}>
+                    <div className={`p-3 rounded-2xl text-sm inline-block text-left ${msg.isUser ? "bg-[#BCCCE6] text-[#0B111C] rounded-tr-sm" : "bg-[#161F2D] text-white rounded-tl-sm"}`}>
                       {msg.text}
                     </div>
-                    <span className={`text-[11px] text-[#7E889C] mt-1 block ${msg.isUser ? "text-right" : ""}`}>
+                    <span className={`text-[11px] text-[#97A0B3] mt-1 block ${msg.isUser ? "text-right" : ""}`}>
                       {msg.time}
                     </span>
                   </div>
@@ -233,7 +233,7 @@ export function PortalCreativePodPage() {
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 bg-transparent text-sm text-white placeholder-[#7E889C] outline-none"
+                className="flex-1 bg-transparent text-sm text-white placeholder-[#97A0B3] outline-none"
               />
               <button onClick={handleSendMessage} className="px-4 py-1.5 bg-[#BCCCE6] text-[#0B111C] rounded-full text-[13px] font-medium hover:bg-white transition-colors flex items-center gap-1.5 shrink-0">
                 <Send className="w-3.5 h-3.5" />
@@ -246,7 +246,7 @@ export function PortalCreativePodPage() {
         {/* Booking (1 col) */}
         <div className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446]">
           <h3 className="text-base font-semibold text-white mb-1">Book a call</h3>
-          <p className="text-[13px] text-[#7E889C] mb-5">15-minute slots with your pod lead</p>
+          <p className="text-[13px] text-[#97A0B3] mb-5">15-minute slots with your pod lead</p>
 
           <div className="space-y-0 divide-y divide-white/[0.05]">
             {upcomingSlots.map((slot) => {
@@ -259,7 +259,7 @@ export function PortalCreativePodPage() {
                     disabled={isBooked}
                     className={`px-3 py-1 rounded-md text-[13px] font-medium transition-colors flex items-center gap-1.5 ${
                       isBooked 
-                        ? "bg-[#047857]/20 text-[#34D399] cursor-default" 
+                        ? "bg-[#7FA0D6]/20 text-[#BCCCE6] cursor-default" 
                         : "bg-white/[0.08] text-white hover:bg-white/[0.12]"
                     }`}
                   >

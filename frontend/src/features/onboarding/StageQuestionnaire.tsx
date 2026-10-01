@@ -327,7 +327,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
 
   const [secD, setSecD] = useState({
     brand_guidelines: "none",
-    colours: [{ hex: "#0D2137", label: "primary" }, { hex: "#2B7BC4", label: "accent" }],
+    colours: [{ hex: "#0B111C", label: "primary" }, { hex: "#7FA0D6", label: "accent" }],
     fonts: "",
     logo_files: [],
     photography_product_shots: [],
@@ -826,7 +826,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
     return (
       <div className="flex flex-col items-center justify-center p-16 space-y-4">
         <Loader2 className="w-8 h-8 animate-spin text-[#7FA0D6]" />
-        <p className="text-xs text-[#94A3B8] font-medium">Restoring your brand discovery session...</p>
+        <p className="text-xs text-[#97A0B3] font-medium">Restoring your brand discovery session...</p>
       </div>
     );
   }
@@ -885,8 +885,8 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 isActive
                   ? "bg-[#161F2D] border-2 border-[#BCCCE6] text-white shadow-lg ring-2 ring-[#BCCCE6]/20"
                   : isDone
-                  ? "bg-[#161F2D]/90 border-[#7FA0D6]/40 text-[#CBD5E1] hover:border-[#7FA0D6]"
-                  : "bg-[#161F2D]/60 border-[#2A3446] text-[#94A3B8] hover:border-[#7FA0D6]/40"
+                  ? "bg-[#161F2D]/90 border-[#7FA0D6]/40 text-[#BCCCE6] hover:border-[#7FA0D6]"
+                  : "bg-[#161F2D]/60 border-[#2A3446] text-[#97A0B3] hover:border-[#7FA0D6]/40"
               }`}
             >
               <div className="flex items-center justify-between w-full mb-1">
@@ -895,7 +895,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     ? "bg-[#7FA0D6] text-[#0B111C]"
                     : isDone
                     ? "bg-emerald-950/60 text-emerald-300 border border-emerald-800/60"
-                    : "bg-[#0B111C] text-[#94A3B8] border border-[#2A3446]"
+                    : "bg-[#0B111C] text-[#97A0B3] border border-[#2A3446]"
                 }`}>
                   {isDone ? `✓ ${sec.badge}` : sec.badge}
                 </span>
@@ -910,10 +910,10 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 )}
               </div>
               <div className="flex items-center gap-1.5 mt-1 w-full min-w-0">
-                <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-[#7FA0D6]" : isDone ? "text-emerald-400" : "text-[#94A3B8]"}`} />
+                <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-[#7FA0D6]" : isDone ? "text-emerald-400" : "text-[#97A0B3]"}`} />
                 <span className="text-xs font-bold truncate">{sec.label}</span>
               </div>
-              <span className="text-[11px] text-[#94A3B8] mt-1 font-medium">~{sec.estMinutes} min</span>
+              <span className="text-[11px] text-[#97A0B3] mt-1 font-medium">~{sec.estMinutes} min</span>
             </button>
           );
         })}
@@ -959,7 +959,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
           <div className="space-y-6">
             <div className="border-b border-[#2A3446] pb-4">
               <h2 className="text-lg font-bold text-white">Section A: Brand Identity</h2>
-              <p className="text-xs text-[#94A3B8]">Required · Establishes official naming, social presence, and core category</p>
+              <p className="text-xs text-[#97A0B3]">Required · Establishes official naming, social presence, and core category</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -975,7 +975,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecA({ ...secA, brand_name: e.target.value });
                     clearFieldError("brand_name");
                   }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#97A0B3] focus:outline-none transition-all ${
                     fieldErrors.brand_name
                       ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
                       : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
@@ -1000,7 +1000,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecA({ ...secA, instagram_handle: e.target.value });
                     clearFieldError("instagram_handle");
                   }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#97A0B3] focus:outline-none transition-all ${
                     fieldErrors.instagram_handle
                       ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
                       : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
@@ -1019,7 +1019,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <label className="block text-xs font-semibold text-[#F1F5F9]">
                   A3: In one sentence, what does your brand do? <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-[11px] text-[#94A3B8] font-mono">
+                <span className="text-[11px] text-[#97A0B3] font-mono">
                   {secA.one_liner?.length || 0}/180
                 </span>
               </div>
@@ -1032,7 +1032,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   setSecA({ ...secA, one_liner: e.target.value });
                   clearFieldError("one_liner");
                 }}
-                className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#0B111C] text-sm text-white placeholder-[#97A0B3] focus:outline-none transition-all ${
                   fieldErrors.one_liner
                     ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
                     : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
@@ -1118,7 +1118,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                         }
                         clearFieldError("products");
                       }}
-                      className="w-full sm:w-1/3 px-3 py-2 text-xs bg-[#161F2D] text-white rounded-lg border border-[#2A3446] placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                      className="w-full sm:w-1/3 px-3 py-2 text-xs bg-[#161F2D] text-white rounded-lg border border-[#2A3446] placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
                     />
                     <input
                       type="text"
@@ -1131,7 +1131,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           setSecA({ ...secA, products: next });
                         }
                       }}
-                      className="w-full sm:w-1/2 px-3 py-2 text-xs bg-[#161F2D] text-white rounded-lg border border-[#2A3446] placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                      className="w-full sm:w-1/2 px-3 py-2 text-xs bg-[#161F2D] text-white rounded-lg border border-[#2A3446] placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
                     />
                     <select
                       value={prod.price_band}
@@ -1157,7 +1157,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           const next = secA.products.filter((_, i) => i !== idx);
                           setSecA({ ...secA, products: next });
                         }}
-                        className="text-[#94A3B8] hover:text-rose-400 p-1.5 transition-colors cursor-pointer"
+                        className="text-[#97A0B3] hover:text-rose-400 p-1.5 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1188,7 +1188,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="Specific monthly targets, promotional events, or milestones..."
                 value={secA.goal_notes}
                 onChange={(e) => setSecA({ ...secA, goal_notes: e.target.value })}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
           </div>
@@ -1199,7 +1199,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
           <div className="space-y-6">
             <div className="border-b border-[#2A3446] pb-4">
               <h2 className="text-lg font-bold text-white">Section B: Audience & Positioning</h2>
-              <p className="text-xs text-[#94A3B8]">Required · Establishes audience archetype, core pain points, and why they buy</p>
+              <p className="text-xs text-[#97A0B3]">Required · Establishes audience archetype, core pain points, and why they buy</p>
             </div>
 
             <div id="field-ideal_customer">
@@ -1214,7 +1214,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   setSecB({ ...secB, ideal_customer: e.target.value });
                   clearFieldError("ideal_customer");
                 }}
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#97A0B3] focus:outline-none transition-all ${
                   fieldErrors.ideal_customer
                     ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
                     : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
@@ -1240,7 +1240,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecB({ ...secB, problem: e.target.value });
                     clearFieldError("problem");
                   }}
-                  className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                  className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#97A0B3] focus:outline-none transition-all ${
                     fieldErrors.problem
                       ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
                       : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
@@ -1265,7 +1265,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     setSecB({ ...secB, why_chosen: e.target.value });
                     clearFieldError("why_chosen");
                   }}
-                  className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                  className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#97A0B3] focus:outline-none transition-all ${
                     fieldErrors.why_chosen
                       ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
                       : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
@@ -1294,7 +1294,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 value={secB.objections}
                 onChange={(e) => setSecB({ ...secB, objections: e.target.value })}
                 style={{ colorScheme: "dark" }}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#161F2D] border border-[#2A3446] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none transition-all"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#161F2D] border border-[#2A3446] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none transition-all"
               />
             </div>
 
@@ -1321,7 +1321,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
                           isSelected
                             ? "bg-[#7FA0D6] text-[#0B111C] border-[#7FA0D6]"
-                            : "bg-[#0B111C] text-[#CBD5E1] border-[#2A3446] hover:border-[#7FA0D6]/60"
+                            : "bg-[#0B111C] text-[#BCCCE6] border-[#2A3446] hover:border-[#7FA0D6]/60"
                         }`}
                       >
                         {lang.label}
@@ -1370,7 +1370,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
           <div className="space-y-6">
             <div className="border-b border-[#2A3446] pb-4">
               <h2 className="text-lg font-bold text-white">Section C: Voice & Tone Framework</h2>
-              <p className="text-xs text-[#94A3B8]">
+              <p className="text-xs text-[#97A0B3]">
                 Four validated bipolar scales (NN/g) + anti-tone negative constraints (~2 min)
               </p>
             </div>
@@ -1381,7 +1381,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <Sliders className="w-3.5 h-3.5" />
                 <span>Live Voice Synthesizer Preview</span>
               </div>
-              <p className="text-sm font-medium italic text-[#CBD5E1] mt-1">
+              <p className="text-sm font-medium italic text-[#BCCCE6] mt-1">
                 {liveSentencePreview}
               </p>
             </div>
@@ -1463,7 +1463,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <label className="text-xs font-semibold text-[#F1F5F9]">
                   C5: Pick up to 4 words that describe your voice <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-xs text-[#94A3B8] font-mono">
+                <span className="text-xs text-[#97A0B3] font-mono">
                   {secC.voice_words?.length || 0}/4 selected
                 </span>
               </div>
@@ -1486,7 +1486,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                       className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                         isSelected
                           ? "bg-[#7FA0D6] text-[#0B111C] border-[#7FA0D6]"
-                          : "bg-[#0B111C] text-[#CBD5E1] border-[#2A3446] hover:border-[#7FA0D6]/60"
+                          : "bg-[#0B111C] text-[#BCCCE6] border-[#2A3446] hover:border-[#7FA0D6]/60"
                       }`}
                     >
                       {word}
@@ -1555,7 +1555,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="e.g. Miracle cure, Guaranteed 10x, Cheap, Discount, Hack..."
                 value={secC.forbidden_phrases}
                 onChange={(e) => setSecC({ ...secC, forbidden_phrases: e.target.value })}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
           </div>
@@ -1566,7 +1566,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
           <div className="space-y-6">
             <div className="border-b border-[#2A3446] pb-4">
               <h2 className="text-lg font-bold text-white">Section D: Visual Direction & Assets</h2>
-              <p className="text-xs text-[#94A3B8]">Required · Supplies our graphic designers & animators (~2 min)</p>
+              <p className="text-xs text-[#97A0B3]">Required · Supplies our graphic designers & animators (~2 min)</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1598,7 +1598,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   placeholder="e.g. Montserrat, Playfair Display, Inter"
                   value={secD.fonts}
                   onChange={(e) => setSecD({ ...secD, fonts: e.target.value })}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
                 />
               </div>
             </div>
@@ -1660,7 +1660,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                           const next = secD.colours.filter((_, i) => i !== idx);
                           setSecD({ ...secD, colours: next });
                         }}
-                        className="text-[#94A3B8] hover:text-rose-400 p-1 cursor-pointer"
+                        className="text-[#97A0B3] hover:text-rose-400 p-1 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1688,7 +1688,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 <label className="text-xs font-semibold text-[#F1F5F9]">
                   D6: Visual Direction (Pick up to 3) <span className="text-rose-400 font-bold">*</span>
                 </label>
-                <span className="text-xs text-[#94A3B8] font-mono">
+                <span className="text-xs text-[#97A0B3] font-mono">
                   {secD.visual_direction?.length || 0}/3 selected
                 </span>
               </div>
@@ -1711,7 +1711,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                       className={`p-3 rounded-xl border text-left text-xs font-bold transition-all cursor-pointer ${
                         isSelected
                           ? "bg-[#7FA0D6] text-[#0B111C] border-[#7FA0D6] shadow-sm"
-                          : "bg-[#0B111C] text-[#CBD5E1] border-[#2A3446] hover:border-[#7FA0D6]/60 hover:text-white"
+                          : "bg-[#0B111C] text-[#BCCCE6] border-[#2A3446] hover:border-[#7FA0D6]/60 hover:text-white"
                       }`}
                     >
                       {vd.label}
@@ -1735,7 +1735,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="e.g. Neon gradients, loud yellow text, stock photo handshakes, chaotic fast cuts..."
                 value={secD.visual_avoid}
                 onChange={(e) => setSecD({ ...secD, visual_avoid: e.target.value })}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
           </div>
@@ -1746,7 +1746,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
           <div className="space-y-6">
             <div className="border-b border-[#2A3446] pb-4">
               <h2 className="text-lg font-bold text-white">Section E: Production Reality & Constraints</h2>
-              <p className="text-xs text-[#94A3B8]">
+              <p className="text-xs text-[#97A0B3]">
                 Required · The facts an editor, shoot coordinator, and producer need before Monday (~3 min)
               </p>
             </div>
@@ -1760,7 +1760,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   {ON_CAMERA_OPTIONS.map((opt) => {
                     const isChecked = secE.on_camera?.includes(opt.value);
                     return (
-                      <label key={opt.value} className="flex items-center gap-2.5 text-xs text-[#CBD5E1] cursor-pointer p-2 rounded-lg bg-[#0B111C] border border-[#2A3446] hover:border-[#7FA0D6]/40">
+                      <label key={opt.value} className="flex items-center gap-2.5 text-xs text-[#BCCCE6] cursor-pointer p-2 rounded-lg bg-[#0B111C] border border-[#2A3446] hover:border-[#7FA0D6]/40">
                         <input
                           type="checkbox"
                           checked={isChecked}
@@ -1810,7 +1810,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                     {SHOOT_LOCATION_OPTIONS.map((loc) => {
                       const isChecked = secE.shoot_locations?.includes(loc.value);
                       return (
-                        <label key={loc.value} className="flex items-center gap-2.5 text-xs text-[#CBD5E1] cursor-pointer p-2 rounded-lg bg-[#0B111C] border border-[#2A3446] hover:border-[#7FA0D6]/40">
+                        <label key={loc.value} className="flex items-center gap-2.5 text-xs text-[#BCCCE6] cursor-pointer p-2 rounded-lg bg-[#0B111C] border border-[#2A3446] hover:border-[#7FA0D6]/40">
                           <input
                             type="checkbox"
                             checked={isChecked}
@@ -1848,7 +1848,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                       setSecE({ ...secE, shoot_city: e.target.value });
                       clearFieldError("shoot_city");
                     }}
-                    className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#64748B] focus:outline-none transition-all ${
+                    className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-[#0B111C] text-white placeholder-[#97A0B3] focus:outline-none transition-all ${
                       fieldErrors.shoot_city
                         ? "border-rose-500 bg-rose-950/10 focus:border-rose-500"
                         : "border-[#2A3446] focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6]/30"
@@ -1894,7 +1894,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   placeholder="https://yourbrand.com or +919876543210"
                   value={secE.cta_target}
                   onChange={(e) => setSecE({ ...secE, cta_target: e.target.value })}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
                 />
               </div>
             </div>
@@ -1914,7 +1914,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 value={secE.legal_constraints}
                 onChange={(e) => setSecE({ ...secE, legal_constraints: e.target.value })}
                 style={{ colorScheme: "dark" }}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#161F2D] border border-rose-900/60 text-white placeholder-[#64748B] focus:border-rose-500 focus:outline-none transition-all"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#161F2D] border border-rose-900/60 text-white placeholder-[#97A0B3] focus:border-rose-500 focus:outline-none transition-all"
               />
             </div>
 
@@ -1957,7 +1957,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                         className={`px-2.5 py-1 text-xs rounded-lg border transition-colors cursor-pointer ${
                           isExcl
                             ? "bg-rose-900/50 text-rose-300 border-rose-700 font-semibold"
-                            : "bg-[#0B111C] text-[#CBD5E1] border-[#2A3446] hover:border-[#7FA0D6]/50"
+                            : "bg-[#0B111C] text-[#BCCCE6] border-[#2A3446] hover:border-[#7FA0D6]/50"
                         }`}
                       >
                         {f.label}
@@ -1980,7 +1980,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   Optional Enrichment
                 </span>
               </div>
-              <p className="text-xs text-[#94A3B8] mt-1">Helps our team avoid repeating what flopped before (~2 min)</p>
+              <p className="text-xs text-[#97A0B3] mt-1">Helps our team avoid repeating what flopped before (~2 min)</p>
             </div>
 
             <div>
@@ -1992,7 +1992,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="Styles, topics, formats, or angles that flopped or generated negative engagement..."
                 value={secF.what_failed}
                 onChange={(e) => setSecF({ ...secF, what_failed: e.target.value })}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
           </div>
@@ -2008,7 +2008,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   Optional Enrichment
                 </span>
               </div>
-              <p className="text-xs text-[#94A3B8] mt-1">
+              <p className="text-xs text-[#97A0B3] mt-1">
                 Keep these in your own authentic words — they inform our copywriters and narrative strategists.
               </p>
             </div>
@@ -2022,7 +2022,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="The inciting moment, frustration with the industry, or origin story..."
                 value={secG.origin}
                 onChange={(e) => setSecG({ ...secG, origin: e.target.value })}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
 
@@ -2035,7 +2035,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 placeholder="Core conviction, moral stance, or uncompromising standard..."
                 value={secG.stands_for}
                 onChange={(e) => setSecG({ ...secG, stands_for: e.target.value })}
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
               />
             </div>
 
@@ -2049,7 +2049,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   placeholder="The lingering feeling or reputation you want to hold..."
                   value={secG.remembered_for}
                   onChange={(e) => setSecG({ ...secG, remembered_for: e.target.value })}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
                 />
               </div>
 
@@ -2062,7 +2062,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                   placeholder="Market share, global reach, revenue milestone, or new product verticals..."
                   value={secG.vision}
                   onChange={(e) => setSecG({ ...secG, vision: e.target.value })}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#64748B] focus:border-[#7FA0D6] focus:outline-none"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[#2A3446] bg-[#0B111C] text-white placeholder-[#97A0B3] focus:border-[#7FA0D6] focus:outline-none"
                 />
               </div>
             </div>
@@ -2075,7 +2075,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
             type="button"
             onClick={handlePrevSection}
             disabled={activeSection === "a"}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-[#94A3B8] text-xs font-bold hover:text-white hover:border-[#7FA0D6] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] text-[#97A0B3] text-xs font-bold hover:text-white hover:border-[#7FA0D6] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Previous Section</span>
@@ -2097,7 +2097,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
                 }
               }}
               disabled={isSaving}
-              className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] hover:bg-[#1F2C3F] hover:border-[#7FA0D6] text-xs font-bold text-[#CBD5E1] hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#2A3446] bg-[#0B111C] hover:bg-[#161F2D] hover:border-[#7FA0D6] text-xs font-bold text-[#BCCCE6] hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isSaving ? (
                 <Loader2 className="size-3.5 animate-spin text-[#7FA0D6]" />

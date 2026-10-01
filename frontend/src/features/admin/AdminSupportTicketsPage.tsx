@@ -35,7 +35,7 @@ const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
     client: "Sushmitaa",
     tier: "Enterprise Acceleration",
     email: "sushmitaa1407@gmail.com",
-    avatarBg: "bg-[#0F172A]",
+    avatarBg: "bg-[#0B111C]",
     issueTitle: "deliverables not received on time, checkout",
     issueDesc: "I've not received my deliverables which was scheduled yesterday",
     priority: "High",
@@ -52,7 +52,7 @@ const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
     client: "Ryze",
     tier: "Starter Growth",
     email: "sushmitaa1407@gmail.com",
-    avatarBg: "bg-[#0F172A]",
+    avatarBg: "bg-[#0B111C]",
     issueTitle: "API Webhook Timeout on Deliverables Sync",
     issueDesc: "Payload dropped after 4 retries via US-East Gateway during automated delivery sync of 4× 4K Reels.",
     priority: "Urgent",
@@ -69,7 +69,7 @@ const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
     client: "Aravindan",
     tier: "Custom Retainer",
     email: "aravindan20062006@gmail.com",
-    avatarBg: "bg-[#1E293B]",
+    avatarBg: "bg-[#161F2D]",
     issueTitle: "Cloud Database Architecture Infographic Review",
     issueDesc: "Technical schematic revision for zero-latency failover cluster diagram requested by CTO.",
     priority: "High",
@@ -154,7 +154,7 @@ export function AdminSupportTicketsPage() {
           client: st.client || "Client Account",
           tier: st.tier || "Active Retainer",
           email: st.email || "client@creo.agency",
-          avatarBg: "bg-[#0F172A]",
+          avatarBg: "bg-[#0B111C]",
           issueTitle: st.title || st.subject || "Support Inquiry",
           issueDesc: st.description || "",
           priority,
@@ -174,7 +174,7 @@ export function AdminSupportTicketsPage() {
         client: lt.client || "Client Account",
         tier: lt.tier || "Active Retainer",
         email: lt.email || "client@creo.agency",
-        avatarBg: lt.avatarBg || "bg-[#0F172A]",
+        avatarBg: lt.avatarBg || "bg-[#0B111C]",
         issueTitle: lt.issueTitle || lt.title || "Support Request",
         issueDesc: lt.issueDesc || lt.description || "",
         priority: lt.priority || "Urgent",
@@ -320,8 +320,8 @@ export function AdminSupportTicketsPage() {
               <span className="text-xs font-bold text-[#7FA0D6]">active items</span>
             </div>
             <div className="pt-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/15 text-rose-400 text-[11px] font-bold border border-rose-500/30">
-                <span className="size-1.5 rounded-full bg-rose-500 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/15 text-[#BCCCE6] text-[11px] font-bold border border-blue-500/30">
+                <span className="size-1.5 rounded-full bg-[#BCCCE6] animate-pulse" />
                 Live SLA Monitoring
               </span>
             </div>
@@ -333,7 +333,7 @@ export function AdminSupportTicketsPage() {
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#97A0B3]">
                 RESOLVED TODAY
               </span>
-              <div className="size-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <div className="size-8 rounded-xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-[#BCCCE6]">
                 <CheckCircle2 className="size-4" />
               </div>
             </div>
@@ -343,7 +343,7 @@ export function AdminSupportTicketsPage() {
             </div>
             <div className="pt-1">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7FA0D6]/15 text-[#7FA0D6] text-[11px] font-bold border border-[#7FA0D6]/30">
-                <span className="size-1.5 rounded-full bg-[#7FA0D6]/150" />
+                <span className="size-1.5 rounded-full bg-[#7FA0D6]" />
                 100% SLA Compliance Rate
               </span>
             </div>
@@ -370,12 +370,12 @@ export function AdminSupportTicketsPage() {
                     <span
                       className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${
                         t.priority === "Urgent"
-                          ? "bg-rose-500 text-white"
+                          ? "bg-blue-900/40 text-[#BCCCE6] border border-blue-500/30"
                           : t.priority === "High"
-                          ? "bg-amber-100 text-amber-800"
+                          ? "bg-blue-500/20 text-[#BCCCE6] border border-blue-500/30"
                           : t.priority === "Medium"
-                          ? "bg-[#7FA0D6]/20 text-blue-800"
-                          : "bg-[#1F2C3F] text-[#F1F5F9]"
+                          ? "bg-[#7FA0D6]/20 text-[#7FA0D6]"
+                          : "bg-[#161F2D] text-[#F1F5F9]"
                       }`}
                     >
                       {t.priority}
@@ -384,12 +384,12 @@ export function AdminSupportTicketsPage() {
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                       t.status === "Open"
-                        ? "bg-rose-50 text-rose-700 border-rose-200"
+                        ? "bg-blue-500/15 text-[#BCCCE6] border-blue-500/30"
                         : t.status === "In Progress"
                         ? "bg-[#7FA0D6]/15 text-[#7FA0D6] border-[#7FA0D6]/30"
                         : t.status === "Pending Client"
-                        ? "bg-amber-50 text-amber-700 border-amber-200"
-                        : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        ? "bg-blue-500/20 text-[#BCCCE6] border-blue-500/30"
+                        : "bg-blue-600/15 text-[#BCCCE6] border-blue-500/30"
                     }`}
                   >
                     {t.status}
@@ -406,7 +406,7 @@ export function AdminSupportTicketsPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="font-bold text-xs text-white truncate">{t.client}</span>
-                      <span className="px-1.5 py-0.2 rounded text-[8px] font-extrabold bg-[#7FA0D6]/20 text-blue-800 uppercase">
+                      <span className="px-1.5 py-0.2 rounded text-[8px] font-extrabold bg-[#7FA0D6]/20 text-[#7FA0D6] uppercase">
                         {t.tier}
                       </span>
                     </div>
@@ -442,7 +442,7 @@ export function AdminSupportTicketsPage() {
                     <button
                       type="button"
                       onClick={() => navigate(`/admin/support/tickets/${t.id}`)}
-                      className="px-2.5 py-1 rounded-xl bg-[#1F2C3F] text-[#F1F5F9] text-[11px] font-bold hover:bg-slate-200"
+                      className="px-2.5 py-1 rounded-xl bg-[#161F2D] text-[#F1F5F9] text-[11px] font-bold hover:bg-slate-200"
                     >
                       {t.secondaryAction}
                     </button>
@@ -534,17 +534,17 @@ export function AdminSupportTicketsPage() {
                             <span
                               className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
                                 t.priority === "Urgent"
-                                  ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                                  ? "bg-blue-900/40 text-[#BCCCE6] border border-blue-500/30"
                                   : t.priority === "High"
-                                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                  ? "bg-blue-500/20 text-[#BCCCE6] border border-blue-500/30"
                                   : t.priority === "Medium"
                                   ? "bg-[#7FA0D6]/20 text-[#7FA0D6] border border-[#7FA0D6]/30"
-                                  : "bg-[#1F2C3F] text-[#F1F5F9] border border-[#2A3446]"
+                                  : "bg-[#161F2D] text-[#F1F5F9] border border-[#2A3446]"
                               }`}
                             >
                               {t.priority}
                             </span>
-                            <span className="text-[11px] font-semibold text-rose-400">
+                            <span className="text-[11px] font-semibold text-[#BCCCE6]">
                               {t.timeLog}
                             </span>
                           </div>
@@ -575,12 +575,12 @@ export function AdminSupportTicketsPage() {
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
                             t.status === "Open"
-                              ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                              ? "bg-blue-500/15 text-[#BCCCE6] border border-blue-500/30"
                               : t.status === "In Progress"
                               ? "bg-[#7FA0D6]/15 text-[#7FA0D6] border border-[#7FA0D6]/30"
                               : t.status === "Pending Client"
-                              ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                              : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                              ? "bg-blue-500/20 text-[#BCCCE6] border border-blue-500/30"
+                              : "bg-blue-600/15 text-[#BCCCE6] border border-blue-500/30"
                           }`}
                         >
                           {t.status}
@@ -604,7 +604,7 @@ export function AdminSupportTicketsPage() {
                           <button
                             type="button"
                             onClick={() => navigate(`/admin/support/tickets/${t.id}`)}
-                            className="px-2.5 py-1 rounded-xl bg-[#1F2C3F] text-[#F1F5F9] text-[11px] font-bold hover:bg-slate-200 transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-xl bg-[#161F2D] text-[#F1F5F9] text-[11px] font-bold hover:bg-slate-200 transition-colors cursor-pointer"
                           >
                             {t.secondaryAction}
                           </button>
@@ -643,7 +643,7 @@ export function AdminSupportTicketsPage() {
             <button
               type="button"
               onClick={() => setAlertModal(null)}
-              className="absolute top-4 right-4 size-8 rounded-full bg-[#1F2C3F] hover:bg-slate-200 text-[#97A0B3] hover:text-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
+              className="absolute top-4 right-4 size-8 rounded-full bg-[#161F2D] hover:bg-slate-200 text-[#97A0B3] hover:text-[#F1F5F9] flex items-center justify-center transition-colors cursor-pointer"
               aria-label="Close dialog"
             >
               <X className="size-4" />
@@ -710,7 +710,7 @@ export function AdminSupportTicketsPage() {
                     setAlertModal(null);
                     navigate(`/admin/support/tickets/${id}`);
                   }}
-                  className="px-5 py-3 rounded-2xl bg-[#1F2C3F] hover:bg-slate-200 text-[#F1F5F9] font-bold text-xs active:scale-95 transition-all cursor-pointer"
+                  className="px-5 py-3 rounded-2xl bg-[#161F2D] hover:bg-slate-200 text-[#F1F5F9] font-bold text-xs active:scale-95 transition-all cursor-pointer"
                 >
                   View Ticket
                 </button>

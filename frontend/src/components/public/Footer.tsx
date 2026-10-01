@@ -38,7 +38,7 @@ export function Footer() {
                 href="https://wa.me/919941999415" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#0A0F18] border border-[#222F44] text-[#F8FAFC] hover:bg-[#1A2333] transition-colors px-6 py-3.5 rounded-full text-xs sm:text-sm font-semibold"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#0A0F18] border border-[#222F44] text-[#F8FAFC] hover:bg-[#0B111C] transition-colors px-6 py-3.5 rounded-full text-xs sm:text-sm font-semibold"
               >
                 <MessageCircle className="size-4 text-emerald-400" />
                 <span>Schedule Live Demo</span>
@@ -149,7 +149,7 @@ export function Footer() {
                 href="https://www.linkedin.com/in/creo-tool-3bb3b841b?utm_source=share_via&utm_content=profile&utm_medium=member_android"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex size-9 items-center justify-center rounded-xl border border-[#222F44] bg-[#0A0F18] text-[#97A0B3] hover:text-white hover:bg-[#0A66C2] hover:border-transparent transition-all shadow-xs"
+                className="flex size-9 items-center justify-center rounded-xl border border-[#222F44] bg-[#0A0F18] text-[#97A0B3] hover:text-white hover:bg-[#7FA0D6] hover:border-transparent transition-all shadow-xs"
                 aria-label="LinkedIn"
                 title="LinkedIn"
               >
@@ -163,7 +163,7 @@ export function Footer() {
                 href="https://www.facebook.com/share/1GKDeenkvC/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex size-9 items-center justify-center rounded-xl border border-[#222F44] bg-[#0A0F18] text-[#97A0B3] hover:text-white hover:bg-[#1877F2] hover:border-transparent transition-all shadow-xs"
+                className="flex size-9 items-center justify-center rounded-xl border border-[#222F44] bg-[#0A0F18] text-[#97A0B3] hover:text-white hover:bg-[#7FA0D6] hover:border-transparent transition-all shadow-xs"
                 aria-label="Facebook"
                 title="Facebook"
               >

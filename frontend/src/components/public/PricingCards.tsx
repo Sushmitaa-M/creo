@@ -125,7 +125,7 @@ export function PricingCards({ className = "" }: PricingCardsProps) {
                 </div>
 
                 {/* Features List */}
-                <ul className="space-y-3.5 mb-8 text-sm text-[#D1D5DB] leading-relaxed">
+                <ul className="space-y-3.5 mb-8 text-sm text-[#97A0B3] leading-relaxed">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-2.5">
                       <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#7FA0D6]/12 text-[#7FA0D6]">

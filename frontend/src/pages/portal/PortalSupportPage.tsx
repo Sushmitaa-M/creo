@@ -6,7 +6,6 @@ import {
   Send,
   X,
   Plus,
-  ChevronLeft,
   ShieldAlert,
   ArrowRight,
   PhoneCall,
@@ -151,63 +150,6 @@ export function PortalSupportPage() {
 
   return (
     <div className="space-y-6">
-      {/* ── Top Navigation / Breadcrumbs: Instant Redirect to All Pages ── */}
-      <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
-        <div className="flex items-center gap-2 text-xs">
-          <Link
-            to={isStaffOrAdmin ? "/admin" : "/portal"}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B111C] border border-[#2A3446] text-[#97A0B3] hover:text-white hover:border-[#7FA0D6]/40 transition-colors font-bold cursor-pointer"
-            title="Return to Dashboard"
-          >
-            <ChevronLeft className="w-3.5 h-3.5 text-[#7FA0D6]" />
-            <span>{isStaffOrAdmin ? "Admin Dashboard" : "Client Dashboard"}</span>
-          </Link>
-          <span className="text-[#2A3446]">/</span>
-          <span className="text-white font-bold">Support & Help Desk</span>
-        </div>
-
-        {/* Quick Route Nav Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          <Link
-            to="/portal"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/portal/deliverables"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Deliverables
-          </Link>
-          <Link
-            to="/portal/calendar"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Calendar
-          </Link>
-          <Link
-            to="/portal/creative-pod"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Creative Pod
-          </Link>
-          <Link
-            to="/portal/payments"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Plans & Billing
-          </Link>
-          {isStaffOrAdmin && (
-            <Link
-              to="/admin/support"
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] hover:bg-[#7FA0D6]/25 transition-colors whitespace-nowrap border border-[#7FA0D6]/30 cursor-pointer"
-            >
-              Admin Support Desk →
-            </Link>
-          )}
-        </div>
-      </div>
 
       {/* ── Retainer Notice Banner (Informative & Actionable, Never Blocking Support) ── */}
       {isExpired && !isStaffOrAdmin && (

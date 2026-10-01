@@ -38,6 +38,7 @@ import { RequireOnboardingStage } from "../components/auth/RequireOnboardingStag
 import { MandatoryPasswordResetModal } from "../components/auth/MandatoryPasswordResetModal";
 import { CreoLoadingScreen } from "../components/ui/CreoLoadingScreen";
 import { CreoLoader, CreoInlineLoader } from "../components/ui/CreoLoader";
+import { SimpleErrorBoundary } from "../components/ui/SimpleErrorBoundary";
 
 // Portal Layout (pages are lazy-loaded from ./lazy-pages)
 import { PortalLayout } from "../components/portal/PortalLayout";
@@ -417,12 +418,12 @@ export function App() {
                 }
               >
                 <Route index element={<PortalDashboardPage />} />
-                <Route path="deliverables" element={<PortalDeliverablesPage />} />
+                <Route path="deliverables" element={<SimpleErrorBoundary name="Deliverables"><PortalDeliverablesPage /></SimpleErrorBoundary>} />
                 <Route path="calendar" element={<PortalCalendarPage />} />
                 <Route path="creative-pod" element={<PortalCreativePodPage />} />
                 <Route path="creative_pod" element={<PortalCreativePodPage />} />
                 <Route path="payments" element={<PortalPaymentsPage />} />
-                <Route path="support" element={<PortalSupportPage />} />
+                <Route path="support" element={<SimpleErrorBoundary name="Support"><PortalSupportPage /></SimpleErrorBoundary>} />
                 <Route path="account" element={<PortalAccountPage />} />
                 <Route path="library" element={<PortalLibraryPage />} />
               </Route>

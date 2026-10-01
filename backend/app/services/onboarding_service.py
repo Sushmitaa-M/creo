@@ -86,7 +86,32 @@ async def get_current_stage(db: AsyncSession, client_id: uuid.UUID) -> int:
         if not user_res.scalar_one_or_none():
             raise NotFound("Client account not found", code="CLIENT_NOT_FOUND")
         return 0
-    return int(row[0])
+    base_stage = int(row[0])
+    if base_stage < 4:
+        return base_stage
+        
+    # v_client_onboarding tops out at 4 when core questionnaire is complete.
+    # Derive higher stages dynamically.
+    from sqlalchemy import func
+    from app.models.user import ClientProfile
+    from app.models.work import ClientAssignment, ContentCalendar
+    
+    profile = (await db.execute(select(ClientProfile).where(ClientProfile.user_id == client_id))).scalar_one_or_none()
+    if not profile or not profile.brand_dna:
+        return 4
+        
+    ca_count = (await db.execute(select(func.count(ClientAssignment.id)).where(ClientAssignment.client_id == client_id))).scalar() or 0
+    if ca_count == 0:
+        return 5
+        
+    cc_count = (await db.execute(select(func.count(ContentCalendar.id)).where(ContentCalendar.client_id == client_id))).scalar() or 0
+    if cc_count == 0:
+        return 6
+        
+    if not profile.onboarding_completed_at:
+        return 7
+        
+    return 8
 
 
 async def get_onboarding_status(db: AsyncSession, client_id: uuid.UUID) -> OnboardingStatusResponse:

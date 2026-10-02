@@ -46,7 +46,7 @@ logger = get_logger("app.services.calendar_engine")
 
 PLANS: dict[str, dict[str, Any]] = {
     "starter": {
-        "name": "Starter Growth",
+        "name": "Starter",
         "price_minor": 2_500_000,
         "posters": 8,
         "reels": 4,
@@ -55,27 +55,31 @@ PLANS: dict[str, dict[str, Any]] = {
         "shoot_days_per_cycle": 1,
         "dedicated_director": False,
     },
-    "accelerator": {
-        "name": "Brand Accelerator",
+    "growth": {
+        "name": "Growth",
         "price_minor": 5_000_000,
-        "posters": 15,
-        "reels": 8,
-        "stories": 20,
+        "posters": 16,
+        "reels": 10,
+        "stories": 22,
         "revision_rounds": 2,
         "shoot_days_per_cycle": 1,
         "dedicated_director": True,
     },
-    "enterprise": {
-        "name": "Enterprise Domination",
+    "scale": {
+        "name": "Scale",
         "price_minor": 9_500_000,
-        "posters": 30,
-        "reels": 16,
-        "stories": 40,
+        "posters": 32,
+        "reels": 20,
+        "stories": 44,
         "revision_rounds": 3,
         "shoot_days_per_cycle": 2,
         "dedicated_director": True,
     },
 }
+# Backward compatibility aliases
+PLANS["pro"] = PLANS["scale"]
+PLANS["accelerator"] = PLANS["growth"]
+PLANS["enterprise"] = PLANS["scale"]
 
 DEFAULT_POLICY: dict[str, Any] = {
     "runway_days": 7,

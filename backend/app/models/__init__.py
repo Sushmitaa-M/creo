@@ -4,6 +4,7 @@ from app.models.auth import IdempotencyKey, RefreshToken
 from app.models.billing import (
     PaymentEvent,
     Plan,
+    PlanNegotiation,
     PlatformPaymentEvent,
     PlatformSubscription,
     Subscription,
@@ -26,13 +27,21 @@ from app.models.calendar import (
     ClientCycle,
     ShootDay,
 )
-from app.models.ops import Announcement, AuditLog, LeaveRequest, Notification
-from app.models.negotiation import PlanNegotiation
+from app.models.ops import (
+    Announcement,
+    AuditLog,
+    EscalationState,
+    LeaveRequest,
+    Notification,
+    PlatformSetting,
+    SampleRequest,
+)
 from app.models.questionnaire import Questionnaire
 from app.models.support import Ticket, TicketMessage
 from app.models.tenant import Agency, Team, TeamMember
 from app.models.user import ClientProfile, ClientRoleRequirement, StaffProfile, User
 from app.models.work import ClientAssignment, ContentCalendar, Deliverable, Task
+from app.models.chat import DirectMessage
 
 __all__ = [
     # Negotiation
@@ -54,6 +63,7 @@ __all__ = [
     "ClientRoleRequirement",
     # Billing
     "Plan",
+    "PlanNegotiation",
     "Subscription",
     "PaymentEvent",
     "UsageCounter",
@@ -77,6 +87,9 @@ __all__ = [
     "Announcement",
     "AuditLog",
     "Notification",
+    "SampleRequest",
+    "PlatformSetting",
+    "EscalationState",
     # Auth
     "RefreshToken",
     "IdempotencyKey",

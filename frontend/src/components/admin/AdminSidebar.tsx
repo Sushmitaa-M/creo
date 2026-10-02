@@ -256,7 +256,7 @@ export function AdminSidebar() {
           <button
             type="button"
             onClick={onItemClick}
-            className="md:hidden size-8 rounded-xl flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F] border border-transparent hover:border-[#2A3446] transition-colors cursor-pointer"
+            className="md:hidden size-8 rounded-xl flex items-center justify-center text-[#97A0B3] hover:text-white hover:bg-[#161F2D] border border-transparent hover:border-[#2A3446] transition-colors cursor-pointer"
             aria-label="Close navigation sidebar"
           >
             <X className="w-5 h-5" />
@@ -309,7 +309,7 @@ export function AdminSidebar() {
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                       active
                         ? "bg-[#BCCCE6] text-[#0B111C] shadow-sm font-black"
-                        : "text-[#97A0B3] hover:text-white hover:bg-[#1F2C3F]"
+                        : "text-[#97A0B3] hover:text-white hover:bg-[#161F2D]"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -358,7 +358,7 @@ export function AdminSidebar() {
               }
               navigate("/auth");
             }}
-            className="p-1.5 rounded-lg text-[#97A0B3] hover:text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-[#97A0B3] hover:text-[#D8BF9B] hover:bg-[#D8BF9B]/10 transition-colors cursor-pointer"
             title="Sign Out / Log Out"
             aria-label="Sign Out"
           >

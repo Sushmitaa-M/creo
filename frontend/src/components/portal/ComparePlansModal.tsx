@@ -147,7 +147,7 @@ export function ComparePlansModal({
                     ? "bg-[#0B111C] border-[#7FA0D6] shadow-[0_0_25px_rgba(127,160,214,0.15)] ring-1 ring-[#7FA0D6]"
                     : tier.isPopular
                       ? "bg-[#0B111C]/60 border-[#D8BF9B]/40 hover:border-[#D8BF9B]"
-                      : "bg-[#0B111C]/40 border-[#2A3446] hover:border-[#3E4D66]"
+                      : "bg-[#0B111C]/40 border-[#2A3446] hover:border-[#2A3446]"
                 }`}
               >
                 {/* Header Badge */}

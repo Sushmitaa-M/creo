@@ -6,7 +6,6 @@ import {
   Send,
   X,
   Plus,
-  ChevronLeft,
   ShieldAlert,
   ArrowRight,
   PhoneCall,
@@ -14,6 +13,7 @@ import {
 import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
 import { PlanBargainCallModal } from "../../components/portal/PlanBargainCallModal";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 import type { TicketItem } from "../../types/api";
 
 interface SupportTicketData {
@@ -27,6 +27,7 @@ interface SupportTicketData {
   meta: string;
   category?: string;
   messages?: Array<{ id: string; sender: string; text: string; time: string; isMe?: boolean }>;
+  rawId?: string;
 }
 
 const CATEGORIES = ["Content", "Billing", "Technical", "Brand", "Other"];
@@ -35,18 +36,18 @@ const CATEGORIES = ["Content", "Billing", "Technical", "Brand", "Other"];
 const NO_TICKETS: TicketItem[] = [];
 
 const FAQ_ITEMS = [
-  { q: "How do I request changes on an approved asset?", a: "Once an asset is approved, it moves to the Scheduled queue. If you need a last-minute change, please open a Support ticket with the priority 'High' and mention the asset ID." },
-  { q: "What happens if I miss a review deadline?", a: "Assets auto-approve after the SLA timer expires to ensure your delivery pipeline stays on schedule. You can still request a revision via support, but it may eat into your monthly quota." },
-  { q: "Can I add more reels to my plan mid-cycle?", a: "Yes! You can purchase Add-on packs from the Plan & billing page. They apply immediately and do not affect your recurring billing cycle." },
-  { q: "How do revision rounds work?", a: "Each asset includes 2 free revision rounds. When reviewing, select 'Request Changes' and leave detailed comments. The pod will submit a v2 within 24-48 hours." },
-  { q: "What's included in the Growth plan?", a: "The Growth plan includes a dedicated creative pod, 8 Reels, 4 Posts, and 8 Stories per cycle, with a 2-hour response SLA." },
+  { q: "How do I request changes on a deliverable?", a: "In the Review section, select 'Request change' and describe your feedback. Your dedicated creative pod will deliver an updated version within your plan's turnaround SLA." },
+  { q: "What happens if I miss a review deadline?", a: "Deliverables undergo standard 5-business-day auto-approval to keep production on cadence. You will receive notifications before auto-approval occurs." },
+  { q: "Can I add more reels or posts mid-cycle?", a: "Yes! You can purchase Add-on top-up packs directly from the Plan & billing page. They apply immediately to your current cycle." },
+  { q: "How do revision rounds work per plan?", a: "Revision rounds per deliverable depend on your plan: 1 round for Starter, 2 rounds for Growth, and 3 rounds for Scale. Leaving clear feedback ensures your pod gets it right on the next iteration." },
+  { q: "What are the SLA turnaround promises per plan?", a: "Starter features 3 business days turnaround per deliverable batch, Growth offers 2 business days, and Scale offers 24-hour priority turnaround." },
 ];
 
 export function PortalSupportPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: subData } = useQuery({
+  const { data: subData, isLoading: isSubLoading } = useQuery({
     queryKey: ["client-subscription"],
     queryFn: () => request<any>("/api/v1/payments/subscription"),
   });
@@ -57,12 +58,12 @@ export function PortalSupportPage() {
     subData?.subscription?.status === "canceled";
   const isStaffOrAdmin = user?.role && user.role !== "client";
 
-  const { data: serverTickets = NO_TICKETS } = useQuery<TicketItem[]>({
+  const { data: serverTickets = NO_TICKETS, isLoading: isTicketsLoading } = useQuery<TicketItem[]>({
     queryKey: ["tickets", user?.id],
     queryFn: async () => {
       try {
-        const res = await request<TicketItem[]>("/api/v1/tickets");
-        return Array.isArray(res) ? res : [];
+        const res = await request<any>("/api/v1/tickets");
+        return res?.items ?? (Array.isArray(res) ? res : []);
       } catch {
         return [];
       }
@@ -85,17 +86,21 @@ export function PortalSupportPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+
+
   // Sync server tickets
   React.useEffect(() => {
-    if (serverTickets && serverTickets.length > 0) {
-      const mapped: SupportTicketData[] = serverTickets.map((t) => ({
-        id: `#TKT-${t.id.slice(0, 4).toUpperCase()}`,
-        status: (t.status === "resolved" || t.status === "closed" ? "resolved" : t.status === "in_progress" ? "in_progress" : "open") as any,
-        priority: ((t.priority as any) || "medium") as any,
-        priorityLabel: t.priority === "urgent" ? "Urgent" : t.priority === "high" ? "High" : t.priority === "low" ? "Low" : "Medium",
-        timeAgo: t.created_at ? new Date(t.created_at).toLocaleDateString() : "Recently",
-        title: t.title,
-        description: t.description,
+    const safeTickets = (Array.isArray(serverTickets) ? serverTickets : []);
+    if (safeTickets.length > 0) {
+      const mapped: SupportTicketData[] = safeTickets.map((t: any) => ({
+        rawId: t?.id,
+        id: `#TKT-${String(t?.id || "").slice(0, 4).toUpperCase()}`,
+        status: (t?.status === "resolved" || t?.status === "closed" ? "resolved" : t?.status === "in_progress" ? "in_progress" : "open") as any,
+        priority: ((t?.priority as any) || "medium") as any,
+        priorityLabel: t?.priority === "urgent" ? "Urgent" : t?.priority === "high" ? "High" : t?.priority === "low" ? "Low" : "Medium",
+        timeAgo: t?.created_at ? new Date(t.created_at).toLocaleDateString() : "Recently",
+        title: t?.title || "General Support Thread",
+        description: t?.description || "",
         meta: `Opened by ${user?.full_name || "You"}`,
         category: "General",
       }));
@@ -114,6 +119,12 @@ export function PortalSupportPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tickets"] });
+      showToast(`Ticket submitted successfully!`);
+      setSubject("");
+      setDescription("");
+    },
+    onError: (error: any) => {
+      showToast(`Failed to create ticket: ${error.message || "Validation Error"}`);
     },
   });
 
@@ -124,85 +135,15 @@ export function PortalSupportPage() {
       return;
     }
 
-    const newTicketId = `#TKT-${Math.floor(1000 + Math.random() * 9000)}`;
-    const newTicket: SupportTicketData = {
-      id: newTicketId,
-      status: "in_progress",
-      priority: "medium",
-      priorityLabel: "Medium",
-      timeAgo: "Just now",
-      title: subject.trim(),
-      description: description.trim(),
-      meta: `Opened by ${user?.full_name || "You"}`,
-      category: selectedCategory,
-    };
-
-    setTicketsList((prev) => [newTicket, ...prev]);
     createTicketMutation.mutate({ title: subject.trim(), description: description.trim(), priority: "medium" });
-    showToast(`Ticket ${newTicketId} submitted!`);
-    setSubject("");
-    setDescription("");
   };
+
+  if (isSubLoading || isTicketsLoading) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Support Desk" />;
+  }
 
   return (
     <div className="space-y-6">
-      {/* ── Top Navigation / Breadcrumbs: Instant Redirect to All Pages ── */}
-      <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
-        <div className="flex items-center gap-2 text-xs">
-          <Link
-            to={isStaffOrAdmin ? "/admin" : "/portal"}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B111C] border border-[#2A3446] text-[#97A0B3] hover:text-white hover:border-[#7FA0D6]/40 transition-colors font-bold cursor-pointer"
-            title="Return to Dashboard"
-          >
-            <ChevronLeft className="w-3.5 h-3.5 text-[#7FA0D6]" />
-            <span>{isStaffOrAdmin ? "Admin Dashboard" : "Client Dashboard"}</span>
-          </Link>
-          <span className="text-[#2A3446]">/</span>
-          <span className="text-white font-bold">Support & Help Desk</span>
-        </div>
-
-        {/* Quick Route Nav Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          <Link
-            to="/portal"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/portal/deliverables"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Deliverables
-          </Link>
-          <Link
-            to="/portal/calendar"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Calendar
-          </Link>
-          <Link
-            to="/portal/creative-pod"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Creative Pod
-          </Link>
-          <Link
-            to="/portal/payments"
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#97A0B3] hover:text-white hover:bg-[#0B111C] transition-colors whitespace-nowrap cursor-pointer"
-          >
-            Plans & Billing
-          </Link>
-          {isStaffOrAdmin && (
-            <Link
-              to="/admin/support"
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#7FA0D6]/15 text-[#7FA0D6] hover:bg-[#7FA0D6]/25 transition-colors whitespace-nowrap border border-[#7FA0D6]/30 cursor-pointer"
-            >
-              Admin Support Desk →
-            </Link>
-          )}
-        </div>
-      </div>
 
       {/* ── Retainer Notice Banner (Informative & Actionable, Never Blocking Support) ── */}
       {isExpired && !isStaffOrAdmin && (
@@ -257,7 +198,7 @@ export function PortalSupportPage() {
                     className={`px-4 py-2 rounded-full text-[13px] font-medium transition-colors ${
                       selectedCategory === cat
                         ? "bg-[#BCCCE6] text-[#0B111C]"
-                        : "bg-transparent border border-[#2A3446] text-white hover:bg-[#1F2C3F]"
+                        : "bg-transparent border border-[#2A3446] text-white hover:bg-[#161F2D]"
                     }`}
                   >
                     {cat}
@@ -274,7 +215,7 @@ export function PortalSupportPage() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Briefly summarize your request..."
-                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#7E889C] focus:outline-none focus:border-white/[0.2] transition-colors"
+                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#97A0B3] focus:outline-none focus:border-white/[0.2] transition-colors"
               />
             </div>
 
@@ -286,7 +227,7 @@ export function PortalSupportPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your issue or request..."
-                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#7E889C] focus:outline-none focus:border-white/[0.2] resize-none transition-colors"
+                className="w-full bg-[#0B111C] border border-[#2A3446] rounded-lg p-3 text-sm text-white placeholder-[#97A0B3] focus:outline-none focus:border-white/[0.2] resize-none transition-colors"
               />
             </div>
 
@@ -294,8 +235,9 @@ export function PortalSupportPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={createTicketMutation.isPending}
-                className="w-10 h-10 rounded-full bg-[#BCCCE6] text-[#0B111C] flex items-center justify-center hover:bg-white transition-colors"
+                onClick={handleFormSubmit}
+                disabled={createTicketMutation.isPending || !subject.trim() || !description.trim()}
+                className="w-10 h-10 rounded-full bg-[#BCCCE6] text-[#0B111C] flex items-center justify-center hover:bg-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {createTicketMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -314,16 +256,16 @@ export function PortalSupportPage() {
             <h3 className="text-base font-semibold text-white mb-4">Your requests</h3>
 
             {ticketsList.length === 0 ? (
-              <p className="text-sm text-[#7E889C] py-6 text-center">No tickets yet. Submit your first request.</p>
+              <p className="text-sm text-[#97A0B3] py-6 text-center">No tickets yet. Need help? Raise a Ticket</p>
             ) : (
               <div className="space-y-3">
                 {ticketsList.slice(0, 5).map((t) => (
-                  <div key={t.id} className="p-4 bg-[#0B111C] rounded-xl border border-white/[0.04]">
+                  <Link key={t.id} to={`/portal/support/${t.rawId}`} className="block p-4 bg-[#0B111C] rounded-xl border border-white/[0.04] hover:border-[#7FA0D6]/30 transition-colors">
                     {/* Top row */}
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="text-xs font-mono text-[#7E889C]">{t.id}</span>
-                      <span className="text-xs text-[#7E889C]">· {t.category}</span>
-                      <span className="text-xs text-[#7E889C] ml-auto">{t.timeAgo}</span>
+                      <span className="text-xs font-mono text-[#97A0B3]">{t.id}</span>
+                      <span className="text-xs text-[#97A0B3]">· {t.category}</span>
+                      <span className="text-xs text-[#97A0B3] ml-auto">{t.timeAgo}</span>
                     </div>
                     {/* Title */}
                     <p className="text-sm font-medium text-white mb-2">{t.title}</p>
@@ -333,7 +275,7 @@ export function PortalSupportPage() {
                         t.status === "resolved"
                           ? "bg-[#7FA0D6]/10 text-[#7FA0D6]"
                           : t.status === "in_progress"
-                          ? "bg-[#FCD34D]/10 text-[#FCD34D]"
+                          ? "bg-[#D8BF9B]/10 text-[#D8BF9B]"
                           : "bg-white/[0.05] text-[#97A0B3]"
                       }`}
                     >
@@ -343,7 +285,7 @@ export function PortalSupportPage() {
                         ? "In progress"
                         : "Waiting on you"}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -363,13 +305,13 @@ export function PortalSupportPage() {
                   >
                     <span className="text-sm text-[#97A0B3] group-hover:text-white transition-colors pr-4">{item.q}</span>
                     <Plus
-                      className={`w-4 h-4 text-[#7E889C] shrink-0 transition-transform duration-200 ${
+                      className={`w-4 h-4 text-[#97A0B3] shrink-0 transition-transform duration-200 ${
                         expandedFaq === i ? "rotate-45" : ""
                       }`}
                     />
                   </button>
                   {expandedFaq === i && (
-                    <div className="pb-4 text-sm text-[#7E889C] animate-in fade-in slide-in-from-top-2">
+                    <div className="pb-4 text-sm text-[#97A0B3] animate-in fade-in slide-in-from-top-2">
                       {item.a}
                     </div>
                   )}
@@ -383,9 +325,9 @@ export function PortalSupportPage() {
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#161F2D] text-white px-5 py-3 rounded-xl shadow-2xl border border-white/[0.1] text-sm font-medium flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#6EE7B7]" />
+          <span className="w-2 h-2 rounded-full bg-[#BCCCE6]" />
           {toastMessage}
-          <button type="button" onClick={() => setToastMessage(null)} className="ml-2 text-[#7E889C] hover:text-white cursor-pointer">
+          <button type="button" onClick={() => setToastMessage(null)} className="ml-2 text-[#97A0B3] hover:text-white cursor-pointer">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>

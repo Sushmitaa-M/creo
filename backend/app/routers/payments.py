@@ -34,7 +34,7 @@ async def list_plans(
         select(Plan)
         .where(
             Plan.is_active.is_(True),
-            Plan.name.in_(["starter", "growth", "pro"]),
+            Plan.name.in_(["starter", "growth", "scale"]),
         )
         .order_by(Plan.price_minor.asc())
     )

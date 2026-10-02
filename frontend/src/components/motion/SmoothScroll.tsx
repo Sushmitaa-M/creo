@@ -18,12 +18,12 @@ export function SmoothScroll() {
 
     const lenis = new Lenis({
       duration: 1.15,
-      easing: (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
+      easing: (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t)),
       smoothWheel: true,
       anchors: { offset: -80 },
       autoRaf: true,
       // Let nested scroll areas (tables, dialogs, dropdowns) scroll natively
-      prevent: (node) =>
+      prevent: (node: Element) =>
         node.closest("[data-lenis-prevent], [role='dialog'], .overflow-x-auto") !== null,
     });
     lenisRef.current = lenis;

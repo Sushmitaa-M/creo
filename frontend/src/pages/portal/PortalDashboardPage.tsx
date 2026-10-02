@@ -5,6 +5,7 @@ import { request } from "../../lib/http";
 import { useAuth } from "../../lib/auth-context";
 import { useOnboardingGate } from "../../lib/useOnboardingGate";
 import { ResumeOnboardingBanner } from "../../components/portal/ResumeOnboardingBanner";
+import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 
 /* ── Types ── */
 export interface TeamHandler {
@@ -57,7 +58,7 @@ export function PortalDashboardPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // The dashboard endpoint rejects clients that haven't finished onboarding, so don't call it until then
-  const { data: dashboard } = useQuery<DashboardData>({
+  const { data: dashboard, isLoading: isDashboardLoading } = useQuery<DashboardData>({
     queryKey: ["portal-dashboard", user?.id],
     queryFn: async () => {
       return await request<DashboardData>("/api/v1/portal/dashboard");
@@ -138,18 +139,36 @@ export function PortalDashboardPage() {
     }
   };
 
-  const handleDeclineDeliverable = async (id: string, e: React.MouseEvent) => {
+  const [declineTarget, setDeclineTarget] = useState<{ id: string; title?: string } | null>(null);
+  const [declineComment, setDeclineComment] = useState("");
+  const [submittingDecline, setSubmittingDecline] = useState(false);
+
+  const handleDeclineDeliverable = (id: string, e: React.MouseEvent, title?: string) => {
     e.preventDefault();
     e.stopPropagation();
+    setDeclineTarget({ id, title });
+    setDeclineComment("");
+  };
+
+  const submitDeclineReason = async () => {
+    if (!declineTarget || !declineComment.trim()) return;
+    setSubmittingDecline(true);
     try {
-      await request(`/api/v1/deliverables/${id}/request-changes?rejection_comment=Changes requested from dashboard`, {
-        method: "POST",
-      });
+      await request(
+        `/api/v1/deliverables/${declineTarget.id}/request-changes?rejection_comment=${encodeURIComponent(
+          declineComment.trim()
+        )}`,
+        { method: "POST" }
+      );
       queryClient.invalidateQueries({ queryKey: ["portal-dashboard-deliverables"] });
       queryClient.invalidateQueries({ queryKey: ["portal-dashboard"] });
       showToast("Revision requested from pod");
+      setDeclineTarget(null);
+      setDeclineComment("");
     } catch {
       showToast("Change request failed");
+    } finally {
+      setSubmittingDecline(false);
     }
   };
 
@@ -165,6 +184,10 @@ export function PortalDashboardPage() {
   const dateStr = today.toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase();
   const daysRemaining = (dashboard?.active_plan as any)?.days_remaining ?? subData?.days_remaining ?? 30;
   const cycleDay = Math.max(1, Math.min(30, 30 - daysRemaining + 1));
+
+  if (!gate.isReady || (!isLocked && (isDashboardLoading || !dashboard))) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Workspace" />;
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -189,7 +212,7 @@ export function PortalDashboardPage() {
           </h1>
         </div>
         <div className={`flex items-center gap-3 shrink-0 pt-1 ${isLocked ? "hidden" : ""}`}>
-          <Link to="/portal/creative-pod" className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#1F2C3F] transition-colors">
+          <Link to="/portal/creative-pod" className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#161F2D] transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
@@ -265,7 +288,7 @@ export function PortalDashboardPage() {
                             ? "text-white font-bold"
                             : step.completed
                             ? "text-[#97A0B3] font-medium"
-                            : "text-[#7E889C] font-medium"
+                            : "text-[#97A0B3] font-medium"
                         }`}
                       >
                         {step.label}
@@ -278,7 +301,7 @@ export function PortalDashboardPage() {
 
             {/* Alert Box (Only when review is needed) */}
             {pendingDeliverables.length > 0 && (
-              <div className="bg-[#1F2C3F] rounded-xl p-4 mb-8">
+              <div className="bg-[#161F2D] rounded-xl p-4 mb-8">
                 <p className="text-[13px] text-[#97A0B3] leading-relaxed">
                   You have <span className="text-white font-medium">{pendingDeliverables.length} {pendingDeliverables.length === 1 ? 'deliverable' : 'deliverables'}</span> awaiting your review. Approving or requesting changes keeps your batch on its delivery SLA.
                 </p>
@@ -288,7 +311,7 @@ export function PortalDashboardPage() {
             {/* Asset List */}
             {pendingDeliverables.length === 0 ? (
               <div className="py-8 text-center">
-                <p className="text-sm text-[#7E889C]">
+                <p className="text-sm text-[#97A0B3]">
                   {isLocked
                     ? "Your production pipeline activates once setup is complete. Pieces waiting for your review will show up here."
                     : "No deliverables pending review right now."}
@@ -299,7 +322,7 @@ export function PortalDashboardPage() {
                 {pendingDeliverables.slice(0, 3).map((item: any) => (
                   <div key={item.id} className="flex items-center gap-4 py-4">
                     {/* Thumbnail */}
-                    <div className="w-16 h-16 rounded-lg bg-[#1F2C3F] overflow-hidden shrink-0 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-lg bg-[#161F2D] overflow-hidden shrink-0 flex items-center justify-center">
                       {item.thumbnail_url || item.file_url ? (
                         <img
                           src={item.thumbnail_url || item.file_url}
@@ -307,7 +330,7 @@ export function PortalDashboardPage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <svg className="w-6 h-6 text-[#7E889C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6 text-[#97A0B3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
                         </svg>
                       )}
@@ -320,21 +343,21 @@ export function PortalDashboardPage() {
                       <p className="text-[15px] font-medium text-white truncate mt-0.5">
                         {item.title || "Untitled"}
                       </p>
-                      <p className="text-[13px] text-[#7E889C] truncate mt-0.5">
+                      <p className="text-[13px] text-[#97A0B3] truncate mt-0.5">
                         {item.description || "Ready for your review"}
                       </p>
                     </div>
                     {/* Actions */}
                     <div className="flex items-center gap-2 shrink-0">
                       <button
-                        onClick={(e) => handleDeclineDeliverable(item.id, e)}
-                        className="px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#1F2C3F] transition-colors"
+                        onClick={(e) => handleDeclineDeliverable(item.id, e, item.title)}
+                        className="px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#161F2D] transition-colors cursor-pointer"
                       >
                         Request change
                       </button>
                       <button
                         onClick={(e) => handleApproveDeliverable(item.id, e)}
-                        className="px-4 py-2 rounded-full bg-[#BCCCE6] text-[#0B111C] text-[13px] font-bold hover:bg-white transition-colors"
+                        className="px-4 py-2 rounded-full bg-[#BCCCE6] text-[#0B111C] text-[13px] font-bold hover:bg-white transition-colors cursor-pointer"
                       >
                         Approve
                       </button>
@@ -349,13 +372,13 @@ export function PortalDashboardPage() {
           <div className="bg-[#161F2D] rounded-2xl p-6 border border-[#2A3446]">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-base font-semibold text-white">Coming up</h3>
-              <span className="text-xs font-medium text-[#7E889C]">
+              <span className="text-xs font-medium text-[#97A0B3]">
                 next 7 days
               </span>
             </div>
 
             {/* Table Header */}
-            <div className="grid grid-cols-4 gap-4 text-[11px] uppercase tracking-[0.1em] text-[#7E889C] font-bold pb-2 border-b border-[#2A3446]">
+            <div className="grid grid-cols-4 gap-4 text-[11px] uppercase tracking-[0.1em] text-[#97A0B3] font-bold pb-2 border-b border-[#2A3446]">
               <span>When</span>
               <span>Format</span>
               <span>Post</span>
@@ -365,7 +388,7 @@ export function PortalDashboardPage() {
             {/* Table Rows */}
             <div className="divide-y divide-white/[0.04]">
               {upcomingEntries.length === 0 ? (
-                <div className="py-8 text-center text-[#7E889C] text-sm">
+                <div className="py-8 text-center text-[#97A0B3] text-sm">
                   {isLocked
                     ? "Your 30-day content calendar is generated when setup is complete."
                     : "No upcoming posts scheduled in the next 7 days."}
@@ -382,7 +405,7 @@ export function PortalDashboardPage() {
                     "Scheduled";
                   const badgeColor =
                     statusLabel === "Needs you" ? "bg-[#D8BF9B]/15 text-[#D8BF9B]" :
-                    statusLabel === "Approved" ? "bg-[#10B981]/20 text-[#6EE7B7]" :
+                    statusLabel === "Approved" ? "bg-[#7FA0D6]/20 text-[#BCCCE6]" :
                     "bg-[#7FA0D6]/15 text-[#BCCCE6]";
                   return (
                     <div key={entry.id || idx} className="grid grid-cols-4 gap-4 py-3 text-sm items-center hover:bg-white/[0.02] transition-colors -mx-2 px-2 rounded-lg cursor-pointer">
@@ -434,17 +457,17 @@ export function PortalDashboardPage() {
                 {
                   label: "Reels",
                   used: quotas.reel?.used ?? 0,
-                  total: quotas.reel?.quota ?? plan?.reel_quota ?? 8,
+                  total: quotas.reel?.quota ?? plan?.reel_quota ?? 0,
                 },
                 {
                   label: "Posts",
                   used: (quotas.static_post?.used ?? quotas.poster?.used) ?? 0,
-                  total: quotas.static_post?.quota ?? quotas.poster?.quota ?? plan?.poster_quota ?? 4,
+                  total: quotas.static_post?.quota ?? quotas.poster?.quota ?? plan?.poster_quota ?? 0,
                 },
                 {
                   label: "Stories",
                   used: quotas.story?.used ?? 0,
-                  total: quotas.story?.quota ?? plan?.story_quota ?? 8,
+                  total: quotas.story?.quota ?? plan?.story_quota ?? 0,
                 },
               ];
 
@@ -459,7 +482,7 @@ export function PortalDashboardPage() {
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="text-sm text-[#97A0B3]">{item.label}</span>
                             <span className="text-sm text-white font-medium">
-                              {item.used} <span className="text-[#7E889C]">/ {item.total}</span>
+                              {item.used} <span className="text-[#97A0B3]">/ {item.total}</span>
                             </span>
                           </div>
                           <div className="h-2 bg-white/[0.04] rounded-full overflow-hidden">
@@ -473,7 +496,7 @@ export function PortalDashboardPage() {
                     })}
                   </div>
                   <div className="mt-6 pt-4 border-t border-[#2A3446]">
-                    <p className="text-xs text-[#7E889C]">
+                    <p className="text-xs text-[#97A0B3]">
                       Renews {renewalDateStr} · <Link to="/portal/payments" className="text-white hover:underline">Add-ons available</Link>
                     </p>
                   </div>
@@ -505,7 +528,7 @@ export function PortalDashboardPage() {
               {!isLocked && (
                 <Link
                   to="/portal/creative-pod"
-                  className="px-4 py-1.5 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#1F2C3F] transition-colors"
+                  className="px-4 py-1.5 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#161F2D] transition-colors"
                 >
                   Open chat
                 </Link>
@@ -514,7 +537,7 @@ export function PortalDashboardPage() {
 
             {/* Real Pod Team or Empty State */}
             {(!dashboard?.assigned_team || dashboard.assigned_team.length === 0) ? (
-              <div className="py-6 text-center text-sm text-[#7E889C]">
+              <div className="py-6 text-center text-sm text-[#97A0B3]">
                 {isLocked
                   ? "Your dedicated creative pod is assigned when setup is complete."
                   : "Your dedicated creative pod is being allocated."}
@@ -523,7 +546,7 @@ export function PortalDashboardPage() {
               <div className="space-y-4">
                 {dashboard.assigned_team.slice(0, 3).map((member: any, i: number) => {
                   const initials = member.name.split(" ").filter((w: string) => w.length > 0).map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
-                  const avatarBgs = ["bg-[#BCCCE6] text-[#0B111C]", "bg-white/[0.08] text-white", "bg-[#10B981] text-white"];
+                  const avatarBgs = ["bg-[#BCCCE6] text-[#0B111C]", "bg-white/[0.08] text-white", "bg-[#7FA0D6] text-white"];
                   return (
                     <div key={member.id || i} className="flex gap-3 items-center">
                       <div className={`w-8 h-8 rounded-full ${avatarBgs[i % avatarBgs.length]} flex items-center justify-center text-[11px] font-bold shrink-0`}>
@@ -532,7 +555,7 @@ export function PortalDashboardPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between mb-0.5">
                           <span className="text-sm font-bold text-white truncate">{member.name}</span>
-                          <span className="text-xs text-[#7E889C]">{member.is_primary ? "Lead" : "Pod"}</span>
+                          <span className="text-xs text-[#97A0B3]">{member.is_primary ? "Lead" : "Pod"}</span>
                         </div>
                         <p className="text-[13px] text-[#97A0B3] truncate">
                           {member.role || "Creative execution"}
@@ -547,10 +570,72 @@ export function PortalDashboardPage() {
         </div>
       </div>
 
+      {/* Revision Reason Modal Dialog */}
+      {declineTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.15s_ease-out]">
+          <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A3446]">
+              <h3 className="text-base font-bold text-white">
+                Request Changes on {declineTarget.title || "Deliverable"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setDeclineTarget(null)}
+                className="text-[#97A0B3] hover:text-white text-xs font-bold px-2 py-1 rounded-lg bg-[#0B111C]"
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            <p className="text-xs text-[#97A0B3]">
+              Select quick feedback tags or describe what the creative pod should adjust in the next version:
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              {["Less text", "Different music", "Stronger hook", "Colour feels off-brand", "Wrong product"].map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setDeclineComment((prev) => (prev ? `${prev} · ${tag}` : tag))}
+                  className="px-3 py-1 rounded-lg bg-[#0B111C] hover:bg-[#2A3446] border border-[#2A3446] text-xs font-semibold text-[#BCCCE6] transition-colors"
+                >
+                  + {tag}
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={declineComment}
+              onChange={(e) => setDeclineComment(e.target.value)}
+              placeholder="Provide clear revision instructions for your creative team..."
+              className="w-full bg-[#0B111C] border border-[#2A3446] rounded-xl p-3.5 text-xs text-white placeholder:text-[#97A0B3] focus:outline-none focus:border-[#7FA0D6] h-28 resize-none"
+            />
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeclineTarget(null)}
+                className="px-4 py-2 rounded-xl border border-[#2A3446] text-xs font-bold text-[#97A0B3] hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={submitDeclineReason}
+                disabled={!declineComment.trim() || submittingDecline}
+                className="px-5 py-2 rounded-xl bg-[#BCCCE6] text-[#0B111C] text-xs font-bold hover:bg-white transition-colors disabled:opacity-50"
+              >
+                {submittingDecline ? "Submitting..." : "Submit Revision Request"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Toast */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#161F2D] text-white px-5 py-3 rounded-xl shadow-2xl border border-white/[0.1] text-sm font-medium flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#6EE7B7]" />
+          <span className="w-2 h-2 rounded-full bg-[#BCCCE6]" />
           {toastMessage}
         </div>
       )}

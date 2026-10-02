@@ -730,10 +730,6 @@ async def verify_otp(
     if not user:
         email_lower = email_key
         assigned_role = UserRole.CLIENT
-        if email_lower.endswith("@creo.agency") or email_lower.startswith("admin@") or "admin" in email_lower:
-            assigned_role = UserRole.SUPER_ADMIN
-        elif email_lower.startswith("team@") or email_lower.startswith("editor@") or email_lower.startswith("lead@"):
-            assigned_role = UserRole.TEAM_LEAD
 
         user = User(
             auth_id=f"auth-otp-{uuid.uuid4().hex[:12]}",

@@ -5,20 +5,15 @@ import {
   Search,
   CheckCircle2,
   Clock,
-  Check,
   X,
   Phone,
   MessageSquare,
   CreditCard,
   Loader2,
-  ExternalLink,
   DollarSign,
   AlertCircle,
   Sparkles,
-  ArrowRight,
   ShieldCheck,
-  Calendar,
-  User,
   Mail,
 } from "lucide-react";
 import { request } from "../../lib/http";
@@ -56,7 +51,7 @@ export function AdminPlansAndNegotiationsPage() {
   const [modalError, setModalError] = useState<string | null>(null);
 
   // Fetch Negotiations from Backend
-  const { data, isLoading, error } = useQuery<{ negotiations: NegotiationItem[]; total: number }>({
+  const { data, isLoading } = useQuery<{ negotiations: NegotiationItem[]; total: number }>({
     queryKey: ["admin-negotiations"],
     queryFn: () => request<{ negotiations: NegotiationItem[]; total: number }>("/api/negotiations"),
     refetchInterval: 5000,

@@ -20,12 +20,15 @@ export function PortalLibraryPage() {
     enabled: !!user?.id && gate.isComplete,
   });
 
-  const rawItems = response?.items || [];
+  // Filter strictly to delivered/approved assets per Rule R4
+  const rawItems = (response?.items || []).filter(
+    (item: any) => item.status === "approved" || item.status === "scheduled" || item.status === "published"
+  );
   
   // Transform real items into library format
   const realAssets = rawItems.map((item: any) => ({
     id: item.id,
-    status: item.status === "pending_approval" ? "Needs you" : item.status === "approved" ? "Approved" : item.status === "in_production" ? "Scheduled" : "Published",
+    status: item.status === "approved" ? "Approved" : item.status === "scheduled" ? "Scheduled" : "Published",
     type: (item.type || (item.file_type?.includes("video") ? "reel" : "post")).toUpperCase(),
     title: item.title || `${item.type || "Asset"} Draft`,
     image: item.thumbnail_url || item.file_url || "",
@@ -59,17 +62,38 @@ export function PortalLibraryPage() {
     );
   }
 
-  const handleDownload = (id: string, url?: string) => {
+  const handleDownload = async (id: string, url?: string) => {
     setDownloading(id);
-    setTimeout(() => {
-      if (url) {
+    try {
+      if (id === "all") {
+        const res = await fetch("/api/v1/deliverables/download-zip", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token") || ""}` },
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = downloadUrl;
+          a.download = "creo_approved_assets.zip";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(downloadUrl);
+        }
+      } else if (url) {
         const a = document.createElement("a");
         a.href = url;
-        a.download = true.toString();
+        a.download = "asset";
+        a.target = "_blank";
+        document.body.appendChild(a);
         a.click();
+        a.remove();
       }
+    } catch {
+      // Gracefully handle download failure
+    } finally {
       setDownloading(null);
-    }, 1000);
+    }
   };
 
   if (isLoading) {
@@ -85,20 +109,20 @@ export function PortalLibraryPage() {
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="text-[11px] font-bold tracking-[0.15em] text-[#7E889C] uppercase mb-1">
+          <p className="text-[11px] font-bold tracking-[0.15em] text-[#97A0B3] uppercase mb-1">
             EVERYTHING WE HAVE MADE FOR YOU
           </p>
           <h1 className="text-3xl font-semibold text-white">Library</h1>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7E889C]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#97A0B3]" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search posts, captions..."
-              className="w-full sm:w-[280px] pl-10 pr-4 py-2.5 bg-[#161F2D] border border-[#2A3446] rounded-xl text-sm text-white placeholder:text-[#7E889C] focus:outline-none focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6] transition-all"
+              className="w-full sm:w-[280px] pl-10 pr-4 py-2.5 bg-[#161F2D] border border-[#2A3446] rounded-xl text-sm text-white placeholder:text-[#97A0B3] focus:outline-none focus:border-[#7FA0D6] focus:ring-1 focus:ring-[#7FA0D6] transition-all"
             />
           </div>
           <button 
@@ -116,22 +140,22 @@ export function PortalLibraryPage() {
         <div className="p-5 sm:p-6">
           <p className="text-xs text-[#97A0B3] font-medium mb-1.5">Delivered since joining</p>
           <p className="text-3xl font-semibold text-white mb-1">{counts.total}</p>
-          <p className="text-xs text-[#7E889C]">assets, all yours to keep</p>
+          <p className="text-xs text-[#97A0B3]">assets, all yours to keep</p>
         </div>
         <div className="p-5 sm:p-6">
           <p className="text-xs text-[#97A0B3] font-medium mb-1.5">Published</p>
           <p className="text-3xl font-semibold text-white mb-1">{assets.filter(a => a.status === "Published").length}</p>
-          <p className="text-xs text-[#7E889C]">to your socials</p>
+          <p className="text-xs text-[#97A0B3]">to your socials</p>
         </div>
         <div className="p-5 sm:p-6">
           <p className="text-xs text-[#97A0B3] font-medium mb-1.5">First-round approvals</p>
           <p className="text-3xl font-semibold text-white mb-1">94%</p>
-          <p className="text-xs text-[#7E889C]">across all batches</p>
+          <p className="text-xs text-[#97A0B3]">across all batches</p>
         </div>
         <div className="p-5 sm:p-6">
           <p className="text-xs text-[#97A0B3] font-medium mb-1.5">Brand files</p>
           <p className="text-3xl font-semibold text-white mb-1">12</p>
-          <p className="text-xs text-[#7E889C]">logos, fonts, photos</p>
+          <p className="text-xs text-[#97A0B3]">logos, fonts, photos</p>
         </div>
       </div>
 
@@ -158,7 +182,7 @@ export function PortalLibraryPage() {
             </button>
           ))}
         </div>
-        <p className="text-xs text-[#7E889C]">
+        <p className="text-xs text-[#97A0B3]">
           Every file comes in full resolution with captions and hashtags.
         </p>
       </div>
@@ -166,16 +190,16 @@ export function PortalLibraryPage() {
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[400px]">
         {filteredAssets.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center text-[#7E889C] py-20 border border-dashed border-white/[0.1] rounded-2xl">
+          <div className="col-span-full flex flex-col items-center justify-center text-[#97A0B3] py-20 border border-dashed border-white/[0.1] rounded-2xl">
             <Search className="w-8 h-8 mb-4 opacity-50" />
             <p className="text-sm font-medium text-white/80">{search ? "No assets match your search" : "No deliverables in your library yet"}</p>
-            <p className="text-xs text-[#7E889C] mt-1">{search ? "Try searching for a different keyword" : "Completed content produced by your pod will appear here."}</p>
+            <p className="text-xs text-[#97A0B3] mt-1">{search ? "Try searching for a different keyword" : "Completed content produced by your pod will appear here."}</p>
           </div>
         ) : (
           filteredAssets.map((asset, i) => {
             let badgeClass = "bg-[#2A3446] text-[#F8FAFC]"; // default / Scheduled
             if (asset.status === "Needs you") badgeClass = "bg-[#D8BF9B]/15 text-[#D8BF9B]";
-            else if (asset.status === "Approved") badgeClass = "bg-[#047857]/90 text-white";
+            else if (asset.status === "Approved") badgeClass = "bg-[#7FA0D6]/90 text-white";
             else if (asset.status === "Published") badgeClass = "bg-[#7FA0D6]/15 text-[#BCCCE6]";
 
             return (
@@ -194,7 +218,7 @@ export function PortalLibraryPage() {
                     />
                   ) : (
                     <div className="text-center p-4">
-                      <span className="text-xs font-bold text-[#7E889C] tracking-wider uppercase">{asset.type}</span>
+                      <span className="text-xs font-bold text-[#97A0B3] tracking-wider uppercase">{asset.type}</span>
                     </div>
                   )}
                   <div className="absolute top-3 left-3">

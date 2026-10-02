@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { 
-  Mail, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, Check, User, 
+  Mail, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, Check, User, Building2,
   Loader2, ShieldCheck, TrendingUp, Activity, CheckCircle2, Zap, X, Sparkles
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -59,6 +59,8 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
   const queryEmail = new URLSearchParams(location.search).get("email") || "";
   const [email, setEmail] = useState(queryEmail || initialPending?.email || "");
   const [password, setPassword] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(true);
 
   useEffect(() => {
     const qEmail = new URLSearchParams(location.search).get("email");
@@ -96,7 +98,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
   const handleDemoFill = () => {
     setMode("signin");
     setEmail("admin@creo.agency");
-    setPassword("creo2026");
+    setPassword("Admin123!");
     setError(null);
   };
 
@@ -120,7 +122,15 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
       setLoading(true);
       setError(null);
       if (mode === "signin") {
-        await loginWithPassword(cleanEmail, cleanPass);
+        const loggedInUser = await loginWithPassword(cleanEmail, cleanPass);
+        // Navigate explicitly after login to avoid relying solely on PublicOnlyRoute re-render
+        const params = new URLSearchParams(location.search);
+        const redirectedFrom = params.get("redirectedFrom");
+        const { getRoleHome } = await import("../../components/auth/ProtectedRoute");
+        const { getPostLoginRedirect } = await import("../../lib/useRouteMemory");
+        const defaultHome = getRoleHome(loggedInUser.role);
+        const destination = getPostLoginRedirect(loggedInUser.role, redirectedFrom ? decodeURIComponent(redirectedFrom) : null, defaultHome);
+        navigate(destination, { replace: true });
       } else {
         // Move to the OTP surface immediately; delivery continues in this request.
         setRegistrationPending(true);
@@ -201,7 +211,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
       {/* Background Ambient Glow & Grid Matrix */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#7FA0D6]/10 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-40 right-10 w-[500px] h-[300px] bg-[#38BDF8]/5 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-40 right-10 w-[500px] h-[300px] bg-[#BCCCE6]/5 rounded-full blur-[100px]" />
         <svg className="absolute w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="auth-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -230,7 +240,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
             <button
               type="button"
               onClick={handleDemoFill}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121926] hover:bg-[#1A2333] border border-[#7FA0D6]/40 text-[#7FA0D6] hover:text-[#F8FAFC] text-[11px] font-semibold transition shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121926] hover:bg-[#0B111C] border border-[#7FA0D6]/40 text-[#7FA0D6] hover:text-[#F8FAFC] text-[11px] font-semibold transition shadow-sm cursor-pointer"
               title="Auto-fill Executive Admin credentials"
             >
               <Sparkles className="size-3 text-[#7FA0D6]" />
@@ -346,7 +356,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                   }}
                   className={`text-xs py-1.5 px-4 rounded-full flex-1 text-center transition font-semibold cursor-pointer ${
                     mode === "signin" 
-                      ? "bg-[#1C2638] border border-[#7FA0D6]/40 text-[#F8FAFC] shadow-xs" 
+                      ? "bg-[#161F2D] border border-[#7FA0D6]/40 text-[#F8FAFC] shadow-xs" 
                       : "text-[#97A0B3] hover:text-[#F8FAFC]"
                   }`}
                 >
@@ -362,7 +372,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                   }}
                   className={`text-xs py-1.5 px-4 rounded-full flex-1 text-center transition font-semibold cursor-pointer ${
                     mode === "signup" 
-                      ? "bg-[#1C2638] border border-[#7FA0D6]/40 text-[#F8FAFC] shadow-xs" 
+                      ? "bg-[#161F2D] border border-[#7FA0D6]/40 text-[#F8FAFC] shadow-xs" 
                       : "text-[#97A0B3] hover:text-[#F8FAFC]"
                   }`}
                 >
@@ -454,24 +464,42 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
               ) : (
               <form onSubmit={handleSubmit} className="space-y-3">
                 
-                {/* Full Name (Sign Up only) */}
+                {/* Full Name & Business Name (Sign Up only) */}
                 {mode === "signup" && (
-                  <div>
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
-                      Full Name
-                    </label>
-                    <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
-                      <User className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
-                      <input 
-                        type="text" 
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Your full name" 
-                        className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
-                        required={mode === "signup"}
-                      />
+                  <>
+                    <div>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                        Full Name
+                      </label>
+                      <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                        <User className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                        <input 
+                          type="text" 
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          placeholder="Your full name" 
+                          className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
+                          required={mode === "signup"}
+                        />
+                      </div>
                     </div>
-                  </div>
+
+                    <div>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                        Business / Agency Name
+                      </label>
+                      <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                        <Building2 className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                        <input 
+                          type="text" 
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          placeholder="Your Business / Studio Name" 
+                          className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
+                        />
+                      </div>
+                    </div>
+                  </>
                 )}
 
                 {/* Email Field */}
@@ -524,15 +552,27 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
 
                 {/* Remember Me & Forgot Password Row */}
                 <div className="flex items-center justify-between text-[11px] pt-0.5">
-                  <label 
-                    className="flex items-center gap-2 cursor-pointer group select-none" 
-                    onClick={() => setRememberMe(!rememberMe)}
-                  >
-                    <div className={`w-3.5 h-3.5 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${rememberMe ? 'bg-[#7FA0D6]' : 'bg-[#0A0F18] border border-[#222F44]'}`}>
-                      {rememberMe && <Check className="size-2.5 text-[#050810]" strokeWidth={3.5} />}
-                    </div>
-                    <span className="text-[#97A0B3] group-hover:text-[#F8FAFC] transition-colors">Remember me</span>
-                  </label>
+                  {mode === "signup" ? (
+                    <label 
+                      className="flex items-center gap-2 cursor-pointer group select-none" 
+                      onClick={() => setTermsAccepted(!termsAccepted)}
+                    >
+                      <div className={`w-3.5 h-3.5 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${termsAccepted ? 'bg-[#7FA0D6]' : 'bg-[#0A0F18] border border-[#222F44]'}`}>
+                        {termsAccepted && <Check className="size-2.5 text-[#050810]" strokeWidth={3.5} />}
+                      </div>
+                      <span className="text-[#97A0B3] group-hover:text-[#F8FAFC] transition-colors">I accept the Terms & Privacy Policy</span>
+                    </label>
+                  ) : (
+                    <label 
+                      className="flex items-center gap-2 cursor-pointer group select-none" 
+                      onClick={() => setRememberMe(!rememberMe)}
+                    >
+                      <div className={`w-3.5 h-3.5 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${rememberMe ? 'bg-[#7FA0D6]' : 'bg-[#0A0F18] border border-[#222F44]'}`}>
+                        {rememberMe && <Check className="size-2.5 text-[#050810]" strokeWidth={3.5} />}
+                      </div>
+                      <span className="text-[#97A0B3] group-hover:text-[#F8FAFC] transition-colors">Remember me</span>
+                    </label>
+                  )}
                   
                   {mode === "signin" && (
                     <button
@@ -579,7 +619,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
 
                   <button 
                     type="button"
-                    className="w-full bg-[#0A0F18] border border-[#222F44] hover:bg-[#1A2333] hover:border-[#7FA0D6]/40 text-[#F8FAFC] text-xs font-semibold py-2 rounded-xl flex items-center justify-center gap-2.5 transition shadow-xs cursor-pointer" 
+                    className="w-full bg-[#0A0F18] border border-[#222F44] hover:bg-[#0B111C] hover:border-[#7FA0D6]/40 text-[#F8FAFC] text-xs font-semibold py-2 rounded-xl flex items-center justify-center gap-2.5 transition shadow-xs cursor-pointer" 
                     onClick={async () => { 
                       try { 
                         setLoading(true); 
@@ -595,10 +635,10 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
                     }}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#7FA0D6"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#7FA0D6"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#D8BF9B"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#D8BF9B"/>
                     </svg>
                     <span>Google Workspace</span>
                   </button>

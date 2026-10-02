@@ -13,6 +13,7 @@ import {
   AboutPage,
   AuthPage,
   ClientsPage,
+  FaqPage,
   GoogleCallbackPage,
   OnboardingView,
   PortalAccountPage,
@@ -38,6 +39,7 @@ import { RequireOnboardingStage } from "../components/auth/RequireOnboardingStag
 import { MandatoryPasswordResetModal } from "../components/auth/MandatoryPasswordResetModal";
 import { CreoLoadingScreen } from "../components/ui/CreoLoadingScreen";
 import { CreoLoader, CreoInlineLoader } from "../components/ui/CreoLoader";
+import { SimpleErrorBoundary } from "../components/ui/SimpleErrorBoundary";
 
 // Portal Layout (pages are lazy-loaded from ./lazy-pages)
 import { PortalLayout } from "../components/portal/PortalLayout";
@@ -69,12 +71,12 @@ const AdminTicketDetailPage = lazy(() =>
 const AdminSLAPerformancePage = lazy(() =>
   import("../features/admin/AdminSLAPerformancePage").then((m) => ({ default: m.AdminSLAPerformancePage }))
 );
+const ClientTicketDetailPage = lazy(() =>
+  import("../pages/portal/PortalTicketDetailPage").then((m) => ({ default: m.ClientTicketDetailPage }))
+);
 
 const AdminRevenuePage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminRevenuePage }))
-);
-const AdminPlansPage = lazy(() =>
-  import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminPlansPage }))
 );
 const AdminSalesPage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminSalesPage }))
@@ -144,13 +146,13 @@ class OnboardingErrorBoundary extends Component<
   override render() {
     if (this.state.hasError) {
       return (
-        <div className="w-full max-w-md mx-auto p-8 rounded-2xl bg-white border border-[#C9DFF0] shadow-sm text-center my-12">
+        <div className="w-full max-w-md mx-auto p-8 rounded-2xl bg-white border border-[#2A3446] shadow-sm text-center my-12">
           <p className="text-sm text-rose-600 font-semibold mb-2">Something interrupted onboarding display.</p>
-          <p className="text-xs text-[#64748B] mb-5">{this.state.error?.message || "Please reload to continue."}</p>
+          <p className="text-xs text-[#97A0B3] mb-5">{this.state.error?.message || "Please reload to continue."}</p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="px-5 py-2.5 rounded-xl bg-[#2B7BC4] text-white font-semibold text-xs hover:bg-[#1A5EA8] transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-[#7FA0D6] text-white font-semibold text-xs hover:bg-[#7FA0D6] transition-colors"
           >
             Reload Onboarding
           </button>
@@ -236,34 +238,34 @@ function HealthPage() {
   });
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#E8F4FD] text-[#0D2137] p-6 sm:p-8">
-      <div className="w-full max-w-md rounded-2xl border border-[#C9DFF0] bg-white p-8 shadow-lg space-y-6">
-        <div className="flex items-center gap-3 border-b border-[#C9DFF0] pb-4">
-          <div className="size-10 rounded-xl bg-[#E8F4FD] border border-[#C9DFF0] flex items-center justify-center text-[#2B7BC4] font-bold">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-[#BCCCE6] text-[#0B111C] p-6 sm:p-8">
+      <div className="w-full max-w-md rounded-2xl border border-[#2A3446] bg-white p-8 shadow-lg space-y-6">
+        <div className="flex items-center gap-3 border-b border-[#2A3446] pb-4">
+          <div className="size-10 rounded-xl bg-[#BCCCE6] border border-[#2A3446] flex items-center justify-center text-[#7FA0D6] font-bold">
             ⚡
           </div>
           <div>
-            <h1 className="text-lg font-bold text-[#0D2137]">Creo System Status</h1>
-            <p className="text-xs text-[#64748B] mt-0.5">
+            <h1 className="text-lg font-bold text-[#0B111C]">Creo System Status</h1>
+            <p className="text-xs text-[#97A0B3] mt-0.5">
               Real-time backend API & Database health
             </p>
           </div>
         </div>
 
         <div className="space-y-3 text-xs">
-          <div className="flex justify-between items-center border-b border-[#F0F4F8] py-2">
-            <span className="text-[#64748B] font-medium">API Service</span>
+          <div className="flex justify-between items-center border-b border-[#161F2D] py-2">
+            <span className="text-[#97A0B3] font-medium">API Service</span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
               <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
               {data?.status || (isLoading ? "Checking..." : "Error")}
             </span>
           </div>
-          <div className="flex justify-between items-center border-b border-[#F0F4F8] py-2">
-            <span className="text-[#64748B] font-medium">Platform Version</span>
-            <span className="font-mono text-[#0D2137] font-semibold">{data?.version || "0.1.0"}</span>
+          <div className="flex justify-between items-center border-b border-[#161F2D] py-2">
+            <span className="text-[#97A0B3] font-medium">Platform Version</span>
+            <span className="font-mono text-[#0B111C] font-semibold">{data?.version || "0.1.0"}</span>
           </div>
-          <div className="flex justify-between items-center border-b border-[#F0F4F8] py-2">
-            <span className="text-[#64748B] font-medium">Database Engine</span>
+          <div className="flex justify-between items-center border-b border-[#161F2D] py-2">
+            <span className="text-[#97A0B3] font-medium">Database Engine</span>
             <span className="font-mono text-emerald-700 font-semibold">PostgreSQL (Connected)</span>
           </div>
         </div>
@@ -271,13 +273,13 @@ function HealthPage() {
         <div className="flex gap-3 pt-2">
           <Link
             to="/"
-            className="flex-1 text-center rounded-xl bg-[#2B7BC4] py-2.5 text-xs font-bold text-white hover:bg-[#1A5EA8] transition-colors shadow-xs"
+            className="flex-1 text-center rounded-xl bg-[#7FA0D6] py-2.5 text-xs font-bold text-white hover:bg-[#7FA0D6] transition-colors shadow-xs"
           >
             Landing Page
           </Link>
           <Link
             to="/portal"
-            className="flex-1 text-center rounded-xl bg-[#E8F4FD] border border-[#C9DFF0] py-2.5 text-xs font-bold text-[#2B7BC4] hover:bg-[#D5EBFA] transition-colors"
+            className="flex-1 text-center rounded-xl bg-[#BCCCE6] border border-[#2A3446] py-2.5 text-xs font-bold text-[#7FA0D6] hover:bg-[#161F2D] transition-colors"
           >
             Client Portal
           </Link>
@@ -316,6 +318,18 @@ function ScrollToTop() {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     document.documentElement.scrollTo({ top: 0, left: 0, behavior: "instant" });
     document.body.scrollTo({ top: 0, left: 0, behavior: "instant" });
+
+    // Reset internal container scroll positions (e.g., ops/portal layout surfaces)
+    const scrollContainers = document.querySelectorAll(
+      "main, [data-surface], .overflow-y-auto, div[class*='overflow-y-auto']"
+    );
+    scrollContainers.forEach((el) => {
+      try {
+        el.scrollTop = 0;
+      } catch (_e) {
+        // ignore non-scrollable nodes
+      }
+    });
   }, [pathname, search, hash]);
 
   return null;
@@ -348,11 +362,12 @@ export function App() {
               {/* 1. Public Marketing Pages (Open to All) */}
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/work" element={<PortfolioPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />
                 <Route path="/clients" element={<ClientsPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/faq" element={<Navigate to="/pricing" replace />} />
+                <Route path="/faq" element={<FaqPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
               </Route>
@@ -421,14 +436,16 @@ export function App() {
                 }
               >
                 <Route index element={<PortalDashboardPage />} />
-                <Route path="deliverables" element={<PortalDeliverablesPage />} />
+                <Route path="deliverables" element={<SimpleErrorBoundary name="Deliverables"><PortalDeliverablesPage /></SimpleErrorBoundary>} />
                 <Route path="calendar" element={<PortalCalendarPage />} />
                 <Route path="creative-pod" element={<PortalCreativePodPage />} />
                 <Route path="creative_pod" element={<PortalCreativePodPage />} />
                 <Route path="payments" element={<PortalPaymentsPage />} />
                 <Route path="plans" element={<PortalPaymentsPage />} />
-                <Route path="support" element={<PortalSupportPage />} />
+                <Route path="support" element={<SimpleErrorBoundary name="Support"><PortalSupportPage /></SimpleErrorBoundary>} />
+                <Route path="support/:ticketId" element={<ClientTicketDetailPage />} />
                 <Route path="account" element={<PortalAccountPage />} />
+                <Route path="brand-dna" element={<Navigate to="/portal/account?tab=brand" replace />} />
                 <Route path="library" element={<PortalLibraryPage />} />
               </Route>
 
@@ -552,10 +569,12 @@ export function App() {
                   path="/admin/settings"
                   element={<Navigate to="/admin" replace />}
                 />
+                <Route path="/lead" element={<Navigate to="/lead/dashboard" replace />} />
+                <Route path="/pod-lead" element={<Navigate to="/lead/dashboard" replace />} />
                 <Route
                   path="/admin/pod-dashboard"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodLeadDashboardPage />
                     </ProtectedRoute>
                   }
@@ -563,7 +582,7 @@ export function App() {
                 <Route
                   path="/admin/pod"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodLeadDashboardPage />
                     </ProtectedRoute>
                   }
@@ -573,7 +592,7 @@ export function App() {
                 <Route
                   path="/team-lead/dashboard"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodLeadDashboardPage />
                     </ProtectedRoute>
                   }
@@ -581,7 +600,7 @@ export function App() {
                 <Route
                   path="/team-lead/tasks"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodTaskBoardPage />
                     </ProtectedRoute>
                   }
@@ -589,7 +608,7 @@ export function App() {
                 <Route
                   path="/team-lead/deliverables"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodDeliverablesReviewPage />
                     </ProtectedRoute>
                   }
@@ -597,7 +616,7 @@ export function App() {
                 <Route
                   path="/team-lead/schedule"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodScheduleLeavePage />
                     </ProtectedRoute>
                   }
@@ -605,7 +624,7 @@ export function App() {
                 <Route
                   path="/team-lead/clients"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodClientAllocationsPage />
                     </ProtectedRoute>
                   }
@@ -613,7 +632,7 @@ export function App() {
                 <Route
                   path="/team-lead/clients/:clientId"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <AdminClientBrandPage />
                     </ProtectedRoute>
                   }
@@ -622,7 +641,7 @@ export function App() {
                 <Route
                   path="/lead/dashboard"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodLeadDashboardPage />
                     </ProtectedRoute>
                   }
@@ -630,7 +649,7 @@ export function App() {
                 <Route
                   path="/lead/tasks"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodTaskBoardPage />
                     </ProtectedRoute>
                   }
@@ -638,7 +657,7 @@ export function App() {
                 <Route
                   path="/lead/deliverables"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodDeliverablesReviewPage />
                     </ProtectedRoute>
                   }
@@ -646,7 +665,7 @@ export function App() {
                 <Route
                   path="/lead/schedule"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodScheduleLeavePage />
                     </ProtectedRoute>
                   }
@@ -654,7 +673,7 @@ export function App() {
                 <Route
                   path="/lead/clients"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <PodClientAllocationsPage />
                     </ProtectedRoute>
                   }
@@ -662,7 +681,7 @@ export function App() {
                 <Route
                   path="/lead/clients/:clientId"
                   element={
-                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead"]}>
+                    <ProtectedRoute allowedRoles={["admin", "super_admin", "team_lead", "team_member", "editor", "designer"]}>
                       <AdminClientBrandPage />
                     </ProtectedRoute>
                   }

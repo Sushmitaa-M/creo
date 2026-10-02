@@ -41,18 +41,20 @@ Agency Pvt. Ltd. ("Agency") and the Client identified during registration.
    are assigned to Client. Agency retains the right to display the work in its
    portfolio unless Client requests otherwise in writing.
 
-4. REVISION POLICY
+4. REVISION POLICY & SLA TURNAROUNDS
    The number of revision rounds per deliverable is determined by the selected
-   plan (1 round for Starter, 2 for Growth, 3 for Enterprise). Revisions must
-   be requested within 5 business days of delivery.
+   plan (1 round for Starter, 2 for Growth, 3 for Scale). Standard turnarounds:
+   Starter (3 business days), Growth (2 business days), Scale (1 business day).
+   Revisions must be requested within 5 business days of delivery.
 
 5. CONFIDENTIALITY
    Both parties agree to keep confidential any proprietary information shared
    during the engagement. This obligation survives termination of this Agreement.
 
-6. TERMINATION
-   Either party may terminate this Agreement with 30 days written notice.
-   No refunds are issued for the current billing cycle upon termination.
+6. TERMINATION & CANCELLATION
+   Client may cancel their subscription retainer at any time. Subscriptions are billed
+   month-to-month. Cancellation takes effect at the end of the current billing cycle.
+   No written notice requirement or cancellation fees apply.
 
 7. LIMITATION OF LIABILITY
    Agency's total liability under this Agreement shall not exceed the total fees

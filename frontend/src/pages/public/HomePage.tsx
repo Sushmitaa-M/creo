@@ -1,8 +1,10 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { AnimatePresence, motion, useScroll } from "motion/react";
-import { CheckCircle2, AlertCircle, ArrowRight, Layers, User, BarChart2, Database, ChevronDown, Zap } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { CheckCircle2, AlertCircle, ArrowRight, Layers, User, Database, ChevronDown, Zap, Loader2, Instagram, Mail, Check, Layout, Clock } from "lucide-react";
 import { PricingCards } from "../../components/public/PricingCards";
+import { request } from "../../lib/http";
 import {
   EASE_OUT_EXPO,
   Magnetic,
@@ -69,42 +71,59 @@ const faqs = [
   {
     category: "Migration & Tools",
     tag: "MIGRATION & WORKFLOW",
-    question: "How does CREO replace our existing stack of WhatsApp, Drive, and spreadsheets?",
+    question: "How does CREO streamline content creation for D2C brands?",
     icon: Layers,
-    answer: "CREO doesn't just store files; it connects them directly to team capacity and client sign-offs. Your briefs connect to Figma/Adobe, client feedback triggers automated SLA revision tickets to motion leads, and retainer hours calculate contribution margins automatically—eliminating the 7 fragmented silos.",
+    answer: "CREO connects content briefs directly to creative leads and client sign-offs. Your briefs trigger automated SLA revision tickets and real-time deliverables tracking—eliminating delays and fragmented communication.",
     extra: (
       <div className="text-[#7FA0D6] bg-[#0A0F18] border border-[#2A3446] rounded-md px-3 py-1 text-xs inline-flex items-center gap-1.5 mt-3">
         <Zap className="size-3.5 fill-current" />
-        Typical agency migration completed in under 48 hours.
+        Typical D2C brand onboarding completed in under 48 hours.
       </div>
-    )
+    ),
   },
   {
-    category: "Client Portals & Approvals",
-    tag: "CLIENT PORTALS",
-    question: "Do our clients need to create a CREO account to review and approve deliverables?",
+    category: "Deliverables & Formats",
+    tag: "CONTENT FORMATS",
+    question: "What content deliverables are included in our monthly pod retainer?",
+    icon: Layout,
+    answer: "Depending on your plan tier (Starter, Growth, or Scale), your pod delivers a fixed monthly volume of high-converting 9:16 reels, static/carousel brand posts, and interactive story sets."
+  },
+  {
+    category: "Turnaround & SLAs",
+    tag: "PRODUCTION SLAs",
+    question: "What are the guaranteed turnaround times for content batches?",
+    icon: Clock,
+    answer: "Every deliverable batch is produced under strict SLA timelines: 3 business days for Starter, 2 business days for Growth, and 24-hour priority turnaround for Scale."
+  },
+  {
+    category: "Revisions & Approvals",
+    tag: "ONE-CLICK REVIEW",
+    question: "How do revisions work inside the client portal?",
     icon: User,
-    answer: "No. Clients receive a secure, 1-click magic link. They can view the asset, leave timestamped comments, and approve directly from their browser without ever logging in."
+    answer: "You review draft assets in your portal. If revisions are needed, click Decline, enter your feedback, and your pod will revise and resubmit within your plan's revision quota."
   },
   {
-    category: "Capacity & Workflows",
-    tag: "CAPACITY & WORKLOAD",
-    question: "How are team capacity meters and burnout alerts calculated?",
-    icon: BarChart2,
-    answer: "CREO monitors active projects, assigned revision tickets, and typical turnaround times. If a designer exceeds 85% capacity based on their historical velocity, the system automatically flags them and pauses new assignments."
-  },
-  {
-    category: "Retainer Margins & Billing",
-    tag: "RETAINER ECONOMICS",
-    question: "How does the real-time contribution margin calculation work?",
+    category: "Flexibility & Terms",
+    tag: "MONTH-TO-MONTH",
+    question: "Can we upgrade, pause, or cancel our retainer anytime?",
     icon: Database,
-    answer: "As your team logs hours or completes deliverables, CREO deducts their blended rate from the retainer's value in real-time, giving you an exact profit margin percentage before the month ends."
+    answer: "Yes. All Creo retainers operate on a month-to-month basis with no long-term lock-in. You can upgrade, pause renewal, or cancel anytime."
   }
 ];
 
 export function HomePage() {
-  const navigate = useNavigate();
   const [sampleEmail, setSampleEmail] = useState("");
+  const [sampleHandle, setSampleHandle] = useState("");
+  const [sampleSubmitting, setSampleSubmitting] = useState(false);
+  const [sampleSuccess, setSampleSuccess] = useState(false);
+  const [sampleError, setSampleError] = useState<string | null>(null);
+
+  const { data: ledgerData } = useQuery<{ has_enough: boolean; items: any[] }>({
+    queryKey: ["public-ledger"],
+    queryFn: () => request<any>("/api/v1/public/ledger"),
+    staleTime: 60_000,
+  });
+
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [assets, setAssets] = useState([
     { id: 1, name: "Brand Launch Teaser", type: "Reel 9:16", status: "awaiting" },
@@ -126,16 +145,31 @@ export function HomePage() {
     offset: ["start 85%", "end 55%"],
   });
 
-  const handleRequestSample = (e?: React.FormEvent) => {
+  const handleRequestSample = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (localStorage.getItem('creo_auth') === 'true') {
-      navigate("/portal");
-    } else {
-      const trimmed = sampleEmail.trim();
-      const targetUrl = trimmed
-        ? `/login?email=${encodeURIComponent(trimmed)}`
-        : "/login";
-      navigate(targetUrl);
+    if (!sampleEmail || !sampleEmail.includes("@")) {
+      setSampleError("Please enter a valid work email address.");
+      return;
+    }
+    if (!sampleHandle.trim()) {
+      setSampleError("Please enter your Instagram handle.");
+      return;
+    }
+    setSampleSubmitting(true);
+    setSampleError(null);
+    try {
+      await request("/api/v1/public/sample", {
+        method: "POST",
+        body: JSON.stringify({
+          email: sampleEmail.trim(),
+          instagram_handle: sampleHandle.trim(),
+        }),
+      });
+      setSampleSuccess(true);
+    } catch (err: unknown) {
+      setSampleError(err instanceof Error ? err.message : "Failed to submit sample request.");
+    } finally {
+      setSampleSubmitting(false);
     }
   };
 
@@ -281,36 +315,32 @@ export function HomePage() {
           <Reveal direction="up" blur className="max-w-4xl mx-auto">
           <div className="backdrop-blur-md bg-[#161F2D]/70 border border-[#2A3446]/60 rounded-2xl overflow-hidden shadow-2xl">
             <div className="grid grid-cols-4 bg-[#0A0F18] border-b border-[#2A3446] p-4 sm:p-5 items-center">
-              <div className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider">Industry</div>
+              <div className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider">Asset / Batch</div>
               <div className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider">Milestone</div>
               <div className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider">SLA Time</div>
               <div className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider text-right">Status</div>
             </div>
             
-            <Stagger className="divide-y divide-[#2A3446]" gap={0.07}>
-              {[
-                { industry: "Food & beverage", batch: "Batch 04", time: "4d 18h", status: "Approved" },
-                { industry: "Skincare", batch: "Batch 12", time: "2d 02h", status: "Approved" },
-                { industry: "Home & living", batch: "Batch 02", time: "3d 14h", status: "Revisions" },
-                { industry: "Activewear", batch: "Batch 07", time: "4d 01h", status: "Approved" },
-                { industry: "Mobility", batch: "Batch 01", time: "5d 00h", status: "Awaiting" }
-              ].map((row, i) => (
-                <StaggerItem key={i} className="grid grid-cols-4 items-center p-4 sm:p-5 hover:bg-[#121926] transition-colors">
-                  <div className="text-sm font-semibold text-[#F8FAFC]">{row.industry}</div>
-                  <div className="text-sm text-[#97A0B3]">{row.batch}</div>
-                  <div className="text-sm font-mono text-[#F8FAFC]">{row.time}</div>
-                  <div className="text-right">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider ${
-                      row.status === "Approved" ? "bg-[#050810] border border-[#7FA0D6]/50 text-[#7FA0D6]" : 
-                      row.status === "Revisions" ? "bg-[#050810] border border-[#D8BF9B]/50 text-[#D8BF9B]" : 
-                      "bg-[#050810] border border-[#7FA0D6]/50 text-[#7FA0D6]"
-                    }`}>
-                      {row.status}
-                    </span>
-                  </div>
-                </StaggerItem>
-              ))}
-            </Stagger>
+            {ledgerData?.has_enough ? (
+              <Stagger className="divide-y divide-[#2A3446]" gap={0.07}>
+                {(ledgerData.items || []).map((row: any, i: number) => (
+                  <StaggerItem key={row.id || i} className="grid grid-cols-4 items-center p-4 sm:p-5 hover:bg-[#121926] transition-colors">
+                    <div className="text-sm font-semibold text-[#F8FAFC]">{row.file_type || "Content Batch"}</div>
+                    <div className="text-sm text-[#97A0B3]">Batch {i + 1}</div>
+                    <div className="text-sm font-mono text-[#F8FAFC]">SLA Verified</div>
+                    <div className="text-right">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-[#050810] border border-[#7FA0D6]/50 text-[#7FA0D6]">
+                        {row.status}
+                      </span>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+            ) : (
+              <div className="p-12 text-center font-mono text-2xl text-[#97A0B3]">
+                —
+              </div>
+            )}
           </div>
           </Reveal>
         </div>
@@ -578,26 +608,60 @@ export function HomePage() {
             Drop your Instagram handle and email below. We'll send you a custom sample batch of reels and carousels for your brand, completely free. No credit card required.
           </p>
           
-          <form 
-            onSubmit={handleRequestSample}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto backdrop-blur-md bg-[#161F2D]/30 p-2 rounded-2xl border border-[#2A3446]/40"
-          >
-            <input 
-              type="email" 
-              value={sampleEmail}
-              onChange={(e) => setSampleEmail(e.target.value)}
-              placeholder="Enter work email for a sample deliverable..." 
-              className="bg-[#0A0F18] border border-[#2A3446] text-[#F8FAFC] rounded-xl px-4 py-3 text-sm focus:border-[#7FA0D6] focus:outline-none w-full sm:w-80 transition-colors" 
-            />
-            <button 
-              type="submit"
-              className="w-full sm:w-auto bg-[#BCCCE6] text-[#050810] hover:bg-white font-semibold transition-all shadow-sm text-sm px-6 py-3 rounded-xl shrink-0 flex items-center justify-center gap-2 cursor-pointer"
+          {sampleSuccess ? (
+            <div className="p-6 rounded-2xl bg-emerald-950/50 border border-emerald-800/80 text-center max-w-md mx-auto shadow-2xl">
+              <div className="size-12 rounded-full bg-emerald-500 text-[#0B111C] flex items-center justify-center mx-auto mb-3">
+                <Check className="size-6 stroke-[3]" />
+              </div>
+              <h3 className="text-lg font-bold text-white mb-1">Sample Batch Requested!</h3>
+              <p className="text-xs text-emerald-300 leading-relaxed">
+                We received your Instagram handle ({sampleHandle}) and email ({sampleEmail}). Our creative team will prepare your custom sample batch within 48 hours.
+              </p>
+            </div>
+          ) : (
+            <form 
+              onSubmit={handleRequestSample}
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-3xl mx-auto backdrop-blur-md bg-[#161F2D]/50 p-3 rounded-2xl border border-[#2A3446]"
             >
-              Request Sample Batch <ArrowRight className="size-4" />
-            </button>
-          </form>
+              <div className="relative w-full sm:w-64">
+                <Instagram className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-[#97A0B3]" />
+                <input 
+                  type="text" 
+                  value={sampleHandle}
+                  onChange={(e) => setSampleHandle(e.target.value)}
+                  placeholder="@yourbrand" 
+                  required
+                  className="bg-[#0A0F18] border border-[#2A3446] text-[#F8FAFC] rounded-xl pl-10 pr-4 py-3 text-sm focus:border-[#7FA0D6] focus:outline-none w-full transition-colors" 
+                />
+              </div>
+              <div className="relative w-full sm:w-72">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-[#97A0B3]" />
+                <input 
+                  type="email" 
+                  value={sampleEmail}
+                  onChange={(e) => setSampleEmail(e.target.value)}
+                  placeholder="name@brand.com" 
+                  required
+                  className="bg-[#0A0F18] border border-[#2A3446] text-[#F8FAFC] rounded-xl pl-10 pr-4 py-3 text-sm focus:border-[#7FA0D6] focus:outline-none w-full transition-colors" 
+                />
+              </div>
+              <button 
+                type="submit"
+                disabled={sampleSubmitting}
+                className="w-full sm:w-auto bg-[#BCCCE6] text-[#050810] hover:bg-white font-bold transition-all shadow-sm text-sm px-6 py-3 rounded-xl shrink-0 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {sampleSubmitting ? <Loader2 className="size-4 animate-spin" /> : "Request Sample"}
+                <ArrowRight className="size-4" />
+              </button>
+            </form>
+          )}
+
+          {sampleError && (
+            <p className="text-xs text-rose-400 font-semibold mt-3">{sampleError}</p>
+          )}
+
           <div className="text-xs font-semibold text-[#97A0B3] mt-6">
-            No commitment. 48-hour pilot turnaround for qualified creative agencies.
+            No commitment required. 48-hour sample turnaround for qualified D2C brands.
           </div>
         </Reveal>
       </section>

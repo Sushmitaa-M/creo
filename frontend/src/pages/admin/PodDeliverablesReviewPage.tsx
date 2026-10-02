@@ -155,12 +155,12 @@ export function PodDeliverablesReviewPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">6</span>
+                <span className="text-lg sm:text-xl font-black text-white">{data?.tasks?.internal_qa?.length || 0}</span>
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Deliverables</span>
               </div>
               <div className="flex items-center gap-2 text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="px-1.5 py-0.2 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1">
-                  ● 2 Urgent
+                  ● {(data?.tasks?.internal_qa?.filter((t) => t.is_near_sla).length) || 0} Urgent
                 </span>
                 <span className="text-[#97A0B3] font-medium">Within 2h SLA threshold</span>
               </div>

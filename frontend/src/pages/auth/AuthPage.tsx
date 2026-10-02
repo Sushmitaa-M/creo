@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { 
-  Mail, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, Check, User, 
+  Mail, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, Check, User, Building2,
   Loader2, ShieldCheck, TrendingUp, Activity, CheckCircle2, Zap, X, Sparkles
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -59,6 +59,8 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
   const queryEmail = new URLSearchParams(location.search).get("email") || "";
   const [email, setEmail] = useState(queryEmail || initialPending?.email || "");
   const [password, setPassword] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(true);
 
   useEffect(() => {
     const qEmail = new URLSearchParams(location.search).get("email");
@@ -96,7 +98,7 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
   const handleDemoFill = () => {
     setMode("signin");
     setEmail("admin@creo.agency");
-    setPassword("creo2026");
+    setPassword("Admin123!");
     setError(null);
   };
 
@@ -120,7 +122,15 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
       setLoading(true);
       setError(null);
       if (mode === "signin") {
-        await loginWithPassword(cleanEmail, cleanPass);
+        const loggedInUser = await loginWithPassword(cleanEmail, cleanPass);
+        // Navigate explicitly after login to avoid relying solely on PublicOnlyRoute re-render
+        const params = new URLSearchParams(location.search);
+        const redirectedFrom = params.get("redirectedFrom");
+        const { getRoleHome } = await import("../../components/auth/ProtectedRoute");
+        const { getPostLoginRedirect } = await import("../../lib/useRouteMemory");
+        const defaultHome = getRoleHome(loggedInUser.role);
+        const destination = getPostLoginRedirect(loggedInUser.role, redirectedFrom ? decodeURIComponent(redirectedFrom) : null, defaultHome);
+        navigate(destination, { replace: true });
       } else {
         // Move to the OTP surface immediately; delivery continues in this request.
         setRegistrationPending(true);
@@ -454,24 +464,42 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
               ) : (
               <form onSubmit={handleSubmit} className="space-y-3">
                 
-                {/* Full Name (Sign Up only) */}
+                {/* Full Name & Business Name (Sign Up only) */}
                 {mode === "signup" && (
-                  <div>
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
-                      Full Name
-                    </label>
-                    <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
-                      <User className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
-                      <input 
-                        type="text" 
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Your full name" 
-                        className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
-                        required={mode === "signup"}
-                      />
+                  <>
+                    <div>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                        Full Name
+                      </label>
+                      <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                        <User className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                        <input 
+                          type="text" 
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          placeholder="Your full name" 
+                          className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
+                          required={mode === "signup"}
+                        />
+                      </div>
                     </div>
-                  </div>
+
+                    <div>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-[#97A0B3] mb-1 block text-left">
+                        Business / Agency Name
+                      </label>
+                      <div className="relative flex items-center bg-[#0A0F18] border border-[#222F44] rounded-xl px-3 py-2.5 focus-within:border-[#7FA0D6] focus-within:ring-1 focus-within:ring-[#7FA0D6]/30 transition-all">
+                        <Building2 className="text-[#97A0B3] size-4 mr-2.5 shrink-0" />
+                        <input 
+                          type="text" 
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          placeholder="Your Business / Studio Name" 
+                          className="bg-transparent text-xs text-[#F8FAFC] placeholder-[#97A0B3]/50 focus:outline-none w-full"
+                        />
+                      </div>
+                    </div>
+                  </>
                 )}
 
                 {/* Email Field */}
@@ -524,15 +552,27 @@ export function AuthPage({ defaultView = "signin" }: { defaultView?: string }) {
 
                 {/* Remember Me & Forgot Password Row */}
                 <div className="flex items-center justify-between text-[11px] pt-0.5">
-                  <label 
-                    className="flex items-center gap-2 cursor-pointer group select-none" 
-                    onClick={() => setRememberMe(!rememberMe)}
-                  >
-                    <div className={`w-3.5 h-3.5 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${rememberMe ? 'bg-[#7FA0D6]' : 'bg-[#0A0F18] border border-[#222F44]'}`}>
-                      {rememberMe && <Check className="size-2.5 text-[#050810]" strokeWidth={3.5} />}
-                    </div>
-                    <span className="text-[#97A0B3] group-hover:text-[#F8FAFC] transition-colors">Remember me</span>
-                  </label>
+                  {mode === "signup" ? (
+                    <label 
+                      className="flex items-center gap-2 cursor-pointer group select-none" 
+                      onClick={() => setTermsAccepted(!termsAccepted)}
+                    >
+                      <div className={`w-3.5 h-3.5 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${termsAccepted ? 'bg-[#7FA0D6]' : 'bg-[#0A0F18] border border-[#222F44]'}`}>
+                        {termsAccepted && <Check className="size-2.5 text-[#050810]" strokeWidth={3.5} />}
+                      </div>
+                      <span className="text-[#97A0B3] group-hover:text-[#F8FAFC] transition-colors">I accept the Terms & Privacy Policy</span>
+                    </label>
+                  ) : (
+                    <label 
+                      className="flex items-center gap-2 cursor-pointer group select-none" 
+                      onClick={() => setRememberMe(!rememberMe)}
+                    >
+                      <div className={`w-3.5 h-3.5 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${rememberMe ? 'bg-[#7FA0D6]' : 'bg-[#0A0F18] border border-[#222F44]'}`}>
+                        {rememberMe && <Check className="size-2.5 text-[#050810]" strokeWidth={3.5} />}
+                      </div>
+                      <span className="text-[#97A0B3] group-hover:text-[#F8FAFC] transition-colors">Remember me</span>
+                    </label>
+                  )}
                   
                   {mode === "signin" && (
                     <button

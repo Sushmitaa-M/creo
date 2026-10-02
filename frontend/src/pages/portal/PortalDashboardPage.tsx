@@ -139,18 +139,36 @@ export function PortalDashboardPage() {
     }
   };
 
-  const handleDeclineDeliverable = async (id: string, e: React.MouseEvent) => {
+  const [declineTarget, setDeclineTarget] = useState<{ id: string; title?: string } | null>(null);
+  const [declineComment, setDeclineComment] = useState("");
+  const [submittingDecline, setSubmittingDecline] = useState(false);
+
+  const handleDeclineDeliverable = (id: string, e: React.MouseEvent, title?: string) => {
     e.preventDefault();
     e.stopPropagation();
+    setDeclineTarget({ id, title });
+    setDeclineComment("");
+  };
+
+  const submitDeclineReason = async () => {
+    if (!declineTarget || !declineComment.trim()) return;
+    setSubmittingDecline(true);
     try {
-      await request(`/api/v1/deliverables/${id}/request-changes?rejection_comment=Changes requested from dashboard`, {
-        method: "POST",
-      });
+      await request(
+        `/api/v1/deliverables/${declineTarget.id}/request-changes?rejection_comment=${encodeURIComponent(
+          declineComment.trim()
+        )}`,
+        { method: "POST" }
+      );
       queryClient.invalidateQueries({ queryKey: ["portal-dashboard-deliverables"] });
       queryClient.invalidateQueries({ queryKey: ["portal-dashboard"] });
       showToast("Revision requested from pod");
+      setDeclineTarget(null);
+      setDeclineComment("");
     } catch {
       showToast("Change request failed");
+    } finally {
+      setSubmittingDecline(false);
     }
   };
 
@@ -332,14 +350,14 @@ export function PortalDashboardPage() {
                     {/* Actions */}
                     <div className="flex items-center gap-2 shrink-0">
                       <button
-                        onClick={(e) => handleDeclineDeliverable(item.id, e)}
-                        className="px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#161F2D] transition-colors"
+                        onClick={(e) => handleDeclineDeliverable(item.id, e, item.title)}
+                        className="px-4 py-2 rounded-full border border-[#2A3446] text-[13px] font-medium text-white hover:bg-[#161F2D] transition-colors cursor-pointer"
                       >
                         Request change
                       </button>
                       <button
                         onClick={(e) => handleApproveDeliverable(item.id, e)}
-                        className="px-4 py-2 rounded-full bg-[#BCCCE6] text-[#0B111C] text-[13px] font-bold hover:bg-white transition-colors"
+                        className="px-4 py-2 rounded-full bg-[#BCCCE6] text-[#0B111C] text-[13px] font-bold hover:bg-white transition-colors cursor-pointer"
                       >
                         Approve
                       </button>
@@ -551,6 +569,68 @@ export function PortalDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Revision Reason Modal Dialog */}
+      {declineTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.15s_ease-out]">
+          <div className="bg-[#161F2D] border border-[#2A3446] rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A3446]">
+              <h3 className="text-base font-bold text-white">
+                Request Changes on {declineTarget.title || "Deliverable"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setDeclineTarget(null)}
+                className="text-[#97A0B3] hover:text-white text-xs font-bold px-2 py-1 rounded-lg bg-[#0B111C]"
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            <p className="text-xs text-[#97A0B3]">
+              Select quick feedback tags or describe what the creative pod should adjust in the next version:
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              {["Less text", "Different music", "Stronger hook", "Colour feels off-brand", "Wrong product"].map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setDeclineComment((prev) => (prev ? `${prev} · ${tag}` : tag))}
+                  className="px-3 py-1 rounded-lg bg-[#0B111C] hover:bg-[#2A3446] border border-[#2A3446] text-xs font-semibold text-[#BCCCE6] transition-colors"
+                >
+                  + {tag}
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={declineComment}
+              onChange={(e) => setDeclineComment(e.target.value)}
+              placeholder="Provide clear revision instructions for your creative team..."
+              className="w-full bg-[#0B111C] border border-[#2A3446] rounded-xl p-3.5 text-xs text-white placeholder:text-[#97A0B3] focus:outline-none focus:border-[#7FA0D6] h-28 resize-none"
+            />
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeclineTarget(null)}
+                className="px-4 py-2 rounded-xl border border-[#2A3446] text-xs font-bold text-[#97A0B3] hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={submitDeclineReason}
+                disabled={!declineComment.trim() || submittingDecline}
+                className="px-5 py-2 rounded-xl bg-[#BCCCE6] text-[#0B111C] text-xs font-bold hover:bg-white transition-colors disabled:opacity-50"
+              >
+                {submittingDecline ? "Submitting..." : "Submit Revision Request"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Toast */}
       {toastMessage && (

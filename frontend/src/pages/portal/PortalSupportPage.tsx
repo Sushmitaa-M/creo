@@ -36,11 +36,11 @@ const CATEGORIES = ["Content", "Billing", "Technical", "Brand", "Other"];
 const NO_TICKETS: TicketItem[] = [];
 
 const FAQ_ITEMS = [
-  { q: "How do I request changes on an approved asset?", a: "Once an asset is approved, it moves to the Scheduled queue. If you need a last-minute change, please open a Support ticket with the priority 'High' and mention the asset ID." },
-  { q: "What happens if I miss a review deadline?", a: "Assets auto-approve after the SLA timer expires to ensure your delivery pipeline stays on schedule. You can still request a revision via support, but it may eat into your monthly quota." },
-  { q: "Can I add more reels to my plan mid-cycle?", a: "Yes! You can purchase Add-on packs from the Plan & billing page. They apply immediately and do not affect your recurring billing cycle." },
-  { q: "How do revision rounds work?", a: "Each asset includes 2 free revision rounds. When reviewing, select 'Request Changes' and leave detailed comments. The pod will submit a v2 within 24-48 hours." },
-  { q: "What's included in the Growth plan?", a: "The Growth plan includes a dedicated creative pod, 8 Reels, 4 Posts, and 8 Stories per cycle, with a 2-hour response SLA." },
+  { q: "How do I request changes on a deliverable?", a: "In the Review section, select 'Request change' and describe your feedback. Your dedicated creative pod will deliver an updated version within your plan's turnaround SLA." },
+  { q: "What happens if I miss a review deadline?", a: "Deliverables undergo standard 5-business-day auto-approval to keep production on cadence. You will receive notifications before auto-approval occurs." },
+  { q: "Can I add more reels or posts mid-cycle?", a: "Yes! You can purchase Add-on top-up packs directly from the Plan & billing page. They apply immediately to your current cycle." },
+  { q: "How do revision rounds work per plan?", a: "Revision rounds per deliverable depend on your plan: 1 round for Starter, 2 rounds for Growth, and 3 rounds for Scale. Leaving clear feedback ensures your pod gets it right on the next iteration." },
+  { q: "What are the SLA turnaround promises per plan?", a: "Starter features 3 business days turnaround per deliverable batch, Growth offers 2 business days, and Scale offers 24-hour priority turnaround." },
 ];
 
 export function PortalSupportPage() {

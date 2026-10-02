@@ -33,7 +33,7 @@ const TERMS_SECTIONS = [
       "Creo offers three subscription tiers, each with defined content deliverable quotas:",
       "Starter Plan — Designed for small businesses beginning their digital marketing journey. Includes a fixed monthly quota of social media content pieces, one dedicated content creator, and standard turnaround times.",
       "Growth Plan — For businesses scaling their online presence. Includes an increased monthly content quota, a dedicated content team (writer + designer), priority turnaround times, and access to advanced analytics.",
-      "Pro Plan — For established brands requiring full-stack marketing. Includes the highest content quota, a dedicated brand team, priority support with guaranteed SLAs, advanced content strategy, and access to all platform features including Instagram publishing.",
+      "Scale Plan — For established brands requiring full-stack marketing. Includes the highest content quota, a dedicated brand team, priority support with guaranteed SLAs, advanced content strategy, and access to all platform features including Instagram publishing.",
       "Quota limits are enforced on a calendar-month basis. Unused content quotas do not roll over to the next month. If you exceed your plan's quota, additional content can be requested as Add-on orders (see Section 8).",
       "Plan pricing is displayed on our Pricing page and may be updated periodically. Existing subscribers are notified of pricing changes at least 30 days before they take effect.",
     ],
@@ -70,7 +70,7 @@ const TERMS_SECTIONS = [
     badge: "Strict Business SLAs",
     content: [
       "All service level agreements are measured in business days (Monday through Friday, excluding Indian public holidays):",
-      "New Content Delivery — Content deliverables are produced and submitted for client approval within the turnaround time specified by your subscription plan. Standard turnaround is 3 business days for Starter, 2 business days for Growth, and 1 business day for Pro.",
+      "New Content Delivery — Content deliverables are produced and submitted for client approval within the turnaround time specified by your subscription plan. Standard turnaround is 3 business days for Starter, 2 business days for Growth, and 1 business day for Scale.",
       "Revision Turnaround — When a client requests revisions on a submitted deliverable, the creative team will deliver the revised version within 24 business hours of the revision request.",
       "Support Ticket Response — Our support team responds to all tickets within 8 business hours during standard working hours (10:00 AM to 7:00 PM IST, Monday through Friday).",
       "Escalation Response — High-priority escalations are acknowledged within 4 business hours and resolved within 1 business day.",

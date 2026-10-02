@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useSearchParams, Navigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { fetchClientRoster, fetchPlanNegotiations, updatePlanNegotiation, createPlanNegotiation, fetchPodDashboard } from "../../lib/ops-api";
+import { fetchClientRoster, fetchPlanNegotiations, updatePlanNegotiation, createPlanNegotiation, fetchPodDashboard, fetchLeaveRequests, approveLeaveRequest, rejectLeaveRequest, fetchAdminQueue } from "../../lib/ops-api";
 import type { PlanNegotiationApiItem } from "../../lib/ops-api";
 import type { ClientRosterItem } from "../../types/ops";
 import {
@@ -4055,6 +4055,32 @@ export function AdminTeamManagementPage() {
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
+  const { data: queueData } = useQuery({
+    queryKey: ["admin_queue"],
+    queryFn: () => fetchAdminQueue(),
+  });
+
+  useEffect(() => {
+    if (queueData?.staff && queueData.staff.length > 0) {
+      const mapped = queueData.staff.map((s, idx) => ({
+        id: s.user_id || `staff-${idx}`,
+        podId: idx % 3 === 0 ? "pod-a" : idx % 3 === 1 ? "pod-b" : "pod-c",
+        name: String(s.full_name || (s.email ? s.email.split("@")[0] : "Team Member")),
+        role: s.department ? `${s.department.toUpperCase()} Specialist` : "Creative Specialist",
+        category: (s.department === "lead" ? "lead" : "editor") as "editor" | "designer" | "lead" | "videographer" | "photographer",
+        isLead: s.department === "lead",
+        email: s.email || "staff@creo.agency",
+        handle: String(s.email ? `@${s.email.split("@")[0]}` : "@member"),
+        status: (s.on_leave_today ? "On Leave" : s.is_accepting_work ? "Accepting Work" : "Fully Booked") as "Pod Lead" | "Accepting Work" | "Fully Booked" | "On Leave" | "Sprint Ready",
+        statusColor: s.on_leave_today ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-emerald-50 text-emerald-700 border-emerald-200",
+        allocatedPct: Math.min(100, Math.round((s.active_wip / Math.max(1, s.daily_capacity)) * 100)),
+        projectsCount: s.active_wip,
+        capabilities: s.skills && s.skills.length > 0 ? s.skills : ["Creative Design", "Content Operations"],
+      }));
+      setMembersList(mapped);
+    }
+  }, [queueData]);
+
   const [pods, setPods] = useState([
     {
       id: "pod-a",
@@ -4513,67 +4539,82 @@ export function AdminTeamManagementPage() {
             </div>
 
             {/* 3 KPI Summary Cards matching Screenshot 1 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Card 1: NO OF PODS */}
-              <div className="kpi-card bg-[#161F2D] rounded-3xl p-6 border-2 border-[#161F2D] hover:border-[#BCCCE6] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-extrabold text-[#97A0B3] uppercase tracking-wider">
-                    NO OF PODS
-                  </span>
-                  <div className="w-9 h-9 rounded-2xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
-                    <Users className="w-5 h-5" />
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-white tracking-tight">8 Pods</span>
-                  <span className="text-xs font-semibold text-[#97A0B3]">across 72 members</span>
-                </div>
-                <div className="mt-4 pt-3 border-t border-[#2A3446] text-xs font-bold text-[#7FA0D6] flex items-center gap-1">
-                  <Layers className="w-3.5 h-3.5" /> Pods A – H Active Pods
-                </div>
-              </div>
+            {(() => {
+              const totalPodsCount = pods.length;
+              const totalMembersCount = membersList.length;
+              const avgCapacityPct = Math.round(
+                membersList.reduce((acc, m) => acc + (m.allocatedPct || 0), 0) / (membersList.length || 1)
+              );
+              const activeTasksCount = membersList.reduce((acc, m) => acc + (m.projectsCount || 0), 0);
+              const firstPodLetter = pods[0]?.letter || "A";
+              const lastPodLetter = pods[pods.length - 1]?.letter || String.fromCharCode(65 + Math.max(0, pods.length - 1));
 
-              {/* Card 2: CAPACITY */}
-              <div className="kpi-card bg-[#161F2D] rounded-3xl p-6 border-2 border-[#161F2D] hover:border-[#BCCCE6] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-extrabold text-[#97A0B3] uppercase tracking-wider">
-                    CAPACITY
-                  </span>
-                  <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <Zap className="w-5 h-5" />
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Card 1: NO OF PODS */}
+                  <div className="kpi-card bg-[#161F2D] rounded-3xl p-6 border-2 border-[#161F2D] hover:border-[#BCCCE6] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-extrabold text-[#97A0B3] uppercase tracking-wider">
+                        NO OF PODS
+                      </span>
+                      <div className="w-9 h-9 rounded-2xl bg-[#7FA0D6]/15 text-[#7FA0D6] flex items-center justify-center">
+                        <Users className="w-5 h-5" />
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-black text-white tracking-tight">{totalPodsCount} Pods</span>
+                      <span className="text-xs font-semibold text-[#97A0B3]">across {totalMembersCount} members</span>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-[#2A3446] text-xs font-bold text-[#7FA0D6] flex items-center gap-1">
+                      <Layers className="w-3.5 h-3.5" /> Pods {firstPodLetter} – {lastPodLetter} Active Pods
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-white tracking-tight">88%</span>
-                  <span className="text-xs font-semibold text-[#97A0B3]">optimal bandwidth</span>
-                </div>
-                <div className="mt-4 pt-3 border-t border-[#2A3446] flex items-center gap-2">
-                  <div className="flex-1 bg-[#161F2D] rounded-full h-2 overflow-hidden">
-                    <div className="bg-emerald-600 h-full rounded-full w-[88%]" />
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600">Healthy</span>
-                </div>
-              </div>
 
-              {/* Card 3: TASKS TO BE DONE */}
-              <div className="kpi-card bg-[#161F2D] rounded-3xl p-6 border-2 border-[#161F2D] hover:border-[#BCCCE6] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-extrabold text-[#97A0B3] uppercase tracking-wider">
-                    TASKS TO BE DONE
-                  </span>
-                  <div className="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center">
-                    <CheckSquare className="w-5 h-5" />
+                  {/* Card 2: CAPACITY */}
+                  <div className="kpi-card bg-[#161F2D] rounded-3xl p-6 border-2 border-[#161F2D] hover:border-[#BCCCE6] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-extrabold text-[#97A0B3] uppercase tracking-wider">
+                        CAPACITY
+                      </span>
+                      <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <Zap className="w-5 h-5" />
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-black text-white tracking-tight">{avgCapacityPct}%</span>
+                      <span className="text-xs font-semibold text-[#97A0B3]">optimal bandwidth</span>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-[#2A3446] flex items-center gap-2">
+                      <div className="flex-1 bg-[#161F2D] rounded-full h-2 overflow-hidden">
+                        <div className="bg-emerald-600 h-full rounded-full" style={{ width: `${avgCapacityPct}%` }} />
+                      </div>
+                      <span className="text-xs font-bold text-emerald-600">
+                        {avgCapacityPct > 90 ? "High Load" : "Healthy"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card 3: TASKS TO BE DONE */}
+                  <div className="kpi-card bg-[#161F2D] rounded-3xl p-6 border-2 border-[#161F2D] hover:border-[#BCCCE6] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-extrabold text-[#97A0B3] uppercase tracking-wider">
+                        TASKS TO BE DONE
+                      </span>
+                      <div className="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center">
+                        <CheckSquare className="w-5 h-5" />
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-black text-white tracking-tight">{activeTasksCount}</span>
+                      <span className="text-xs font-semibold text-[#97A0B3]">in review/progress</span>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-[#2A3446] text-xs text-[#97A0B3] flex items-center gap-1 font-medium">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> All squad tasks live on track
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-white tracking-tight">28</span>
-                  <span className="text-xs font-semibold text-[#97A0B3]">in review/progress</span>
-                </div>
-                <div className="mt-4 pt-3 border-t border-[#2A3446] text-xs text-[#97A0B3] flex items-center gap-1 font-medium">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#97A0B3]" /> 142 milestones closed ahead of target
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Team Pods Section Header */}
             <div className="flex items-center justify-between pt-2">
@@ -5488,12 +5529,30 @@ export function AdminLeaveApprovalsPage() {
   const [filterTab, setFilterTab] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
-  const [leaveRequests, setLeaveRequests] = useState<any[]>([]);
+  const { data: dbLeaves = [], refetch } = useQuery({
+    queryKey: ["admin_leave_requests"],
+    queryFn: fetchLeaveRequests,
+  });
 
-  const handleAction = (id: string, action: "approved" | "rejected") => {
-    setLeaveRequests((prev) =>
-      prev.map((lr) => (lr.id === id ? { ...lr, status: action } : lr))
-    );
+  const [localOverrides, setLocalOverrides] = useState<Record<string, "approved" | "rejected">>({});
+
+  const leaveRequests = dbLeaves.map((lr) => ({
+    ...lr,
+    status: localOverrides[lr.id] || lr.status,
+  }));
+
+  const handleAction = async (id: string, action: "approved" | "rejected") => {
+    setLocalOverrides((prev) => ({ ...prev, [id]: action }));
+    try {
+      if (action === "approved") {
+        await approveLeaveRequest(id);
+      } else {
+        await rejectLeaveRequest(id);
+      }
+      refetch();
+    } catch {
+      // Keep optimistic UI
+    }
     setToast(`Leave request ${action} successfully.`);
     setTimeout(() => setToast(null), 3000);
   };
@@ -5503,7 +5562,7 @@ export function AdminLeaveApprovalsPage() {
   );
 
   const onLeaveCount = leaveRequests.filter((l) => l.status === "approved").length;
-  const inOfficeCount = 9 - onLeaveCount;
+  const inOfficeCount = Math.max(0, 9 - onLeaveCount);
 
   return (
     <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
@@ -5623,12 +5682,11 @@ export function AdminLeaveApprovalsPage() {
                 filteredRequests.map((lr) => (
                 <tr key={lr.id} className="hover:bg-[#0B111C]/60">
                   <td className="px-5 py-4">
-                    <div className="font-bold text-white">{lr.name}</div>
-                    <div className="text-[11px] text-[#97A0B3]">{lr.department} • {lr.pod}</div>
+                    <div className="font-bold text-white">{lr.user_name || (lr as any).name || "Team Member"}</div>
+                    <div className="text-[11px] text-[#97A0B3]">{lr.user_role || (lr as any).department || "Specialist"}</div>
                   </td>
                   <td className="px-5 py-4 font-mono text-[11px]">
-                    <div>{lr.startDate} to {lr.endDate}</div>
-                    <span className="text-[#97A0B3] font-sans">({lr.days} days)</span>
+                    <div>{lr.start_date || (lr as any).startDate} to {lr.end_date || (lr as any).endDate}</div>
                   </td>
                   <td className="px-5 py-4 text-[#F1F5F9] max-w-xs">{lr.reason}</td>
                   <td className="px-5 py-4">

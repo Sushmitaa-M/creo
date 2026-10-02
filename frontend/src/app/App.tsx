@@ -13,6 +13,7 @@ import {
   AboutPage,
   AuthPage,
   ClientsPage,
+  FaqPage,
   GoogleCallbackPage,
   OnboardingView,
   PortalAccountPage,
@@ -360,11 +361,12 @@ export function App() {
               {/* 1. Public Marketing Pages (Open to All) */}
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/work" element={<PortfolioPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />
                 <Route path="/clients" element={<ClientsPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/faq" element={<Navigate to="/pricing" replace />} />
+                <Route path="/faq" element={<FaqPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
               </Route>
@@ -442,6 +444,7 @@ export function App() {
                 <Route path="support/:ticketId" element={<ClientTicketDetailPage />} />
 
                 <Route path="account" element={<PortalAccountPage />} />
+                <Route path="brand-dna" element={<Navigate to="/portal/account?tab=brand" replace />} />
                 <Route path="library" element={<PortalLibraryPage />} />
               </Route>
 

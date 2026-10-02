@@ -9,11 +9,10 @@ interface SlaPerformanceWidgetProps {
 
 export function SlaPerformanceWidget({ slas }: SlaPerformanceWidgetProps) {
   const navigate = useNavigate();
-  // Mock data as per screenshot since we don't have historical SLA % in API
-  const overallSla = 98.4;
-  const responseSla = 99.1;
-  const resolutionSla = 97.8;
   const activeAlerts = slas.length;
+  const overallSla = activeAlerts > 0 ? Math.max(75.0, 100 - activeAlerts * 5) : 100.0;
+  const responseSla = activeAlerts > 0 ? Math.max(80.0, 100 - activeAlerts * 4) : 100.0;
+  const resolutionSla = activeAlerts > 0 ? Math.max(70.0, 100 - activeAlerts * 6) : 100.0;
 
   return (
     <div

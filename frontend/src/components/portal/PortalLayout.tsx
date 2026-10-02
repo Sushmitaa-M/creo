@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useRouteMemory } from "../../lib/useRouteMemory";
-import { AdminSidebar } from "../admin/AdminSidebar";
+import { PortalSidebarNew } from "./PortalSidebarNew";
 import { AdminSidebarProvider } from "../admin/AdminSidebarContext";
 import { AdminTopHeader } from "../admin/AdminTopHeader";
 import { CreoInlineLoader } from "../ui/CreoLoader";
@@ -27,10 +27,10 @@ export function PortalLayout() {
         </a>
 
         {/* Permanent Desktop Sidebar (Always Visible) & Mobile Drawer */}
-        <AdminSidebar />
+        <PortalSidebarNew />
 
         {/* Main Content Area: Offset on desktop to sit beside the permanent sidebar */}
-        <div className="flex-1 min-w-0 md:pl-64 lg:pl-72 flex flex-col min-h-screen">
+        <div className="flex-1 min-w-0 xl:pl-[280px] flex flex-col min-h-screen">
           {/* Top Header with Hamburger (mobile), Page Title, Notification Bell & Profile */}
           <AdminTopHeader showBackButton />
 

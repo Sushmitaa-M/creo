@@ -30,41 +30,51 @@ import {
   completeOnboarding,
 } from "../../lib/onboarding-api";
 import type { AssignedTeamMember } from "../../types/api";
-import { ColorPicker, useColor, ColorService } from "react-color-palette";
-import "react-color-palette/css";
-
-function AdvancedColorPicker({ color, onChange }: { color: string, onChange: (hex: string) => void }) {
-  const [col, setCol] = useColor(color || "#0D2137");
+function AdvancedColorPicker({ color, onChange }: { color: string; onChange: (hex: string) => void }) {
+  const currentHex = color || "#0D2137";
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (color && color !== col.hex) {
-      try {
-        setCol(ColorService.convert("hex", color));
-      } catch (e) {
-        // ignore invalid hex
-      }
-    }
-  }, [color]);
-
-  const handleChange = (newCol: any) => {
-    setCol(newCol);
-    onChange(newCol.hex);
-  };
 
   return (
     <div className="relative flex items-center">
-      <div 
-        className="w-8 h-8 rounded-lg cursor-pointer border border-[#2A3446] shadow-sm relative z-10" 
-        style={{ backgroundColor: col.hex }}
+      <div
+        className="w-8 h-8 rounded-lg cursor-pointer border border-[#2A3446] shadow-sm relative z-10 transition-transform hover:scale-105"
+        style={{ backgroundColor: currentHex }}
         onClick={() => setOpen(!open)}
-        title="Click to open advanced color picker"
+        title="Click to open color picker"
       />
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute z-50 mt-2 top-full left-0 bg-[#0B111C] p-2 rounded-xl border border-[#2A3446] shadow-2xl">
-             <ColorPicker color={col} onChange={handleChange} />
+          <div className="absolute z-50 mt-2 top-full left-0 bg-[#0B111C] p-3 rounded-xl border border-[#2A3446] shadow-2xl space-y-2.5 min-w-[200px]">
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={currentHex.startsWith("#") ? currentHex : "#0D2137"}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-10 h-10 rounded cursor-pointer bg-transparent border-0"
+              />
+              <input
+                type="text"
+                value={currentHex}
+                onChange={(e) => onChange(e.target.value)}
+                className="flex-1 bg-[#161F2D] border border-[#2A3446] text-white text-xs px-2.5 py-1.5 rounded-lg font-mono focus:outline-none focus:border-[#7FA0D6]"
+                placeholder="#0D2137"
+              />
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap pt-1 border-t border-[#2A3446]">
+              {["#0D2137", "#7FA0D6", "#161F2D", "#F8FAFC", "#D8BF9B", "#E11D48", "#10B981"].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => {
+                    onChange(preset);
+                    setOpen(false);
+                  }}
+                  className="w-5 h-5 rounded-full border border-white/20 transition-transform hover:scale-110"
+                  style={{ backgroundColor: preset }}
+                />
+              ))}
+            </div>
           </div>
         </>
       )}

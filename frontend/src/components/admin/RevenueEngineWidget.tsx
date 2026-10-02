@@ -76,16 +76,15 @@ export function RevenueEngineWidget({ kpis, clients: _clients }: RevenueEngineWi
     loadTrend(activeTimeframe);
   }, [activeTimeframe, loadTrend]);
 
-  const fallbackPoints = [
-    { label: "W1", value: 11000000 },
-    { label: "W2", value: 12500000 },
-    { label: "W3", value: 13800000 },
-    { label: "W4", value: 14500000 },
-    { label: "W5", value: 14000000 },
-    { label: "W6", value: 15200000 },
-    { label: "W7", value: 14500000 },
-  ];
-  const rawPoints = (trendData?.points && trendData.points.length > 0) ? trendData.points : fallbackPoints;
+  const rawPoints = (trendData?.points && trendData.points.length > 0)
+    ? trendData.points
+    : [
+        { label: "W1", value: Math.round(mrrValue * 0.2) },
+        { label: "W2", value: Math.round(mrrValue * 0.4) },
+        { label: "W3", value: Math.round(mrrValue * 0.6) },
+        { label: "W4", value: Math.round(mrrValue * 0.8) },
+        { label: "Current", value: mrrValue },
+      ];
   const chartData = rawPoints.map((p) => ({
     name: p.label,
     revenue: p.value,

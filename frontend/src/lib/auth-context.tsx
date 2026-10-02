@@ -107,21 +107,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
     try {
-      const data = await request<AuthUser & { access_token?: string }>("/api/v1/auth/me");
+      const data = await request<AuthUser & { access_token?: string }>("/api/v1/auth/me", {
+        signal: controller.signal,
+      });
       if (data.access_token && data.access_token !== currentToken) {
         setToken(data.access_token);
       }
       const { access_token: _ignored, ...profile } = data;
       setUser(profile);
-    } catch (err) {
-      // Only an auth rejection ends the session; a network blip keeps the cached user.
-      const isAuthError = err instanceof HttpError && (err.status === 401 || err.status === 403);
-      if (isAuthError || !readCachedUser()) {
+    } catch (err: any) {
+      // On 401, 403, 500, or a timeout (AbortError), clear the session and force login
+      const isAuthError = err instanceof HttpError && (err.status === 401 || err.status === 403 || err.status === 500);
+      const isTimeout = err.name === "AbortError";
+      
+      if (isAuthError || isTimeout || !readCachedUser()) {
         setUser(null);
         setToken(null);
+        clearAuthToken();
       }
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   };

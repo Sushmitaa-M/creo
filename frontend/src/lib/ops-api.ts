@@ -11,6 +11,7 @@ import type {
 } from "../types/ops";
 import { request } from "./http";
 export { request };
+export type { ClientRosterItem, AdminDashboardData, AdminKPIs, AdminQueueData, SLABreachItem };
 
 export async function autoAssignTask(
   taskId: string,
@@ -300,6 +301,12 @@ export interface PodTask {
   client_id: string;
   client_name: string;
   assigned_to: string | null;
+  assignee: {
+    id: string;
+    full_name: string;
+    email: string;
+    role?: string;
+  } | null;
   assignee_name: string;
   assignee_role: string | null;
   deliverable_type: "reel" | "carousel" | "story" | "static_post" | "shoot_day" | string;

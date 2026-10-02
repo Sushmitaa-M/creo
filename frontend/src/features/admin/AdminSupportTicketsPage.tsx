@@ -16,6 +16,7 @@ interface TicketItem {
   client: string;
   tier: string;
   email: string;
+  clientInitial?: string;
   avatarBg: string;
   issueTitle: string;
   issueDesc: string;
@@ -27,6 +28,7 @@ interface TicketItem {
   status: "Open" | "In Progress" | "Pending Client" | "Resolved";
   primaryAction: string;
   secondaryAction: string;
+  rawId?: string;
 }
 
 const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
@@ -102,6 +104,7 @@ const DEFAULT_INITIAL_TICKETS: TicketItem[] = [
 
 export function AdminSupportTicketsPage() {
   const navigate = useNavigate();
+  const [statusFilter, setStatusFilter] = useState<"active" | "closed">("active");
   const [tickets, setTickets] = useState<TicketItem[]>(DEFAULT_INITIAL_TICKETS);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [alertModal, setAlertModal] = useState<{
@@ -119,13 +122,10 @@ export function AdminSupportTicketsPage() {
       // 1. Fetch from server API
       let serverItems: any[] = [];
       try {
-        const res = await request<any[]>("/api/v1/admin/support/tickets");
+        const res = await request<any[]>(`/api/v1/tickets?status_filter=${statusFilter}`);
         if (Array.isArray(res) && res.length > 0) serverItems = res;
-      } catch {
-        try {
-          const res2 = await request<any[]>("/api/v1/tickets");
-          if (Array.isArray(res2)) serverItems = res2;
-        } catch {}
+      } catch (e) {
+        console.error("Failed to load server tickets", e);
       }
 
       // 2. Fetch from shared local tickets (client portal submissions)
@@ -140,9 +140,17 @@ export function AdminSupportTicketsPage() {
         const priority: TicketItem["priority"] =
           prio === "urgent" ? "Urgent" : prio === "high" ? "High" : prio === "low" ? "Low Priority" : "Medium";
         const stat = (st.status || "open").toLowerCase();
-        const status: TicketItem["status"] =
-          stat === "resolved" ? "Resolved" : stat === "in_progress" ? "In Progress" : stat === "waiting_on_client" ? "Pending Client" : "Open";
+        let status: TicketItem["status"] = "Open";
+        if (stat === "resolved") status = "Resolved";
+        else if (stat === "in_progress") status = "In Progress";
+        else if (stat === "waiting_on_client") status = "Pending Client";
+        else if (stat === "closed") status = "Resolved"; // Map closed to Resolved in UI for now or handle appropriately.
         const initials = (st.assignee_name || st.agent || "Support Lead").split(" ").map((w: string) => w[0]).join("").toUpperCase();
+        
+        const clientName = st.client_name || st.client || "Client Account";
+        const clientEmail = st.client_email || st.email || "client@creo.agency";
+        const clientInitial = clientName.charAt(0).toUpperCase();
+        
         const shortId = String(st.id).includes("1781")
           ? "1781"
           : String(st.id).length > 8
@@ -151,10 +159,11 @@ export function AdminSupportTicketsPage() {
 
         return {
           id: shortId,
-          client: st.client || "Client Account",
+          client: clientName,
           tier: st.tier || "Active Retainer",
-          email: st.email || "client@creo.agency",
+          email: clientEmail,
           avatarBg: "bg-[#0B111C]",
+          clientInitial,
           issueTitle: st.title || st.subject || "Support Inquiry",
           issueDesc: st.description || "",
           priority,
@@ -165,6 +174,7 @@ export function AdminSupportTicketsPage() {
           status,
           primaryAction: status === "Resolved" ? "Reopen" : "Resolve",
           secondaryAction: "Assign",
+          rawId: String(st.id),
         };
       });
 
@@ -185,6 +195,7 @@ export function AdminSupportTicketsPage() {
         status: lt.status || "Open",
         primaryAction: lt.status === "Resolved" ? "Reopen" : "Resolve",
         secondaryAction: "Assign",
+        rawId: String(lt.id),
       }));
 
       // Combine with local first so newly sent tickets appear at the very top
@@ -209,7 +220,7 @@ export function AdminSupportTicketsPage() {
       console.error("Failed to load tickets:", err);
       setTickets(DEFAULT_INITIAL_TICKETS);
     }
-  }, []);
+  }, [statusFilter]);
 
   useEffect(() => {
     loadTickets();
@@ -245,6 +256,10 @@ export function AdminSupportTicketsPage() {
   };
 
   const handlePrimaryAction = async (t: TicketItem) => {
+    if (t.primaryAction === "Open Chat" || t.issueTitle === "Client Pod Thread") {
+      navigate(`/admin/support/tickets/${t.rawId || t.id}`);
+      return;
+    }
     const newStatus: TicketItem["status"] = t.status !== "Resolved" ? "Resolved" : "In Progress";
     setTickets((prev) =>
       prev.map((item) =>
@@ -350,6 +365,26 @@ export function AdminSupportTicketsPage() {
           </div>
         </div>
 
+        {/* View Toggle */}
+        <div className="flex items-center gap-2 border-b border-[#2A3446] pb-2">
+          <button
+            onClick={() => setStatusFilter("active")}
+            className={`px-4 py-2 text-xs font-bold transition-all border-b-2 ${
+              statusFilter === "active" ? "border-[#7FA0D6] text-white" : "border-transparent text-[#97A0B3] hover:text-[#BCCCE6]"
+            }`}
+          >
+            Active Tickets ({openCount})
+          </button>
+          <button
+            onClick={() => setStatusFilter("closed")}
+            className={`px-4 py-2 text-xs font-bold transition-all border-b-2 ${
+              statusFilter === "closed" ? "border-[#7FA0D6] text-white" : "border-transparent text-[#97A0B3] hover:text-[#BCCCE6]"
+            }`}
+          >
+            Closed Archive ({resolvedCount})
+          </button>
+        </div>
+
         {/* Mobile Tickets Card List (< md) */}
         <div className="block md:hidden space-y-3">
           {filteredTickets.length === 0 ? (
@@ -360,7 +395,7 @@ export function AdminSupportTicketsPage() {
             filteredTickets.map((t) => (
               <div
                 key={t.id}
-                onClick={() => navigate(`/admin/support/tickets/${t.id}`)}
+                onClick={() => navigate(`/admin/support/tickets/${t.rawId || t.id}`)}
                 className="bg-[#161F2D] rounded-2xl p-4 border border-[#2A3446]/90 shadow-2xs space-y-3 hover:border-blue-300 transition-all cursor-pointer active:scale-[0.99]"
               >
                 {/* Header: ID + Priority + Status */}
@@ -401,7 +436,7 @@ export function AdminSupportTicketsPage() {
                   <div
                     className={`size-8 rounded-xl ${t.avatarBg} text-white font-black text-xs flex items-center justify-center shrink-0`}
                   >
-                    {t.client[0]}
+                    {t.clientInitial || t.client[0]}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
@@ -441,7 +476,7 @@ export function AdminSupportTicketsPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => navigate(`/admin/support/tickets/${t.id}`)}
+                      onClick={() => navigate(`/admin/support/tickets/${t.rawId || t.id}`)}
                       className="px-2.5 py-1 rounded-xl bg-[#161F2D] text-[#F1F5F9] text-[11px] font-bold hover:bg-slate-200"
                     >
                       {t.secondaryAction}
@@ -488,7 +523,7 @@ export function AdminSupportTicketsPage() {
                     <tr
                       key={t.id}
                       className="hover:bg-[#0B111C]/80 transition-colors group cursor-pointer"
-                      onClick={() => navigate(`/admin/support/tickets/${t.id}`)}
+                      onClick={() => navigate(`/admin/support/tickets/${t.rawId || t.id}`)}
                     >
                       <td className="px-4 py-4 text-center" onClick={(e) => e.stopPropagation()}>
                         <input
@@ -603,14 +638,14 @@ export function AdminSupportTicketsPage() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => navigate(`/admin/support/tickets/${t.id}`)}
+                            onClick={() => navigate(`/admin/support/tickets/${t.rawId || t.id}`)}
                             className="px-2.5 py-1 rounded-xl bg-[#161F2D] text-[#F1F5F9] text-[11px] font-bold hover:bg-slate-200 transition-colors cursor-pointer"
                           >
                             {t.secondaryAction}
                           </button>
                           <button
                             type="button"
-                            onClick={() => navigate(`/admin/support/tickets/${t.id}`)}
+                            onClick={() => navigate(`/admin/support/tickets/${t.rawId || t.id}`)}
                             className="p-1 text-[#97A0B3] hover:text-[#F1F5F9] rounded cursor-pointer"
                             aria-label="More actions"
                           >

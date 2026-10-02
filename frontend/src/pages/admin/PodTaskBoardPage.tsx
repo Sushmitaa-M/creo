@@ -61,11 +61,11 @@ export function PodTaskBoardPage() {
   const handleExportSprintCSV = () => {
     const headers = ["Task ID", "Column / Stage", "Task Title", "Format", "Client", "Assignee", "Status Info"];
     const allTasks: any[] = [
-      ...(data?.tasks?.backlog || []).map(t => [t.id, "Backlog", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "Ready for Sprint"]),
-      ...(data?.tasks?.in_production || []).map(t => [t.id, "In Progress", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "In Production"]),
-      ...(data?.tasks?.internal_qa || []).map(t => [t.id, "Pending Lead QA", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "Requires Lead Sign-off"]),
-      ...(data?.tasks?.ready_to_publish || []).map(t => [t.id, "Ready to Publish", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "Approved"]),
-      ...(data?.tasks?.completed || []).map(t => [t.id, "Dispatched", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee_name, "Delivered"]),
+      ...(data?.tasks?.backlog || []).map(t => [t.id, "Backlog", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee?.full_name || t.assignee_name, "Ready for Sprint"]),
+      ...(data?.tasks?.in_production || []).map(t => [t.id, "In Progress", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee?.full_name || t.assignee_name, "In Production"]),
+      ...(data?.tasks?.internal_qa || []).map(t => [t.id, "Pending Lead QA", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee?.full_name || t.assignee_name, "Requires Lead Sign-off"]),
+      ...(data?.tasks?.ready_to_publish || []).map(t => [t.id, "Ready to Publish", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee?.full_name || t.assignee_name, "Approved"]),
+      ...(data?.tasks?.completed || []).map(t => [t.id, "Dispatched", t.blueprint?.concept_name || "Task", t.deliverable_type, t.client_name, t.assignee?.full_name || t.assignee_name, "Delivered"]),
     ];
 
     const rows = allTasks.length > 0 ? allTasks : [["N/A", "N/A", "No active tasks in sprint", "-", "-", "-", "-"]];
@@ -253,7 +253,7 @@ export function PodTaskBoardPage() {
                         {task.deliverable_type?.toUpperCase() || "ASSET"}
                       </span>
                       <div className="flex items-center gap-1 text-[#F1F5F9] font-bold text-[9.5px]">
-                        <span>{task.assignee_name || "Unassigned"}</span>
+                        <span>{task.assignee?.full_name || task.assignee_name || "Unassigned"}</span>
                       </div>
                     </div>
                   </div>
@@ -307,7 +307,7 @@ export function PodTaskBoardPage() {
                       <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">{task.assignee_role || "Creative Execution"}</p>
                     </div>
                     <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
-                      <span>{task.assignee_name || "Specialist"}</span>
+                      <span>{task.assignee?.full_name || task.assignee_name || "Specialist"}</span>
                       <span className="px-1.5 py-0.2 rounded bg-[#7FA0D6]/15 text-[#7FA0D6] font-bold text-[9px] border border-[#7FA0D6]/30">
                         {task.deliverable_type?.toUpperCase() || "ASSET"}
                       </span>
@@ -351,7 +351,7 @@ export function PodTaskBoardPage() {
                       <h4 className="text-xs font-black text-white leading-snug">
                         {task.blueprint?.concept_name || `${task.client_name || "Sprint"} ${task.deliverable_type?.toUpperCase() || "Asset"}`}
                       </h4>
-                      <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">{task.assignee_name}</p>
+                      <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">{task.assignee?.full_name || task.assignee_name}</p>
                     </div>
                     <div className="flex items-center gap-1.5 pt-1.5 border-t border-[#2A3446]">
                       <Link
@@ -414,7 +414,7 @@ export function PodTaskBoardPage() {
                       <p className="text-[9.5px] text-[#97A0B3] font-medium mt-0.5">Delivered to client vault</p>
                     </div>
                     <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446] text-[9.5px] font-bold text-[#F1F5F9]">
-                      <span>{task.assignee_name || "Specialist"}</span>
+                      <span>{task.assignee?.full_name || task.assignee_name || "Specialist"}</span>
                       <span className="text-emerald-400">● Accepted</span>
                     </div>
                   </div>

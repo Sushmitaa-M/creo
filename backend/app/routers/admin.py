@@ -698,6 +698,12 @@ async def get_dispatch_queue(
                cp.company_name AS client_company,
                c.email AS client_email,
                u.full_name AS assignee_name,
+               jsonb_build_object(
+                   'id', u.id,
+                   'full_name', u.full_name,
+                   'email', u.email,
+                   'role', u.role
+               ) AS assignee,
                u.email AS assignee_email,
                u.role AS assignee_role,
                cp.brand_summary,
@@ -726,15 +732,16 @@ async def get_dispatch_queue(
             "created_at": r[6].isoformat() if r[6] else None,
             "client_company": r[7] or (r[8].split("@")[0].capitalize() if r[8] else "Client"),
             "client_email": r[8],
-            "assignee_name": r[9] or (r[10].split("@")[0].capitalize() if r[10] else "Unassigned"),
-            "assignee_email": r[10],
-            "assignee_role": r[11],
-            "brand_summary": r[12],
-            "brand_dna": r[13] if isinstance(r[13], dict) else (json.loads(r[13]) if isinstance(r[13], str) else None),
-            "blueprint": r[14] if isinstance(r[14], dict) else (json.loads(r[14]) if isinstance(r[14], str) else None),
-            "concept_status": r[15],
-            "effort_points": r[16],
-            "instagram_username": r[17],
+            "assignee": r[10] if isinstance(r[10], dict) else (json.loads(r[10]) if isinstance(r[10], str) else None) if r[10] else None,
+            "assignee_name": r[9] or (r[11].split("@")[0].capitalize() if r[11] else "Unassigned"),
+            "assignee_email": r[11],
+            "assignee_role": r[12],
+            "brand_summary": r[13],
+            "brand_dna": r[14] if isinstance(r[14], dict) else (json.loads(r[14]) if isinstance(r[14], str) else None),
+            "blueprint": r[15] if isinstance(r[15], dict) else (json.loads(r[15]) if isinstance(r[15], str) else None),
+            "concept_status": r[16],
+            "effort_points": r[17],
+            "instagram_username": r[18],
         }
         for r in active_rows
     ]
@@ -2223,7 +2230,7 @@ async def list_admin_deliverables(
             User.email.label("client_email"),
             User.full_name.label("client_name"),
             ClientProfile.company_name.label("company_name"),
-            StaffUser.full_name.label("assignee_name"),
+            StaffUser,
         )
         .join(User, User.id == Deliverable.client_id)
         .outerjoin(ClientProfile, ClientProfile.user_id == Deliverable.client_id)
@@ -2235,7 +2242,13 @@ async def list_admin_deliverables(
     rows = res.fetchall()
 
     results = []
-    for d, client_email, client_name, company_name, assignee_name in rows:
+    for row in rows:
+        d = row[0]
+        client_email = row[1]
+        client_name = row[2]
+        company_name = row[3]
+        staff_user = row[4]
+        assignee_name = staff_user.full_name if staff_user else None
         client_label = company_name or client_name or (client_email.split("@")[0].capitalize() if client_email else "Client")
         file_type_clean = d.file_type.split("/")[-1].lower() if "/" in d.file_type else d.file_type.lower()
         type_display = "Reel 9:16" if "mp4" in file_type_clean or "video" in file_type_clean or "reel" in file_type_clean else "Static Poster" if "png" in file_type_clean or "poster" in file_type_clean or "image" in file_type_clean else "Carousel"
@@ -2256,6 +2269,12 @@ async def list_admin_deliverables(
             ),
             "description": d.rejection_comment or f"High-resolution social media creative formatted for Instagram brand channel.",
             "assigned_name": assignee_name or "Creative Studio",
+            "assignee": {
+                "id": str(staff_user.id),
+                "full_name": staff_user.full_name,
+                "email": staff_user.email,
+                "role": staff_user.role.value if hasattr(staff_user.role, "value") else str(staff_user.role),
+            } if staff_user else None,
             "created_at": d.created_at.isoformat() if d.created_at else None,
         })
     return results
@@ -2453,7 +2472,12 @@ async def list_admin_support_tickets(
             "priority": t.priority.value,
             "status": t.status.value,
             "assigned_to": str(t.assigned_to) if t.assigned_to else None,
-            "assignee_name": t.assignee.full_name or t.assignee.email if t.assignee else None,
+            "assignee": {
+                "id": str(t.assignee.id),
+                "full_name": t.assignee.full_name,
+                "email": t.assignee.email,
+                "role": t.assignee.role.value if hasattr(t.assignee.role, "value") else str(t.assignee.role),
+            } if t.assignee else None,
             "deliverable_id": str(t.deliverable_id) if t.deliverable_id else None,
             "deliverable_title": deliv_title,
             "time": t.created_at.strftime("%b %d, %I:%M %p") if t.created_at else "Recently",

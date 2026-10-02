@@ -509,7 +509,7 @@ export function MemberOverviewPage() {
                             </span>
                           </div>
                           <div className="flex items-center justify-between pt-1.5 border-t border-[#2A3446]/60 text-xs">
-                            <span className="font-bold text-[#7FA0D6] text-[10px]">{t.assignee_name || "Assigned"}</span>
+                            <span className="font-bold text-[#7FA0D6] text-[10px]">{t.assignee?.full_name || t.assignee_name || "Assigned"}</span>
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => setUploadModalOpen(true)}
@@ -548,7 +548,7 @@ export function MemberOverviewPage() {
                                   {t.status === "in_production" ? "IN PRODUCTION" : t.status === "internal_qa" ? "PENDING QA" : "READY"}
                                 </span>
                               </td>
-                              <td className="py-2.5 px-2.5 font-bold text-[#F1F5F9] text-xs">{t.assignee_name || "Unassigned"}</td>
+                              <td className="py-2.5 px-2.5 font-bold text-[#F1F5F9] text-xs">{t.assignee?.full_name || t.assignee_name || "Unassigned"}</td>
                               <td className="py-2.5 px-2.5 text-right space-x-1.5">
                                 <button
                                   onClick={() => setUploadModalOpen(true)}

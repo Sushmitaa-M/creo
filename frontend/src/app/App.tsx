@@ -69,6 +69,9 @@ const AdminTicketDetailPage = lazy(() =>
 const AdminSLAPerformancePage = lazy(() =>
   import("../features/admin/AdminSLAPerformancePage").then((m) => ({ default: m.AdminSLAPerformancePage }))
 );
+const ClientTicketDetailPage = lazy(() =>
+  import("../pages/portal/PortalTicketDetailPage").then((m) => ({ default: m.ClientTicketDetailPage }))
+);
 
 const AdminRevenuePage = lazy(() =>
   import("../features/admin/AdminSubPages").then((m) => ({ default: m.AdminRevenuePage }))
@@ -435,6 +438,7 @@ export function App() {
                 <Route path="creative_pod" element={<PortalCreativePodPage />} />
                 <Route path="payments" element={<PortalPaymentsPage />} />
                 <Route path="support" element={<PortalSupportPage />} />
+                <Route path="support/:ticketId" element={<ClientTicketDetailPage />} />
                 <Route path="account" element={<PortalAccountPage />} />
                 <Route path="library" element={<PortalLibraryPage />} />
               </Route>

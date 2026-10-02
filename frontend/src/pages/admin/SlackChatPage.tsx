@@ -17,6 +17,7 @@ import {
   Search,
 } from "lucide-react";
 import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
+import { request } from "../../lib/http";
 
 // WhatsApp Emoji Categories
 const EMOJI_CATEGORIES = [
@@ -140,7 +141,7 @@ const SEED_MESSAGES: Record<string, ChatMessage[]> = {
 };
 import { useAuth } from "../../lib/auth-context";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPodDashboard, type PodDashboardData } from "../../lib/ops-api";
+import { fetchPodDashboard, fetchClientRoster, type PodDashboardData, type ClientRosterItem } from "../../lib/ops-api";
 
 interface ChatMessage {
   id: string;
@@ -174,6 +175,20 @@ export function SlackChatPage() {
 
   const podName = podData?.pod?.name || "Pod Operations";
   const defaultPersona = user?.full_name || user?.email?.split("@")[0] || "Team Member";
+
+  const isOpsOrSuperAdmin = user?.role === "admin" || user?.role === "super_admin" || user?.role === "ops_admin";
+
+  const { data: rawClientRoster } = useQuery<ClientRosterItem[]>({
+    queryKey: ["client_roster"],
+    queryFn: () => fetchClientRoster(),
+    enabled: isOpsOrSuperAdmin,
+  });
+
+  const clientRoster = (rawClientRoster || []).map(c => ({
+    id: c.client_id,
+    name: c.company_name || c.email.split("@")[0] || "Unknown Client",
+    pod_name: (c as any).pod_name || undefined
+  }));
 
   // Active channel / DM selection
   const [activeChannel, setActiveChannel] = useState<string>("general");
@@ -287,12 +302,75 @@ export function SlackChatPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [channelMessages, activeChannel, activeDm]);
 
-  const activeKey = activeDm ? `dm-${activeDm}` : activeChannel;
-  const currentMessages = channelMessages[activeKey] || [];
+  const activeClientId = activeChannel.startsWith("client-")
+    ? (isOpsOrSuperAdmin 
+        ? clientRoster?.find((c) => `client-${c.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}` === activeChannel)?.id 
+        : podData?.clients?.find((c) => `client-${c.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}` === activeChannel)?.id)
+    : null;
 
-  const handleSendMessage = (e?: React.FormEvent) => {
+  const { data: serverMessages = [], refetch: refetchServerMessages } = useQuery({
+    queryKey: ["chat_messages", activeChannel, activeDm],
+    queryFn: async () => {
+      let url = "";
+      if (activeDm) {
+        const dmUser = podData?.members?.find((m) => (m.name || m.full_name) === activeDm);
+        if (!dmUser?.id) return [];
+        url = `/api/v1/chat/messages?other_user_id=${dmUser.id}`;
+      } else if (activeChannel.startsWith("client-")) {
+        url = `/api/v1/chat/messages?channel=${activeChannel}`;
+      } else {
+        url = `/api/v1/chat/messages?channel=${activeChannel}`;
+      }
+      
+      const res = await request<any[]>(url);
+      return (res || []).map((m: any) => ({
+        id: m.id,
+        sender: m.sender_name || "Unknown",
+        role: "Specialist", 
+        avatar: (m.sender_name || "U").slice(0, 2).toUpperCase(),
+        avatarBg: "bg-[#7FA0D6]",
+        content: m.message,
+        timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        reactions: [],
+      })) as ChatMessage[];
+    },
+    refetchInterval: 5000,
+    staleTime: 5000,
+  });
+
+  const activeKey = activeDm ? `dm-${activeDm}` : activeChannel;
+  const currentMessages = activeChannel.startsWith("client-") || activeDm ? serverMessages : (channelMessages[activeKey] || []);
+
+  const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!messageText.trim()) return;
+
+    if (activeChannel.startsWith("client-") || activeDm) {
+      try {
+        const payload: any = { message: messageText.trim(), thread_type: "direct" };
+        if (activeDm) {
+          const dmUser = podData?.members?.find((m) => (m.name || m.full_name) === activeDm);
+          if (dmUser?.id) {
+            payload.recipient_id = dmUser.id;
+          }
+        } else {
+          payload.channel = activeChannel;
+          payload.client_id = activeClientId;
+        }
+
+        await request("/api/v1/chat/messages", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        setMessageText("");
+        setShowEmojiPicker(false);
+        refetchServerMessages();
+        return;
+      } catch (err: any) {
+        showToast(err?.message || "Failed to send message", "info");
+        return;
+      }
+    }
 
     const senderRole =
       user?.role === "admin" || user?.role === "super_admin"
@@ -423,15 +501,15 @@ export function SlackChatPage() {
     setTaskTitle("");
   };
 
-  // Channels configuration
   const channels = [
     { id: "general", label: "general", desc: `${podName} daily standup & team banter` },
     { id: "deliverables-handoff", label: "deliverables-handoff", desc: "Master asset sync & drops" },
     { id: "urgent-escalations", label: "urgent-escalations", desc: "SLA priority alert queue" },
-    ...(podData?.clients || []).map((c) => ({
+    ...(isOpsOrSuperAdmin ? (clientRoster || []) : (podData?.clients || [])).map((c) => ({
       id: `client-${c.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
       label: `client-${c.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
-      desc: `${c.name} pod communication`,
+      desc: isOpsOrSuperAdmin && 'pod_name' in c ? `${c.name} (${c.pod_name})` : `${c.name} pod communication`,
+      badge: isOpsOrSuperAdmin && 'pod_name' in c ? c.pod_name : undefined,
     })),
   ];
 
@@ -530,7 +608,7 @@ export function SlackChatPage() {
                 <span className="text-[#97A0B3]">{channels.length}</span>
               </div>
 
-              {channels.map((c) => (
+              {channels.map((c: any) => (
                 <button
                   key={c.id}
                   onClick={() => {
@@ -546,6 +624,11 @@ export function SlackChatPage() {
                 >
                   <Hash className="size-3.5 opacity-70" />
                   <span className="truncate flex-1">{c.label}</span>
+                  {c.badge && (
+                    <span className="px-1.5 py-0.5 rounded text-[8px] uppercase tracking-wider font-bold bg-[#161F2D]/50 text-[#97A0B3] border border-[#2A3446]">
+                      {c.badge}
+                    </span>
+                  )}
                   <ChevronRight className="size-3.5 opacity-40 md:hidden" />
                 </button>
               ))}

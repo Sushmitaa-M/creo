@@ -628,6 +628,16 @@ async def complete_onboarding(db: AsyncSession, client_id: uuid.UUID) -> Onboard
     if not profile.onboarding_deadline:
         profile.onboarding_deadline = now + timedelta(days=7)
 
+    # Set user account to active
+    user_stmt = select(User).where(User.id == client_id)
+    user = (await db.execute(user_stmt)).scalar_one_or_none()
+    if user:
+        user.account_status = "active"
+
+    # Initialize monthly usage counters for the sprint
+    from app.services.quota_service import initialize_quotas_for_client
+    await initialize_quotas_for_client(db, client_id)
+
     await db.commit()
     await db.refresh(profile)
 

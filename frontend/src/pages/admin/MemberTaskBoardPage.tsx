@@ -104,7 +104,7 @@ export function MemberTaskBoardPage() {
           priority: "Normal" as const,
           status: "assigned" as const,
           deadline: "Active Sprint",
-          description: `Sprint task assigned to ${t.assignee_name || "specialist"}.`,
+          description: `Sprint task assigned to ${t.assignee?.full_name || t.assignee_name || "specialist"}.`,
           tags: [t.deliverable_type || "Deliverable"],
           reviewData: {
             reviewer: leadName,
@@ -126,7 +126,7 @@ export function MemberTaskBoardPage() {
           priority: "High" as const,
           status: "production" as const,
           deadline: "In Progress",
-          description: `In active production with ${t.assignee_name || "specialist"}.`,
+          description: `In active production with ${t.assignee?.full_name || t.assignee_name || "specialist"}.`,
           tags: [t.deliverable_type || "Deliverable"],
           progress: 50,
           reviewData: {

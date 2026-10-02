@@ -27,6 +27,7 @@ interface SupportTicketData {
   meta: string;
   category?: string;
   messages?: Array<{ id: string; sender: string; text: string; time: string; isMe?: boolean }>;
+  rawId?: string;
 }
 
 const CATEGORIES = ["Content", "Billing", "Technical", "Brand", "Other"];
@@ -61,8 +62,8 @@ export function PortalSupportPage() {
     queryKey: ["tickets", user?.id],
     queryFn: async () => {
       try {
-        const res = await request<TicketItem[]>("/api/v1/tickets");
-        return Array.isArray(res) ? res : [];
+        const res = await request<any>("/api/v1/tickets");
+        return res?.items ?? (Array.isArray(res) ? res : []);
       } catch {
         return [];
       }
@@ -85,21 +86,21 @@ export function PortalSupportPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  if (isSubLoading || isTicketsLoading) {
-    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Support Desk" />;
-  }
+
 
   // Sync server tickets
   React.useEffect(() => {
-    if (serverTickets && serverTickets.length > 0) {
-      const mapped: SupportTicketData[] = serverTickets.map((t) => ({
-        id: `#TKT-${t.id.slice(0, 4).toUpperCase()}`,
-        status: (t.status === "resolved" || t.status === "closed" ? "resolved" : t.status === "in_progress" ? "in_progress" : "open") as any,
-        priority: ((t.priority as any) || "medium") as any,
-        priorityLabel: t.priority === "urgent" ? "Urgent" : t.priority === "high" ? "High" : t.priority === "low" ? "Low" : "Medium",
-        timeAgo: t.created_at ? new Date(t.created_at).toLocaleDateString() : "Recently",
-        title: t.title,
-        description: t.description,
+    const safeTickets = (Array.isArray(serverTickets) ? serverTickets : []);
+    if (safeTickets.length > 0) {
+      const mapped: SupportTicketData[] = safeTickets.map((t: any) => ({
+        rawId: t?.id,
+        id: `#TKT-${String(t?.id || "").slice(0, 4).toUpperCase()}`,
+        status: (t?.status === "resolved" || t?.status === "closed" ? "resolved" : t?.status === "in_progress" ? "in_progress" : "open") as any,
+        priority: ((t?.priority as any) || "medium") as any,
+        priorityLabel: t?.priority === "urgent" ? "Urgent" : t?.priority === "high" ? "High" : t?.priority === "low" ? "Low" : "Medium",
+        timeAgo: t?.created_at ? new Date(t.created_at).toLocaleDateString() : "Recently",
+        title: t?.title || "General Support Thread",
+        description: t?.description || "",
         meta: `Opened by ${user?.full_name || "You"}`,
         category: "General",
       }));
@@ -118,6 +119,12 @@ export function PortalSupportPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tickets"] });
+      showToast(`Ticket submitted successfully!`);
+      setSubject("");
+      setDescription("");
+    },
+    onError: (error: any) => {
+      showToast(`Failed to create ticket: ${error.message || "Validation Error"}`);
     },
   });
 
@@ -128,25 +135,12 @@ export function PortalSupportPage() {
       return;
     }
 
-    const newTicketId = `#TKT-${Math.floor(1000 + Math.random() * 9000)}`;
-    const newTicket: SupportTicketData = {
-      id: newTicketId,
-      status: "in_progress",
-      priority: "medium",
-      priorityLabel: "Medium",
-      timeAgo: "Just now",
-      title: subject.trim(),
-      description: description.trim(),
-      meta: `Opened by ${user?.full_name || "You"}`,
-      category: selectedCategory,
-    };
-
-    setTicketsList((prev) => [newTicket, ...prev]);
     createTicketMutation.mutate({ title: subject.trim(), description: description.trim(), priority: "medium" });
-    showToast(`Ticket ${newTicketId} submitted!`);
-    setSubject("");
-    setDescription("");
   };
+
+  if (isSubLoading || isTicketsLoading) {
+    return <CreoLoadingScreen label="Verifying session..." sublabel="Loading Support Desk" />;
+  }
 
   return (
     <div className="space-y-6">
@@ -241,8 +235,9 @@ export function PortalSupportPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={createTicketMutation.isPending}
-                className="w-10 h-10 rounded-full bg-[#BCCCE6] text-[#0B111C] flex items-center justify-center hover:bg-white transition-colors"
+                onClick={handleFormSubmit}
+                disabled={createTicketMutation.isPending || !subject.trim() || !description.trim()}
+                className="w-10 h-10 rounded-full bg-[#BCCCE6] text-[#0B111C] flex items-center justify-center hover:bg-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {createTicketMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -261,11 +256,11 @@ export function PortalSupportPage() {
             <h3 className="text-base font-semibold text-white mb-4">Your requests</h3>
 
             {ticketsList.length === 0 ? (
-              <p className="text-sm text-[#97A0B3] py-6 text-center">No tickets yet. Submit your first request.</p>
+              <p className="text-sm text-[#97A0B3] py-6 text-center">No tickets yet. Need help? Raise a Ticket</p>
             ) : (
               <div className="space-y-3">
                 {ticketsList.slice(0, 5).map((t) => (
-                  <div key={t.id} className="p-4 bg-[#0B111C] rounded-xl border border-white/[0.04]">
+                  <Link key={t.id} to={`/portal/support/${t.rawId}`} className="block p-4 bg-[#0B111C] rounded-xl border border-white/[0.04] hover:border-[#7FA0D6]/30 transition-colors">
                     {/* Top row */}
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="text-xs font-mono text-[#97A0B3]">{t.id}</span>
@@ -290,7 +285,7 @@ export function PortalSupportPage() {
                         ? "In progress"
                         : "Waiting on you"}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

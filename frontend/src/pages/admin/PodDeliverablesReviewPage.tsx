@@ -60,7 +60,7 @@ export function PodDeliverablesReviewPage() {
         t.blueprint?.concept_name || `${t.client_name} Asset`,
         t.client_name,
         t.deliverable_type?.toUpperCase(),
-        t.assignee_name,
+        t.assignee?.full_name || t.assignee_name,
         t.due_date ? `Due ${new Date(t.due_date).toLocaleDateString([], { month: "short", day: "numeric" })}` : "Due today",
         "Pending Lead Sign-off",
       ]),
@@ -69,7 +69,7 @@ export function PodDeliverablesReviewPage() {
         t.blueprint?.concept_name || `${t.client_name} Asset`,
         t.client_name,
         t.deliverable_type?.toUpperCase(),
-        t.assignee_name,
+        t.assignee?.full_name || t.assignee_name,
         "Delivered",
         "Client Approved",
       ]),
@@ -287,7 +287,7 @@ export function PodDeliverablesReviewPage() {
               if (!currentTask) return null;
               const clientName = currentTask.client_name || "Client";
               const taskTitle = currentTask.blueprint?.concept_name || `${clientName} ${currentTask.deliverable_type?.toUpperCase() || "Asset"}`;
-              const specialistName = currentTask.assignee_name || "Specialist";
+              const specialistName = currentTask.assignee?.full_name || currentTask.assignee_name || "Specialist";
               return (
                 <div className="bg-[#161F2D] rounded-2xl border border-[#2A3446]/80 shadow-2xs p-4 sm:p-5 space-y-4">
                   {/* Header row */}

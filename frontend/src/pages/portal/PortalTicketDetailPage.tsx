@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link } from "react-router";
 import { motion } from "motion/react";
 import { request } from "../../lib/http";
 import {
@@ -27,10 +27,7 @@ import {
   Share2,
   Archive,
   Sparkles,
-  RotateCcw,
 } from "lucide-react";
-import { AdminTopHeader } from "../../components/admin/AdminTopHeader";
-
 interface MessageEntry {
   id: string;
   author: string;
@@ -51,8 +48,7 @@ const getInitials = (name?: string) => {
   return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase();
 };
 
-export function AdminTicketDetailPage() {
-  const navigate = useNavigate();
+export function ClientTicketDetailPage() {
   const { id, ticketId } = useParams();
   const activeId = id || ticketId || "1039";
   const [activeTab, setActiveTab] = useState<"public" | "internal">("public");
@@ -357,18 +353,8 @@ export function AdminTicketDetailPage() {
   };
 
   // Toggle resolve
-  const handleToggleResolve = async () => {
+  const handleToggleResolve = () => {
     const nextState = !isResolved;
-    if (ticketData?.id && ticketData.id.length > 8) {
-      try {
-        await request(`/api/v1/tickets/${ticketData.id}/status`, {
-          method: "PATCH",
-          body: JSON.stringify({ status: nextState ? "RESOLVED" : "OPEN" }),
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    }
     setIsResolved(nextState);
     const auditMsg: MessageEntry = {
       id: `audit-${Date.now()}`,
@@ -389,21 +375,6 @@ export function AdminTicketDetailPage() {
         : `Ticket #${activeId} reopened.`,
       "success"
     );
-  };
-
-  const handleCloseTicket = async () => {
-    if (ticketData?.id && ticketData.id.length > 8) {
-      try {
-        await request(`/api/v1/tickets/${ticketData.id}/status`, {
-          method: "PATCH",
-          body: JSON.stringify({ status: "CLOSED" }),
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    showToast(`Ticket #${activeId} closed successfully.`, "success");
-    navigate("/admin/support");
   };
 
   // Send message
@@ -533,14 +504,23 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
 
   return (
     <div data-surface="ops" className="w-full min-h-screen font-sans bg-[#0B111C] flex flex-col">
-      <AdminTopHeader activeTab="Support" />
-
+      <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-4 bg-[#161F2D] border-b border-[#2A3446]">
+        <div className="flex items-center gap-4">
+          <Link
+            to="/portal/support"
+            className="p-2 rounded-xl text-[#97A0B3] hover:text-white hover:bg-[#2A3446] transition-colors"
+          >
+            <ArrowLeft className="size-5" />
+          </Link>
+          <h1 className="text-lg font-bold text-white">Ticket Details</h1>
+        </div>
+      </header>
       {/* Sub-header Breadcrumb Bar */}
       <div className="bg-[#161F2D] border-b border-[#2A3446] px-6 lg:px-8 py-3.5">
         <div className="max-w-[1500px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 text-[#97A0B3] font-medium">
             <Link
-              to="/admin/support"
+              to="/portal/support"
               className="inline-flex items-center gap-1.5 hover:text-[#7FA0D6] transition-colors font-semibold"
             >
               <ArrowLeft className="size-3.5" />
@@ -642,59 +622,38 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
 
           {/* Quick Header Actions */}
           <div className="flex items-center gap-2.5 shrink-0 flex-wrap relative">
-            {ticketData?.title !== "Client Pod Thread" && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setReassignModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] hover:bg-[#0B111C] shadow-2xs transition-all cursor-pointer"
-                >
-                  <UserCheck className="size-3.5 text-[#97A0B3]" />
-                  Reassign
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setEscalateModalOpen(true)}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-2xs ${
-                    isEscalated
-                      ? "bg-blue-900/40 border-blue-500/40 text-[#BCCCE6] hover:bg-blue-900/60"
-                      : "border-blue-500/30 bg-blue-500/15 text-[#BCCCE6] hover:bg-blue-500/25"
-                  }`}
-                >
-                  <AlertTriangle className="size-3.5 text-[#BCCCE6]" />
-                  {isEscalated ? "Escalation Active" : "Escalate"}
-                </button>
-                
-                {!isResolved ? (
-                  <button
-                    type="button"
-                    onClick={handleToggleResolve}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    <CheckCircle2 className="size-3.5" />
-                    Mark as Resolved
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={handleCloseTicket}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer bg-blue-600 hover:bg-blue-700"
-                    >
-                      Close Ticket
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleToggleResolve}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer bg-slate-700 hover:bg-slate-600"
-                    >
-                      <RotateCcw className="size-3.5" />
-                      Reopen
-                    </button>
-                  </>
-                )}
-              </>
-            )}
+            <button
+              type="button"
+              onClick={() => setReassignModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-[#2A3446] bg-[#161F2D] text-xs font-bold text-[#F1F5F9] hover:bg-[#0B111C] shadow-2xs transition-all cursor-pointer"
+            >
+              <UserCheck className="size-3.5 text-[#97A0B3]" />
+              Reassign
+            </button>
+            <button
+              type="button"
+              onClick={() => setEscalateModalOpen(true)}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-2xs ${
+                isEscalated
+                  ? "bg-blue-900/40 border-blue-500/40 text-[#BCCCE6] hover:bg-blue-900/60"
+                  : "border-blue-500/30 bg-blue-500/15 text-[#BCCCE6] hover:bg-blue-500/25"
+              }`}
+            >
+              <AlertTriangle className="size-3.5 text-[#BCCCE6]" />
+              {isEscalated ? "Escalation Active" : "Escalate to Core"}
+            </button>
+            <button
+              type="button"
+              onClick={handleToggleResolve}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer ${
+                isResolved
+                  ? "bg-blue-700 hover:bg-blue-800"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              <CheckCircle2 className="size-3.5" />
+              {isResolved ? "Reopen Ticket" : "Mark as Resolved"}
+            </button>
 
             {/* More Options Dropdown Button */}
             <div className="relative">
@@ -1052,28 +1011,31 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                 )}
 
                 {/* Textarea */}
-                <textarea
-                  rows={4}
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                  placeholder={
-                    activeTab === "public"
-                      ? `Type your reply to ${ticketData?.client || "client"} team, or insert a macro above...`
-                      : "Type an internal engineering note (visible only to Creo Pod team and Admins)..."
-                  }
-                  className="w-full text-xs sm:text-sm p-3 border border-[#2A3446] rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-slate-400"
-                />
+                {ticketData?.status === "closed" ? (
+                  <div className="w-full text-xs sm:text-sm p-3 border border-[#2A3446] rounded-xl bg-[#0B111C] text-[#97A0B3] text-center">
+                    This ticket has been resolved and closed by your Pod Lead.
+                  </div>
+                ) : (
+                  <textarea
+                    rows={4}
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                    placeholder={`Type your reply to Creo Support team...`}
+                    className="w-full text-xs sm:text-sm p-3 border border-[#2A3446] rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-slate-400"
+                  />
+                )}
 
                 {/* Bottom Actions */}
                 <div className="flex items-center justify-between pt-1">
                   <button
                     type="button"
+                    disabled={ticketData?.status === "closed"}
                     onClick={() => {
                       if (!replyText.trim()) {
                         showToast("Reply box is empty", "error");
@@ -1081,17 +1043,18 @@ Resolution Path: Re-route via US-Central High-Bandwidth Gateway with 60s handsha
                       }
                       showToast("Draft response saved locally.", "info");
                     }}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[#F1F5F9] hover:bg-[#161F2D] transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[#F1F5F9] hover:bg-[#161F2D] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Save Draft
                   </button>
                   <button
                     type="button"
+                    disabled={ticketData?.status === "closed"}
                     onClick={handleSendMessage}
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send className="size-3.5" />
-                    {activeTab === "internal" ? "Post Internal Note" : "Send Reply & Keep Open"}
+                    Send Reply
                   </button>
                 </div>
               </div>

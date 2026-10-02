@@ -30,6 +30,47 @@ import {
   completeOnboarding,
 } from "../../lib/onboarding-api";
 import type { AssignedTeamMember } from "../../types/api";
+import { ColorPicker, useColor, ColorService } from "react-color-palette";
+import "react-color-palette/css";
+
+function AdvancedColorPicker({ color, onChange }: { color: string, onChange: (hex: string) => void }) {
+  const [col, setCol] = useColor(color || "#0D2137");
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (color && color !== col.hex) {
+      try {
+        setCol(ColorService.convert("hex", color));
+      } catch (e) {
+        // ignore invalid hex
+      }
+    }
+  }, [color]);
+
+  const handleChange = (newCol: any) => {
+    setCol(newCol);
+    onChange(newCol.hex);
+  };
+
+  return (
+    <div className="relative flex items-center">
+      <div 
+        className="w-8 h-8 rounded-lg cursor-pointer border border-[#2A3446] shadow-sm relative z-10" 
+        style={{ backgroundColor: col.hex }}
+        onClick={() => setOpen(!open)}
+        title="Click to open advanced color picker"
+      />
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute z-50 mt-2 top-full left-0 bg-[#0B111C] p-2 rounded-xl border border-[#2A3446] shadow-2xl">
+             <ColorPicker color={col} onChange={handleChange} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 interface StageQuestionnaireProps {
   userId: string;
@@ -372,7 +413,7 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
   });
 
   useEffect(() => {
-    if (qState) {
+    if (qState && !dataInitialized) {
       const completed = new Set<SectionKey>();
       const allKeys: SectionKey[] = ["a", "b", "c", "d", "e", "f", "g"];
       serverSectionsRef.current = new Set(
@@ -786,10 +827,9 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
       // because autosave already sent them. Sequential on purpose: each save re-evaluates
       // core completion.
       const allSections: SectionKey[] = ["a", "b", "c", "d", "e", "f", "g"];
-      for (const sec of allSections) {
-        if (isSectionDirty(sec)) {
-          await persistSection(sec);
-        }
+      const dirtySections = allSections.filter(sec => isSectionDirty(sec));
+      if (dirtySections.length > 0) {
+        await Promise.all(dirtySections.map(sec => persistSection(sec)));
       }
 
       // 3. Allocate the pod and generate the workspace. This call is fast: the Gemini
@@ -1611,19 +1651,16 @@ export function StageQuestionnaire({ userId, initialSection, onComplete }: Stage
               <div className="flex flex-wrap gap-2.5">
                 {secD.colours?.map((col, idx) => (
                   <div key={idx} className="flex items-center gap-2 p-2 bg-[#0B111C] border border-[#2A3446] rounded-xl">
-                    <input
-                      type="color"
-                      value={col.hex}
-                      onChange={(e) => {
+                    <AdvancedColorPicker
+                      color={col.hex}
+                      onChange={(newHex) => {
                         const next = [...(secD.colours || [])];
                         if (next[idx]) {
-                          next[idx] = { ...next[idx], hex: e.target.value };
+                          next[idx] = { ...next[idx], hex: newHex };
                           setSecD({ ...secD, colours: next });
                         }
                         clearFieldError("colours");
                       }}
-                      style={{ colorScheme: "dark" }}
-                      className="w-8 h-8 rounded-lg border-none cursor-pointer bg-transparent"
                     />
                     <input
                       type="text"

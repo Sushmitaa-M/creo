@@ -257,9 +257,9 @@ export function PortalAccountPage() {
               <div className="flex gap-8">
                 <div className="flex-1 space-y-3">
                   <h4 className="text-[13px] font-bold text-white">Do</h4>
-                  <ul className="text-[13px] text-[#97A0B3] space-y-2">
-                    {profile?.brand_dna?.guidelines?.dos?.length > 0 ? (
-                      profile.brand_dna.guidelines.dos.map((item: string, i: number) => <li key={i}>{item}</li>)
+                  <ul className="text-[13px] text-[#97A0B3] space-y-2 list-disc list-inside">
+                    {profile?.brand_dna?.tone?.writing_rules?.length > 0 ? (
+                      profile.brand_dna.tone.writing_rules.map((item: string, i: number) => <li key={i} className="leading-snug">{item}</li>)
                     ) : (
                       <>
                         <li>Highlight clear product value & storytelling</li>
@@ -270,10 +270,10 @@ export function PortalAccountPage() {
                   </ul>
                 </div>
                 <div className="flex-1 space-y-3">
-                  <h4 className="text-[13px] font-bold text-[#D8BF9B]">Don't</h4>
-                  <ul className="text-[13px] text-[#97A0B3] space-y-2">
-                    {profile?.brand_dna?.guidelines?.donts?.length > 0 ? (
-                      profile.brand_dna.guidelines.donts.map((item: string, i: number) => <li key={i}>{item}</li>)
+                  <h4 className="text-[13px] font-bold text-[#F87171]">Don't</h4>
+                  <ul className="text-[13px] text-[#97A0B3] space-y-2 list-disc list-inside">
+                    {(profile?.brand_dna?.guidelines?.donts?.length > 0 || profile?.brand_dna?.do_not?.length > 0) ? (
+                      (profile.brand_dna.guidelines?.donts || profile.brand_dna.do_not).map((item: string, i: number) => <li key={i} className="leading-snug">{item}</li>)
                     ) : (
                       <>
                         <li>Generic stock photos without custom grading</li>

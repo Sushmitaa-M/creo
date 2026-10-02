@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { HttpError, request } from "./http";
-import { getAuthToken, setAuthToken } from "./auth-token";
+import { getAuthToken, setAuthToken, clearAuthToken } from "./auth-token";
 
 const USER_CACHE_KEY = "creo_auth_user";
 
@@ -253,6 +253,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await request("/api/v1/auth/logout", { method: "POST" });
     } finally {
+      clearAuthToken();
       setToken(null);
       setUser(null);
     }

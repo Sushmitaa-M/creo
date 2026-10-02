@@ -198,7 +198,21 @@ export function AdminTopHeader({
       // optimistic fallback
     }
     setNotificationOpen(false);
-    if (item.link) {
+
+    // Plan Bargain Call notification redirection
+    if (item.link?.includes("/admin/plans-and-negotiations")) {
+      navigate(item.link);
+    } else if (
+      item.title?.toLowerCase().includes("plan bargain call") ||
+      item.message?.toLowerCase().includes("bargain plan") ||
+      item.type === "plan_negotiation"
+    ) {
+      navigate(
+        item.link && item.link.startsWith("/admin/plans-and-negotiations")
+          ? item.link
+          : "/admin/plans-and-negotiations"
+      );
+    } else if (item.link) {
       navigate(item.link);
     }
   };

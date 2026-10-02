@@ -13,6 +13,8 @@ import { ComparePlansModal } from "../../components/portal/ComparePlansModal";
 import { PlanBargainCallModal } from "../../components/portal/PlanBargainCallModal";
 import { CreoLoadingScreen } from "../../components/ui/CreoLoadingScreen";
 
+import { generateInvoicePDF, type InvoiceData } from "../../lib/pdf-invoice";
+
 interface SubscriptionData {
   status: string;
   name?: string;
@@ -116,7 +118,19 @@ export function PortalPaymentsPage() {
 
   const handleDownload = (id: string) => {
     setDownloadingInv(id);
-    setTimeout(() => setDownloadingInv(null), 1200);
+    const targetInv = backendInvoices.find((i: any) => i.id === id);
+    const invToRender: InvoiceData = {
+      id: id,
+      date: targetInv?.date || new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+      amount: targetInv?.amount ? String(targetInv.amount) : `₹${planPrice.toLocaleString("en-IN")}`,
+      status: targetInv?.status || "Paid",
+      plan: planName,
+      clientName: user?.full_name || undefined,
+      clientEmail: user?.email || undefined,
+      companyName: user?.company_name || undefined,
+    };
+    generateInvoicePDF(invToRender);
+    setTimeout(() => setDownloadingInv(null), 500);
   };
 
   const handleResumePlan = async () => {

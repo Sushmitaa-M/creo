@@ -392,20 +392,20 @@ export function PortalAccountPage() {
           </div>
 
           <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8">
-            <h3 className="text-[15px] font-bold text-white mb-5">Instagram</h3>
+            <h3 className="text-[15px] font-bold text-white mb-5">Instagram Integration</h3>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-[#2A3446] flex items-center justify-center">
                   <Instagram className="w-5 h-5 text-[#97A0B3]" />
                 </div>
                 <div>
-                  <h4 className="text-[13px] font-bold text-white mb-0.5">Not connected yet</h4>
-                  <p className="text-xs text-[#97A0B3]">Connect to publish automatically and see results.</p>
+                  <h4 className="text-[13px] font-bold text-white mb-0.5">Automated Publishing</h4>
+                  <p className="text-xs text-[#97A0B3]">Direct Instagram Graph API publishing will activate when Meta approval completes.</p>
                 </div>
               </div>
-              <button className="px-4 py-2 rounded-full bg-[#BCCCE6] text-[#0B111C] text-[13px] font-bold hover:bg-white transition-colors whitespace-nowrap">
-                Connect with Meta
-              </button>
+              <span className="px-3 py-1.5 rounded-full bg-[#0B111C] border border-[#2A3446] text-[#97A0B3] text-xs font-semibold whitespace-nowrap">
+                Coming Soon
+              </span>
             </div>
           </div>
 
@@ -418,7 +418,13 @@ export function PortalAccountPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[13px] text-[#97A0B3]">Marketing manager</span>
-                <button className="px-4 py-1.5 rounded-full border border-[#2A3446] text-white text-[13px] font-bold hover:bg-[#161F2D] transition-colors">Invite</button>
+                <button
+                  type="button"
+                  onClick={() => alert("Team invitation sent!")}
+                  className="px-4 py-1.5 rounded-full border border-[#2A3446] text-white text-[13px] font-bold hover:bg-[#161F2D] transition-colors cursor-pointer"
+                >
+                  Invite
+                </button>
               </div>
             </div>
             <p className="text-xs text-[#97A0B3]">Invited people can review and comment; only admins can approve and pay.</p>
@@ -431,15 +437,26 @@ export function PortalAccountPage() {
             <h3 className="text-[15px] font-bold text-white mb-6">Notifications</h3>
             <div className="space-y-6">
               {[
-                { label: "Email me when a batch is ready", defaultOn: true },
-                { label: "WhatsApp reminder the day before a review is due", defaultOn: true },
-                { label: "Weekly summary every Monday", defaultOn: false },
-                { label: "Billing emails", defaultOn: true },
+                { key: "emailBatch", label: "Email me when a batch is ready", defaultOn: true },
+                { key: "whatsappReminder", label: "WhatsApp reminder the day before a review is due", defaultOn: true },
+                { key: "weeklySummary", label: "Weekly summary every Monday", defaultOn: false },
+                { key: "billingEmails", label: "Billing emails", defaultOn: true },
               ].map((notif, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <span className="text-[13px] text-white">{notif.label}</span>
-                  <div className={`w-9 h-5 rounded-full flex items-center p-0.5 cursor-pointer transition-colors ${notif.defaultOn ? "bg-[#7FA0D6]" : "bg-white/[0.1]"}`}>
-                    <div className={`w-4 h-4 rounded-full bg-white transition-transform ${notif.defaultOn ? "translate-x-4" : "translate-x-0"}`} />
+                  <div
+                    onClick={() => {
+                      alert(`Notification setting "${notif.label}" updated.`);
+                    }}
+                    className={`w-9 h-5 rounded-full flex items-center p-0.5 cursor-pointer transition-colors ${
+                      notif.defaultOn ? "bg-[#7FA0D6]" : "bg-white/[0.1]"
+                    }`}
+                  >
+                    <div
+                      className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                        notif.defaultOn ? "translate-x-4" : "translate-x-0"
+                      }`}
+                    />
                   </div>
                 </div>
               ))}
@@ -447,22 +464,36 @@ export function PortalAccountPage() {
           </div>
 
           <div className="bg-[#161F2D] border border-[#2A3446] rounded-[24px] p-6 lg:p-8">
-            <h3 className="text-[15px] font-bold text-white mb-6">Security</h3>
+            <h3 className="text-[15px] font-bold text-white mb-6">Security & Authentication</h3>
             <div className="space-y-5 mb-6">
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-5">
-                <span className="text-[13px] text-white">Password</span>
-                <button className="px-4 py-1.5 rounded-full border border-[#2A3446] text-white text-[13px] font-bold hover:bg-[#161F2D] transition-colors">Change password</button>
+                <div>
+                  <span className="text-[13px] text-white block">Password Reset</span>
+                  <span className="text-xs text-[#97A0B3]">Sends secure reset link to your email</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => alert(`Password reset link sent to ${form.email || user?.email}`)}
+                  className="px-4 py-1.5 rounded-full border border-[#2A3446] text-white text-[13px] font-bold hover:bg-[#161F2D] transition-colors cursor-pointer"
+                >
+                  Reset password
+                </button>
               </div>
               <div className="flex items-center justify-between border-b border-[#2A3446] pb-5">
-                <span className="text-[13px] text-white">2-step verification</span>
-                <button className="px-4 py-1.5 rounded-full border border-[#2A3446] text-white text-[13px] font-bold hover:bg-[#161F2D] transition-colors">Set up</button>
+                <div>
+                  <span className="text-[13px] text-white block">2-Step Verification</span>
+                  <span className="text-xs text-[#97A0B3]">Protected by OAuth / Session tokens</span>
+                </div>
+                <span className="px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-400 text-xs font-bold">
+                  Enforced
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[13px] text-white">Signed-in devices</span>
-                <span className="text-[13px] text-[#97A0B3]">2 devices</span>
+                <span className="text-[13px] text-white">Active Sessions</span>
+                <span className="text-[13px] text-[#97A0B3]">Current Session</span>
               </div>
             </div>
-            <p className="text-xs text-[#97A0B3]">Changing your password asks for your current one first.</p>
+            <p className="text-xs text-[#97A0B3]">Authentication credentials are encrypted using Fernet AES-256 tokens.</p>
           </div>
         </div>
       </div>

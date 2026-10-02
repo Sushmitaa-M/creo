@@ -314,7 +314,7 @@ export function PodLeadDashboardPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">4 / 4</span>
+                <span className="text-lg sm:text-xl font-black text-white">{teamRoster.length > 0 ? teamRoster.length : (data?.members?.length || 0)} / {teamRoster.length > 0 ? teamRoster.length : (data?.members?.length || 4)}</span>
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Members Active</span>
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
@@ -341,14 +341,14 @@ export function PodLeadDashboardPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">6</span>
+                <span className="text-lg sm:text-xl font-black text-white">{(data?.tasks?.internal_qa?.length) ?? deliverablesList.length}</span>
                 <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Pending Review</span>
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="font-bold text-rose-600 flex items-center gap-1">
-                  ▲ 2 Urgent
+                  ▲ {(data?.tasks?.internal_qa?.filter((t: any) => t.is_near_sla).length) || 0} Urgent
                 </span>
-                <span className="font-bold text-[#97A0B3]">Avg: 38m</span>
+                <span className="font-bold text-[#97A0B3]">Avg: {(data as any)?.kpis?.avg_turnaround_hours ? `${Math.round((data as any).kpis.avg_turnaround_hours * 60)}m` : "38m"}</span>
               </div>
             </div>
           </motion.div>
@@ -368,8 +368,8 @@ export function PodLeadDashboardPage() {
             </div>
             <div>
               <div className="flex items-baseline gap-1.5 mb-1">
-                <span className="text-lg sm:text-xl font-black text-white">0</span>
-                <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">On Leave Today</span>
+                <span className="text-lg sm:text-xl font-black text-white">{pendingLeaveRequests.length}</span>
+                <span className="text-[10.5px] sm:text-[11px] font-bold text-[#97A0B3]">Pending Leave Requests</span>
               </div>
               <div className="flex items-center justify-between text-[10px] sm:text-[11px] pt-1.5 border-t border-[#2A3446]">
                 <span className="font-bold text-[#F1F5F9]">1 Upcoming Tomorrow</span>

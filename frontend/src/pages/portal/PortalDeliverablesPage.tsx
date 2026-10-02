@@ -289,16 +289,28 @@ export function PortalDeliverablesPage() {
               )}
 
               {/* Revision rounds */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[13px] font-bold text-white">Revision rounds</span>
-                  <span className="text-xs text-[#97A0B3]">{selectedItem.revision_round || 1} of 2 used</span>
-                </div>
-                <div className="h-1.5 w-full bg-white/[0.08] rounded-full flex gap-1">
-                  <div className="h-full flex-1 bg-[#7FA0D6] rounded-full" />
-                  <div className={`h-full flex-1 rounded-full ${(selectedItem.revision_round || 1) > 1 ? "bg-[#7FA0D6]" : ""}`} />
-                </div>
-              </div>
+              {(() => {
+                const planName = (String((deliverablesData as any)?.plan_name || (user as any)?.plan_id || (user as any)?.plan || "")).toLowerCase();
+                const maxRevisionRounds = planName.includes("starter") ? 1 : planName.includes("scale") || planName.includes("pro") ? 3 : 2;
+                const currentRound = selectedItem.revision_round || 1;
+
+                return (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[13px] font-bold text-white">Revision rounds</span>
+                      <span className="text-xs text-[#97A0B3]">{currentRound} of {maxRevisionRounds} used</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/[0.08] rounded-full flex gap-1">
+                      {Array.from({ length: maxRevisionRounds }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-full flex-1 rounded-full ${currentRound > i ? "bg-[#7FA0D6]" : "bg-white/[0.08]"}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Comments */}
               <div>

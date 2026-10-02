@@ -436,7 +436,7 @@ export function SlackChatPage() {
   ];
 
   return (
-    <div data-surface="ops" className="min-h-screen bg-[#0B111C] text-white font-sans flex flex-col">
+    <div data-surface="ops" className="h-screen max-h-screen bg-[#0B111C] text-white font-sans flex flex-col overflow-hidden">
       {/* Top Header Navigation matching Admin */}
       <AdminTopHeader activeTab="Slack" />
 
@@ -445,7 +445,7 @@ export function SlackChatPage() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="flex-1 flex flex-col md:flex-row max-w-[1650px] w-full mx-auto px-2 sm:px-6 py-2 sm:py-4 gap-3 sm:gap-4 h-[calc(100vh-76px)] overflow-hidden pb-20 md:pb-4"
+        className="flex-1 min-h-0 flex flex-col md:flex-row max-w-[1650px] w-full mx-auto px-2 sm:px-6 py-2 sm:py-4 gap-3 sm:gap-4 overflow-hidden pb-2 md:pb-4"
       >
         {/* Toast Alert */}
         {toastMessage && (
@@ -464,14 +464,14 @@ export function SlackChatPage() {
           </div>
         )}
 
-        {/* 1. SLACK LEFT SIDEBAR */}
+        {/* 1. SLACK LEFT SIDEBAR (Compact Fixed Width & Equal Height) */}
         <aside
           className={`${
-            mobileView === "channels" ? "flex w-full" : "hidden md:flex md:w-72"
-          } bg-[#161F2D]/90 backdrop-blur-xl text-slate-300 rounded-2xl sm:rounded-3xl flex-col shadow-xl border border-[#2A3446] shrink-0 overflow-hidden h-full`}
+            mobileView === "channels" ? "flex w-full" : "hidden md:flex"
+          } md:w-72 lg:w-80 shrink-0 min-w-0 bg-[#161F2D] text-slate-300 rounded-2xl sm:rounded-3xl flex flex-col shadow-xl border border-[#2A3446] overflow-hidden h-full min-h-0`}
         >
           {/* Workspace Title & Persona Switcher */}
-          <div className="p-4 border-b border-[#2A3446] bg-[#0B111C]/80 space-y-2.5">
+          <div className="p-4 border-b border-[#2A3446] bg-[#0B111C]/80 space-y-2.5 shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="size-3 rounded-md bg-[#7FA0D6]" />
@@ -513,7 +513,7 @@ export function SlackChatPage() {
           </div>
 
           {/* Channels & DMs List */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-4 text-xs">
+          <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-4 text-xs">
             {/* Quick Task Assign Button in Sidebar */}
             <button
               onClick={() => setAssignTaskModalOpen(true)}
@@ -595,7 +595,7 @@ export function SlackChatPage() {
           </div>
 
           {/* Active User Footer in Sidebar */}
-          <div className="p-3 border-t border-slate-800 bg-slate-950/60 flex items-center gap-2.5">
+          <div className="p-3 border-t border-slate-800 bg-slate-950/60 flex items-center gap-2.5 mt-auto shrink-0">
             <div className="size-8 rounded-xl bg-[#7FA0D6] text-white font-black text-xs flex items-center justify-center shadow-xs">
               {currentPersona.slice(0, 2).toUpperCase()}
             </div>
@@ -609,14 +609,14 @@ export function SlackChatPage() {
           </div>
         </aside>
 
-        {/* 2. SLACK MAIN CHAT AREA */}
+        {/* 2. SLACK MAIN CHAT AREA (Fills Remaining Space) */}
         <section
           className={`${
-            mobileView === "chat" ? "flex flex-1" : "hidden md:flex md:flex-1"
-          } bg-[#161F2D] rounded-2xl sm:rounded-3xl border border-[#2A3446] shadow-xl flex-col overflow-hidden h-full`}
+            mobileView === "chat" ? "flex w-full" : "hidden md:flex"
+          } flex-1 min-w-0 bg-[#161F2D] rounded-2xl sm:rounded-3xl border border-[#2A3446] shadow-xl flex flex-col overflow-hidden h-full min-h-0`}
         >
           {/* Header Bar */}
-          <div className="px-3 sm:px-6 py-3 border-b border-[#2A3446] flex items-center justify-between bg-[#161F2D] gap-2">
+          <div className="px-3 sm:px-6 py-3 border-b border-[#2A3446] flex items-center justify-between bg-[#161F2D] gap-2 shrink-0">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               {/* Back button on mobile to view channel list */}
               <button
@@ -671,7 +671,7 @@ export function SlackChatPage() {
           </div>
 
           {/* Messages Feed */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-[#0B111C]/90 backdrop-blur-xl flex flex-col">
+          <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-[#0B111C]/90 backdrop-blur-xl flex flex-col">
             {currentMessages.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
                 <div className="size-14 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-4 border border-blue-500/20">
@@ -796,7 +796,7 @@ export function SlackChatPage() {
           </div>
 
           {/* Message Input Bar */}
-          <div className="p-3 sm:p-4 border-t border-[#2A3446] bg-[#161F2D] relative">
+          <div className="p-3 sm:p-4 border-t border-[#2A3446] bg-[#161F2D] relative shrink-0 mt-auto">
             {/* FULL WHATSAPP EMOJI PICKER POPOVER */}
             {showEmojiPicker && (
               <div className="absolute bottom-16 right-2 sm:right-4 z-50 w-[92vw] max-w-sm sm:w-96 bg-[#161F2D] border border-[#2A3446] rounded-3xl p-3 sm:p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-2">
